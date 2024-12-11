@@ -66,6 +66,14 @@
 		@include font(13, 20, 400);
 		color: $color-blueberry;
 	}
+
+	&__icon {
+		border: 1px dashed #949494;
+		background: #fff;
+		border-radius: 50%;
+		width: 32px;
+		height: 32px;
+	}
 }
 
 .ppcp-r-feature-item {

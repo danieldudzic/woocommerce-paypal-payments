@@ -1,6 +1,3 @@
-import { PayPalCheckbox, handleCheckboxState } from '../Fields';
-import data from '../../../utils/data';
-
 const TodoSettingsBlock = ( {
 	todos,
 	setTodos,
@@ -36,34 +33,13 @@ const TodoItem = ( props ) => {
 	return (
 		<div className="ppcp-r-todo-item">
 			<div className="ppcp-r-todo-item__inner">
-				<PayPalCheckbox
-					{ ...{
-						...props,
-						handleCheckboxState,
-					} }
-				/>
+				<div className="ppcp-r-todo-item__icon"></div>
 				<div className="ppcp-r-todo-item__description">
 					{ props.description }
 				</div>
 			</div>
-			<div
-				className="ppcp-r-todo-item__close"
-				onClick={ () =>
-					removeTodo(
-						props.value,
-						props.todosData,
-						props.changeTodos
-					)
-				}
-			>
-				{ data().getImage( 'icon-close.svg' ) }
-			</div>
 		</div>
 	);
-};
-
-const removeTodo = ( todoValue, todosData, changeTodos ) => {
-	changeTodos( todosData.filter( ( todo ) => todo.value !== todoValue ) );
 };
 
 export default TodoSettingsBlock;
