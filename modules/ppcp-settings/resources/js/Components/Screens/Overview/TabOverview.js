@@ -72,16 +72,16 @@ const TabOverview = () => {
 				className="ppcp-r-tab-overview-features"
 				title={ __( 'Features', 'woocommerce-paypal-payments' ) }
 				description={
-					<div>
+					<>
 						<p>
 							{ __(
-								'Enable additional features…',
+								'Enable additional features and capabilities on your WooCommerce store.',
 								'woocommerce-paypal-payments'
 							) }
 						</p>
 						<p>
 							{ __(
-								'Click Refresh…',
+								'Click Refresh to update your current features after making changes.',
 								'woocommerce-paypal-payments'
 							) }
 						</p>
@@ -101,7 +101,7 @@ const TabOverview = () => {
 										'woocommerce-paypal-payments'
 								  ) }
 						</Button>
-					</div>
+					</>
 				}
 				contentItems={ features.map( ( feature ) => (
 					<FeatureSettingsBlock
@@ -124,6 +124,60 @@ const TabOverview = () => {
 						} }
 					/>
 				) ) }
+			/>
+
+			<SettingsCard
+				className="ppcp-r-tab-overview-help"
+				title={ __( 'Help Center', 'woocommerce-paypal-payments' ) }
+				description={ __(
+					'Access detailed guides and responsive support to streamline setup and enhance your experience.',
+					'woocommerce-paypal-payments'
+				) }
+				contentItems={ [
+					<FeatureSettingsBlock
+						key="documentation"
+						title={ __(
+							'Documentation',
+							'woocommerce-paypal-payments'
+						) }
+						description={ __(
+							'Find detailed guides and resources to help you set up, manage, and optimize your PayPal integration.',
+							'woocommerce-paypal-payments'
+						) }
+						actionProps={ {
+							buttons: [
+								{
+									type: 'tertiary',
+									text: __(
+										'View full documentation',
+										'woocommerce-paypal-payments'
+									),
+									url: '#',
+								},
+							],
+						} }
+					/>,
+					<FeatureSettingsBlock
+						key="support"
+						title={ __( 'Support', 'woocommerce-paypal-payments' ) }
+						description={ __(
+							'Need help? Access troubleshooting tips or contact our support team for personalized assistance.',
+							'woocommerce-paypal-payments'
+						) }
+						actionProps={ {
+							buttons: [
+								{
+									type: 'tertiary',
+									text: __(
+										'View support options',
+										'woocommerce-paypal-payments'
+									),
+									url: '#',
+								},
+							],
+						} }
+					/>,
+				] }
 			/>
 		</div>
 	);
