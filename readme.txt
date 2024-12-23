@@ -1,7 +1,7 @@
 === WooCommerce PayPal Payments ===
 Contributors: woocommerce, automattic, syde
 Tags: woocommerce, paypal, payments, ecommerce, credit card
-Requires at least: 6.3
+Requires at least: 6.5
 Tested up to: 6.7
 Requires PHP: 7.4
 Stable tag: 2.9.5
