@@ -4,6 +4,10 @@ import { ButtonSettingsBlock } from '../../../../../ReusableComponents/SettingsB
 import { useDispatch } from '@wordpress/data';
 import { store as noticesStore } from '@wordpress/notices';
 import { CommonHooks } from '../../../../../../data';
+import {
+	NOTIFICATION_ERROR,
+	NOTIFICATION_SUCCESS,
+} from '../../../../../ReusableComponents/Icons';
 
 const SimulationBlock = () => {
 	const {
@@ -52,7 +56,7 @@ const SimulationBlock = () => {
 					'woocommerce-paypal-payments'
 				),
 				{
-					icon: '❌',
+					icon: NOTIFICATION_ERROR,
 				}
 			);
 			return;
@@ -78,7 +82,7 @@ const SimulationBlock = () => {
 							'woocommerce-paypal-payments'
 						),
 						{
-							icon: '✔️',
+							icon: NOTIFICATION_SUCCESS,
 						}
 					);
 					stopSimulation();
@@ -97,7 +101,7 @@ const SimulationBlock = () => {
 				'woocommerce-paypal-payments'
 			),
 			{
-				icon: '❌',
+				icon: NOTIFICATION_ERROR,
 			}
 		);
 	};

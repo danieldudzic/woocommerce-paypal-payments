@@ -4,6 +4,10 @@ import { ButtonSettingsBlock } from '../../../../../ReusableComponents/SettingsB
 import { __ } from '@wordpress/i18n';
 import { useDispatch } from '@wordpress/data';
 import { store as noticesStore } from '@wordpress/notices';
+import {
+	NOTIFICATION_ERROR,
+	NOTIFICATION_SUCCESS,
+} from '../../../../../ReusableComponents/Icons';
 
 const ResubscribeBlock = () => {
 	const { createSuccessNotice, createErrorNotice } =
@@ -24,7 +28,7 @@ const ResubscribeBlock = () => {
 					'woocommerce-paypal-payments'
 				),
 				{
-					icon: '❌',
+					icon: NOTIFICATION_ERROR,
 				}
 			);
 			return;
@@ -37,7 +41,7 @@ const ResubscribeBlock = () => {
 				'woocommerce-paypal-payments'
 			),
 			{
-				icon: '✔️',
+				icon: NOTIFICATION_SUCCESS,
 			}
 		);
 	};
