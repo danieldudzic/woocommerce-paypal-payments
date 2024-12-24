@@ -37,6 +37,7 @@ const FeatureSettingsBlock = ( { title, description, ...props } ) => {
 				<div className="ppcp-r-feature-item__buttons">
 					{ props.actionProps?.buttons.map( ( button ) => (
 						<Button
+							className={ button.class ? button.class : '' }
 							href={ button.url }
 							key={ button.text }
 							variant={ button.type }
