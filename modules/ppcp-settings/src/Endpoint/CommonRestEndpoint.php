@@ -58,6 +58,9 @@ class CommonRestEndpoint extends RestEndpoint {
 			'js_name'  => 'clientSecret',
 			'sanitize' => 'sanitize_text_field',
 		),
+		'webhooks'              => array(
+			'js_name' => 'webhooks',
+		),
 	);
 
 	/**
