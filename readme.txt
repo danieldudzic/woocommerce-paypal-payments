@@ -4,7 +4,7 @@ Tags: woocommerce, paypal, payments, ecommerce, credit card
 Requires at least: 6.5
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 2.9.5
+Stable tag: 2.9.6
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -178,6 +178,18 @@ If you encounter issues with the PayPal buttons not appearing after an update, p
 6. Main settings screen.
 
 == Changelog ==
+
+= 2.9.6 - XXXX-XX-XX =
+* Fix - NOT_ENABLED_TO_VAULT_PAYMENT_SOURCE on PayPal transactions when using ACDC Vaulting without PayPal Vault approval #2955
+* Fix - Express buttons for Free Trial Subscription products on Block Cart/Checkout trigger CANNOT_BE_ZERO_OR_NEGATIVE error #2872
+* Fix - String translations not applied to Card Fields on Block Checkout #2934
+* Fix - Fastlane component included in script when Fastlane is disabled #2911
+* Fix - Zero amount line items may trigger CANNOT_BE_ZERO_OR_NEGATIVE error after rounding error #2906
+* Fix - “Save changes” is grey and unclickable when switching from Sandbox to Live #2895
+* Fix - plugin queries variations when button/messaging is disabled on single product page #2896
+* Fix - Use get_id instead of get_order_number on setting custom_id (author @0verscore) #2930
+* Enhancement - Improve fraud response order notes for Advanced Card Processing transactions #2905
+* Tweak - Update the minimum plugin requirements to WordPress 6.5 & WooCommerce 9.2 #2920
 
 = 2.9.5 - 2024-12-10 =
 Fix - Early translation loading triggers `Function _load_textdomain_just_in_time was called incorrectly.` notice #2816
