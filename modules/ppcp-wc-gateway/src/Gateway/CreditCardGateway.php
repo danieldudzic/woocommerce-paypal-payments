@@ -444,7 +444,18 @@ class CreditCardGateway extends \WC_Payment_Gateway_CC {
 			}
 		}
 
-		do_action( 'woocommerce_paypal_payments_before_process_credit_card_order', $wc_order, $this->get_return_url( $wc_order ) );
+		if ( $this->is_customer_changing_subscription_payment( $this->subscription_helper, $wc_order ) ) {
+			// phpcs:ignore WordPress.Security.NonceVerification.Missing
+			$wc_payment_token_id = wc_clean( wp_unslash( $_POST['wc-ppcp-credit-card-gateway-payment-token'] ?? '' ) );
+			if ( ! $wc_payment_token_id ) {
+				// phpcs:ignore WordPress.Security.NonceVerification.Missing
+				$wc_payment_token_id = wc_clean( wp_unslash( $_POST['saved_credit_card'] ?? '' ) );
+			}
+
+			if ( $wc_payment_token_id ) {
+				return $this->add_payment_token_to_order( $wc_order, (int) $wc_payment_token_id, $this->get_return_url( $wc_order ), $this->session_handler );
+			}
+		}
 
 		/**
 		 * Vault v3 (save payment methods).
@@ -629,5 +640,54 @@ class CreditCardGateway extends \WC_Payment_Gateway_CC {
 	 */
 	protected function settings_renderer(): SettingsRenderer {
 		return $this->settings_renderer;
+	}
+
+	/**
+	 * Check whether customer is changing subscription payment.
+	 *
+	 * @param SubscriptionHelper $subscription_helper Subscription helper.
+	 * @param WC_Order           $wc_order WC order.
+	 * @return bool
+	 */
+	private function is_customer_changing_subscription_payment( SubscriptionHelper $subscription_helper, WC_Order $wc_order ): bool {
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing
+		return isset( $_POST['woocommerce_change_payment'] ) && $subscription_helper->has_subscription( $wc_order->get_id() ) && $subscription_helper->is_subscription_change_payment();
+	}
+
+	/**
+	 * Adds the given WC payment token into the given WC Order.
+	 *
+	 * @param WC_Order       $wc_order WC order.
+	 * @param int            $wc_payment_token_id WC payment token ID.
+	 * @param string         $return_url Return url.
+	 * @param SessionHandler $session_handler Session handler.
+	 * @return array{result: string, redirect: string, errorMessage?: string}
+	 */
+	private function add_payment_token_to_order(
+		WC_Order $wc_order,
+		int $wc_payment_token_id,
+		string $return_url,
+		SessionHandler $session_handler
+	): array {
+		$payment_token = WC_Payment_Tokens::get( $wc_payment_token_id );
+		if ( $payment_token ) {
+			$wc_order->add_payment_token( $payment_token );
+			$wc_order->save();
+
+			$session_handler->destroy_session_data();
+
+			return array(
+				'result'   => 'success',
+				'redirect' => $return_url,
+			);
+		}
+
+		wc_add_notice( __( 'Could not change payment.', 'woocommerce-paypal-payments' ), 'error' );
+
+		return array(
+			'result'       => 'failure',
+			'redirect'     => wc_get_checkout_url(),
+			'errorMessage' => __( 'Could not change payment.', 'woocommerce-paypal-payments' ),
+		);
 	}
 }
