@@ -2,7 +2,7 @@
     "name": "woocommerce/woocommerce-paypal-payments",
     "type": "wordpress-plugin",
     "description": "PayPal Commerce Platform for WooCommerce",
-    "license": "GPL-2.0",
+    "license": "GPL-2.0-or-later",
     "require": {
         "php": "^7.4 | ^8.0",
         "ext-json": "*",
