@@ -69,10 +69,10 @@ class AuthenticationRestEndpoint extends RestEndpoint {
 	public function register_routes() {
 		register_rest_route(
 			$this->namespace,
-			'/' . $this->rest_base,
+			'/' . $this->rest_base . '/direct',
 			array(
 				'methods'             => WP_REST_Server::EDITABLE,
-				'callback'            => array( $this, 'connect_manual' ),
+				'callback'            => array( $this, 'connect_direct' ),
 				'permission_callback' => array( $this, 'check_permission' ),
 				'args'                => array(
 					'clientId'     => array(
@@ -99,11 +99,14 @@ class AuthenticationRestEndpoint extends RestEndpoint {
 	}
 
 	/**
-	 * Retrieves merchantId and email.
+	 * Direct login: Retrieves merchantId and email using clientId and clientSecret.
+	 *
+	 * This is the "Manual Login" logic, when a merchant already knows their
+	 * API credentials.
 	 *
 	 * @param WP_REST_Request $request Full data about the request.
 	 */
-	public function connect_manual( WP_REST_Request $request ) : WP_REST_Response {
+	public function connect_direct( WP_REST_Request $request ) : WP_REST_Response {
 		$client_id     = $request->get_param( 'clientId' );
 		$client_secret = $request->get_param( 'clientSecret' );
 		$use_sandbox   = $request->get_param( 'useSandbox' );

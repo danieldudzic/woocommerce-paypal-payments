@@ -11,7 +11,7 @@ import apiFetch from '@wordpress/api-fetch';
 
 import {
 	REST_PERSIST_PATH,
-	REST_MANUAL_CONNECTION_PATH,
+	REST_DIRECT_AUTHENTICATION_PATH,
 	REST_CONNECTION_URL_PATH,
 	REST_HYDRATE_MERCHANT_PATH,
 	REST_REFRESH_FEATURES_PATH,
@@ -56,7 +56,7 @@ export const controls = {
 	} ) {
 		try {
 			return await apiFetch( {
-				path: REST_MANUAL_CONNECTION_PATH,
+				path: REST_DIRECT_AUTHENTICATION_PATH,
 				method: 'POST',
 				data: {
 					clientId,
