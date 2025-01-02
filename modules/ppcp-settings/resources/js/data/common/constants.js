@@ -46,6 +46,16 @@ export const REST_DIRECT_AUTHENTICATION_PATH =
 	'/wc/v3/wc_paypal/authenticate/direct';
 
 /**
+ * REST path to perform the ISU authentication check, using shared ID and authCode.
+ *
+ * Used by: Controls
+ * See: AuthenticateRestEndpoint.php
+ *
+ * @type {string}
+ */
+export const REST_ISU_AUTHENTICATION_PATH = '/wc/v3/wc_paypal/authenticate/isu';
+
+/**
  * REST path to generate an ISU URL for the PayPal-login.
  *
  * Used by: Controls
