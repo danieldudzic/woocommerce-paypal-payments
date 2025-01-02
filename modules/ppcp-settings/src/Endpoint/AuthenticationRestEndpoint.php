@@ -23,7 +23,14 @@ use WooCommerce\PayPalCommerce\Settings\Data\GeneralSettings;
 use WooCommerce\PayPalCommerce\Settings\Service\ConnectionManager;
 
 /**
- * REST controller for connection to a PayPal merchant account.
+ * REST controller for authenticating and connecting to a PayPal merchant account.
+ *
+ * This endpoint is responsible for verifying credentials and establishing
+ * a connection, regardless of whether they are provided via:
+ * 1. Direct login (clientId + secret)
+ * 2. UI-driven login (sharedId + authCode)
+ *
+ * It handles the actual authentication process after the login URL has been used.
  */
 class AuthenticationRestEndpoint extends RestEndpoint {
 	/**

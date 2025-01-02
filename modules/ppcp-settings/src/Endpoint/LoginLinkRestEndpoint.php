@@ -15,7 +15,14 @@ use WP_REST_Request;
 use WooCommerce\PayPalCommerce\Settings\Service\ConnectionUrlGenerator;
 
 /**
- * REST controller that generates merchant login URLs.
+ * REST controller that generates merchant login URLs for PayPal.
+ *
+ * This endpoint is responsible solely for generating a URL that initiates
+ * the PayPal login flow. It does not handle the authentication itself.
+ *
+ * The generated URL is typically used to redirect merchants to PayPal's login page.
+ * After successful login, the authentication process is completed via the
+ * AuthenticationRestEndpoint.
  */
 class LoginLinkRestEndpoint extends RestEndpoint {
 	/**
