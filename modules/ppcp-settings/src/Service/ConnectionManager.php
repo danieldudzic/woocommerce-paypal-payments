@@ -140,6 +140,57 @@ class ConnectionManager {
 	}
 
 
+	/**
+	 * Checks if the provided ID and auth-code have a valid format.
+	 *
+	 * Part of the "ISU Connection" (login via Popup) flow.
+	 *
+	 * On failure, an Exception is thrown, while a successful check does not
+	 * generate any return value. Note, that we did not find official documentation
+	 * on those values, so we only check if they are non-empty strings.
+	 *
+	 * @param string $shared_id The shared onboarding ID.
+	 * @param string $auth_code The authorization code.
+	 * @return void
+	 * @throws RuntimeException When invalid shared ID or auth provided.
+	 */
+	public function validate_id_and_auth_code( string $shared_id, string $auth_code ) : void {
+		if ( empty( $shared_id ) ) {
+			throw new RuntimeException( 'No onboarding ID provided.' );
+		}
+
+		if ( empty( $auth_code ) ) {
+			throw new RuntimeException( 'No authorization code provided.' );
+		}
+	}
+
+	/**
+	 * Disconnects the current merchant, and then attempts to connect to a
+	 * PayPal account the onboarding ID and authorization ID.
+	 *
+	 * Part of the "ISU Connection" (login via Popup) flow.
+	 *
+	 * @param bool   $use_sandbox Whether to use the sandbox mode.
+	 * @param string $shared_id   The shared onboarding ID.
+	 * @param string $auth_code   The authorization code.
+	 * @return void
+	 * @throws RuntimeException When failed to retrieve payee.
+	 */
+	public function connect_via_auth_code( bool $use_sandbox, string $shared_id, string $auth_code ) : void {
+		$this->disconnect();
+
+		$this->logger->info(
+			'Attempting ISU login to PayPal...',
+			array(
+				'sandbox'   => $use_sandbox,
+				'shared_id' => $shared_id,
+			)
+		);
+
+		// TODO ...
+	}
+
+
 	// ----------------------------------------------------------------------------
 	// Internal helper methods
 
