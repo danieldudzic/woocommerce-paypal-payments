@@ -1,8 +1,6 @@
 import { Icon } from '@wordpress/components';
 import { chevronDown, chevronUp } from '@wordpress/icons';
-
 import classNames from 'classnames';
-
 import { useAccordionState } from '../../hooks/useAccordionState';
 
 // Provide defaults for all layout components so the generic version just works.
@@ -23,6 +21,13 @@ const DefaultAction = ( { children } ) => (
 const DefaultDescription = ( { children } ) => (
 	<div className="ppcp-r-accordion__description">{ children }</div>
 );
+
+const AccordionContent = ( { isOpen, children } ) => {
+	if ( ! isOpen || ! children ) {
+		return null;
+	}
+	return <div className="ppcp-r-accordion__content">{ children }</div>;
+};
 
 const Accordion = ( {
 	title,
@@ -65,9 +70,7 @@ const Accordion = ( {
 					) }
 				</Header>
 			</button>
-			{ isOpen && children && (
-				<div className="ppcp-r-accordion__content">{ children }</div>
-			) }
+			<AccordionContent isOpen={ isOpen }>{ children }</AccordionContent>
 		</div>
 	);
 };

@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        php-versions: ['7.4', '8.0', '8.1', '8.2', '8.3']
+        php-versions: ['7.4', '8.0', '8.1', '8.2', '8.3', '8.4']
 
     name: PHP ${{ matrix.php-versions }}
     steps:
@@ -30,6 +30,7 @@ jobs:
       run: vendor/bin/phpunit
 
     - name: Psalm
+      if: ${{ matrix.php-versions == '7.4' }}
       run: ./vendor/bin/psalm --show-info=false --threads=8 --diff
 
     - name: Run PHPCS

@@ -35,27 +35,19 @@ const SelectSettingsBlock = ( {
 	order = DEFAULT_ELEMENT_ORDER,
 	...props
 } ) => (
-	<SettingsBlock
-		{ ...props }
-		className="ppcp-r-settings-block__select"
-		components={ [
-			() => (
-				<>
-					{ order.map( ( elementKey ) => {
-						const RenderElement = ELEMENT_RENDERERS[ elementKey ];
-						return RenderElement ? (
-							<RenderElement
-								key={ elementKey }
-								title={ title }
-								description={ description }
-								actionProps={ props.actionProps }
-							/>
-						) : null;
-					} ) }
-				</>
-			),
-		] }
-	/>
+	<SettingsBlock { ...props } className="ppcp-r-settings-block__select">
+		{ order.map( ( elementKey ) => {
+			const RenderElement = ELEMENT_RENDERERS[ elementKey ];
+			return RenderElement ? (
+				<RenderElement
+					key={ elementKey }
+					title={ title }
+					description={ description }
+					actionProps={ props.actionProps }
+				/>
+			) : null;
+		} ) }
+	</SettingsBlock>
 );
 
 export default SelectSettingsBlock;

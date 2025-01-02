@@ -42,28 +42,20 @@ const InputSettingsBlock = ( {
 	order = DEFAULT_ELEMENT_ORDER,
 	...props
 } ) => (
-	<SettingsBlock
-		{ ...props }
-		className="ppcp-r-settings-block__input"
-		components={ [
-			() => (
-				<>
-					{ order.map( ( elementKey ) => {
-						const RenderElement = ELEMENT_RENDERERS[ elementKey ];
-						return RenderElement ? (
-							<RenderElement
-								key={ elementKey }
-								title={ title }
-								description={ description }
-								supplementaryLabel={ supplementaryLabel }
-								actionProps={ props.actionProps }
-							/>
-						) : null;
-					} ) }
-				</>
-			),
-		] }
-	/>
+	<SettingsBlock { ...props } className="ppcp-r-settings-block__input">
+		{ order.map( ( elementKey ) => {
+			const RenderElement = ELEMENT_RENDERERS[ elementKey ];
+			return RenderElement ? (
+				<RenderElement
+					key={ elementKey }
+					title={ title }
+					description={ description }
+					supplementaryLabel={ supplementaryLabel }
+					actionProps={ props.actionProps }
+				/>
+			) : null;
+		} ) }
+	</SettingsBlock>
 );
 
 export default InputSettingsBlock;

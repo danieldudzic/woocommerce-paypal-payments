@@ -11,56 +11,43 @@ const FeatureSettingsBlock = ( { title, description, ...props } ) => {
 		}
 
 		return (
-			<>
-				<span className="ppcp-r-feature-item__notes">
-					{ notes.map( ( note, index ) => (
-						<span key={ index }>{ note }</span>
-					) ) }
-				</span>
-			</>
+			<span className="ppcp-r-feature-item__notes">
+				{ notes.map( ( note, index ) => (
+					<span key={ index }>{ note }</span>
+				) ) }
+			</span>
 		);
 	};
 
 	return (
-		<SettingsBlock
-			{ ...props }
-			className="ppcp-r-settings-block__feature"
-			components={ [
-				() => (
-					<>
-						<Header>
-							<Title>
-								{ title }
-								{ props.actionProps?.featureStatus && (
-									<TitleBadge
-										{ ...props.actionProps?.badge }
-									/>
-								) }
-							</Title>
-							<Description className="ppcp-r-settings-block__feature__description">
-								{ description }
-								{ printNotes() }
-							</Description>
-						</Header>
-						<Action>
-							<div className="ppcp-r-feature-item__buttons">
-								{ props.actionProps?.buttons.map(
-									( button ) => (
-										<Button
-											href={ button.url }
-											key={ button.text }
-											variant={ button.type }
-										>
-											{ button.text }
-										</Button>
-									)
-								) }
-							</div>
-						</Action>
-					</>
-				),
-			] }
-		/>
+		<SettingsBlock { ...props } className="ppcp-r-settings-block__feature">
+			<Header>
+				<Title>
+					{ title }
+					{ props.actionProps?.enabled && (
+						<TitleBadge { ...props.actionProps?.badge } />
+					) }
+				</Title>
+				<Description className="ppcp-r-settings-block__feature__description">
+					{ description }
+					{ printNotes() }
+				</Description>
+			</Header>
+			<Action>
+				<div className="ppcp-r-feature-item__buttons">
+					{ props.actionProps?.buttons.map( ( button ) => (
+						<Button
+							className={ button.class ? button.class : '' }
+							href={ button.url }
+							key={ button.text }
+							variant={ button.type }
+						>
+							{ button.text }
+						</Button>
+					) ) }
+				</div>
+			</Action>
+		</SettingsBlock>
 	);
 };
 

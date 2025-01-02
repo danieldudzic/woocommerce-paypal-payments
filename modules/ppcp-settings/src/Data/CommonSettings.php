@@ -59,6 +59,12 @@ class CommonSettings extends AbstractDataModel {
 			'use_manual_connection' => false,
 			'client_id'             => '',
 			'client_secret'         => '',
+
+			// Details about connected merchant account.
+			'merchant_connected'    => false,
+			'sandbox_merchant'      => false,
+			'merchant_id'           => '',
+			'merchant_email'        => '',
 		);
 	}
 
@@ -143,5 +149,59 @@ class CommonSettings extends AbstractDataModel {
 	 */
 	public function get_woo_settings() : array {
 		return $this->woo_settings;
+	}
+
+	/**
+	 * Setter to update details of the connected merchant account.
+	 *
+	 * Those details cannot be changed individually.
+	 *
+	 * @param bool   $is_sandbox     Whether the details are for a sandbox account.
+	 * @param string $merchant_id    The merchant ID.
+	 * @param string $merchant_email The merchant's email.
+	 *
+	 * @return void
+	 */
+	public function set_merchant_data( bool $is_sandbox, string $merchant_id, string $merchant_email ) : void {
+		$this->data['sandbox_merchant']   = $is_sandbox;
+		$this->data['merchant_id']        = sanitize_text_field( $merchant_id );
+		$this->data['merchant_email']     = sanitize_email( $merchant_email );
+		$this->data['merchant_connected'] = true;
+	}
+
+	/**
+	 * Whether the currently connected merchant is a sandbox account.
+	 *
+	 * @return bool
+	 */
+	public function is_sandbox_merchant() : bool {
+		return $this->data['sandbox_merchant'];
+	}
+
+	/**
+	 * Whether the merchant successfully logged into their PayPal account.
+	 *
+	 * @return bool
+	 */
+	public function is_merchant_connected() : bool {
+		return $this->data['merchant_connected'] && $this->data['merchant_id'] && $this->data['merchant_email'];
+	}
+
+	/**
+	 * Gets the currently connected merchant ID.
+	 *
+	 * @return string
+	 */
+	public function get_merchant_id() : string {
+		return $this->data['merchant_id'];
+	}
+
+	/**
+	 * Gets the currently connected merchant's email.
+	 *
+	 * @return string
+	 */
+	public function get_merchant_email() : string {
+		return $this->data['merchant_email'];
 	}
 }

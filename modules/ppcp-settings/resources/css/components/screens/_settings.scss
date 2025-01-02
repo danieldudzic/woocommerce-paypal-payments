@@ -11,10 +11,6 @@
 }
 
 // Todo List and Feature Items
-.ppcp-r-tab-overview-todo {
-	margin: 0 0 48px 0;
-}
-
 .ppcp-r-todo-item {
 	position: relative;
 	display: flex;
@@ -109,6 +105,8 @@
 		span {
 			font-weight: 500;
 		}
+
+		margin-top:24px;
 	}
 }
 
@@ -239,6 +237,10 @@
 }
 
 // Settings Card and Block Styles
+.ppcp-r-settings-card {
+	margin: 0 0 48px 0;
+}
+
 .ppcp-r-settings-card__content {
 	> .ppcp-r-settings-block {
 		&:not(:last-child) {

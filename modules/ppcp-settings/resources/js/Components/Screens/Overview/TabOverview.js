@@ -1,15 +1,49 @@
 import { __ } from '@wordpress/i18n';
 import { useState } from '@wordpress/element';
-import { Button } from '@wordpress/components';
+import { Button, Icon } from '@wordpress/components';
+import { useDispatch } from '@wordpress/data';
+import { reusableBlock } from '@wordpress/icons';
+
 import SettingsCard from '../../ReusableComponents/SettingsCard';
 import TodoSettingsBlock from '../../ReusableComponents/SettingsBlocks/TodoSettingsBlock';
 import FeatureSettingsBlock from '../../ReusableComponents/SettingsBlocks/FeatureSettingsBlock';
 import { TITLE_BADGE_POSITIVE } from '../../ReusableComponents/TitleBadge';
-import data from '../../../utils/data';
+import { useMerchantInfo } from '../../../data/common/hooks';
+import { STORE_NAME } from '../../../data/common';
 
 const TabOverview = () => {
 	const [ todos, setTodos ] = useState( [] );
 	const [ todosData, setTodosData ] = useState( todosDataDefault );
+	const [ isRefreshing, setIsRefreshing ] = useState( false );
+
+	const { merchant } = useMerchantInfo();
+	const { refreshFeatureStatuses } = useDispatch( STORE_NAME );
+
+	const features = featuresDefault.map( ( feature ) => {
+		const merchantFeature = merchant?.features?.[ feature.id ];
+		return {
+			...feature,
+			enabled: merchantFeature?.enabled ?? false,
+		};
+	} );
+
+	const refreshHandler = async () => {
+		setIsRefreshing( true );
+
+		const result = await refreshFeatureStatuses();
+
+		// TODO: Implement the refresh logic, remove this debug code -- PCP-4024
+		if ( result && ! result.success ) {
+			console.error(
+				'Failed to refresh features:',
+				result.message || 'Unknown error'
+			);
+		} else {
+			console.log( 'Features refreshed successfully.' );
+		}
+
+		setIsRefreshing( false );
+	};
 
 	return (
 		<div className="ppcp-r-tab-overview">
@@ -38,39 +72,118 @@ const TabOverview = () => {
 				className="ppcp-r-tab-overview-features"
 				title={ __( 'Features', 'woocommerce-paypal-payments' ) }
 				description={
-					<div>
-						<p>{ __( 'Enable additional features…' ) }</p>
-						<p>{ __( 'Click Refresh…' ) }</p>
-						<Button variant="tertiary">
-							{ data().getImage( 'icon-refresh.svg' ) }
-							{ __( 'Refresh', 'woocommerce-paypal-payments' ) }
+					<>
+						<p>
+							{ __(
+								'Enable additional features and capabilities on your WooCommerce store.',
+								'woocommerce-paypal-payments'
+							) }
+						</p>
+						<p>
+							{ __(
+								'Click Refresh to update your current features after making changes.',
+								'woocommerce-paypal-payments'
+							) }
+						</p>
+						<Button
+							variant="tertiary"
+							onClick={ refreshHandler }
+							disabled={ isRefreshing }
+						>
+							<Icon icon={ reusableBlock } size={ 18 } />
+							{ isRefreshing
+								? __(
+										'Refreshing…',
+										'woocommerce-paypal-payments'
+								  )
+								: __(
+										'Refresh',
+										'woocommerce-paypal-payments'
+								  ) }
 						</Button>
-					</div>
+					</>
 				}
-				contentItems={ featuresDefault.map( ( feature ) => (
+				contentItems={ features.map( ( feature ) => (
 					<FeatureSettingsBlock
 						key={ feature.id }
 						title={ feature.title }
 						description={ feature.description }
 						actionProps={ {
 							buttons: feature.buttons,
-							featureStatus: feature.featureStatus,
+							enabled: feature.enabled,
 							notes: feature.notes,
-							badge: {
-								text: __(
-									'Active',
-									'woocommerce-paypal-payments'
-								),
-								type: TITLE_BADGE_POSITIVE,
-							},
+							badge: feature.enabled
+								? {
+										text: __(
+											'Active',
+											'woocommerce-paypal-payments'
+										),
+										type: TITLE_BADGE_POSITIVE,
+								  }
+								: undefined,
 						} }
 					/>
 				) ) }
+			/>
+
+			<SettingsCard
+				className="ppcp-r-tab-overview-help"
+				title={ __( 'Help Center', 'woocommerce-paypal-payments' ) }
+				description={ __(
+					'Access detailed guides and responsive support to streamline setup and enhance your experience.',
+					'woocommerce-paypal-payments'
+				) }
+				contentItems={ [
+					<FeatureSettingsBlock
+						key="documentation"
+						title={ __(
+							'Documentation',
+							'woocommerce-paypal-payments'
+						) }
+						description={ __(
+							'Find detailed guides and resources to help you set up, manage, and optimize your PayPal integration.',
+							'woocommerce-paypal-payments'
+						) }
+						actionProps={ {
+							buttons: [
+								{
+									type: 'tertiary',
+									text: __(
+										'View full documentation',
+										'woocommerce-paypal-payments'
+									),
+									url: '#',
+								},
+							],
+						} }
+					/>,
+					<FeatureSettingsBlock
+						key="support"
+						title={ __( 'Support', 'woocommerce-paypal-payments' ) }
+						description={ __(
+							'Need help? Access troubleshooting tips or contact our support team for personalized assistance.',
+							'woocommerce-paypal-payments'
+						) }
+						actionProps={ {
+							buttons: [
+								{
+									type: 'tertiary',
+									text: __(
+										'View support options',
+										'woocommerce-paypal-payments'
+									),
+									url: '#',
+								},
+							],
+						} }
+					/>,
+				] }
 			/>
 		</div>
 	);
 };
 
+// TODO: This list should be refactored into a separate module, maybe utils/thingsToDoNext.js
 const todosDataDefault = [
 	{
 		value: 'paypal_later_messaging',
@@ -106,6 +219,7 @@ const todosDataDefault = [
 	},
 ];
 
+// TODO: Hardcoding this list here is not the best idea. Can we move this to a REST API response?
 const featuresDefault = [
 	{
 		id: 'save_paypal_and_venmo',
@@ -117,6 +231,7 @@ const featuresDefault = [
 		buttons: [
 			{
 				type: 'secondary',
+				class: 'small-button',
 				text: __( 'Configure', 'woocommerce-paypal-payments' ),
 				url: '#',
 			},
@@ -133,7 +248,6 @@ const featuresDefault = [
 			'Advanced Credit and Debit Cards',
 			'woocommerce-paypal-payments'
 		),
-		featureStatus: true,
 		description: __(
 			'Process major credit and debit cards including Visa, Mastercard, American Express and Discover.',
 			'woocommerce-paypal-payments'
@@ -141,6 +255,7 @@ const featuresDefault = [
 		buttons: [
 			{
 				type: 'secondary',
+				class: 'small-button',
 				text: __( 'Configure', 'woocommerce-paypal-payments' ),
 				url: '#',
 			},
@@ -164,6 +279,7 @@ const featuresDefault = [
 		buttons: [
 			{
 				type: 'secondary',
+				class: 'small-button',
 				text: __( 'Apply', 'woocommerce-paypal-payments' ),
 				url: '#',
 			},
@@ -181,10 +297,10 @@ const featuresDefault = [
 			'Let customers pay using their Google Pay wallet.',
 			'woocommerce-paypal-payments'
 		),
-		featureStatus: true,
 		buttons: [
 			{
 				type: 'secondary',
+				class: 'small-button',
 				text: __( 'Configure', 'woocommerce-paypal-payments' ),
 				url: '#',
 			},
@@ -193,9 +309,6 @@ const featuresDefault = [
 				text: __( 'Learn more', 'woocommerce-paypal-payments' ),
 				url: '#',
 			},
-		],
-		notes: [
-			__( '¹PayPal Q2 Earnings-2021.', 'woocommerce-paypal-payments' ),
 		],
 	},
 	{
@@ -208,6 +321,7 @@ const featuresDefault = [
 		buttons: [
 			{
 				type: 'secondary',
+				class: 'small-button',
 				text: __(
 					'Domain registration',
 					'woocommerce-paypal-payments'
@@ -231,6 +345,7 @@ const featuresDefault = [
 		buttons: [
 			{
 				type: 'secondary',
+				class: 'small-button',
 				text: __( 'Configure', 'woocommerce-paypal-payments' ),
 				url: '#',
 			},
@@ -239,6 +354,9 @@ const featuresDefault = [
 				text: __( 'Learn more', 'woocommerce-paypal-payments' ),
 				url: '#',
 			},
+		],
+		notes: [
+			__( '¹PayPal Q2 Earnings-2021.', 'woocommerce-paypal-payments' ),
 		],
 	},
 ];

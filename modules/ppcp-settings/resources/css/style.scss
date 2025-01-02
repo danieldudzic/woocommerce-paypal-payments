@@ -3,10 +3,11 @@
 
 #ppcp-settings-container {
 	@import './global';
-	@import './components/reusable-components/onboarding-header';
+	@import './components/reusable-components/busy-state';
 	@import './components/reusable-components/button';
-	@import './components/reusable-components/settings-toggle-block';
 	@import './components/reusable-components/separator';
+	@import './components/reusable-components/onboarding-header';
+	@import './components/reusable-components/settings-toggle-block';
 	@import './components/reusable-components/payment-method-icons';
 	@import "./components/reusable-components/payment-method-item";
 	@import './components/reusable-components/settings-wrapper';
@@ -22,6 +23,7 @@
 	@import './components/screens/onboarding';
 	@import './components/screens/settings';
 	@import './components/screens/overview/tab-styling';
+	@import './components/app';
 }
 
 @import './components/reusable-components/payment-method-modal';

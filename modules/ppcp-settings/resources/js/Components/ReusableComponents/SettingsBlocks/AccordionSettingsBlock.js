@@ -9,25 +9,19 @@ import {
 } from './SettingsBlockElements';
 
 const SettingsAccordion = ( { title, description, children, ...props } ) => (
-	<SettingsBlock
-		{ ...props }
-		className="ppcp-r-settings-block__accordion"
-		components={ [
-			() => (
-				<Accordion
-					title={ title }
-					description={ description }
-					Header={ Header }
-					TitleWrapper={ TitleWrapper }
-					Title={ Title }
-					Action={ Action }
-					Description={ Description }
-				>
-					{ children }
-				</Accordion>
-			),
-		] }
-	/>
+	<SettingsBlock { ...props } className="ppcp-r-settings-block__accordion">
+		<Accordion
+			title={ title }
+			description={ description }
+			Header={ Header }
+			TitleWrapper={ TitleWrapper }
+			Title={ Title }
+			Action={ Action }
+			Description={ Description }
+		>
+			{ children }
+		</Accordion>
+	</SettingsBlock>
 );
 
 export default SettingsAccordion;
