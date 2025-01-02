@@ -214,7 +214,7 @@ export const useDirectAuthentication = () => {
 		useConnectionBase();
 	const { withActivity } = CommonHooks.useBusyState();
 	const {
-		connectViaIdAndSecret,
+		connectViaSecret,
 		isManualConnectionMode,
 		setManualConnectionMode,
 		clientId,
@@ -223,7 +223,7 @@ export const useDirectAuthentication = () => {
 		setClientSecret,
 	} = CommonHooks.useAuthentication();
 
-	const handleConnectViaIdAndSecret = async ( { validation } = {} ) => {
+	const handleDirectAuthentication = async ( { validation } = {} ) => {
 		return withActivity(
 			ACTIVITIES.CONNECT_MANUAL,
 			'Connecting manually via Client ID and Secret',
@@ -237,7 +237,7 @@ export const useDirectAuthentication = () => {
 					}
 				}
 
-				const res = await connectViaIdAndSecret();
+				const res = await connectViaSecret();
 
 				if ( res.success ) {
 					await handleCompleted();
@@ -251,7 +251,7 @@ export const useDirectAuthentication = () => {
 	};
 
 	return {
-		handleConnectViaIdAndSecret,
+		handleDirectAuthentication,
 		isManualConnectionMode,
 		setManualConnectionMode,
 		clientId,

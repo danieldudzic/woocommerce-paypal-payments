@@ -40,7 +40,7 @@ const AdvancedOptionsForm = () => {
 
 	const { isSandboxMode, setSandboxMode } = useSandboxConnection();
 	const {
-		handleConnectViaIdAndSecret,
+		handleDirectAuthentication,
 		isManualConnectionMode,
 		setManualConnectionMode,
 		clientId,
@@ -83,10 +83,10 @@ const AdvancedOptionsForm = () => {
 
 	const handleManualConnect = useCallback(
 		() =>
-			handleConnectViaIdAndSecret( {
+			handleDirectAuthentication( {
 				validation: validateManualConnectionForm,
 			} ),
-		[ handleConnectViaIdAndSecret, validateManualConnectionForm ]
+		[ handleDirectAuthentication, validateManualConnectionForm ]
 	);
 
 	useEffect( () => {

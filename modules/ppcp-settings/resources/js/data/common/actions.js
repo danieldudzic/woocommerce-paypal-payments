@@ -173,11 +173,11 @@ export const productionOnboardingUrl = function* ( products = [] ) {
 };
 
 /**
- * Side effect. Initiates a manual connection attempt using the provided client ID and secret.
+ * Side effect. Initiates a direct connection attempt using the provided client ID and secret.
  *
  * @return {Action} The action.
  */
-export const connectViaIdAndSecret = function* () {
+export const connectViaSecret = function* () {
 	const { clientId, clientSecret, useSandbox } =
 		yield select( STORE_NAME ).persistentData();
 
