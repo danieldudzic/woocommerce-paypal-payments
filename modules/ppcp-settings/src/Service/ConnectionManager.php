@@ -11,10 +11,15 @@ namespace WooCommerce\PayPalCommerce\Settings\Service;
 
 use Psr\Log\LoggerInterface;
 use RuntimeException;
+use JsonException;
 use WooCommerce\PayPalCommerce\ApiClient\Authentication\PayPalBearer;
 use WooCommerce\PayPalCommerce\ApiClient\Endpoint\Orders;
 use WooCommerce\PayPalCommerce\ApiClient\Helper\InMemoryCache;
 use WooCommerce\PayPalCommerce\Settings\Data\CommonSettings;
+use WooCommerce\PayPalCommerce\ApiClient\Endpoint\LoginSeller;
+use WooCommerce\WooCommerce\Logging\Logger\NullLogger;
+use WooCommerce\PayPalCommerce\ApiClient\Repository\PartnerReferralsData;
+use Automattic\Jetpack\Partner;
 
 /**
  * Class that manages the connection to PayPal.
@@ -35,27 +40,58 @@ class ConnectionManager {
 	private LoggerInterface $logger;
 
 	/**
-	 * Base URLs for the manual connection attempt.
+	 * Base URLs for the manual connection attempt, by environment.
 	 *
 	 * @var array<string, string>
 	 */
 	private array $connection_hosts;
 
 	/**
+	 * Login API handler instances, by environment.
+	 *
+	 * @var array<string, LoginSeller>
+	 */
+	private array $login_endpoints;
+
+	/**
+	 * Onboarding referrals data.
+	 *
+	 * @var PartnerReferralsData
+	 */
+	private PartnerReferralsData $referrals_data;
+
+	/**
 	 * Constructor.
 	 *
-	 * @param CommonSettings  $common_settings Data model that stores the connection details.
-	 * @param string          $live_host       The API host for the live mode.
-	 * @param string          $sandbox_host    The API host for the sandbox mode.
-	 * @param LoggerInterface $logger          Logging instance.
+	 * @param CommonSettings       $common_settings        Data model that stores the connection
+	 *                                                     details.
+	 * @param string               $live_host              The API host for the live mode.
+	 * @param string               $sandbox_host           The API host for the sandbox mode.
+	 * @param LoginSeller          $live_login_endpoint    API handler to fetch live-merchant
+	 *                                                     credentials.
+	 * @param LoginSeller          $sandbox_login_endpoint API handler to fetch sandbox-merchant
+	 *                                                     credentials.
+	 * @param PartnerReferralsData $referrals_data         Partner referrals data.
+	 * @param ?LoggerInterface     $logger                 Logging instance.
 	 */
-	public function __construct( CommonSettings $common_settings, string $live_host, string $sandbox_host, LoggerInterface $logger ) {
-		$this->common_settings  = $common_settings;
-		$this->logger           = $logger;
+	public function __construct(
+		CommonSettings $common_settings, string $live_host, string $sandbox_host,
+		LoginSeller $live_login_endpoint, LoginSeller $sandbox_login_endpoint,
+		PartnerReferralsData $referrals_data,
+		?LoggerInterface $logger = null
+	) {
+		$this->common_settings = $common_settings;
+		$this->logger          = $logger ?: new NullLogger();
+
 		$this->connection_hosts = array(
 			'live'    => $live_host,
 			'sandbox' => $sandbox_host,
 		);
+		$this->login_endpoints  = array(
+			'live'    => $live_login_endpoint,
+			'sandbox' => $sandbox_login_endpoint,
+		);
+		$this->referrals_data   = $referrals_data;
 	}
 
 	/**
@@ -187,7 +223,10 @@ class ConnectionManager {
 			)
 		);
 
-		// TODO ...
+		$credentials = $this->get_credentials( $shared_id, $auth_code, $use_sandbox );
+
+		// TODO.
+		// $this->update_connection_details( $use_sandbox, $payee['merchant_id'], $payee['email_address'] );
 	}
 
 
@@ -206,7 +245,19 @@ class ConnectionManager {
 	}
 
 	/**
+	 * Returns an API handler to fetch merchant credentials.
+	 *
+	 * @param bool $for_sandbox Whether to return the sandbox API handler.
+	 * @return LoginSeller
+	 */
+	private function get_login_endpoint( bool $for_sandbox = false ) : LoginSeller {
+		return $for_sandbox ? $this->login_endpoints['sandbox'] : $this->login_endpoints['live'];
+	}
+
+	/**
 	 * Retrieves the payee object with the merchant data by creating a minimal PayPal order.
+	 *
+	 * Part of the "Direct Connection" (Manual Connection) flow.
 	 *
 	 * @param string $client_id     The client ID.
 	 * @param string $client_secret The client secret.
@@ -249,13 +300,16 @@ class ConnectionManager {
 			),
 		);
 
-		$response = $orders->create( $request_body );
-		$body     = json_decode( $response['body'] );
+		try {
+			$response = $orders->create( $request_body );
+			$body     = json_decode( $response['body'], false, 512, JSON_THROW_ON_ERROR );
+			$order_id = $body->id;
 
-		$order_id = $body->id;
-
-		$order_response = $orders->order( $order_id );
-		$order_body     = json_decode( $order_response['body'] );
+			$order_response = $orders->order( $order_id );
+			$order_body     = json_decode( $order_response['body'], false, 512, JSON_THROW_ON_ERROR );
+		} catch ( JsonException $exception ) {
+			throw new RuntimeException( 'Could not decode JSON response: ' . $exception->getMessage() );
+		}
 
 		$pu    = $order_body->purchase_units[0];
 		$payee = $pu->payee;
@@ -271,6 +325,28 @@ class ConnectionManager {
 			'merchant_id'   => $payee->merchant_id,
 			'email_address' => $payee->email_address,
 		);
+	}
+
+	/**
+	 * Fetches merchant API credentials using a shared onboarding ID and
+	 * authorization code.
+	 *
+	 * Part of the "ISU Connection" (login via Popup) flow.
+	 *
+	 * @param string $shared_id   The shared onboarding ID.
+	 * @param string $auth_code   The authorization code.
+	 * @param bool   $use_sandbox Whether to use the sandbox mode.
+	 * @return array
+	 */
+	private function get_credentials( string $shared_id, string $auth_code, bool $use_sandbox ) : array {
+		$login_handler = $this->get_login_endpoint( $use_sandbox );
+		$nonce         = $this->referrals_data->nonce();
+
+		// TODO. Always throws the exception "No token found."
+		$response = $login_handler->credentials_for( $shared_id, $auth_code, $nonce );
+
+		// TODO.
+		return (array) $response;
 	}
 
 	/**
@@ -294,4 +370,5 @@ class ConnectionManager {
 		$this->common_settings->set_merchant_data( $is_sandbox, $merchant_id, $merchant_email );
 		$this->common_settings->save();
 	}
+
 }

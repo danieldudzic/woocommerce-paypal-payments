@@ -24,6 +24,7 @@ use WooCommerce\PayPalCommerce\Settings\Service\OnboardingUrlManager;
 use WooCommerce\PayPalCommerce\Vendor\Psr\Container\ContainerInterface;
 use WooCommerce\PayPalCommerce\Settings\Handler\ConnectionListener;
 use WooCommerce\PayPalCommerce\Settings\Service\ConnectionManager;
+use WooCommerce\PayPalCommerce\Settings\Service\EnvironmentConfig;
 
 return array(
 	'settings.url'                                => static function ( ContainerInterface $container ) : string {
@@ -195,6 +196,9 @@ return array(
 			$container->get( 'settings.data.common' ),
 			$container->get( 'api.paypal-host-production' ),
 			$container->get( 'api.paypal-host-sandbox' ),
+			$container->get( 'api.endpoint.login-seller-production' ),
+			$container->get( 'api.endpoint.login-seller-sandbox' ),
+			$container->get( 'api.repository.partner-referrals-data' ),
 			$container->get( 'woocommerce.logger.woocommerce' ),
 		);
 	},
