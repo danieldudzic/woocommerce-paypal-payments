@@ -41,26 +41,6 @@ class AuthenticationRestEndpoint extends RestEndpoint {
 	protected $rest_base = 'authenticate';
 
 	/**
-	 * Field mapping for request.
-	 *
-	 * @var array
-	 */
-	private array $field_map = array(
-		'client_id'     => array(
-			'js_name'  => 'clientId',
-			'sanitize' => 'sanitize_text_field',
-		),
-		'client_secret' => array(
-			'js_name'  => 'clientSecret',
-			'sanitize' => 'sanitize_text_field',
-		),
-		'use_sandbox'   => array(
-			'js_name'  => 'useSandbox',
-			'sanitize' => 'to_boolean',
-		),
-	);
-
-	/**
 	 * Defines the JSON response format (when connection was successful).
 	 *
 	 * @var array
@@ -90,10 +70,30 @@ class AuthenticationRestEndpoint extends RestEndpoint {
 		register_rest_route(
 			$this->namespace,
 			'/' . $this->rest_base,
-				array(
-					'methods'             => WP_REST_Server::EDITABLE,
-					'callback'            => array( $this, 'connect_manual' ),
-					'permission_callback' => array( $this, 'check_permission' ),
+			array(
+				'methods'             => WP_REST_Server::EDITABLE,
+				'callback'            => array( $this, 'connect_manual' ),
+				'permission_callback' => array( $this, 'check_permission' ),
+				'args'                => array(
+					'clientId'     => array(
+						'requires'          => true,
+						'type'              => 'string',
+						'sanitize_callback' => 'sanitize_text_field',
+						'minLength'         => 80,
+						'maxLength'         => 80,
+					),
+					'clientSecret' => array(
+						'requires'          => true,
+						'type'              => 'string',
+						'sanitize_callback' => 'sanitize_text_field',
+					),
+					'useSandbox'   => array(
+						'requires'          => false,
+						'type'              => 'boolean',
+						'default'           => false,
+						'sanitize_callback' => array( $this, 'to_boolean' ),
+					),
+				),
 			)
 		);
 	}
@@ -104,14 +104,9 @@ class AuthenticationRestEndpoint extends RestEndpoint {
 	 * @param WP_REST_Request $request Full data about the request.
 	 */
 	public function connect_manual( WP_REST_Request $request ) : WP_REST_Response {
-		$data = $this->sanitize_for_wordpress(
-			$request->get_params(),
-			$this->field_map
-		);
-
-		$client_id     = $data['client_id'] ?? '';
-		$client_secret = $data['client_secret'] ?? '';
-		$use_sandbox   = (bool) ( $data['use_sandbox'] ?? false );
+		$client_id     = $request->get_param( 'clientId' );
+		$client_secret = $request->get_param( 'clientSecret' );
+		$use_sandbox   = $request->get_param( 'useSandbox' );
 
 		try {
 			$this->connection_manager->validate_id_and_secret( $client_id, $client_secret );
