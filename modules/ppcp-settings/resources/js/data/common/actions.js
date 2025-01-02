@@ -48,6 +48,17 @@ export const setIsReady = ( isReady ) => ( {
 } );
 
 /**
+ * Transient. Sets the active settings tab.
+ *
+ * @param {string} activeModal
+ * @return {Action} The action.
+ */
+export const setActiveModal = ( activeModal ) => ( {
+	type: ACTION_TYPES.SET_TRANSIENT,
+	payload: { activeModal },
+} );
+
+/**
  * Transient. Changes the "saving" flag.
  *
  * @param {boolean} isSaving

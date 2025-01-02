@@ -119,8 +119,6 @@
 					background-color: $color-white;
 
 					&::before {
-						transform: translate(3px, 3px);
-						border-width: 6px;
 						border-color: $color-blueberry;
 					}
 				}
