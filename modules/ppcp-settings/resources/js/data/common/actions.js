@@ -182,7 +182,7 @@ export const connectViaSecret = function* () {
 		yield select( STORE_NAME ).persistentData();
 
 	return yield {
-		type: ACTION_TYPES.DO_MANUAL_CONNECTION,
+		type: ACTION_TYPES.DO_MANUAL_AUTHENTICATION,
 		clientId,
 		clientSecret,
 		useSandbox,

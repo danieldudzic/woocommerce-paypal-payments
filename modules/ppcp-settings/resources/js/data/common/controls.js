@@ -49,7 +49,7 @@ export const controls = {
 		}
 	},
 
-	async [ ACTION_TYPES.DO_MANUAL_CONNECTION ]( {
+	async [ ACTION_TYPES.DO_MANUAL_AUTHENTICATION ]( {
 		clientId,
 		clientSecret,
 		useSandbox,
