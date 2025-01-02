@@ -1,6 +1,6 @@
 <?php
 /**
- * REST controller for connection via manual credentials input.
+ * REST controller for authenticating a PayPal merchant.
  *
  * @package WooCommerce\PayPalCommerce\Settings\Endpoint
  */
@@ -23,15 +23,15 @@ use WooCommerce\PayPalCommerce\Settings\Data\GeneralSettings;
 use WooCommerce\PayPalCommerce\Settings\Service\ConnectionManager;
 
 /**
- * REST controller for connection via manual credentials input.
+ * REST controller for connection to a PayPal merchant account.
  */
-class ConnectManualRestEndpoint extends RestEndpoint {
+class AuthenticationRestEndpoint extends RestEndpoint {
 	/**
 	 * The base path for this REST controller.
 	 *
 	 * @var string
 	 */
-	protected $rest_base = 'connect_manual';
+	protected $rest_base = 'authenticate';
 
 	/**
 	 * Field mapping for request.
@@ -68,7 +68,7 @@ class ConnectManualRestEndpoint extends RestEndpoint {
 	);
 
 	/**
-	 * ConnectManualRestEndpoint constructor.
+	 * Constructor.
 	 *
 	 * @param ConnectionManager $connection_manager The connection manager.
 	 */

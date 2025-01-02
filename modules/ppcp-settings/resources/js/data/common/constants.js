@@ -38,11 +38,11 @@ export const REST_PERSIST_PATH = '/wc/v3/wc_paypal/common';
  * REST path to perform the manual connection check, using client ID and secret,
  *
  * Used by: Controls
- * See: ConnectManualRestEndpoint.php
+ * See: AuthenticateRestEndpoint.php
  *
  * @type {string}
  */
-export const REST_MANUAL_CONNECTION_PATH = '/wc/v3/wc_paypal/connect_manual';
+export const REST_MANUAL_CONNECTION_PATH = '/wc/v3/wc_paypal/authenticate';
 
 /**
  * REST path to generate an ISU URL for the PayPal-login.

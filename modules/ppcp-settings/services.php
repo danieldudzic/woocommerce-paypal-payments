@@ -14,7 +14,7 @@ use WooCommerce\PayPalCommerce\Settings\Data\CommonSettings;
 use WooCommerce\PayPalCommerce\Settings\Data\GeneralSettings;
 use WooCommerce\PayPalCommerce\Settings\Data\OnboardingProfile;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\CommonRestEndpoint;
-use WooCommerce\PayPalCommerce\Settings\Endpoint\ConnectManualRestEndpoint;
+use WooCommerce\PayPalCommerce\Settings\Endpoint\AuthenticationRestEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\LoginLinkRestEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\OnboardingRestEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\RefreshFeatureStatusEndpoint;
@@ -79,8 +79,8 @@ return array(
 			$container->get( 'woocommerce.logger.woocommerce' )
 		);
 	},
-	'settings.rest.connect_manual'                => static function ( ContainerInterface $container ) : ConnectManualRestEndpoint {
-		return new ConnectManualRestEndpoint(
+	'settings.rest.connect_manual'                => static function ( ContainerInterface $container ) : AuthenticationRestEndpoint {
+		return new AuthenticationRestEndpoint(
 			$container->get( 'settings.service.connection_manager' ),
 		);
 	},
