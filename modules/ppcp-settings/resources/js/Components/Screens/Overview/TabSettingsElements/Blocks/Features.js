@@ -23,6 +23,7 @@ const Features = {
 						} );
 					},
 					showWhen: 'enabled',
+					class: 'small-button',
 				},
 				{
 					type: 'secondary',
@@ -33,6 +34,7 @@ const Features = {
 						live: 'https://www.paypal.com/bizsignup/entry?product=ADVANCED_VAULTING',
 					},
 					showWhen: 'disabled',
+					class: 'small-button',
 				},
 				{
 					type: 'tertiary',
@@ -41,6 +43,7 @@ const Features = {
 						sandbox: '#',
 						live: '#',
 					},
+					class: 'small-button',
 				},
 			],
 		},
@@ -69,6 +72,7 @@ const Features = {
 						} );
 					},
 					showWhen: 'enabled',
+					class: 'small-button',
 				},
 				{
 					type: 'secondary',
@@ -79,6 +83,7 @@ const Features = {
 						live: 'https://www.paypal.com/bizsignup/entry?product=ppcp',
 					},
 					showWhen: 'disabled',
+					class: 'small-button',
 				},
 				{
 					type: 'tertiary',
@@ -87,6 +92,7 @@ const Features = {
 						sandbox: '#',
 						live: '#',
 					},
+					class: 'small-button',
 				},
 			],
 		},
@@ -111,6 +117,7 @@ const Features = {
 						);
 					},
 					showWhen: 'enabled',
+					class: 'small-button',
 				},
 				{
 					type: 'secondary',
@@ -120,6 +127,7 @@ const Features = {
 						live: '#',
 					},
 					showWhen: 'disabled',
+					class: 'small-button',
 				},
 				{
 					type: 'tertiary',
@@ -128,6 +136,7 @@ const Features = {
 						sandbox: '#',
 						live: '#',
 					},
+					class: 'small-button',
 				},
 			],
 		},
@@ -151,6 +160,7 @@ const Features = {
 						} );
 					},
 					showWhen: 'enabled',
+					class: 'small-button',
 				},
 				{
 					type: 'secondary',
@@ -161,6 +171,7 @@ const Features = {
 						live: 'https://www.paypal.com/bizsignup/add-product?product=payment_methods&capabilities=GOOGLE_PAY',
 					},
 					showWhen: 'disabled',
+					class: 'small-button',
 				},
 				{
 					type: 'tertiary',
@@ -169,6 +180,7 @@ const Features = {
 						sandbox: '#',
 						live: '#',
 					},
+					class: 'small-button',
 				},
 			],
 			notes: [
@@ -198,6 +210,7 @@ const Features = {
 						} );
 					},
 					showWhen: 'enabled',
+					class: 'small-button',
 				},
 				{
 					type: 'secondary',
@@ -211,6 +224,7 @@ const Features = {
 						live: 'https://www.paypal.com/uccservicing/apm/applepay',
 					},
 					showWhen: 'enabled',
+					class: 'small-button',
 				},
 				{
 					type: 'secondary',
@@ -221,6 +235,7 @@ const Features = {
 						live: 'https://www.paypal.com/bizsignup/add-product?product=payment_methods&capabilities=APPLE_PAY',
 					},
 					showWhen: 'disabled',
+					class: 'small-button',
 				},
 				{
 					type: 'tertiary',
@@ -229,6 +244,7 @@ const Features = {
 						sandbox: '#',
 						live: '#',
 					},
+					class: 'small-button',
 				},
 			],
 		},
@@ -252,6 +268,7 @@ const Features = {
 						} );
 					},
 					showWhen: 'enabled',
+					class: 'small-button',
 				},
 				{
 					type: 'secondary',
@@ -261,6 +278,7 @@ const Features = {
 						live: '#',
 					},
 					showWhen: 'disabled',
+					class: 'small-button',
 				},
 				{
 					type: 'tertiary',
@@ -269,6 +287,7 @@ const Features = {
 						sandbox: '#',
 						live: '#',
 					},
+					class: 'small-button',
 				},
 			],
 		},

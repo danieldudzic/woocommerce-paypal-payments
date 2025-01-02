@@ -33,3 +33,7 @@ export const merchant = ( state ) => {
 export const wooSettings = ( state ) => {
 	return getState( state ).wooSettings || EMPTY_OBJ;
 };
+
+export const webhooks = ( state ) => {
+	return getState( state ).webhooks || EMPTY_OBJ;
+};

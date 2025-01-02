@@ -53,6 +53,9 @@ const AcdcFlow = ( { isFastlane, isPayLater, storeCountry } ) => {
 						imageBadge={ [
 							'icon-payment-method-paypal-small.svg',
 						] }
+                        textBadge={
+                            <PricingTitleBadge item="plater" />
+                        }
 						description={ sprintf(
 							// translators: %s: Link to PayPal business fees guide
 							__(

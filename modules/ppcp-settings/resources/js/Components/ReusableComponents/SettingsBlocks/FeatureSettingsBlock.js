@@ -22,6 +22,7 @@ const FeatureSettingsBlock = ( { title, description, ...props } ) => {
 	const renderButton = ( button ) => {
 		const buttonElement = (
 			<Button
+				className={ button.class ? button.class : '' }
 				key={ button.text }
 				variant={ button.type }
 				onClick={ button.onClick }

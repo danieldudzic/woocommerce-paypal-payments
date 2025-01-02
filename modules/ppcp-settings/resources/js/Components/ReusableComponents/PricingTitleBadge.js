@@ -5,26 +5,29 @@ import { countryPriceInfo } from '../../utils/countryPriceInfo';
 import { formatPrice } from '../../utils/formatPrice';
 import TitleBadge, { TITLE_BADGE_INFO } from './TitleBadge';
 
-const getFixedAmount = ( currency, priceList ) => {
-	if ( priceList[ currency ] ) {
-		return formatPrice( priceList[ currency ], currency );
+const getFixedAmount = ( currency, priceList, itemFixedAmount ) => {
+    if ( priceList[ currency ] ) {
+        const sum = priceList[ currency ] + itemFixedAmount;
+		return formatPrice( sum, currency );
 	}
 
 	const [ defaultCurrency, defaultPrice ] = Object.entries( priceList )[ 0 ];
-
-	return formatPrice( defaultPrice, defaultCurrency );
+    const sum = defaultPrice + itemFixedAmount;
+	return formatPrice( sum, defaultCurrency );
 };
 
 const PricingTitleBadge = ( { item } ) => {
-	const { storeCountry } = CommonHooks.useWooSettings();
+	const { storeCountry, storeCurrency } = CommonHooks.useWooSettings();
 	const infos = countryPriceInfo[ storeCountry ];
+    const itemKey = item.split(' ')[0]; // Extract the first word, fastlane has more than one
 
-	if ( ! infos || ! infos[ item ] ) {
+    if ( ! infos || ! infos[ itemKey ] ) {
 		return null;
 	}
 
-	const percentage = infos[ item ].toFixed( 2 );
-	const fixedAmount = getFixedAmount( storeCountry, infos.fixedFee );
+    const percentage = typeof infos[itemKey] === 'number' ? infos[itemKey].toFixed(2) : infos[itemKey]['percentage'].toFixed(2);
+    const itemFixedAmount = infos[itemKey]['fixedFee'] ? infos[itemKey]['fixedFee'] : 0;
+    const fixedAmount = getFixedAmount( storeCurrency, infos.fixedFee, itemFixedAmount );
 
 	const label = sprintf(
 		__( 'from %1$s%% + %2$s', 'woocommerce-paypal-payments' ),
