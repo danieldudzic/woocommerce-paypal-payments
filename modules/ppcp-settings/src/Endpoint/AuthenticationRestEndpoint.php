@@ -90,12 +90,10 @@ class AuthenticationRestEndpoint extends RestEndpoint {
 		register_rest_route(
 			$this->namespace,
 			'/' . $this->rest_base,
-			array(
 				array(
 					'methods'             => WP_REST_Server::EDITABLE,
 					'callback'            => array( $this, 'connect_manual' ),
 					'permission_callback' => array( $this, 'check_permission' ),
-				),
 			)
 		);
 	}

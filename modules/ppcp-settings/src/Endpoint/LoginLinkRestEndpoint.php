@@ -56,25 +56,23 @@ class LoginLinkRestEndpoint extends RestEndpoint {
 			$this->namespace,
 			'/' . $this->rest_base,
 			array(
-				array(
-					'methods'             => WP_REST_Server::EDITABLE,
-					'callback'            => array( $this, 'get_login_url' ),
-					'permission_callback' => array( $this, 'check_permission' ),
-					'args'                => array(
-						'environment' => array(
-							'required' => true,
-							'type'     => 'string',
+				'methods'             => WP_REST_Server::EDITABLE,
+				'callback'            => array( $this, 'get_login_url' ),
+				'permission_callback' => array( $this, 'check_permission' ),
+				'args'                => array(
+					'environment' => array(
+						'required' => true,
+						'type'     => 'string',
+					),
+					'products'    => array(
+						'required'          => true,
+						'type'              => 'array',
+						'items'             => array(
+							'type' => 'string',
 						),
-						'products'    => array(
-							'required'          => true,
-							'type'              => 'array',
-							'items'             => array(
-								'type' => 'string',
-							),
-							'sanitize_callback' => function ( $products ) {
-								return array_map( 'sanitize_text_field', $products );
-							},
-						),
+						'sanitize_callback' => function ( $products ) {
+							return array_map( 'sanitize_text_field', $products );
+						},
 					),
 				),
 			)

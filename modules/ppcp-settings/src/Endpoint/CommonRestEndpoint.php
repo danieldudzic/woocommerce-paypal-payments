@@ -111,11 +111,9 @@ class CommonRestEndpoint extends RestEndpoint {
 			$this->namespace,
 			'/' . $this->rest_base,
 			array(
-				array(
-					'methods'             => WP_REST_Server::READABLE,
-					'callback'            => array( $this, 'get_details' ),
-					'permission_callback' => array( $this, 'check_permission' ),
-				),
+				'methods'             => WP_REST_Server::READABLE,
+				'callback'            => array( $this, 'get_details' ),
+				'permission_callback' => array( $this, 'check_permission' ),
 			)
 		);
 
@@ -123,11 +121,9 @@ class CommonRestEndpoint extends RestEndpoint {
 			$this->namespace,
 			'/' . $this->rest_base,
 			array(
-				array(
-					'methods'             => WP_REST_Server::EDITABLE,
-					'callback'            => array( $this, 'update_details' ),
-					'permission_callback' => array( $this, 'check_permission' ),
-				),
+				'methods'             => WP_REST_Server::EDITABLE,
+				'callback'            => array( $this, 'update_details' ),
+				'permission_callback' => array( $this, 'check_permission' ),
 			)
 		);
 
@@ -135,11 +131,9 @@ class CommonRestEndpoint extends RestEndpoint {
 			$this->namespace,
 			"/$this->rest_base/merchant",
 			array(
-				array(
-					'methods'             => WP_REST_Server::READABLE,
-					'callback'            => array( $this, 'get_merchant_details' ),
-					'permission_callback' => array( $this, 'check_permission' ),
-				),
+				'methods'             => WP_REST_Server::READABLE,
+				'callback'            => array( $this, 'get_merchant_details' ),
+				'permission_callback' => array( $this, 'check_permission' ),
 			)
 		);
 	}
