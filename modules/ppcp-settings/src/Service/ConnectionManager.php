@@ -87,6 +87,8 @@ class ConnectionManager {
 	/**
 	 * Checks if the provided ID and secret have a valid format.
 	 *
+	 * Part of the "Direct Connection" (Manual Connection) flow.
+	 *
 	 * On failure, an Exception is thrown, while a successful check does not
 	 * generate any return value.
 	 *
@@ -112,6 +114,8 @@ class ConnectionManager {
 	/**
 	 * Disconnects the current merchant, and then attempts to connect to a
 	 * PayPal account using a client ID and secret.
+	 *
+	 * Part of the "Direct Connection" (Manual Connection) flow.
 	 *
 	 * @param bool   $use_sandbox   Whether to use the sandbox mode.
 	 * @param string $client_id     The client ID.
