@@ -190,6 +190,34 @@ export const connectViaSecret = function* () {
 };
 
 /**
+ * Side effect. Completes the ISU login by authenticating the user via the one time sharedId and
+ * authCode provided by PayPal.
+ *
+ * This action accepts parameters instead of fetching data from the Redux state because all
+ * parameters are dynamically generated during the authentication process, and not managed by our
+ * Redux store.
+ *
+ * @param {string} sharedId    - One-time authentication ID that PayPal "shares" with us.
+ * @param {string} authCode    - Matching one-time authentication code to validate the login.
+ * @param {string} environment - [production|sandbox].
+ * @return {Action} The action.
+ */
+export const connectViaAuthCode = function* (
+	sharedId,
+	authCode,
+	environment
+) {
+	const useSandbox = 'sandbox' === environment;
+
+	return yield {
+		type: ACTION_TYPES.DO_ISU_AUTHENTICATION,
+		sharedId,
+		authCode,
+		useSandbox,
+	};
+};
+
+/**
  * Side effect. Clears and refreshes the merchant data via a REST request.
  *
  * @return {Action} The action.

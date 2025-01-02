@@ -44,6 +44,7 @@ export const useHandleOnboardingButton = ( isSandbox ) => {
 	const { productionOnboardingUrl } = CommonHooks.useProduction();
 	const products = OnboardingHooks.useDetermineProducts();
 	const { withActivity } = CommonHooks.useBusyState();
+	const { connectViaAuthCode } = CommonHooks.useAuthentication();
 	const [ onboardingUrl, setOnboardingUrl ] = useState( '' );
 	const [ scriptLoaded, setScriptLoaded ] = useState( false );
 	const timerRef = useRef( null );
@@ -112,7 +113,7 @@ export const useHandleOnboardingButton = ( isSandbox ) => {
 
 	const setCompleteHandler = useCallback(
 		( environment ) => {
-			const onComplete = async ( authCode, shareId ) => {
+			const onComplete = async ( authCode, sharedId ) => {
 				/**
 				 * Until now, the full page is blocked by PayPal's semi-transparent, black overlay.
 				 * But at this point, the overlay is removed, while we process the sharedId and
@@ -126,14 +127,10 @@ export const useHandleOnboardingButton = ( isSandbox ) => {
 					ACTIVITIES.CONNECT_ISU,
 					'Validating the connection details',
 					async () => {
-						// TODO -- finish this!
-						console.log(
-							`${ environment }-boarding complete - AUTH: `,
-							authCode
-						);
-						console.log(
-							`${ environment }-boarding complete - SHARE:`,
-							shareId
+						await connectViaAuthCode(
+							authCode,
+							sharedId,
+							environment
 						);
 					}
 				);

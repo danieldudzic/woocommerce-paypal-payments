@@ -15,6 +15,7 @@ import {
 	REST_CONNECTION_URL_PATH,
 	REST_HYDRATE_MERCHANT_PATH,
 	REST_REFRESH_FEATURES_PATH,
+	REST_ISU_AUTHENTICATION_PATH,
 } from './constants';
 import ACTION_TYPES from './action-types';
 
@@ -61,6 +62,29 @@ export const controls = {
 				data: {
 					clientId,
 					clientSecret,
+					useSandbox,
+				},
+			} );
+		} catch ( e ) {
+			return {
+				success: false,
+				error: e,
+			};
+		}
+	},
+
+	async [ ACTION_TYPES.DO_ISU_AUTHENTICATION ]( {
+		sharedId,
+		authCode,
+		useSandbox,
+	} ) {
+		try {
+			return await apiFetch( {
+				path: REST_ISU_AUTHENTICATION_PATH,
+				method: 'POST',
+				data: {
+					sharedId,
+					authCode,
 					useSandbox,
 				},
 			} );

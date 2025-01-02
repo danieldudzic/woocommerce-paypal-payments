@@ -34,6 +34,7 @@ const useHooks = () => {
 		sandboxOnboardingUrl,
 		productionOnboardingUrl,
 		connectViaSecret,
+		connectViaAuthCode,
 	} = useDispatch( STORE_NAME );
 
 	// Transient accessors.
@@ -80,6 +81,7 @@ const useHooks = () => {
 		sandboxOnboardingUrl,
 		productionOnboardingUrl,
 		connectViaSecret,
+		connectViaAuthCode,
 		merchant,
 		wooSettings,
 	};
@@ -106,6 +108,7 @@ export const useAuthentication = () => {
 		clientSecret,
 		setClientSecret,
 		connectViaSecret,
+		connectViaAuthCode,
 	} = useHooks();
 
 	return {
@@ -116,6 +119,7 @@ export const useAuthentication = () => {
 		clientSecret,
 		setClientSecret,
 		connectViaSecret,
+		connectViaAuthCode,
 	};
 };
 
