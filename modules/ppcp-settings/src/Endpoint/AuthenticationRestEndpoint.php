@@ -76,19 +76,19 @@ class AuthenticationRestEndpoint extends RestEndpoint {
 				'permission_callback' => array( $this, 'check_permission' ),
 				'args'                => array(
 					'clientId'     => array(
-						'requires'          => true,
+						'required'          => true,
 						'type'              => 'string',
 						'sanitize_callback' => 'sanitize_text_field',
 						'minLength'         => 80,
 						'maxLength'         => 80,
 					),
 					'clientSecret' => array(
-						'requires'          => true,
+						'required'          => true,
 						'type'              => 'string',
 						'sanitize_callback' => 'sanitize_text_field',
 					),
 					'useSandbox'   => array(
-						'requires'          => false,
+						'required'          => false,
 						'type'              => 'boolean',
 						'default'           => false,
 						'sanitize_callback' => array( $this, 'to_boolean' ),
@@ -106,19 +106,18 @@ class AuthenticationRestEndpoint extends RestEndpoint {
 				'permission_callback' => array( $this, 'check_permission' ),
 				'args'                => array(
 					'sharedId'   => array(
-						'requires'          => true,
+						'required'          => true,
 						'type'              => 'string',
 						'sanitize_callback' => 'sanitize_text_field',
 					),
 					'authCode'   => array(
-						'requires'          => true,
+						'required'          => true,
 						'type'              => 'string',
 						'sanitize_callback' => 'sanitize_text_field',
 					),
 					'useSandbox' => array(
-						'requires'          => false,
+						'default'           => 0,
 						'type'              => 'boolean',
-						'default'           => false,
 						'sanitize_callback' => array( $this, 'to_boolean' ),
 					),
 				),

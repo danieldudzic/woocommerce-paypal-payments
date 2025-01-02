@@ -157,7 +157,7 @@ abstract class RestEndpoint extends WC_REST_Controller {
 	 *
 	 * @return bool|null The boolean value, or null if not set.
 	 */
-	protected function to_boolean( $value ) : ?bool {
+	public function to_boolean( $value ) : ?bool {
 		return $value !== null ? (bool) $value : null;
 	}
 
@@ -168,7 +168,7 @@ abstract class RestEndpoint extends WC_REST_Controller {
 	 *
 	 * @return int|float|null The numeric value, or null if not set.
 	 */
-	protected function to_number( $value ) {
+	public function to_number( $value ) {
 		if ( $value !== null ) {
 			$value = is_numeric( $value ) ? $value + 0 : null;
 		}
