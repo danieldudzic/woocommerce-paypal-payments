@@ -35,6 +35,7 @@ const MESSAGES = {
 const ACTIVITIES = {
 	CONNECT_SANDBOX: 'ISU_LOGIN_SANDBOX',
 	CONNECT_PRODUCTION: 'ISU_LOGIN_PRODUCTION',
+	CONNECT_ISU: 'ISU_LOGIN',
 	CONNECT_MANUAL: 'MANUAL_LOGIN',
 };
 
@@ -42,6 +43,7 @@ export const useHandleOnboardingButton = ( isSandbox ) => {
 	const { sandboxOnboardingUrl } = CommonHooks.useSandbox();
 	const { productionOnboardingUrl } = CommonHooks.useProduction();
 	const products = OnboardingHooks.useDetermineProducts();
+	const { withActivity } = CommonHooks.useBusyState();
 	const [ onboardingUrl, setOnboardingUrl ] = useState( '' );
 	const [ scriptLoaded, setScriptLoaded ] = useState( false );
 	const timerRef = useRef( null );
@@ -108,31 +110,49 @@ export const useHandleOnboardingButton = ( isSandbox ) => {
 		};
 	}, [ onboardingUrl ] );
 
-	const setCompleteHandler = useCallback( ( environment ) => {
-		const onComplete = ( authCode, shareId ) => {
-			// TODO -- finish this!
-			console.log(
-				`${ environment }-boarding complete - AUTH: `,
-				authCode
-			);
-			console.log(
-				`${ environment }-boarding complete - SHARE:`,
-				shareId
-			);
-		};
+	const setCompleteHandler = useCallback(
+		( environment ) => {
+			const onComplete = async ( authCode, shareId ) => {
+				/**
+				 * Until now, the full page is blocked by PayPal's semi-transparent, black overlay.
+				 * But at this point, the overlay is removed, while we process the sharedId and
+				 * authCode via a REST call.
+				 *
+				 * Note: The REST response is irrelevant, since PayPal will most likely refresh this
+				 * frame before the REST endpoint returns a value. Using "withActivity" is more of a
+				 * visual cue to the user that something is still processing in the background.
+				 */
+				await withActivity(
+					ACTIVITIES.CONNECT_ISU,
+					'Validating the connection details',
+					async () => {
+						// TODO -- finish this!
+						console.log(
+							`${ environment }-boarding complete - AUTH: `,
+							authCode
+						);
+						console.log(
+							`${ environment }-boarding complete - SHARE:`,
+							shareId
+						);
+					}
+				);
+			};
 
-		const addHandler = () => {
-			const MiniBrowser = window.PAYPAL?.apps?.Signup?.MiniBrowser;
-			if ( ! MiniBrowser || MiniBrowser.onOnboardComplete ) {
-				return;
-			}
+			const addHandler = () => {
+				const MiniBrowser = window.PAYPAL?.apps?.Signup?.MiniBrowser;
+				if ( ! MiniBrowser || MiniBrowser.onOnboardComplete ) {
+					return;
+				}
 
-			MiniBrowser.onOnboardComplete = onComplete;
-		};
+				MiniBrowser.onOnboardComplete = onComplete;
+			};
 
-		// Ensure the onComplete handler is not removed by a PayPal init script.
-		timerRef.current = setInterval( addHandler, 250 );
-	}, [] );
+			// Ensure the onComplete handler is not removed by a PayPal init script.
+			timerRef.current = setInterval( addHandler, 250 );
+		},
+		[ withActivity ]
+	);
 
 	const removeCompleteHandler = useCallback( () => {
 		if ( timerRef.current ) {
