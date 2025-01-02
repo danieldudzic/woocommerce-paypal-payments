@@ -189,7 +189,7 @@ export const useSandboxConnection = () => {
 	};
 };
 
-export const useManualConnection = () => {
+export const useDirectAuthentication = () => {
 	const { handleFailed, handleCompleted, createErrorNotice } =
 		useConnectionBase();
 	const { withActivity } = CommonHooks.useBusyState();
@@ -201,7 +201,7 @@ export const useManualConnection = () => {
 		setClientId,
 		clientSecret,
 		setClientSecret,
-	} = CommonHooks.useManualConnection();
+	} = CommonHooks.useAuthentication();
 
 	const handleConnectViaIdAndSecret = async ( { validation } = {} ) => {
 		return withActivity(

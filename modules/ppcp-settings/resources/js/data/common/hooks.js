@@ -97,7 +97,7 @@ export const useProduction = () => {
 	return { productionOnboardingUrl };
 };
 
-export const useManualConnection = () => {
+export const useAuthentication = () => {
 	const {
 		isManualConnectionMode,
 		setManualConnectionMode,

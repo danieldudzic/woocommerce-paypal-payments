@@ -14,7 +14,7 @@ import Separator from '../../../ReusableComponents/Separator';
 import DataStoreControl from '../../../ReusableComponents/DataStoreControl';
 import {
 	useSandboxConnection,
-	useManualConnection,
+	useDirectAuthentication,
 } from '../../../../hooks/useHandleConnections';
 import ConnectionButton from './ConnectionButton';
 import BusyStateWrapper from '../../../ReusableComponents/BusyStateWrapper';
@@ -47,7 +47,7 @@ const AdvancedOptionsForm = () => {
 		setClientId,
 		clientSecret,
 		setClientSecret,
-	} = useManualConnection();
+	} = useDirectAuthentication();
 
 	const refClientId = useRef( null );
 	const refClientSecret = useRef( null );
