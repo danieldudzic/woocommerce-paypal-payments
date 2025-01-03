@@ -7,13 +7,18 @@ const TodoSettingsBlock = ( { todosData, className = '' } ) => {
 		<div
 			className={ `ppcp-r-settings-block__todo ppcp-r-todo-items ${ className }` }
 		>
-			{ todosData.map( ( todo ) => (
-				<TodoItem
-					key={ todo.id }
-					title={ todo.title }
-					onClick={ todo.onClick }
-				/>
-			) ) }
+			{ todosData
+				.slice( 0, 5 )
+				.filter( ( todo ) => {
+					return ! todo.isCompleted();
+				} )
+				.map( ( todo ) => (
+					<TodoItem
+						key={ todo.id }
+						title={ todo.title }
+						onClick={ todo.onClick }
+					/>
+				) ) }
 		</div>
 	);
 };

@@ -46,5 +46,8 @@ export const todosData = [
 		isCompleted: () => {
 			return false;
 		},
+		onClick: () => {
+			selectTab( TAB_IDS.OVERVIEW, 'pay_later_messaging' );
+		},
 	},
 ];

@@ -14,7 +14,6 @@ import Features from './TabSettingsElements/Blocks/Features';
 import { todosData } from '../../../data/settings/tab-overview-todos-data';
 
 const TabOverview = () => {
-	//const [ todosData ] = useState( todosDataDefault );
 	const [ isRefreshing, setIsRefreshing ] = useState( false );
 
 	const { merchant } = useMerchantInfo();
