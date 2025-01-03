@@ -9,17 +9,17 @@ declare( strict_types = 1 );
 
 namespace WooCommerce\PayPalCommerce\Settings\Service;
 
+use JsonException;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
-use JsonException;
 use WooCommerce\PayPalCommerce\ApiClient\Authentication\PayPalBearer;
+use WooCommerce\PayPalCommerce\ApiClient\Endpoint\LoginSeller;
 use WooCommerce\PayPalCommerce\ApiClient\Endpoint\Orders;
 use WooCommerce\PayPalCommerce\ApiClient\Helper\InMemoryCache;
-use WooCommerce\PayPalCommerce\Settings\Data\CommonSettings;
-use WooCommerce\PayPalCommerce\ApiClient\Endpoint\LoginSeller;
-use WooCommerce\WooCommerce\Logging\Logger\NullLogger;
 use WooCommerce\PayPalCommerce\ApiClient\Repository\PartnerReferralsData;
-use Automattic\Jetpack\Partner;
+use WooCommerce\PayPalCommerce\Settings\Data\CommonSettings;
+use WooCommerce\PayPalCommerce\WcGateway\Helper\EnvironmentConfig;
+use WooCommerce\WooCommerce\Logging\Logger\NullLogger;
 
 /**
  * Class that manages the connection to PayPal.
@@ -42,16 +42,16 @@ class ConnectionManager {
 	/**
 	 * Base URLs for the manual connection attempt, by environment.
 	 *
-	 * @var array<string, string>
+	 * @var EnvironmentConfig<string>
 	 */
-	private array $connection_hosts;
+	private EnvironmentConfig $connection_host;
 
 	/**
 	 * Login API handler instances, by environment.
 	 *
-	 * @var array<string, LoginSeller>
+	 * @var EnvironmentConfig<LoginSeller>
 	 */
-	private array $login_endpoints;
+	private EnvironmentConfig $login_endpoint;
 
 	/**
 	 * Onboarding referrals data.
@@ -63,35 +63,24 @@ class ConnectionManager {
 	/**
 	 * Constructor.
 	 *
-	 * @param CommonSettings       $common_settings        Data model that stores the connection
-	 *                                                     details.
-	 * @param string               $live_host              The API host for the live mode.
-	 * @param string               $sandbox_host           The API host for the sandbox mode.
-	 * @param LoginSeller          $live_login_endpoint    API handler to fetch live-merchant
-	 *                                                     credentials.
-	 * @param LoginSeller          $sandbox_login_endpoint API handler to fetch sandbox-merchant
-	 *                                                     credentials.
-	 * @param PartnerReferralsData $referrals_data         Partner referrals data.
-	 * @param ?LoggerInterface     $logger                 Logging instance.
+	 * @param CommonSettings       $common_settings Data model that stores the connection details.
+	 * @param EnvironmentConfig    $connection_host API host for direct authentication.
+	 * @param EnvironmentConfig    $login_endpoint  API handler to fetch merchant credentials.
+	 * @param PartnerReferralsData $referrals_data  Partner referrals data.
+	 * @param ?LoggerInterface     $logger          Logging instance.
 	 */
 	public function __construct(
-		CommonSettings $common_settings, string $live_host, string $sandbox_host,
-		LoginSeller $live_login_endpoint, LoginSeller $sandbox_login_endpoint,
+		CommonSettings $common_settings,
+		EnvironmentConfig $connection_host,
+		EnvironmentConfig $login_endpoint,
 		PartnerReferralsData $referrals_data,
 		?LoggerInterface $logger = null
 	) {
 		$this->common_settings = $common_settings;
+		$this->connection_host = $connection_host;
+		$this->login_endpoint  = $login_endpoint;
+		$this->referrals_data  = $referrals_data;
 		$this->logger          = $logger ?: new NullLogger();
-
-		$this->connection_hosts = array(
-			'live'    => $live_host,
-			'sandbox' => $sandbox_host,
-		);
-		$this->login_endpoints  = array(
-			'live'    => $live_login_endpoint,
-			'sandbox' => $sandbox_login_endpoint,
-		);
-		$this->referrals_data   = $referrals_data;
 	}
 
 	/**
@@ -226,33 +215,12 @@ class ConnectionManager {
 		$credentials = $this->get_credentials( $shared_id, $auth_code, $use_sandbox );
 
 		// TODO.
-		// $this->update_connection_details( $use_sandbox, $payee['merchant_id'], $payee['email_address'] );
 	}
 
 
 	// ----------------------------------------------------------------------------
 	// Internal helper methods
 
-
-	/**
-	 * Returns the API host for the relevant environment.
-	 *
-	 * @param bool $for_sandbox Whether to return the sandbox API host.
-	 * @return string
-	 */
-	private function get_host( bool $for_sandbox = false ) : string {
-		return $for_sandbox ? $this->connection_hosts['sandbox'] : $this->connection_hosts['live'];
-	}
-
-	/**
-	 * Returns an API handler to fetch merchant credentials.
-	 *
-	 * @param bool $for_sandbox Whether to return the sandbox API handler.
-	 * @return LoginSeller
-	 */
-	private function get_login_endpoint( bool $for_sandbox = false ) : LoginSeller {
-		return $for_sandbox ? $this->login_endpoints['sandbox'] : $this->login_endpoints['live'];
-	}
 
 	/**
 	 * Retrieves the payee object with the merchant data by creating a minimal PayPal order.
@@ -271,7 +239,7 @@ class ConnectionManager {
 		string $client_secret,
 		bool $use_sandbox
 	) : array {
-		$host = $this->get_host( $use_sandbox );
+		$host = $this->connection_host->get_value( $use_sandbox );
 
 		$bearer = new PayPalBearer(
 			new InMemoryCache(),
@@ -339,10 +307,10 @@ class ConnectionManager {
 	 * @return array
 	 */
 	private function get_credentials( string $shared_id, string $auth_code, bool $use_sandbox ) : array {
-		$login_handler = $this->get_login_endpoint( $use_sandbox );
+		$login_handler = $this->login_endpoint->get_value( $use_sandbox );
 		$nonce         = $this->referrals_data->nonce();
 
-		// TODO. Always throws the exception "No token found."
+		// TODO. Always throws the exception "No token found.".
 		$response = $login_handler->credentials_for( $shared_id, $auth_code, $nonce );
 
 		// TODO.

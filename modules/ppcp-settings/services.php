@@ -201,10 +201,8 @@ return array(
 	'settings.service.connection_manager'         => static function ( ContainerInterface $container ) : ConnectionManager {
 		return new ConnectionManager(
 			$container->get( 'settings.data.common' ),
-			$container->get( 'api.paypal-host-production' ),
-			$container->get( 'api.paypal-host-sandbox' ),
-			$container->get( 'api.endpoint.login-seller-production' ),
-			$container->get( 'api.endpoint.login-seller-sandbox' ),
+			$container->get( 'api.env.paypal-host' ),
+			$container->get( 'api.env.endpoint.login-seller' ),
 			$container->get( 'api.repository.partner-referrals-data' ),
 			$container->get( 'woocommerce.logger.woocommerce' ),
 		);

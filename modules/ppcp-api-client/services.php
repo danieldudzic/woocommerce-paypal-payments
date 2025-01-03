@@ -79,6 +79,7 @@ use WooCommerce\PayPalCommerce\ApiClient\Repository\PartnerReferralsData;
 use WooCommerce\PayPalCommerce\ApiClient\Repository\PayeeRepository;
 use WooCommerce\PayPalCommerce\WcGateway\Settings\Settings;
 use WooCommerce\PayPalCommerce\ApiClient\Authentication\ConnectBearer;
+use WooCommerce\PayPalCommerce\WcGateway\Helper\EnvironmentConfig;
 
 return array(
 	'api.host'                                       => function( ContainerInterface $container ) : string {
@@ -878,5 +879,21 @@ return array(
 	},
 	'api.partner_merchant_id-sandbox'                => static function( ContainerInterface $container ) : string {
 		return CONNECT_WOO_SANDBOX_MERCHANT_ID;
+	},
+	'api.env.paypal-host'                            => static function ( ContainerInterface $container ) : EnvironmentConfig {
+		/** @type EnvironmentConfig<string> Configuration object */
+		return EnvironmentConfig::create(
+			'string',
+			$container->get( 'api.paypal-host-production' ),
+			$container->get( 'api.paypal-host-sandbox' )
+		);
+	},
+	'api.env.endpoint.login-seller'                  => static function ( ContainerInterface $container ) : EnvironmentConfig {
+		/** @type EnvironmentConfig<LoginSeller> Configuration object */
+		return EnvironmentConfig::create(
+			LoginSeller::class,
+			$container->get( 'api.endpoint.login-seller-production' ),
+			$container->get( 'api.endpoint.login-seller-sandbox' )
+		);
 	},
 );
