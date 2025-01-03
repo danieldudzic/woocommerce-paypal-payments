@@ -12,8 +12,7 @@ import { useMerchantInfo } from '../../../data/common/hooks';
 import { STORE_NAME } from '../../../data/common';
 
 const TabOverview = () => {
-	const [ todos, setTodos ] = useState( [] );
-	const [ todosData, setTodosData ] = useState( todosDataDefault );
+	const [ todosData ] = useState( todosDataDefault );
 	const [ isRefreshing, setIsRefreshing ] = useState( false );
 
 	const { merchant } = useMerchantInfo();
@@ -59,12 +58,7 @@ const TabOverview = () => {
 						'woocommerce-paypal-payments'
 					) }
 				>
-					<TodoSettingsBlock
-						todos={ todos }
-						setTodos={ setTodos }
-						todosData={ todosData }
-						setTodosData={ setTodosData }
-					/>
+					<TodoSettingsBlock todosData={ todosData } />
 				</SettingsCard>
 			) }
 
@@ -183,39 +177,45 @@ const TabOverview = () => {
 	);
 };
 
-// TODO: This list should be refactored into a separate module, maybe utils/thingsToDoNext.js
 const todosDataDefault = [
 	{
-		value: 'paypal_later_messaging',
+		id: 'enable_fastlane',
+		title: __( 'Enable Fastlane', 'woocommerce-paypal-payments' ),
 		description: __(
+			'Accelerate your guest checkout with Fastlane by PayPal.',
+			'woocommerce-paypal-payments'
+		),
+		isCompleted: () => {
+			return false;
+		},
+	},
+	{
+		id: 'enable_credit_debit_cards',
+		title: __(
+			'Enable Credit and Debit Cards on your checkout',
+			'woocommerce-paypal-payments'
+		),
+		description: __(
+			'Credit and Debit Cards is now available for Blocks checkout pages.',
+			'woocommerce-paypal-payments'
+		),
+		isCompleted: () => {
+			return false;
+		},
+	},
+	{
+		id: 'enable_pay_later_messaging',
+		title: __(
 			'Enable Pay Later messaging',
 			'woocommerce-paypal-payments'
 		),
-	},
-	{
-		value: 'capture_authorized_payments',
 		description: __(
-			'Capture authorized payments',
+			'Show Pay Later messaging to boost conversion rate and increase cart size.',
 			'woocommerce-paypal-payments'
 		),
-	},
-	{
-		value: 'enable_google_pay',
-		description: __( 'Enable Google Pay', 'woocommerce-paypal-payments' ),
-	},
-	{
-		value: 'paypal_shortcut',
-		description: __(
-			'Add PayPal shortcut to the Cart page',
-			'woocommerce-paypal-payments'
-		),
-	},
-	{
-		value: 'advanced_cards',
-		description: __(
-			'Add Advanced Cards to Blocks Checkout',
-			'woocommerce-paypal-payments'
-		),
+		isCompleted: () => {
+			return false;
+		},
 	},
 ];
 
