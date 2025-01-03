@@ -10,6 +10,7 @@ import FeatureSettingsBlock from '../../ReusableComponents/SettingsBlocks/Featur
 import { TITLE_BADGE_POSITIVE } from '../../ReusableComponents/TitleBadge';
 import { useMerchantInfo } from '../../../data/common/hooks';
 import { STORE_NAME } from '../../../data/common';
+import { updateQueryString } from '../../../utils/navigation';
 
 const TabOverview = () => {
 	const [ todosData ] = useState( todosDataDefault );
@@ -187,6 +188,10 @@ const todosDataDefault = [
 		),
 		isCompleted: () => {
 			return false;
+		},
+		onClick: ( event ) => {
+			event.preventDefault();
+			updateQueryString( { panel: 'payment-methods' } );
 		},
 	},
 	{
