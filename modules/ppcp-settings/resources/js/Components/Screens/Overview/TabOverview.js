@@ -11,10 +11,10 @@ import { TITLE_BADGE_POSITIVE } from '../../ReusableComponents/TitleBadge';
 import { useMerchantInfo } from '../../../data/common/hooks';
 import { STORE_NAME } from '../../../data/common';
 import Features from './TabSettingsElements/Blocks/Features';
-import { updateQueryString } from '../../../utils/navigation';
+import { todosData } from '../../../data/settings/tab-overview-todos-data';
 
 const TabOverview = () => {
-	const [ todosData ] = useState( todosDataDefault );
+	//const [ todosData ] = useState( todosDataDefault );
 	const [ isRefreshing, setIsRefreshing ] = useState( false );
 
 	const { merchant } = useMerchantInfo();
@@ -204,51 +204,5 @@ const TabOverview = () => {
 		</div>
 	);
 };
-
-const todosDataDefault = [
-	{
-		id: 'enable_fastlane',
-		title: __( 'Enable Fastlane', 'woocommerce-paypal-payments' ),
-		description: __(
-			'Accelerate your guest checkout with Fastlane by PayPal.',
-			'woocommerce-paypal-payments'
-		),
-		isCompleted: () => {
-			return false;
-		},
-		onClick: ( event ) => {
-			event.preventDefault();
-			updateQueryString( { panel: 'payment-methods' } );
-		},
-	},
-	{
-		id: 'enable_credit_debit_cards',
-		title: __(
-			'Enable Credit and Debit Cards on your checkout',
-			'woocommerce-paypal-payments'
-		),
-		description: __(
-			'Credit and Debit Cards is now available for Blocks checkout pages.',
-			'woocommerce-paypal-payments'
-		),
-		isCompleted: () => {
-			return false;
-		},
-	},
-	{
-		id: 'enable_pay_later_messaging',
-		title: __(
-			'Enable Pay Later messaging',
-			'woocommerce-paypal-payments'
-		),
-		description: __(
-			'Show Pay Later messaging to boost conversion rate and increase cart size.',
-			'woocommerce-paypal-payments'
-		),
-		isCompleted: () => {
-			return false;
-		},
-	},
-];
 
 export default TabOverview;
