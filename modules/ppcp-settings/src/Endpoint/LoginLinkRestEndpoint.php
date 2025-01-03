@@ -33,25 +33,25 @@ class LoginLinkRestEndpoint extends RestEndpoint {
 	protected $rest_base = 'login_link';
 
 	/**
-	 * Link generator list, with environment name as array key.
+	 * Login-URL generator.
 	 *
-	 * @var ConnectionUrlGenerator[]
+	 * @var ConnectionUrlGenerator
 	 */
-	protected array $url_generators;
+	protected ConnectionUrlGenerator $url_generator;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param ConnectionUrlGenerator[] $url_generators Array of environment-specific URL generators.
+	 * @param ConnectionUrlGenerator $url_generator Login-URL generator.
 	 */
-	public function __construct( array $url_generators ) {
-		$this->url_generators = $url_generators;
+	public function __construct( ConnectionUrlGenerator $url_generator ) {
+		$this->url_generator = $url_generator;
 	}
 
 	/**
 	 * Configure REST API routes.
 	 */
-	public function register_routes() {
+	public function register_routes() : void {
 		register_rest_route(
 			$this->namespace,
 			'/' . $this->rest_base,
@@ -60,11 +60,12 @@ class LoginLinkRestEndpoint extends RestEndpoint {
 				'callback'            => array( $this, 'get_login_url' ),
 				'permission_callback' => array( $this, 'check_permission' ),
 				'args'                => array(
-					'environment' => array(
-						'required' => true,
-						'type'     => 'string',
+					'useSandbox' => array(
+						'default'           => 0,
+						'type'              => 'boolean',
+						'sanitize_callback' => array( $this, 'to_boolean' ),
 					),
-					'products'    => array(
+					'products'   => array(
 						'required'          => true,
 						'type'              => 'array',
 						'items'             => array(
@@ -87,20 +88,11 @@ class LoginLinkRestEndpoint extends RestEndpoint {
 	 * @return WP_REST_Response The login URL or an error response.
 	 */
 	public function get_login_url( WP_REST_Request $request ) : WP_REST_Response {
-		$environment = $request->get_param( 'environment' );
+		$use_sandbox = $request->get_param( 'useSandbox' );
 		$products    = $request->get_param( 'products' );
 
-		if ( ! isset( $this->url_generators[ $environment ] ) ) {
-			return new WP_REST_Response(
-				array( 'error' => 'Invalid environment specified.' ),
-				400
-			);
-		}
-
-		$url_generator = $this->url_generators[ $environment ];
-
 		try {
-			$url = $url_generator->generate( $products );
+			$url = $this->url_generator->generate( $products, $use_sandbox );
 
 			return $this->return_success( $url );
 		} catch ( \Exception $e ) {

@@ -896,4 +896,12 @@ return array(
 			$container->get( 'api.endpoint.login-seller-sandbox' )
 		);
 	},
+	'api.env.endpoint.partner-referrals'             => static function ( ContainerInterface $container ) : EnvironmentConfig {
+		/** @type EnvironmentConfig<PartnerReferrals> Configuration object */
+		return EnvironmentConfig::create(
+			PartnerReferrals::class,
+			$container->get( 'api.endpoint.partner-referrals-production' ),
+			$container->get( 'api.endpoint.partner-referrals-sandbox' )
+		);
+	},
 );

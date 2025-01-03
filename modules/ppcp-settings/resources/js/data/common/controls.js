@@ -36,13 +36,13 @@ export const controls = {
 
 	async [ ACTION_TYPES.DO_GENERATE_ONBOARDING_URL ]( {
 		products,
-		environment,
+		useSandbox,
 	} ) {
 		try {
 			return apiFetch( {
 				path: REST_CONNECTION_URL_PATH,
 				method: 'POST',
-				data: { environment, products },
+				data: { useSandbox, products },
 			} );
 		} catch ( e ) {
 			return {

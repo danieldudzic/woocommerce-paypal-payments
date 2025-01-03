@@ -87,7 +87,7 @@ return array(
 	},
 	'settings.rest.login_link'                    => static function ( ContainerInterface $container ) : LoginLinkRestEndpoint {
 		return new LoginLinkRestEndpoint(
-			$container->get( 'settings.service.connection-url-generators' ),
+			$container->get( 'settings.service.connection-url-generator' ),
 		);
 	},
 	'settings.rest.webhooks'                      => static function ( ContainerInterface $container ) : WebhookSettingsEndpoint {
@@ -172,31 +172,13 @@ return array(
 			$container->get( 'woocommerce.logger.woocommerce' )
 		);
 	},
-	'settings.service.connection-url-generators'  => static function ( ContainerInterface $container ) : array {
-		// Define available environments.
-		$environments = array(
-			'production' => array(
-				'partner_referrals' => $container->get( 'api.endpoint.partner-referrals-production' ),
-			),
-			'sandbox'    => array(
-				'partner_referrals' => $container->get( 'api.endpoint.partner-referrals-sandbox' ),
-			),
+	'settings.service.connection-url-generator'   => static function ( ContainerInterface $container ) : ConnectionUrlGenerator {
+		return new ConnectionUrlGenerator(
+			$container->get( 'api.env.endpoint.partner-referrals' ),
+			$container->get( 'api.repository.partner-referrals-data' ),
+			$container->get( 'settings.service.onboarding-url-manager' ),
+			$container->get( 'woocommerce.logger.woocommerce' )
 		);
-
-		$generators = array();
-
-		// Instantiate URL generators for each environment.
-		foreach ( $environments as $environment => $config ) {
-			$generators[ $environment ] = new ConnectionUrlGenerator(
-				$config['partner_referrals'],
-				$container->get( 'api.repository.partner-referrals-data' ),
-				$environment,
-				$container->get( 'settings.service.onboarding-url-manager' ),
-				$container->get( 'woocommerce.logger.woocommerce' )
-			);
-		}
-
-		return $generators;
 	},
 	'settings.service.connection_manager'         => static function ( ContainerInterface $container ) : ConnectionManager {
 		return new ConnectionManager(

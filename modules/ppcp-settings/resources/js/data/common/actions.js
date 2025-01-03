@@ -153,7 +153,7 @@ export const persist = function* () {
 export const sandboxOnboardingUrl = function* () {
 	return yield {
 		type: ACTION_TYPES.DO_GENERATE_ONBOARDING_URL,
-		environment: 'sandbox',
+		useSandbox: true,
 		products: [ 'EXPRESS_CHECKOUT' ],
 	};
 };
@@ -167,7 +167,7 @@ export const sandboxOnboardingUrl = function* () {
 export const productionOnboardingUrl = function* ( products = [] ) {
 	return yield {
 		type: ACTION_TYPES.DO_GENERATE_ONBOARDING_URL,
-		environment: 'production',
+		useSandbox: false,
 		products,
 	};
 };
