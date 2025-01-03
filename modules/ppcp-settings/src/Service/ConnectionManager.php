@@ -11,7 +11,7 @@ namespace WooCommerce\PayPalCommerce\Settings\Service;
 
 use JsonException;
 use Psr\Log\LoggerInterface;
-use RuntimeException;
+use WooCommerce\PayPalCommerce\ApiClient\Exception\RuntimeException;
 use WooCommerce\PayPalCommerce\ApiClient\Authentication\PayPalBearer;
 use WooCommerce\PayPalCommerce\ApiClient\Endpoint\LoginSeller;
 use WooCommerce\PayPalCommerce\ApiClient\Endpoint\Orders;
@@ -107,6 +107,12 @@ class ConnectionManager {
 
 		$this->common_settings->reset_merchant_data();
 		$this->common_settings->save();
+
+		/**
+		 * Broadcast, that the plugin disconnected from PayPal. This allows other
+		 * modules to clean up merchant-related details, such as eligibility flags.
+		 */
+		do_action( 'woocommerce_paypal_payments_merchant_disconnected' );
 	}
 
 	/**
@@ -305,6 +311,7 @@ class ConnectionManager {
 	 * @param string $auth_code   The authorization code.
 	 * @param bool   $use_sandbox Whether to use the sandbox mode.
 	 * @return array
+	 * @throws RuntimeException When failed to fetch credentials.
 	 */
 	private function get_credentials( string $shared_id, string $auth_code, bool $use_sandbox ) : array {
 		$login_handler = $this->login_endpoint->get_value( $use_sandbox );
@@ -337,6 +344,12 @@ class ConnectionManager {
 
 		$this->common_settings->set_merchant_data( $is_sandbox, $merchant_id, $merchant_email );
 		$this->common_settings->save();
-	}
 
+		/**
+		 * Broadcast that the plugin connected to a new PayPal merchant account.
+		 * This is the right time to initialize merchant relative flags for the
+		 * first time.
+		 */
+		do_action( 'woocommerce_paypal_payments_authenticated_merchant' );
+	}
 }
