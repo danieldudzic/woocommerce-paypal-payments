@@ -318,6 +318,21 @@ class ConnectionManager {
 		$nonce         = $this->referrals_data->nonce();
 
 		// TODO. Always throws the exception "No token found.".
+		/*
+		 * Maybe the problem is not with the `credentials_for()` call, but something
+		 * that is wrong with the ConnectionUrl?
+		 *
+		 * The LoginSellerEndpoint class uses the same code as this class:
+		>>	$credentials = $endpoint->credentials_for(
+		>>		$data['sharedId'],
+		>>		$data['authCode'],
+		>>		$this->partner_referrals_data->nonce()
+		>>	);
+		 *
+		 * PayPal's API response is 401, not because OAuth the onboarding ID and
+		 * authorization code are invalid, but because they cannot be matched to
+		 * this website/merchant. An intermediary step might be missing.
+		 */
 		$response = $login_handler->credentials_for( $shared_id, $auth_code, $nonce );
 
 		// TODO.
