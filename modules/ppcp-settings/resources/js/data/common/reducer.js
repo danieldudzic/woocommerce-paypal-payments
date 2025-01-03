@@ -15,6 +15,7 @@ import ACTION_TYPES from './action-types';
 const defaultTransient = Object.freeze( {
 	isReady: false,
 	activities: new Map(),
+	activeModal: '',
 
 	// Read only values, provided by the server via hydrate.
 	merchant: Object.freeze( {
