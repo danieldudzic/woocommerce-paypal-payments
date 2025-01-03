@@ -66,6 +66,26 @@ export const REST_ISU_AUTHENTICATION_PATH = '/wc/v3/wc_paypal/authenticate/isu';
 export const REST_CONNECTION_URL_PATH = '/wc/v3/wc_paypal/login_link';
 
 /**
+ * REST path to fetch webhooks data or resubscribe webhooks,
+ *
+ * Used by: Controls
+ * See: WebhookSettingsEndpoint.php
+ *
+ * @type {string}
+ */
+export const REST_WEBHOOKS = '/wc/v3/wc_paypal/webhook_settings';
+
+/**
+ * REST path to start webhook simulation and observe the state,
+ *
+ * Used by: Controls
+ * See: WebhookSettingsEndpoint.php
+ *
+ * @type {string}
+ */
+export const REST_WEBHOOKS_SIMULATE = '/wc/v3/wc_paypal/webhook_simulate';
+
+/**
  * REST path to refresh the feature status.
  *
  * Used by: Controls

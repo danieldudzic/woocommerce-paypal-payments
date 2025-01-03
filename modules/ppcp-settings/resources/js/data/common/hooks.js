@@ -9,7 +9,6 @@
 
 import { useDispatch, useSelect } from '@wordpress/data';
 import { useCallback } from '@wordpress/element';
-
 import { STORE_NAME } from './constants';
 
 const useTransient = ( key ) =>
@@ -35,6 +34,8 @@ const useHooks = () => {
 		productionOnboardingUrl,
 		connectViaSecret,
 		connectViaAuthCode,
+		startWebhookSimulation,
+		checkWebhookSimulationState,
 	} = useDispatch( STORE_NAME );
 
 	// Transient accessors.
@@ -45,7 +46,7 @@ const useHooks = () => {
 	const clientSecret = usePersistent( 'clientSecret' );
 	const isSandboxMode = usePersistent( 'useSandbox' );
 	const isManualConnectionMode = usePersistent( 'useManualConnection' );
-
+	const webhooks = usePersistent( 'webhooks' );
 	const merchant = useSelect(
 		( select ) => select( STORE_NAME ).merchant(),
 		[]
@@ -84,6 +85,9 @@ const useHooks = () => {
 		connectViaAuthCode,
 		merchant,
 		wooSettings,
+		webhooks,
+		startWebhookSimulation,
+		checkWebhookSimulationState,
 	};
 };
 
@@ -129,6 +133,22 @@ export const useWooSettings = () => {
 	return wooSettings;
 };
 
+export const useWebhooks = () => {
+	const {
+		webhooks,
+		setWebhooks,
+		registerWebhooks,
+		startWebhookSimulation,
+		checkWebhookSimulationState,
+	} = useHooks();
+	return {
+		webhooks,
+		setWebhooks,
+		registerWebhooks,
+		startWebhookSimulation,
+		checkWebhookSimulationState,
+	};
+};
 export const useMerchantInfo = () => {
 	const { merchant } = useHooks();
 	const { refreshMerchantData } = useDispatch( STORE_NAME );

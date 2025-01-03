@@ -27,7 +27,7 @@ web_environment:
   - ADMIN_USER=admin
   - ADMIN_PASS=admin
   - ADMIN_EMAIL=admin@example.com
-  - WC_VERSION=7.7.2
+  - WC_VERSION=9.5.1
 
 # Key features of ddev's config.yaml:
 

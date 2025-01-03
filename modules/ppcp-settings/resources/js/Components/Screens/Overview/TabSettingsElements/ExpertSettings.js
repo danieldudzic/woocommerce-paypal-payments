@@ -5,7 +5,7 @@ import {
 	ContentWrapper,
 } from '../../../ReusableComponents/SettingsBlocks';
 import Sandbox from './Blocks/Sandbox';
-import Troubleshooting from './Blocks/Troubleshooting';
+import Troubleshooting from './Blocks/Troubleshooting/Troubleshooting';
 import PaypalSettings from './Blocks/PaypalSettings';
 import OtherSettings from './Blocks/OtherSettings';
 

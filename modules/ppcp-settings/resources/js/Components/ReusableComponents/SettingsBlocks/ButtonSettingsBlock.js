@@ -1,6 +1,6 @@
 import { Button } from '@wordpress/components';
 import SettingsBlock from './SettingsBlock';
-import { Header, Title, Action, Description } from './SettingsBlockElements';
+import { Action, Description, Header, Title } from './SettingsBlockElements';
 
 const ButtonSettingsBlock = ( { title, description, ...props } ) => (
 	<SettingsBlock { ...props } className="ppcp-r-settings-block__button">
@@ -10,6 +10,7 @@ const ButtonSettingsBlock = ( { title, description, ...props } ) => (
 		</Header>
 		<Action>
 			<Button
+				isBusy={ props.actionProps?.isBusy }
 				variant={ props.actionProps?.buttonType }
 				onClick={
 					props.actionProps?.callback

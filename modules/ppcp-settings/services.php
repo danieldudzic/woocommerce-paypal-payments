@@ -19,12 +19,12 @@ use WooCommerce\PayPalCommerce\Settings\Endpoint\LoginLinkRestEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\OnboardingRestEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\RefreshFeatureStatusEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Ajax\SwitchSettingsUiEndpoint;
+use WooCommerce\PayPalCommerce\Settings\Endpoint\WebhookSettingsEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Service\ConnectionUrlGenerator;
 use WooCommerce\PayPalCommerce\Settings\Service\OnboardingUrlManager;
 use WooCommerce\PayPalCommerce\Vendor\Psr\Container\ContainerInterface;
 use WooCommerce\PayPalCommerce\Settings\Handler\ConnectionListener;
 use WooCommerce\PayPalCommerce\Settings\Service\ConnectionManager;
-use WooCommerce\PayPalCommerce\Settings\Service\EnvironmentConfig;
 
 return array(
 	'settings.url'                                => static function ( ContainerInterface $container ) : string {
@@ -88,6 +88,13 @@ return array(
 	'settings.rest.login_link'                    => static function ( ContainerInterface $container ) : LoginLinkRestEndpoint {
 		return new LoginLinkRestEndpoint(
 			$container->get( 'settings.service.connection-url-generators' ),
+		);
+	},
+	'settings.rest.webhooks'                      => static function ( ContainerInterface $container ) : WebhookSettingsEndpoint {
+		return new WebhookSettingsEndpoint(
+			$container->get( 'api.endpoint.webhook' ),
+			$container->get( 'webhook.registrar' ),
+			$container->get( 'webhook.status.simulation' )
 		);
 	},
 	'settings.casual-selling.supported-countries' => static function ( ContainerInterface $container ) : array {
