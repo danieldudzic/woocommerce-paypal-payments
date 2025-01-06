@@ -76,12 +76,12 @@ document.addEventListener( 'DOMContentLoaded', () => {
             ( period === 'month' && parseInt( period_interval ) > 12 ) ||
             ( period === 'week' && parseInt( period_interval ) > 52 ) ||
             ( period === 'day' && parseInt( period_interval ) > 356 ) ||
-            ( ! price || parseInt( price ) < 0)
+            ( ! price || parseInt( price ) <= 0 )
         ) {
             linkBtn.disabled = true;
             linkBtn.checked = false;
-            if (! price || parseInt( price ) < 0 ) {
-                linkBtn.setAttribute('title', __( '0 Price not allowed for PayPal Subscriptions!', 'woocommerce-paypal-subscriptions' ) );
+            if (! price || parseInt( price ) <= 0 ) {
+                linkBtn.setAttribute('title', __( 'Prices must be above zero for PayPal Subscriptions!', 'woocommerce-paypal-subscriptions' ) );
             } else {
                 linkBtn.setAttribute('title', __( 'Not allowed period intervall combination for PayPal Subscriptions!', 'woocommerce-paypal-subscriptions' ) );
             }
@@ -97,7 +97,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
             const linkBtn = e.target.parentElement.parentElement.parentElement.parentElement.querySelector('input[name="_ppcp_enable_subscription_product"]');
             const period_interval = e.target.parentElement.querySelector('select.wc_input_subscription_period_interval')?.value;
             const period = e.target.value;
-            const price = e.target.value;
+            const price = e.target.parentElement.querySelector('input.wc_input_subscription_price')?.value;
 
             checkSubscriptionPeriodsInterval(period, period_interval, price, linkBtn);
         });
@@ -106,7 +106,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
             const linkBtn = e.target.parentElement.parentElement.parentElement.parentElement.querySelector('input[name="_ppcp_enable_subscription_product"]');
             const period_interval = e.target.value;
             const period = e.target.parentElement.querySelector('select.wc_input_subscription_period')?.value;
-            const price = e.target.value;
+            const price = e.target.parentElement.querySelector('input.wc_input_subscription_price')?.value;
 
             checkSubscriptionPeriodsInterval(period, period_interval, price, linkBtn);
         });
@@ -121,7 +121,6 @@ document.addEventListener( 'DOMContentLoaded', () => {
         });
 
         jQuery( '.wc_input_subscription_price' ).trigger( 'change' );
-
 
 		PayPalCommerceGatewayPayPalSubscriptionProducts?.forEach(
 			( product ) => {
