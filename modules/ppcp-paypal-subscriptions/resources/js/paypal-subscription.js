@@ -70,16 +70,22 @@ document.addEventListener( 'DOMContentLoaded', () => {
 		soldIndividually.setAttribute( 'disabled', 'disabled' );
 	};
 
-    const checkSubscriptionPeriodsInterval = (period, period_interval, linkBtn) => {
+    const checkSubscriptionPeriodsInterval = (period, period_interval, price, linkBtn) => {
         if (
             ( period === 'year' && parseInt( period_interval ) > 1 ) ||
             ( period === 'month' && parseInt( period_interval ) > 12 ) ||
             ( period === 'week' && parseInt( period_interval ) > 52 ) ||
-            ( period === 'day' && parseInt( period_interval ) > 356 )
+            ( period === 'day' && parseInt( period_interval ) > 356 ) ||
+            ( ! price || parseInt( price ) < 0)
         ) {
             linkBtn.disabled = true;
             linkBtn.checked = false;
-            linkBtn.setAttribute('title', __( 'Not allowed period intervall combination for PayPal Subscriptions!', 'woocommerce-paypal-subscriptions' ) );
+            if (! price || parseInt( price ) < 0 ) {
+                linkBtn.setAttribute('title', __( '0 Price not allowed for PayPal Subscriptions!', 'woocommerce-paypal-subscriptions' ) );
+            } else {
+                linkBtn.setAttribute('title', __( 'Not allowed period intervall combination for PayPal Subscriptions!', 'woocommerce-paypal-subscriptions' ) );
+            }
+
         } else {
             linkBtn.disabled = false;
             linkBtn.removeAttribute('title');
@@ -91,17 +97,31 @@ document.addEventListener( 'DOMContentLoaded', () => {
             const linkBtn = e.target.parentElement.parentElement.parentElement.parentElement.querySelector('input[name="_ppcp_enable_subscription_product"]');
             const period_interval = e.target.parentElement.querySelector('select.wc_input_subscription_period_interval')?.value;
             const period = e.target.value;
+            const price = e.target.value;
 
-            checkSubscriptionPeriodsInterval(period, period_interval, linkBtn);
+            checkSubscriptionPeriodsInterval(period, period_interval, price, linkBtn);
         });
 
         jQuery( '.wc_input_subscription_period_interval' ).on( 'change', (e) => {
             const linkBtn = e.target.parentElement.parentElement.parentElement.parentElement.querySelector('input[name="_ppcp_enable_subscription_product"]');
             const period_interval = e.target.value;
             const period = e.target.parentElement.querySelector('select.wc_input_subscription_period')?.value;
+            const price = e.target.value;
 
-            checkSubscriptionPeriodsInterval(period, period_interval, linkBtn);
+            checkSubscriptionPeriodsInterval(period, period_interval, price, linkBtn);
         });
+
+        jQuery( '.wc_input_subscription_price' ).on( 'change', (e) => {
+            const linkBtn = e.target.parentElement.parentElement.parentElement.parentElement.querySelector('input[name="_ppcp_enable_subscription_product"]');
+            const period_interval = e.target.parentElement.querySelector('select.wc_input_subscription_period_interval')?.value;
+            const period = e.target.parentElement.querySelector('select.wc_input_subscription_period')?.value;
+            const price = e.target.value;
+
+            checkSubscriptionPeriodsInterval(period, period_interval, price, linkBtn);
+        });
+
+        jQuery( '.wc_input_subscription_price' ).trigger( 'change' );
+
 
 		PayPalCommerceGatewayPayPalSubscriptionProducts?.forEach(
 			( product ) => {
