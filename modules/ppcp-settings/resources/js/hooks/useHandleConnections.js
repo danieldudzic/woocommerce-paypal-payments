@@ -148,7 +148,7 @@ export const useHandleOnboardingButton = ( isSandbox ) => {
 			// Ensure the onComplete handler is not removed by a PayPal init script.
 			timerRef.current = setInterval( addHandler, 250 );
 		},
-		[ withActivity ]
+		[ connectViaAuthCode, withActivity ]
 	);
 
 	const removeCompleteHandler = useCallback( () => {
