@@ -8,7 +8,7 @@ const TodoSettingsBlock = ( { todosData, className = '' } ) => {
 			className={ `ppcp-r-settings-block__todo ppcp-r-todo-items ${ className }` }
 		>
 			{ todosData
-				.slice( 0, 12 )
+				.slice( 0, 5 )
 				.filter( ( todo ) => {
 					return ! todo.isCompleted();
 				} )
