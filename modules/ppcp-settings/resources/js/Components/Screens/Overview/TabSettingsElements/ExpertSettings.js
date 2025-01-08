@@ -5,6 +5,7 @@ import {
 	ContentWrapper,
 } from '../../../ReusableComponents/SettingsBlocks';
 import Sandbox from './Blocks/Sandbox';
+import LiveAccount from './Blocks/LiveAccount';
 import Troubleshooting from './Blocks/Troubleshooting';
 import PaypalSettings from './Blocks/PaypalSettings';
 import OtherSettings from './Blocks/OtherSettings';
@@ -28,6 +29,13 @@ const ExpertSettings = ( { updateFormValue, settings } ) => {
 			<ContentWrapper>
 				<Content>
 					<Sandbox
+						updateFormValue={ updateFormValue }
+						settings={ settings }
+					/>
+				</Content>
+
+				<Content>
+					<LiveAccount
 						updateFormValue={ updateFormValue }
 						settings={ settings }
 					/>
