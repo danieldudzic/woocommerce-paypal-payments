@@ -398,11 +398,15 @@ class AuthenticationManager {
 		$this->common_settings->set_merchant_data( $connection );
 		$this->common_settings->save();
 
-		/**
-		 * Broadcast that the plugin connected to a new PayPal merchant account.
-		 * This is the right time to initialize merchant relative flags for the
-		 * first time.
-		 */
-		do_action( 'woocommerce_paypal_payments_authenticated_merchant' );
+		if ( $this->common_settings->is_merchant_connected() ) {
+			$this->logger->info( 'Merchant successfully connected to PayPal' );
+
+			/**
+			 * Broadcast that the plugin connected to a new PayPal merchant account.
+			 * This is the right time to initialize merchant relative flags for the
+			 * first time.
+			 */
+			do_action( 'woocommerce_paypal_payments_authenticated_merchant' );
+		}
 	}
 }
