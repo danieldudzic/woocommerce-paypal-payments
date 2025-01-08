@@ -50,14 +50,6 @@ class CommonRestEndpoint extends RestEndpoint {
 			'js_name'  => 'useManualConnection',
 			'sanitize' => 'to_boolean',
 		),
-		'client_id'             => array(
-			'js_name'  => 'clientId',
-			'sanitize' => 'sanitize_text_field',
-		),
-		'client_secret'         => array(
-			'js_name'  => 'clientSecret',
-			'sanitize' => 'sanitize_text_field',
-		),
 		'webhooks'              => array(
 			'js_name' => 'webhooks',
 		),
@@ -80,6 +72,12 @@ class CommonRestEndpoint extends RestEndpoint {
 		),
 		'merchant_email'     => array(
 			'js_name' => 'email',
+		),
+		'client_id'          => array(
+			'js_name' => 'clientId',
+		),
+		'client_secret'      => array(
+			'js_name' => 'clientSecret',
 		),
 	);
 

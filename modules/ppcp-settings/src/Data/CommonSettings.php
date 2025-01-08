@@ -57,14 +57,14 @@ class CommonSettings extends AbstractDataModel {
 		return array(
 			'use_sandbox'           => false,
 			'use_manual_connection' => false,
-			'client_id'             => '',
-			'client_secret'         => '',
 
 			// Details about connected merchant account.
 			'merchant_connected'    => false,
 			'sandbox_merchant'      => false,
 			'merchant_id'           => '',
 			'merchant_email'        => '',
+			'client_id'             => '',
+			'client_secret'         => '',
 		);
 	}
 
