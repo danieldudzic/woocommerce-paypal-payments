@@ -10,16 +10,9 @@ declare( strict_types = 1 );
 namespace WooCommerce\PayPalCommerce\Settings\Endpoint;
 
 use Exception;
-use stdClass;
-use RuntimeException;
-use Psr\Log\LoggerInterface;
 use WP_REST_Request;
 use WP_REST_Response;
 use WP_REST_Server;
-use WooCommerce\PayPalCommerce\ApiClient\Authentication\PayPalBearer;
-use WooCommerce\PayPalCommerce\ApiClient\Endpoint\Orders;
-use WooCommerce\PayPalCommerce\ApiClient\Helper\InMemoryCache;
-use WooCommerce\PayPalCommerce\Settings\Data\GeneralSettings;
 use WooCommerce\PayPalCommerce\Settings\Service\AuthenticationManager;
 
 /**

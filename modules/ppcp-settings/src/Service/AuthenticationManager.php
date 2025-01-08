@@ -10,6 +10,7 @@ declare( strict_types = 1 );
 namespace WooCommerce\PayPalCommerce\Settings\Service;
 
 use JsonException;
+use Throwable;
 use Psr\Log\LoggerInterface;
 use WooCommerce\PayPalCommerce\ApiClient\Exception\RuntimeException;
 use WooCommerce\PayPalCommerce\ApiClient\Authentication\PayPalBearer;
@@ -306,7 +307,11 @@ class AuthenticationManager {
 			$order_response = $orders->order( $order_id );
 			$order_body     = json_decode( $order_response['body'], false, 512, JSON_THROW_ON_ERROR );
 		} catch ( JsonException $exception ) {
+			// Cast JsonException to a RuntimeException.
 			throw new RuntimeException( 'Could not decode JSON response: ' . $exception->getMessage() );
+		} catch ( Throwable $exception ) {
+			// Cast any other Throwable to a RuntimeException.
+			throw new RuntimeException( $exception->getMessage() );
 		}
 
 		$pu    = $order_body->purchase_units[0];
@@ -315,7 +320,7 @@ class AuthenticationManager {
 		if ( ! is_object( $payee ) ) {
 			throw new RuntimeException( 'Payee not found.' );
 		}
-		if ( ! isset( $payee->merchant_id ) || ! isset( $payee->email_address ) ) {
+		if ( ! isset( $payee->merchant_id, $payee->email_address ) ) {
 			throw new RuntimeException( 'Payee info not found.' );
 		}
 
