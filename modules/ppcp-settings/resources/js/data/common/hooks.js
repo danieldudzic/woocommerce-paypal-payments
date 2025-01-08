@@ -28,8 +28,6 @@ const useHooks = () => {
 		persist,
 		setSandboxMode,
 		setManualConnectionMode,
-		setClientId,
-		setClientSecret,
 		sandboxOnboardingUrl,
 		productionOnboardingUrl,
 		authenticateWithCredentials,
@@ -42,8 +40,6 @@ const useHooks = () => {
 	const isReady = useTransient( 'isReady' );
 
 	// Persistent accessors.
-	const clientId = usePersistent( 'clientId' );
-	const clientSecret = usePersistent( 'clientSecret' );
 	const isSandboxMode = usePersistent( 'useSandbox' );
 	const isManualConnectionMode = usePersistent( 'useManualConnection' );
 	const webhooks = usePersistent( 'webhooks' );
@@ -70,14 +66,6 @@ const useHooks = () => {
 		isManualConnectionMode,
 		setManualConnectionMode: ( state ) => {
 			return savePersistent( setManualConnectionMode, state );
-		},
-		clientId,
-		setClientId: ( value ) => {
-			return savePersistent( setClientId, value );
-		},
-		clientSecret,
-		setClientSecret: ( value ) => {
-			return savePersistent( setClientSecret, value );
 		},
 		sandboxOnboardingUrl,
 		productionOnboardingUrl,
@@ -107,10 +95,6 @@ export const useAuthentication = () => {
 	const {
 		isManualConnectionMode,
 		setManualConnectionMode,
-		clientId,
-		setClientId,
-		clientSecret,
-		setClientSecret,
 		authenticateWithCredentials,
 		authenticateWithOAuth,
 	} = useHooks();
@@ -118,10 +102,6 @@ export const useAuthentication = () => {
 	return {
 		isManualConnectionMode,
 		setManualConnectionMode,
-		clientId,
-		setClientId,
-		clientSecret,
-		setClientSecret,
 		authenticateWithCredentials,
 		authenticateWithOAuth,
 	};

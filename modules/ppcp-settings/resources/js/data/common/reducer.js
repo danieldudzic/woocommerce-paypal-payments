@@ -22,6 +22,8 @@ const defaultTransient = Object.freeze( {
 		isSandbox: false,
 		id: '',
 		email: '',
+		clientId: '',
+		clientSecret: '',
 	} ),
 
 	wooSettings: Object.freeze( {
@@ -33,8 +35,6 @@ const defaultTransient = Object.freeze( {
 const defaultPersistent = Object.freeze( {
 	useSandbox: false,
 	useManualConnection: false,
-	clientId: '',
-	clientSecret: '',
 	webhooks: [],
 } );
 

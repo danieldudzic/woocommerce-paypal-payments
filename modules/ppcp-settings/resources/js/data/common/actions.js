@@ -113,28 +113,6 @@ export const setManualConnectionMode = ( useManualConnection ) => ( {
 } );
 
 /**
- * Persistent. Changes the "client ID" value.
- *
- * @param {string} clientId
- * @return {Action} The action.
- */
-export const setClientId = ( clientId ) => ( {
-	type: ACTION_TYPES.SET_PERSISTENT,
-	payload: { clientId },
-} );
-
-/**
- * Persistent. Changes the "client secret" value.
- *
- * @param {string} clientSecret
- * @return {Action} The action.
- */
-export const setClientSecret = ( clientSecret ) => ( {
-	type: ACTION_TYPES.SET_PERSISTENT,
-	payload: { clientSecret },
-} );
-
-/**
  * Side effect. Saves the persistent details to the WP database.
  *
  * @return {Action} The action.
