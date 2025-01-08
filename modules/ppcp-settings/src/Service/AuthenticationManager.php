@@ -25,7 +25,7 @@ use WooCommerce\PayPalCommerce\Settings\DTO\MerchantConnectionDTO;
 /**
  * Class that manages the connection to PayPal.
  */
-class ConnectionManager {
+class AuthenticationManager {
 	/**
 	 * Data model that stores the connection details.
 	 *

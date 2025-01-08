@@ -10,21 +10,21 @@ declare( strict_types = 1 );
 namespace WooCommerce\PayPalCommerce\Settings;
 
 use WooCommerce\PayPalCommerce\ApiClient\Helper\Cache;
+use WooCommerce\PayPalCommerce\Settings\Ajax\SwitchSettingsUiEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Data\CommonSettings;
 use WooCommerce\PayPalCommerce\Settings\Data\GeneralSettings;
 use WooCommerce\PayPalCommerce\Settings\Data\OnboardingProfile;
-use WooCommerce\PayPalCommerce\Settings\Endpoint\CommonRestEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\AuthenticationRestEndpoint;
+use WooCommerce\PayPalCommerce\Settings\Endpoint\CommonRestEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\LoginLinkRestEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\OnboardingRestEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\RefreshFeatureStatusEndpoint;
-use WooCommerce\PayPalCommerce\Settings\Ajax\SwitchSettingsUiEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\WebhookSettingsEndpoint;
+use WooCommerce\PayPalCommerce\Settings\Handler\ConnectionListener;
+use WooCommerce\PayPalCommerce\Settings\Service\AuthenticationManager;
 use WooCommerce\PayPalCommerce\Settings\Service\ConnectionUrlGenerator;
 use WooCommerce\PayPalCommerce\Settings\Service\OnboardingUrlManager;
 use WooCommerce\PayPalCommerce\Vendor\Psr\Container\ContainerInterface;
-use WooCommerce\PayPalCommerce\Settings\Handler\ConnectionListener;
-use WooCommerce\PayPalCommerce\Settings\Service\ConnectionManager;
 
 return array(
 	'settings.url'                                => static function ( ContainerInterface $container ) : string {
@@ -82,7 +82,7 @@ return array(
 	},
 	'settings.rest.connect_manual'                => static function ( ContainerInterface $container ) : AuthenticationRestEndpoint {
 		return new AuthenticationRestEndpoint(
-			$container->get( 'settings.service.connection_manager' ),
+			$container->get( 'settings.service.authentication_manager' ),
 		);
 	},
 	'settings.rest.login_link'                    => static function ( ContainerInterface $container ) : LoginLinkRestEndpoint {
@@ -180,8 +180,8 @@ return array(
 			$container->get( 'woocommerce.logger.woocommerce' )
 		);
 	},
-	'settings.service.connection_manager'         => static function ( ContainerInterface $container ) : ConnectionManager {
-		return new ConnectionManager(
+	'settings.service.authentication_manager'     => static function ( ContainerInterface $container ) : AuthenticationManager {
+		return new AuthenticationManager(
 			$container->get( 'settings.data.common' ),
 			$container->get( 'api.env.paypal-host' ),
 			$container->get( 'api.env.endpoint.login-seller' ),

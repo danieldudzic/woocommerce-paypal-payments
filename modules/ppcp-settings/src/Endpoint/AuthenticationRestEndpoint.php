@@ -20,7 +20,7 @@ use WooCommerce\PayPalCommerce\ApiClient\Authentication\PayPalBearer;
 use WooCommerce\PayPalCommerce\ApiClient\Endpoint\Orders;
 use WooCommerce\PayPalCommerce\ApiClient\Helper\InMemoryCache;
 use WooCommerce\PayPalCommerce\Settings\Data\GeneralSettings;
-use WooCommerce\PayPalCommerce\Settings\Service\ConnectionManager;
+use WooCommerce\PayPalCommerce\Settings\Service\AuthenticationManager;
 
 /**
  * REST controller for authenticating and connecting to a PayPal merchant account.
@@ -41,6 +41,13 @@ class AuthenticationRestEndpoint extends RestEndpoint {
 	protected $rest_base = 'authenticate';
 
 	/**
+	 * Authentication manager service.
+	 *
+	 * @var AuthenticationManager
+	 */
+	private AuthenticationManager $authentication_manager;
+
+	/**
 	 * Defines the JSON response format (when connection was successful).
 	 *
 	 * @var array
@@ -57,16 +64,16 @@ class AuthenticationRestEndpoint extends RestEndpoint {
 	/**
 	 * Constructor.
 	 *
-	 * @param ConnectionManager $connection_manager The connection manager.
+	 * @param AuthenticationManager $authentication_manager The authentication manager.
 	 */
-	public function __construct( ConnectionManager $connection_manager ) {
-		$this->connection_manager = $connection_manager;
+	public function __construct( AuthenticationManager $authentication_manager ) {
+		$this->authentication_manager = $authentication_manager;
 	}
 
 	/**
 	 * Configure REST API routes.
 	 */
-	public function register_routes() {
+	public function register_routes() : void {
 		register_rest_route(
 			$this->namespace,
 			'/' . $this->rest_base . '/direct',
@@ -139,13 +146,13 @@ class AuthenticationRestEndpoint extends RestEndpoint {
 		$use_sandbox   = $request->get_param( 'useSandbox' );
 
 		try {
-			$this->connection_manager->validate_id_and_secret( $client_id, $client_secret );
-			$this->connection_manager->connect_via_secret( $use_sandbox, $client_id, $client_secret );
+			$this->authentication_manager->validate_id_and_secret( $client_id, $client_secret );
+			$this->authentication_manager->connect_via_secret( $use_sandbox, $client_id, $client_secret );
 		} catch ( Exception $exception ) {
 			return $this->return_error( $exception->getMessage() );
 		}
 
-		$account  = $this->connection_manager->get_account_details();
+		$account  = $this->authentication_manager->get_account_details();
 		$response = $this->sanitize_for_javascript( $this->response_map, $account );
 
 		return $this->return_success( $response );
@@ -165,13 +172,13 @@ class AuthenticationRestEndpoint extends RestEndpoint {
 		$use_sandbox = $request->get_param( 'useSandbox' );
 
 		try {
-			$this->connection_manager->validate_id_and_auth_code( $shared_id, $auth_code );
-			$this->connection_manager->connect_via_auth_code( $use_sandbox, $shared_id, $auth_code );
+			$this->authentication_manager->validate_id_and_auth_code( $shared_id, $auth_code );
+			$this->authentication_manager->connect_via_auth_code( $use_sandbox, $shared_id, $auth_code );
 		} catch ( Exception $exception ) {
 			return $this->return_error( $exception->getMessage() );
 		}
 
-		$account  = $this->connection_manager->get_account_details();
+		$account  = $this->authentication_manager->get_account_details();
 		$response = $this->sanitize_for_javascript( $this->response_map, $account );
 
 		return $this->return_success( $response );
