@@ -47,8 +47,14 @@ const useHooks = () => {
 		( select ) => select( STORE_NAME ).merchant(),
 		[]
 	);
+
+	// Read-only properties.
 	const wooSettings = useSelect(
 		( select ) => select( STORE_NAME ).wooSettings(),
+		[]
+	);
+	const features = useSelect(
+		( select ) => select( STORE_NAME ).features(),
 		[]
 	);
 
@@ -73,6 +79,7 @@ const useHooks = () => {
 		authenticateWithOAuth,
 		merchant,
 		wooSettings,
+		features,
 		webhooks,
 		startWebhookSimulation,
 		checkWebhookSimulationState,
@@ -130,7 +137,7 @@ export const useWebhooks = () => {
 	};
 };
 export const useMerchantInfo = () => {
-	const { merchant } = useHooks();
+	const { merchant, features } = useHooks();
 	const { refreshMerchantData } = useDispatch( STORE_NAME );
 
 	const verifyLoginStatus = useCallback( async () => {
@@ -146,6 +153,7 @@ export const useMerchantInfo = () => {
 
 	return {
 		merchant, // Merchant details
+		features, // Eligible merchant features
 		verifyLoginStatus, // Callback
 	};
 };
