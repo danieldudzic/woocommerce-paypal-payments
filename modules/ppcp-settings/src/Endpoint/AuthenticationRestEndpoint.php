@@ -140,7 +140,7 @@ class AuthenticationRestEndpoint extends RestEndpoint {
 
 		try {
 			$this->authentication_manager->validate_id_and_secret( $client_id, $client_secret );
-			$this->authentication_manager->connect_via_secret( $use_sandbox, $client_id, $client_secret );
+			$this->authentication_manager->authenticate_via_direct_api( $use_sandbox, $client_id, $client_secret );
 		} catch ( Exception $exception ) {
 			return $this->return_error( $exception->getMessage() );
 		}
@@ -166,7 +166,7 @@ class AuthenticationRestEndpoint extends RestEndpoint {
 
 		try {
 			$this->authentication_manager->validate_id_and_auth_code( $shared_id, $auth_code );
-			$this->authentication_manager->connect_via_auth_code( $use_sandbox, $shared_id, $auth_code );
+			$this->authentication_manager->authenticate_via_oauth( $use_sandbox, $shared_id, $auth_code );
 		} catch ( Exception $exception ) {
 			return $this->return_error( $exception->getMessage() );
 		}

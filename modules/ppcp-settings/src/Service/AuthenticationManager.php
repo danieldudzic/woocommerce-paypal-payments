@@ -156,7 +156,7 @@ class AuthenticationManager {
 	 * @return void
 	 * @throws RuntimeException When failed to retrieve payee.
 	 */
-	public function connect_via_secret( bool $use_sandbox, string $client_id, string $client_secret ) : void {
+	public function authenticate_via_direct_api( bool $use_sandbox, string $client_id, string $client_secret ) : void {
 		$this->disconnect();
 
 		$this->logger->info(
@@ -217,11 +217,11 @@ class AuthenticationManager {
 	 * @return void
 	 * @throws RuntimeException When failed to retrieve payee.
 	 */
-	public function connect_via_auth_code( bool $use_sandbox, string $shared_id, string $auth_code ) : void {
+	public function authenticate_via_oauth( bool $use_sandbox, string $shared_id, string $auth_code ) : void {
 		$this->disconnect();
 
 		$this->logger->info(
-			'Attempting ISU login to PayPal...',
+			'Attempting OAuth login to PayPal...',
 			array(
 				'sandbox'   => $use_sandbox,
 				'shared_id' => $shared_id,

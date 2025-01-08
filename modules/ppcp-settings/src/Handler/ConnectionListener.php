@@ -104,7 +104,7 @@ class ConnectionListener {
 			return;
 		}
 
-		$this->logger->info( 'Found merchant data in request', $data );
+		$this->logger->info( 'Found OAuth merchant data in request', $data );
 
 		$connection = $this->settings->get_merchant_data();
 
