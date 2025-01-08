@@ -175,12 +175,20 @@ export const productionOnboardingUrl = function* ( products = [] ) {
 /**
  * Side effect. Initiates a direct connection attempt using the provided client ID and secret.
  *
+ * This action accepts parameters instead of fetching data from the Redux state because the
+ * values (ID and secret) are not managed by a central redux store, but might come from private
+ * component state.
+ *
+ * @param {string}  clientId     - AP client ID (always 80-characters, starting with "A").
+ * @param {string}  clientSecret - API client secret.
+ * @param {boolean} useSandbox   - Whether the credentials are for a sandbox account.
  * @return {Action} The action.
  */
-export const authenticateWithCredentials = function* () {
-	const { clientId, clientSecret, useSandbox } =
-		yield select( STORE_NAME ).persistentData();
-
+export const authenticateWithCredentials = function* (
+	clientId,
+	clientSecret,
+	useSandbox
+) {
 	return yield {
 		type: ACTION_TYPES.DO_DIRECT_API_AUTHENTICATION,
 		clientId,
@@ -197,18 +205,16 @@ export const authenticateWithCredentials = function* () {
  * parameters are dynamically generated during the authentication process, and not managed by our
  * Redux store.
  *
- * @param {string} sharedId    - OAuth client ID; called "sharedId" to prevent confusion with the API client ID.
- * @param {string} authCode    - OAuth authorization code provided during onboarding.
- * @param {string} environment - [production|sandbox].
+ * @param {string}  sharedId   - OAuth client ID; called "sharedId" to prevent confusion with the API client ID.
+ * @param {string}  authCode   - OAuth authorization code provided during onboarding.
+ * @param {boolean} useSandbox - Whether the credentials are for a sandbox account.
  * @return {Action} The action.
  */
 export const authenticateWithOAuth = function* (
 	sharedId,
 	authCode,
-	environment
+	useSandbox
 ) {
-	const useSandbox = 'sandbox' === environment;
-
 	return yield {
 		type: ACTION_TYPES.DO_OAUTH_AUTHENTICATION,
 		sharedId,

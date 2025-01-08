@@ -130,7 +130,7 @@ export const useHandleOnboardingButton = ( isSandbox ) => {
 						await authenticateWithOAuth(
 							sharedId,
 							authCode,
-							environment
+							'sandbox' === environment
 						);
 					}
 				);
@@ -214,27 +214,38 @@ export const useDirectAuthentication = () => {
 		authenticateWithCredentials,
 		isManualConnectionMode,
 		setManualConnectionMode,
-		clientId,
-		setClientId,
-		clientSecret,
-		setClientSecret,
 	} = CommonHooks.useAuthentication();
 
-	const handleDirectAuthentication = async ( { validation } = {} ) => {
+	const handleDirectAuthentication = async ( connectionDetails ) => {
 		return withActivity(
 			ACTIVITIES.CONNECT_MANUAL,
 			'Connecting manually via Client ID and Secret',
 			async () => {
-				if ( 'function' === typeof validation ) {
+				let data;
+
+				if ( 'function' === typeof connectionDetails ) {
 					try {
-						validation();
+						data = connectionDetails();
 					} catch ( exception ) {
 						createErrorNotice( exception.message );
 						return;
 					}
+				} else if ( 'object' === typeof connectionDetails ) {
+					data = connectionDetails;
 				}
 
-				const res = await authenticateWithCredentials();
+				if ( ! data || ! data.clientId || ! data.clientSecret ) {
+					createErrorNotice(
+						'Invalid connection details (clientID or clientSecret missing)'
+					);
+					return;
+				}
+
+				const res = await authenticateWithCredentials(
+					data.clientId,
+					data.clientSecret,
+					!! data.isSandbox
+				);
 
 				if ( res.success ) {
 					await handleCompleted();
@@ -251,9 +262,5 @@ export const useDirectAuthentication = () => {
 		handleDirectAuthentication,
 		isManualConnectionMode,
 		setManualConnectionMode,
-		clientId,
-		setClientId,
-		clientSecret,
-		setClientSecret,
 	};
 };
