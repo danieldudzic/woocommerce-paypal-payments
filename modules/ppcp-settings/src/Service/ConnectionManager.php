@@ -20,6 +20,7 @@ use WooCommerce\PayPalCommerce\ApiClient\Repository\PartnerReferralsData;
 use WooCommerce\PayPalCommerce\Settings\Data\CommonSettings;
 use WooCommerce\PayPalCommerce\WcGateway\Helper\EnvironmentConfig;
 use WooCommerce\WooCommerce\Logging\Logger\NullLogger;
+use WooCommerce\PayPalCommerce\Settings\DTO\MerchantConnectionDTO;
 
 /**
  * Class that manages the connection to PayPal.
@@ -167,7 +168,15 @@ class ConnectionManager {
 
 		$payee = $this->request_payee( $client_id, $client_secret, $use_sandbox );
 
-		$this->update_connection_details( $use_sandbox, $payee['merchant_id'], $payee['email_address'] );
+		$connection = new MerchantConnectionDTO(
+			$use_sandbox,
+			$client_id,
+			$client_secret,
+			$payee['merchant_id'],
+			$payee['email_address']
+		);
+
+		$this->update_connection_details( $connection );
 	}
 
 
@@ -220,7 +229,22 @@ class ConnectionManager {
 
 		$credentials = $this->get_credentials( $shared_id, $auth_code, $use_sandbox );
 
-		// TODO.
+		/**
+		 * The merchant's email is set by `ConnectionListener`. That listener
+		 * is invoked during the page reload, once the user clicks the blue
+		 * "Return to Store" button in PayPal's login popup.
+		 */
+		$empty_email = '';
+
+		$connection = new MerchantConnectionDTO(
+			$use_sandbox,
+			$credentials['client_id'],
+			$credentials['client_secret'],
+			$credentials['merchant_id'],
+			$empty_email
+		);
+
+		$this->update_connection_details( $connection );
 	}
 
 
@@ -329,22 +353,16 @@ class ConnectionManager {
 	/**
 	 * Stores the provided details in the data model.
 	 *
-	 * @param bool   $is_sandbox     Whether the details are for a sandbox account.
-	 * @param string $merchant_id    PayPal's internal merchant ID.
-	 * @param string $merchant_email Email address associated with the PayPal account.
+	 * @param MerchantConnectionDTO $connection Connection details to persist.
 	 * @return void
 	 */
-	private function update_connection_details( bool $is_sandbox, string $merchant_id, string $merchant_email ) : void {
+	private function update_connection_details( MerchantConnectionDTO $connection ) : void {
 		$this->logger->info(
 			'Updating connection details',
-			array(
-				'sandbox'        => $is_sandbox,
-				'merchant_id'    => $merchant_id,
-				'merchant_email' => $merchant_email,
-			)
+			(array) $connection
 		);
 
-		$this->common_settings->set_merchant_data( $is_sandbox, $merchant_id, $merchant_email );
+		$this->common_settings->set_merchant_data( $connection );
 		$this->common_settings->save();
 
 		/**

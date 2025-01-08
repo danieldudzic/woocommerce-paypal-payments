@@ -10,6 +10,7 @@ declare( strict_types = 1 );
 namespace WooCommerce\PayPalCommerce\Settings\Data;
 
 use RuntimeException;
+use WooCommerce\PayPalCommerce\Settings\DTO\MerchantConnectionDTO;
 
 /**
  * Class CommonSettings
@@ -41,11 +42,16 @@ class CommonSettings extends AbstractDataModel {
 	 *
 	 * @param string $country  WooCommerce store country.
 	 * @param string $currency WooCommerce store currency.
+	 *
+	 * @throws RuntimeException When forgetting to define the OPTION_KEY in this class.
 	 */
 	public function __construct( string $country, string $currency ) {
 		parent::__construct();
+
 		$this->woo_settings['country']  = $country;
 		$this->woo_settings['currency'] = $currency;
+
+		$this->data['merchant_connected'] = $this->is_merchant_connected();
 	}
 
 	/**
@@ -154,19 +160,17 @@ class CommonSettings extends AbstractDataModel {
 	/**
 	 * Setter to update details of the connected merchant account.
 	 *
-	 * Those details cannot be changed individually.
-	 *
-	 * @param bool   $is_sandbox     Whether the details are for a sandbox account.
-	 * @param string $merchant_id    The merchant ID.
-	 * @param string $merchant_email The merchant's email.
+	 * @param MerchantConnectionDTO $connection Connection details.
 	 *
 	 * @return void
 	 */
-	public function set_merchant_data( bool $is_sandbox, string $merchant_id, string $merchant_email ) : void {
-		$this->data['sandbox_merchant']   = $is_sandbox;
-		$this->data['merchant_id']        = sanitize_text_field( $merchant_id );
-		$this->data['merchant_email']     = sanitize_email( $merchant_email );
-		$this->data['merchant_connected'] = true;
+	public function set_merchant_data( MerchantConnectionDTO $connection ) : void {
+		$this->data['sandbox_merchant']   = $connection->is_sandbox;
+		$this->data['merchant_id']        = sanitize_text_field( $connection->merchant_id );
+		$this->data['merchant_email']     = sanitize_email( $connection->merchant_email );
+		$this->data['client_id']          = sanitize_text_field( $connection->client_id );
+		$this->data['client_secret']      = sanitize_text_field( $connection->client_secret );
+		$this->data['merchant_connected'] = $this->is_merchant_connected();
 	}
 
 	/**
@@ -180,7 +184,9 @@ class CommonSettings extends AbstractDataModel {
 		$this->data['sandbox_merchant']   = $defaults['sandbox_merchant'];
 		$this->data['merchant_id']        = $defaults['merchant_id'];
 		$this->data['merchant_email']     = $defaults['merchant_email'];
-		$this->data['merchant_connected'] = $defaults['merchant_connected'];
+		$this->data['client_id']          = $defaults['client_id'];
+		$this->data['client_secret']      = $defaults['client_secret'];
+		$this->data['merchant_connected'] = false;
 	}
 
 	/**
@@ -198,7 +204,10 @@ class CommonSettings extends AbstractDataModel {
 	 * @return bool
 	 */
 	public function is_merchant_connected() : bool {
-		return $this->data['merchant_connected'] && $this->data['merchant_id'] && $this->data['merchant_email'];
+		return $this->data['merchant_email']
+			&& $this->data['merchant_id']
+			&& $this->data['client_id']
+			&& $this->data['client_secret'];
 	}
 
 	/**
