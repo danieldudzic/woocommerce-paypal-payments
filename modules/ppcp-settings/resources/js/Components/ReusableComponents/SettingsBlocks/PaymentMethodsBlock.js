@@ -7,13 +7,16 @@ const PaymentMethodsBlock = ( {
 	className = '',
 	onTriggerModal,
 } ) => {
-	const [ selectedMethod, setSelectedMethod ] = useState( null );
+	const [ selectedMethods, setSelectedMethods ] = useState( {} );
 
 	const handleSelect = useCallback( ( methodId, isSelected ) => {
-		setSelectedMethod( isSelected ? methodId : null );
+		setSelectedMethods( ( prev ) => ( {
+			...prev,
+			[ methodId ]: isSelected,
+		} ) );
 	}, [] );
 
-	if ( paymentMethods.length === 0 ) {
+	if ( ! paymentMethods?.length ) {
 		return null;
 	}
 
@@ -25,7 +28,9 @@ const PaymentMethodsBlock = ( {
 				<PaymentMethodItemBlock
 					key={ paymentMethod.id }
 					{ ...paymentMethod }
-					isSelected={ selectedMethod === paymentMethod.id }
+					isSelected={ Boolean(
+						selectedMethods[ paymentMethod.id ]
+					) }
 					onSelect={ ( checked ) =>
 						handleSelect( paymentMethod.id, checked )
 					}
