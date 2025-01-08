@@ -45,12 +45,13 @@ const defaultTransient = Object.freeze( {
 			enabled: false,
 		},
 	} ),
+
+	webhooks: Object.freeze( [] ),
 } );
 
 const defaultPersistent = Object.freeze( {
 	useSandbox: false,
 	useManualConnection: false,
-	webhooks: [],
 } );
 
 // Reducer logic.
@@ -105,16 +106,18 @@ const commonReducer = createReducer( defaultTransient, defaultPersistent, {
 		const newState = setPersistent( state, payload.data );
 
 		// Populate read-only properties.
-		[ 'wooSettings', 'merchant', 'features' ].forEach( ( key ) => {
-			if ( ! payload[ key ] ) {
-				return;
-			}
+		[ 'wooSettings', 'merchant', 'features', 'webhooks' ].forEach(
+			( key ) => {
+				if ( ! payload[ key ] ) {
+					return;
+				}
 
-			newState[ key ] = Object.freeze( {
-				...newState[ key ],
-				...payload[ key ],
-			} );
-		} );
+				newState[ key ] = Object.freeze( {
+					...newState[ key ],
+					...payload[ key ],
+				} );
+			}
+		);
 
 		return newState;
 	},

@@ -16,8 +16,14 @@ export const persistentData = ( state ) => {
 };
 
 export const transientData = ( state ) => {
-	const { data, merchant, features, wooSettings, ...transientState } =
-		getState( state );
+	const {
+		data,
+		merchant,
+		features,
+		wooSettings,
+		webhooks,
+		...transientState
+	} = getState( state );
 	return transientState || EMPTY_OBJ;
 };
 

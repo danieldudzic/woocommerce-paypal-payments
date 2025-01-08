@@ -42,7 +42,6 @@ const useHooks = () => {
 	// Persistent accessors.
 	const isSandboxMode = usePersistent( 'useSandbox' );
 	const isManualConnectionMode = usePersistent( 'useManualConnection' );
-	const webhooks = usePersistent( 'webhooks' );
 	const merchant = useSelect(
 		( select ) => select( STORE_NAME ).merchant(),
 		[]
@@ -55,6 +54,10 @@ const useHooks = () => {
 	);
 	const features = useSelect(
 		( select ) => select( STORE_NAME ).features(),
+		[]
+	);
+	const webhooks = useSelect(
+		( select ) => select( STORE_NAME ).webhooks(),
 		[]
 	);
 
