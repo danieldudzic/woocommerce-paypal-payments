@@ -1,10 +1,11 @@
+import { __ } from '@wordpress/i18n';
+
 import BusyStateWrapper from '../../../ReusableComponents/BusyStateWrapper';
 import SettingsToggleBlock from '../../../ReusableComponents/SettingsToggleBlock';
-import { __ } from '@wordpress/i18n';
-import ConnectionButton from './ConnectionButton';
 import { useSandboxConnection } from '../../../../hooks/useHandleConnections';
+import ConnectionButton from './ConnectionButton';
 
-const SandboxLoginSection = () => {
+const SandboxConnectionForm = () => {
 	const { isSandboxMode, setSandboxMode } = useSandboxConnection();
 
 	return (
@@ -38,4 +39,4 @@ const SandboxLoginSection = () => {
 	);
 };
 
-export default SandboxLoginSection;
+export default SandboxConnectionForm;
