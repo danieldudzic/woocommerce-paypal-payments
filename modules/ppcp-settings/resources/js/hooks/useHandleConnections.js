@@ -128,8 +128,8 @@ export const useHandleOnboardingButton = ( isSandbox ) => {
 					'Validating the connection details',
 					async () => {
 						await connectViaAuthCode(
-							authCode,
 							sharedId,
+							authCode,
 							environment
 						);
 					}
