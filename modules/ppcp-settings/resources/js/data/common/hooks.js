@@ -32,8 +32,8 @@ const useHooks = () => {
 		setClientSecret,
 		sandboxOnboardingUrl,
 		productionOnboardingUrl,
-		connectViaSecret,
-		connectViaAuthCode,
+		authenticateWithCredentials,
+		authenticateWithOAuth,
 		startWebhookSimulation,
 		checkWebhookSimulationState,
 	} = useDispatch( STORE_NAME );
@@ -81,8 +81,8 @@ const useHooks = () => {
 		},
 		sandboxOnboardingUrl,
 		productionOnboardingUrl,
-		connectViaSecret,
-		connectViaAuthCode,
+		authenticateWithCredentials,
+		authenticateWithOAuth,
 		merchant,
 		wooSettings,
 		webhooks,
@@ -111,8 +111,8 @@ export const useAuthentication = () => {
 		setClientId,
 		clientSecret,
 		setClientSecret,
-		connectViaSecret,
-		connectViaAuthCode,
+		authenticateWithCredentials,
+		authenticateWithOAuth,
 	} = useHooks();
 
 	return {
@@ -122,8 +122,8 @@ export const useAuthentication = () => {
 		setClientId,
 		clientSecret,
 		setClientSecret,
-		connectViaSecret,
-		connectViaAuthCode,
+		authenticateWithCredentials,
+		authenticateWithOAuth,
 	};
 };
 

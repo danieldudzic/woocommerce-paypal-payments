@@ -177,12 +177,12 @@ export const productionOnboardingUrl = function* ( products = [] ) {
  *
  * @return {Action} The action.
  */
-export const connectViaSecret = function* () {
+export const authenticateWithCredentials = function* () {
 	const { clientId, clientSecret, useSandbox } =
 		yield select( STORE_NAME ).persistentData();
 
 	return yield {
-		type: ACTION_TYPES.DO_MANUAL_AUTHENTICATION,
+		type: ACTION_TYPES.DO_DIRECT_API_AUTHENTICATION,
 		clientId,
 		clientSecret,
 		useSandbox,
@@ -197,12 +197,12 @@ export const connectViaSecret = function* () {
  * parameters are dynamically generated during the authentication process, and not managed by our
  * Redux store.
  *
- * @param {string} sharedId    - OAuth client ID, provided via "sharedId" during onboarding.
+ * @param {string} sharedId    - OAuth client ID; called "sharedId" to prevent confusion with the API client ID.
  * @param {string} authCode    - OAuth authorization code provided during onboarding.
  * @param {string} environment - [production|sandbox].
  * @return {Action} The action.
  */
-export const connectViaAuthCode = function* (
+export const authenticateWithOAuth = function* (
 	sharedId,
 	authCode,
 	environment
@@ -210,7 +210,7 @@ export const connectViaAuthCode = function* (
 	const useSandbox = 'sandbox' === environment;
 
 	return yield {
-		type: ACTION_TYPES.DO_ISU_AUTHENTICATION,
+		type: ACTION_TYPES.DO_OAUTH_AUTHENTICATION,
 		sharedId,
 		authCode,
 		useSandbox,

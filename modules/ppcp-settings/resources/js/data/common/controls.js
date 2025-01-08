@@ -52,7 +52,7 @@ export const controls = {
 		}
 	},
 
-	async [ ACTION_TYPES.DO_MANUAL_AUTHENTICATION ]( {
+	async [ ACTION_TYPES.DO_DIRECT_API_AUTHENTICATION ]( {
 		clientId,
 		clientSecret,
 		useSandbox,
@@ -75,7 +75,7 @@ export const controls = {
 		}
 	},
 
-	async [ ACTION_TYPES.DO_ISU_AUTHENTICATION ]( {
+	async [ ACTION_TYPES.DO_OAUTH_AUTHENTICATION ]( {
 		sharedId,
 		authCode,
 		useSandbox,

@@ -44,7 +44,7 @@ export const useHandleOnboardingButton = ( isSandbox ) => {
 	const { productionOnboardingUrl } = CommonHooks.useProduction();
 	const products = OnboardingHooks.useDetermineProducts();
 	const { withActivity } = CommonHooks.useBusyState();
-	const { connectViaAuthCode } = CommonHooks.useAuthentication();
+	const { authenticateWithOAuth } = CommonHooks.useAuthentication();
 	const [ onboardingUrl, setOnboardingUrl ] = useState( '' );
 	const [ scriptLoaded, setScriptLoaded ] = useState( false );
 	const timerRef = useRef( null );
@@ -127,7 +127,7 @@ export const useHandleOnboardingButton = ( isSandbox ) => {
 					ACTIVITIES.CONNECT_ISU,
 					'Validating the connection details',
 					async () => {
-						await connectViaAuthCode(
+						await authenticateWithOAuth(
 							sharedId,
 							authCode,
 							environment
@@ -148,7 +148,7 @@ export const useHandleOnboardingButton = ( isSandbox ) => {
 			// Ensure the onComplete handler is not removed by a PayPal init script.
 			timerRef.current = setInterval( addHandler, 250 );
 		},
-		[ connectViaAuthCode, withActivity ]
+		[ authenticateWithOAuth, withActivity ]
 	);
 
 	const removeCompleteHandler = useCallback( () => {
@@ -211,7 +211,7 @@ export const useDirectAuthentication = () => {
 		useConnectionBase();
 	const { withActivity } = CommonHooks.useBusyState();
 	const {
-		connectViaSecret,
+		authenticateWithCredentials,
 		isManualConnectionMode,
 		setManualConnectionMode,
 		clientId,
@@ -234,7 +234,7 @@ export const useDirectAuthentication = () => {
 					}
 				}
 
-				const res = await connectViaSecret();
+				const res = await authenticateWithCredentials();
 
 				if ( res.success ) {
 					await handleCompleted();
