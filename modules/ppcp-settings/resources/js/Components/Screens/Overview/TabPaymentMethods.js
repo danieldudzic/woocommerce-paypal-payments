@@ -111,9 +111,9 @@ const paymentMethodsPayPalCheckout = [
 	},
 	{
 		id: 'paypal_credit',
-		title: __( 'PayPal Credit', 'woocommerce-paypal-payments' ),
+		title: __( 'Pay Later', 'woocommerce-paypal-payments' ),
 		description: __(
-			'Get paid in full at checkout while giving your customers the option to pay interest free if paid within 6 months on orders over $99.',
+			'Get paid in full at checkout while giving your customers the flexibility to pay in installments over time with no late fees.',
 			'woocommerce-paypal-payments'
 		),
 		icon: 'payment-method-paypal',
