@@ -12,8 +12,7 @@ namespace WooCommerce\PayPalCommerce\Settings\Handler;
 
 use Psr\Log\LoggerInterface;
 use RuntimeException;
-use WooCommerce\PayPalCommerce\Settings\DTO\MerchantConnectionDTO;
-use WooCommerce\PayPalCommerce\Settings\Data\CommonSettings;
+use WooCommerce\PayPalCommerce\Settings\Service\AuthenticationManager;
 use WooCommerce\PayPalCommerce\Settings\Service\OnboardingUrlManager;
 use WooCommerce\WooCommerce\Logging\Logger\NullLogger;
 
@@ -34,18 +33,18 @@ class ConnectionListener {
 	private string $settings_page_id;
 
 	/**
-	 * Access to connection settings.
-	 *
-	 * @var CommonSettings
-	 */
-	private CommonSettings $settings;
-
-	/**
 	 * Access to the onboarding URL manager.
 	 *
 	 * @var OnboardingUrlManager
 	 */
 	private OnboardingUrlManager $url_manager;
+
+	/**
+	 * Authentication manager service, responsible to update connection details.
+	 *
+	 * @var AuthenticationManager
+	 */
+	private AuthenticationManager $authentication_manager;
 
 	/**
 	 * Logger instance, mainly used for debugging purposes.
@@ -64,16 +63,21 @@ class ConnectionListener {
 	/**
 	 * Prepare the instance.
 	 *
-	 * @param string               $settings_page_id Current plugin settings page ID.
-	 * @param CommonSettings       $settings         Access to saved connection details.
-	 * @param OnboardingUrlManager $url_manager      Get OnboardingURL instances.
-	 * @param ?LoggerInterface     $logger           The logger, for debugging purposes.
+	 * @param string                $settings_page_id       Current plugin settings page ID.
+	 * @param OnboardingUrlManager  $url_manager            Get OnboardingURL instances.
+	 * @param AuthenticationManager $authentication_manager Authentication manager service.
+	 * @param ?LoggerInterface      $logger                 The logger, for debugging purposes.
 	 */
-	public function __construct( string $settings_page_id, CommonSettings $settings, OnboardingUrlManager $url_manager, LoggerInterface $logger = null ) {
-		$this->settings_page_id = $settings_page_id;
-		$this->settings         = $settings;
-		$this->url_manager      = $url_manager;
-		$this->logger           = $logger ?: new NullLogger();
+	public function __construct(
+		string $settings_page_id,
+		OnboardingUrlManager $url_manager,
+		AuthenticationManager $authentication_manager,
+		LoggerInterface $logger = null
+	) {
+		$this->settings_page_id       = $settings_page_id;
+		$this->url_manager            = $url_manager;
+		$this->authentication_manager = $authentication_manager;
+		$this->logger                 = $logger ?: new NullLogger();
 
 		// Initialize as "guest", the real ID is provided via process().
 		$this->user_id = 0;
@@ -106,15 +110,11 @@ class ConnectionListener {
 
 		$this->logger->info( 'Found OAuth merchant data in request', $data );
 
-		$connection = $this->settings->get_merchant_data();
-
-		if ( $connection->merchant_id !== $data['merchant_id'] ) {
-			throw new RuntimeException( 'Unexpected merchant ID in request' );
+		try {
+			$this->authentication_manager->finish_oauth_authentication( $data );
+		} catch ( \Exception $e ) {
+			$this->logger->error( 'Failed to complete authentication: ' . $e->getMessage() );
 		}
-
-		$connection->merchant_email = $data['merchant_email'];
-
-		$this->store_data( $connection );
 	}
 
 	/**
@@ -168,22 +168,9 @@ class ConnectionListener {
 		}
 
 		return array(
-			'is_sandbox'     => $this->settings->get_sandbox(),
 			'merchant_id'    => $merchant_id,
 			'merchant_email' => $merchant_email,
 		);
-	}
-
-	/**
-	 * Persist the merchant details to the database.
-	 *
-	 * @param MerchantConnectionDTO $connection Merchant connection details to store.
-	 */
-	protected function store_data( MerchantConnectionDTO $connection ) : void {
-		$this->logger->info( 'Save merchant details to the DB', (array) $connection );
-
-		$this->settings->set_merchant_data( $connection );
-		$this->settings->save();
 	}
 
 	/**

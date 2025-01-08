@@ -248,6 +248,34 @@ class AuthenticationManager {
 		$this->update_connection_details( $connection );
 	}
 
+	/**
+	 * Verifies the merchant details in the final OAuth redirect and extracts
+	 * missing credentials from the URL.
+	 *
+	 * @param array $request_data Array of request parameters to process.
+	 * @return void
+	 *
+	 * @throws RuntimeException Missing or invalid credentials.
+	 */
+	public function finish_oauth_authentication( array $request_data ) : void {
+		$merchant_id    = $request_data['merchant_id'];
+		$merchant_email = $request_data['merchant_email'];
+
+		if ( empty( $merchant_id ) || empty( $merchant_email ) ) {
+			throw new RuntimeException( 'Missing merchant ID or email in request' );
+		}
+
+		$connection = $this->common_settings->get_merchant_data();
+
+		if ( $connection->merchant_id !== $merchant_id ) {
+			throw new RuntimeException( 'Unexpected merchant ID in request' );
+		}
+
+		$connection->merchant_email = $merchant_email;
+
+		$this->update_connection_details( $connection );
+	}
+
 
 	// ----------------------------------------------------------------------------
 	// Internal helper methods

@@ -158,8 +158,8 @@ return array(
 
 		return new ConnectionListener(
 			$page_id,
-			$container->get( 'settings.data.common' ),
 			$container->get( 'settings.service.onboarding-url-manager' ),
+			$container->get( 'settings.service.authentication_manager' ),
 			$container->get( 'woocommerce.logger.woocommerce' )
 		);
 	},
