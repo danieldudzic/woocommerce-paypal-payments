@@ -197,8 +197,8 @@ export const connectViaSecret = function* () {
  * parameters are dynamically generated during the authentication process, and not managed by our
  * Redux store.
  *
- * @param {string} sharedId    - One-time authentication ID that PayPal "shares" with us.
- * @param {string} authCode    - Matching one-time authentication code to validate the login.
+ * @param {string} sharedId    - OAuth client ID, provided via "sharedId" during onboarding.
+ * @param {string} authCode    - OAuth authorization code provided during onboarding.
  * @param {string} environment - [production|sandbox].
  * @return {Action} The action.
  */
