@@ -10,10 +10,12 @@ declare( strict_types = 1 );
 
 namespace WooCommerce\PayPalCommerce\Settings\Handler;
 
+use Psr\Log\LoggerInterface;
+use RuntimeException;
+use WooCommerce\PayPalCommerce\Settings\DTO\MerchantConnectionDTO;
 use WooCommerce\PayPalCommerce\Settings\Data\CommonSettings;
 use WooCommerce\PayPalCommerce\Settings\Service\OnboardingUrlManager;
 use WooCommerce\WooCommerce\Logging\Logger\NullLogger;
-use Psr\Log\LoggerInterface;
 
 /**
  * Provides a listener that handles merchant-connection requests.
@@ -82,6 +84,8 @@ class ConnectionListener {
 	 *
 	 * @param int   $user_id The current user ID.
 	 * @param array $request Request details to process.
+	 *
+	 * @throws RuntimeException If the merchant ID does not match the ID previously set via OAuth.
 	 */
 	public function process( int $user_id, array $request ) : void {
 		$this->user_id = $user_id;
@@ -102,11 +106,15 @@ class ConnectionListener {
 
 		$this->logger->info( 'Found merchant data in request', $data );
 
-		$this->store_data(
-			$data['is_sandbox'],
-			$data['merchant_id'],
-			$data['merchant_email']
-		);
+		$connection = $this->settings->get_merchant_data();
+
+		if ( $connection->merchant_id !== $data['merchant_id'] ) {
+			throw new RuntimeException( 'Unexpected merchant ID in request' );
+		}
+
+		$connection->merchant_email = $data['merchant_email'];
+
+		$this->store_data( $connection );
 	}
 
 	/**
@@ -169,14 +177,12 @@ class ConnectionListener {
 	/**
 	 * Persist the merchant details to the database.
 	 *
-	 * @param bool   $is_sandbox     Whether the details are for a sandbox account.
-	 * @param string $merchant_id    The anonymized merchant ID.
-	 * @param string $merchant_email The merchant's email.
+	 * @param MerchantConnectionDTO $connection Merchant connection details to store.
 	 */
-	protected function store_data( bool $is_sandbox, string $merchant_id, string $merchant_email ) : void {
-		$this->logger->info( "Save merchant details to the DB: $merchant_email ($merchant_id)" );
+	protected function store_data( MerchantConnectionDTO $connection ) : void {
+		$this->logger->info( 'Save merchant details to the DB', (array) $connection );
 
-		$this->settings->set_merchant_data( $is_sandbox, $merchant_id, $merchant_email );
+		$this->settings->set_merchant_data( $connection );
 		$this->settings->save();
 	}
 

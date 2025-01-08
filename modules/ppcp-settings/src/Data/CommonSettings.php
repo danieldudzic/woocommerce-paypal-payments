@@ -61,8 +61,8 @@ class CommonSettings extends AbstractDataModel {
 	 */
 	protected function get_defaults() : array {
 		return array(
-			'use_sandbox'           => false,
-			'use_manual_connection' => false,
+			'use_sandbox'           => false, // UI state, not a connection detail.
+			'use_manual_connection' => false, // UI state, not a connection detail.
 
 			// Details about connected merchant account.
 			'merchant_connected'    => false,
@@ -113,42 +113,6 @@ class CommonSettings extends AbstractDataModel {
 	}
 
 	/**
-	 * Gets the client ID.
-	 *
-	 * @return string
-	 */
-	public function get_client_id() : string {
-		return $this->data['client_id'];
-	}
-
-	/**
-	 * Sets the client ID.
-	 *
-	 * @param string $client_id The client ID.
-	 */
-	public function set_client_id( string $client_id ) : void {
-		$this->data['client_id'] = sanitize_text_field( $client_id );
-	}
-
-	/**
-	 * Gets the client secret.
-	 *
-	 * @return string
-	 */
-	public function get_client_secret() : string {
-		return $this->data['client_secret'];
-	}
-
-	/**
-	 * Sets the client secret.
-	 *
-	 * @param string $client_secret The client secret.
-	 */
-	public function set_client_secret( string $client_secret ) : void {
-		$this->data['client_secret'] = sanitize_text_field( $client_secret );
-	}
-
-	/**
 	 * Returns the list of read-only customization flags.
 	 *
 	 * @return array
@@ -171,6 +135,21 @@ class CommonSettings extends AbstractDataModel {
 		$this->data['client_id']          = sanitize_text_field( $connection->client_id );
 		$this->data['client_secret']      = sanitize_text_field( $connection->client_secret );
 		$this->data['merchant_connected'] = $this->is_merchant_connected();
+	}
+
+	/**
+	 * Returns the full merchant connection DTO for the current connection.
+	 *
+	 * @return MerchantConnectionDTO All connection details.
+	 */
+	public function get_merchant_data() : MerchantConnectionDTO {
+		return new MerchantConnectionDTO(
+			$this->is_sandbox_merchant(),
+			$this->data['client_id'],
+			$this->data['client_secret'],
+			$this->data['merchant_id'],
+			$this->data['merchant_email']
+		);
 	}
 
 	/**
