@@ -22,6 +22,7 @@ use WooCommerce\PayPalCommerce\Settings\Data\GeneralSettings;
 use WooCommerce\PayPalCommerce\WcGateway\Helper\EnvironmentConfig;
 use WooCommerce\WooCommerce\Logging\Logger\NullLogger;
 use WooCommerce\PayPalCommerce\Settings\DTO\MerchantConnectionDTO;
+use WooCommerce\PayPalCommerce\Webhooks\WebhookRegistrar;
 
 /**
  * Class that manages the connection to PayPal.
@@ -418,6 +419,11 @@ class AuthenticationManager {
 			 * first time.
 			 */
 			do_action( 'woocommerce_paypal_payments_authenticated_merchant' );
+
+			/**
+			 * Subscribe the new merchant to relevant PayPal webhooks.
+			 */
+			do_action( WebhookRegistrar::EVENT_HOOK );
 		}
 	}
 }
