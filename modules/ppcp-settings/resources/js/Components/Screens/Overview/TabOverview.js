@@ -17,7 +17,7 @@ const TabOverview = () => {
 	const [ todosData, setTodosData ] = useState( todosDataDefault );
 	const [ isRefreshing, setIsRefreshing ] = useState( false );
 
-	const { merchant } = useMerchantInfo();
+	const { merchantFeatures } = useMerchantInfo();
 	const { refreshFeatureStatuses, setActiveModal } =
 		useDispatch( STORE_NAME );
 
@@ -30,13 +30,13 @@ const TabOverview = () => {
 	// Map merchant features status to our config
 	const features = useMemo( () => {
 		return featuresData.map( ( feature ) => {
-			const merchantFeature = merchant?.features?.[ feature.id ];
+			const merchantFeature = merchantFeatures?.[ feature.id ];
 			return {
 				...feature,
 				enabled: merchantFeature?.enabled ?? false,
 			};
 		} );
-	}, [ featuresData, merchant?.features ] );
+	}, [ featuresData, merchantFeatures ] );
 
 	const refreshHandler = async () => {
 		setIsRefreshing( true );
