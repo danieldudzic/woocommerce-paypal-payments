@@ -4,12 +4,12 @@ import { useMemo } from '@wordpress/element';
 import SettingsCard from '../../ReusableComponents/SettingsCard';
 import PaymentMethodsBlock from '../../ReusableComponents/SettingsBlocks/PaymentMethodsBlock';
 import { CommonHooks } from '../../../data';
-import ModalPayPal from './Modals/ModalPayPal';
-import ModalFastlane from './Modals/ModalFastlane';
-import ModalAcdc from './Modals/ModalAcdc';
+import { useActiveModal } from '../../../data/common/hooks';
+import Modal from './Modals/Modal';
 
 const TabPaymentMethods = () => {
 	const { storeCountry, storeCurrency } = CommonHooks.useWooSettings();
+	const { setActiveModal } = useActiveModal();
 
 	const filteredPaymentMethods = useMemo( () => {
 		const contextProps = { storeCountry, storeCurrency };
@@ -33,6 +33,7 @@ const TabPaymentMethods = () => {
 	return (
 		<div className="ppcp-r-payment-methods">
 			<SettingsCard
+				id="ppcp-paypal-checkout-card"
 				title={ __( 'PayPal Checkout', 'woocommerce-paypal-payments' ) }
 				description={ __(
 					'Select your preferred checkout option with PayPal for easy payment processing.',
@@ -43,9 +44,11 @@ const TabPaymentMethods = () => {
 			>
 				<PaymentMethodsBlock
 					paymentMethods={ filteredPaymentMethods.payPalCheckout }
+					onTriggerModal={ setActiveModal }
 				/>
 			</SettingsCard>
 			<SettingsCard
+				id="ppcp-card-payments-card"
 				title={ __(
 					'Online Card Payments',
 					'woocommerce-paypal-payments'
@@ -59,9 +62,11 @@ const TabPaymentMethods = () => {
 			>
 				<PaymentMethodsBlock
 					paymentMethods={ filteredPaymentMethods.onlineCardPayments }
+					onTriggerModal={ setActiveModal }
 				/>
 			</SettingsCard>
 			<SettingsCard
+				id="ppcp-alternative-payments-card"
 				title={ __(
 					'Alternative Payment Methods',
 					'woocommerce-paypal-payments'
@@ -75,8 +80,11 @@ const TabPaymentMethods = () => {
 			>
 				<PaymentMethodsBlock
 					paymentMethods={ filteredPaymentMethods.alternative }
+					onTriggerModal={ setActiveModal }
 				/>
 			</SettingsCard>
+
+			<Modal />
 		</div>
 	);
 };
@@ -98,7 +106,6 @@ const paymentMethodsPayPalCheckout = [
 			'woocommerce-paypal-payments'
 		),
 		icon: 'payment-method-paypal',
-		modal: ModalPayPal,
 	},
 	{
 		id: 'venmo',
@@ -144,7 +151,6 @@ const paymentMethodsOnlineCardPayments = [
 			'woocommerce-paypal-payments'
 		),
 		icon: 'payment-method-advanced-cards',
-		modal: ModalAcdc,
 	},
 	{
 		id: 'fastlane',
@@ -154,7 +160,6 @@ const paymentMethodsOnlineCardPayments = [
 			'woocommerce-paypal-payments'
 		),
 		icon: 'payment-method-fastlane',
-		modal: ModalFastlane,
 	},
 	{
 		id: 'apply_pay',

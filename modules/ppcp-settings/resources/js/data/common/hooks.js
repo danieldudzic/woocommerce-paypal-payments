@@ -32,12 +32,14 @@ const useHooks = () => {
 		productionOnboardingUrl,
 		authenticateWithCredentials,
 		authenticateWithOAuth,
+		setActiveModal,
 		startWebhookSimulation,
 		checkWebhookSimulationState,
 	} = useDispatch( STORE_NAME );
 
 	// Transient accessors.
 	const isReady = useTransient( 'isReady' );
+	const activeModal = useTransient( 'activeModal' );
 
 	// Persistent accessors.
 	const isSandboxMode = usePersistent( 'useSandbox' );
@@ -68,6 +70,8 @@ const useHooks = () => {
 
 	return {
 		isReady,
+		activeModal,
+		setActiveModal,
 		isSandboxMode,
 		setSandboxMode: ( state ) => {
 			return savePersistent( setSandboxMode, state );
@@ -159,6 +163,11 @@ export const useMerchantInfo = () => {
 		features, // Eligible merchant features
 		verifyLoginStatus, // Callback
 	};
+};
+
+export const useActiveModal = () => {
+	const { activeModal, setActiveModal } = useHooks();
+	return { activeModal, setActiveModal };
 };
 
 // -- Not using the `useHooks()` data provider --

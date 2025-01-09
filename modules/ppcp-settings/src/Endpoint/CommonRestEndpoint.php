@@ -188,6 +188,40 @@ class CommonRestEndpoint extends RestEndpoint {
 	}
 
 	/**
+	 * Returns mocked merchant data until real data fetching is implemented.
+	 *
+	 * @return array Mocked merchant details including connection status, features, etc.
+	 */
+	protected function get_mocked_merchant_data(): array {
+		return array(
+			'isConnected' => true,
+			'isSandbox'   => false,
+			'id'          => '',
+			'email'       => '',
+			'features'    => array(
+				'save_paypal_and_venmo'           => array(
+					'enabled' => true,
+				),
+				'advanced_credit_and_debit_cards' => array(
+					'enabled' => true,
+				),
+				'alternative_payment_methods'     => array(
+					'enabled' => true,
+				),
+				'google_pay'                      => array(
+					'enabled' => true,
+				),
+				'apple_pay'                       => array(
+					'enabled' => true,
+				),
+				'pay_later_messaging'             => array(
+					'enabled' => true,
+				),
+			),
+		);
+	}
+
+	/**
 	 * Appends the "merchant" attribute to the extra_data collection, which
 	 * contains details about the merchant's PayPal account, like the merchant ID.
 	 *
@@ -195,7 +229,7 @@ class CommonRestEndpoint extends RestEndpoint {
 	 *
 	 * @return array Updated extra_data collection.
 	 */
-	protected function add_merchant_info( array $extra_data ) : array {
+	protected function add_merchant_info( array $extra_data ): array {
 		$extra_data['merchant'] = $this->sanitize_for_javascript(
 			$this->settings->to_array(),
 			$this->merchant_info_map
@@ -206,6 +240,11 @@ class CommonRestEndpoint extends RestEndpoint {
 				'woocommerce_paypal_payments_rest_common_merchant_data',
 				array(),
 			);
+		}
+
+		// If no real data is available yet, use mock data.
+		if ( empty( $extra_data['merchant'] ) || ( empty( $extra_data['merchant']['id'] ) && empty( $extra_data['merchant']['email'] ) ) ) {
+			$extra_data['merchant'] = $this->get_mocked_merchant_data();
 		}
 
 		return $extra_data;
