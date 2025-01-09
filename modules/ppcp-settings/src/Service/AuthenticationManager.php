@@ -115,6 +115,12 @@ class AuthenticationManager {
 		 * modules to clean up merchant-related details, such as eligibility flags.
 		 */
 		do_action( 'woocommerce_paypal_payments_merchant_disconnected' );
+
+		/**
+		 * Request to flush caches after disconnecting the merchant. While there
+		 * is no need for it here, it's good house-keeping practice to clean up.
+		 */
+		do_action( 'woocommerce_paypal_payments_flush_api_cache' );
 	}
 
 	/**
@@ -398,6 +404,13 @@ class AuthenticationManager {
 
 		if ( $this->common_settings->is_merchant_connected() ) {
 			$this->logger->info( 'Merchant successfully connected to PayPal' );
+
+			/**
+			 * Request to flush caches before authenticating the merchant, to
+			 * ensure the new merchant does not use stale data from previous
+			 * connections.
+			 */
+			do_action( 'woocommerce_paypal_payments_flush_api_cache' );
 
 			/**
 			 * Broadcast that the plugin connected to a new PayPal merchant account.
