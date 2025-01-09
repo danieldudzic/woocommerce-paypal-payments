@@ -3,6 +3,7 @@ import { useState } from '@wordpress/element';
 import { Button, Icon } from '@wordpress/components';
 import { useDispatch } from '@wordpress/data';
 import { reusableBlock } from '@wordpress/icons';
+import { store as noticesStore } from '@wordpress/notices';
 
 import SettingsCard from '../../ReusableComponents/SettingsCard';
 import TodoSettingsBlock from '../../ReusableComponents/SettingsBlocks/TodoSettingsBlock';
@@ -10,6 +11,7 @@ import FeatureSettingsBlock from '../../ReusableComponents/SettingsBlocks/Featur
 import { TITLE_BADGE_POSITIVE } from '../../ReusableComponents/TitleBadge';
 import { useMerchantInfo } from '../../../data/common/hooks';
 import { STORE_NAME } from '../../../data/common';
+import {NOTIFICATION_ERROR, NOTIFICATION_SUCCESS} from "../../ReusableComponents/Icons";
 
 const TabOverview = () => {
 	const [ todos, setTodos ] = useState( [] );
@@ -18,6 +20,10 @@ const TabOverview = () => {
 
 	const { merchant } = useMerchantInfo();
 	const { refreshFeatureStatuses } = useDispatch( STORE_NAME );
+    const {
+        createSuccessNotice,
+        createErrorNotice,
+    } = useDispatch( noticesStore );
 
 	const features = featuresDefault.map( ( feature ) => {
 		const merchantFeature = merchant?.features?.[ feature.id ];
@@ -32,13 +38,30 @@ const TabOverview = () => {
 
 		const result = await refreshFeatureStatuses();
 
-		// TODO: Implement the refresh logic, remove this debug code -- PCP-4024
 		if ( result && ! result.success ) {
+            createErrorNotice(
+                __(
+                    `Operation failed: ${result.message || 'Unknown error'}. Check WooCommerce logs for more details.`,
+                    'woocommerce-paypal-payments'
+                ),
+                {
+                    icon: NOTIFICATION_ERROR,
+                }
+            );
 			console.error(
 				'Failed to refresh features:',
 				result.message || 'Unknown error'
 			);
 		} else {
+            createSuccessNotice(
+                __(
+                    'Features refreshed successfully.',
+                    'woocommerce-paypal-payments'
+                ),
+                {
+                    icon: NOTIFICATION_SUCCESS,
+                }
+            );
 			console.log( 'Features refreshed successfully.' );
 		}
 
@@ -110,6 +133,7 @@ const TabOverview = () => {
 						description={ feature.description }
 						actionProps={ {
 							buttons: feature.buttons,
+                            isBusy: isRefreshing,
 							enabled: feature.enabled,
 							notes: feature.notes,
 							badge: feature.enabled
