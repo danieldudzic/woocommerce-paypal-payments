@@ -4,8 +4,7 @@ import {
 	Content,
 	ContentWrapper,
 } from '../../../ReusableComponents/SettingsBlocks';
-import Sandbox from './Blocks/Sandbox';
-import LiveAccount from './Blocks/LiveAccount';
+import ConnectionDetails from './Blocks/ConnectionDetails';
 import Troubleshooting from './Blocks/Troubleshooting/Troubleshooting';
 import PaypalSettings from './Blocks/PaypalSettings';
 import OtherSettings from './Blocks/OtherSettings';
@@ -28,14 +27,7 @@ const ExpertSettings = ( { updateFormValue, settings } ) => {
 		>
 			<ContentWrapper>
 				<Content>
-					<Sandbox
-						updateFormValue={ updateFormValue }
-						settings={ settings }
-					/>
-				</Content>
-
-				<Content>
-					<LiveAccount
+					<ConnectionDetails
 						updateFormValue={ updateFormValue }
 						settings={ settings }
 					/>
