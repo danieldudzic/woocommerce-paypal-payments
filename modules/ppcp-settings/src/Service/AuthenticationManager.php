@@ -18,7 +18,7 @@ use WooCommerce\PayPalCommerce\ApiClient\Endpoint\LoginSeller;
 use WooCommerce\PayPalCommerce\ApiClient\Endpoint\Orders;
 use WooCommerce\PayPalCommerce\ApiClient\Helper\InMemoryCache;
 use WooCommerce\PayPalCommerce\ApiClient\Repository\PartnerReferralsData;
-use WooCommerce\PayPalCommerce\Settings\Data\CommonSettings;
+use WooCommerce\PayPalCommerce\Settings\Data\GeneralSettings;
 use WooCommerce\PayPalCommerce\WcGateway\Helper\EnvironmentConfig;
 use WooCommerce\WooCommerce\Logging\Logger\NullLogger;
 use WooCommerce\PayPalCommerce\Settings\DTO\MerchantConnectionDTO;
@@ -30,9 +30,9 @@ class AuthenticationManager {
 	/**
 	 * Data model that stores the connection details.
 	 *
-	 * @var CommonSettings
+	 * @var GeneralSettings
 	 */
-	private CommonSettings $common_settings;
+	private GeneralSettings $common_settings;
 
 	/**
 	 * Logging instance.
@@ -65,14 +65,14 @@ class AuthenticationManager {
 	/**
 	 * Constructor.
 	 *
-	 * @param CommonSettings       $common_settings Data model that stores the connection details.
+	 * @param GeneralSettings      $common_settings Data model that stores the connection details.
 	 * @param EnvironmentConfig    $connection_host API host for direct authentication.
 	 * @param EnvironmentConfig    $login_endpoint  API handler to fetch merchant credentials.
 	 * @param PartnerReferralsData $referrals_data  Partner referrals data.
 	 * @param ?LoggerInterface     $logger          Logging instance.
 	 */
 	public function __construct(
-		CommonSettings $common_settings,
+		GeneralSettings $common_settings,
 		EnvironmentConfig $connection_host,
 		EnvironmentConfig $login_endpoint,
 		PartnerReferralsData $referrals_data,
