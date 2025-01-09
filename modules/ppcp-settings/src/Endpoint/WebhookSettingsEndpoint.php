@@ -9,14 +9,14 @@ declare( strict_types = 1 );
 
 namespace WooCommerce\PayPalCommerce\Settings\Endpoint;
 
-use stdClass;
-use WooCommerce\PayPalCommerce\ApiClient\Endpoint\WebhookEndpoint;
-use WooCommerce\PayPalCommerce\Webhooks\Status\WebhookSimulation;
-use WooCommerce\PayPalCommerce\Webhooks\WebhookRegistrar;
+use Throwable;
 use WP_REST_Response;
 use WP_REST_Server;
+use WooCommerce\PayPalCommerce\ApiClient\Endpoint\WebhookEndpoint;
 use WooCommerce\PayPalCommerce\ApiClient\Entity\Webhook;
-use Throwable;
+use WooCommerce\PayPalCommerce\Webhooks\Status\WebhookSimulation;
+use WooCommerce\PayPalCommerce\Webhooks\WebhookRegistrar;
+use stdClass;
 
 /**
  * Class WebhookSettingsEndpoint
