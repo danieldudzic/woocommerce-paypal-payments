@@ -152,7 +152,7 @@ const TabOverview = () => {
 										'View full documentation',
 										'woocommerce-paypal-payments'
 									),
-									url: '#',
+									url: 'https://woocommerce.com/document/woocommerce-paypal-payments/ ',
 								},
 							],
 						} }
@@ -172,7 +172,7 @@ const TabOverview = () => {
 										'View support options',
 										'woocommerce-paypal-payments'
 									),
-									url: '#',
+									url: 'https://woocommerce.com/document/woocommerce-paypal-payments/#get-help ',
 								},
 							],
 						} }
