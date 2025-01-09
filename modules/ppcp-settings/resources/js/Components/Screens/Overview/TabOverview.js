@@ -11,10 +11,9 @@ import { TITLE_BADGE_POSITIVE } from '../../ReusableComponents/TitleBadge';
 import { useMerchantInfo } from '../../../data/common/hooks';
 import { STORE_NAME } from '../../../data/common';
 import Features from './TabSettingsElements/Blocks/Features';
+import { todosData } from '../../../data/settings/tab-overview-todos-data';
 
 const TabOverview = () => {
-	const [ todos, setTodos ] = useState( [] );
-	const [ todosData, setTodosData ] = useState( todosDataDefault );
 	const [ isRefreshing, setIsRefreshing ] = useState( false );
 
 	const { merchantFeatures } = useMerchantInfo();
@@ -67,12 +66,7 @@ const TabOverview = () => {
 						'woocommerce-paypal-payments'
 					) }
 				>
-					<TodoSettingsBlock
-						todos={ todos }
-						setTodos={ setTodos }
-						todosData={ todosData }
-						setTodosData={ setTodosData }
-					/>
+					<TodoSettingsBlock todosData={ todosData } />
 				</SettingsCard>
 			) }
 
@@ -209,41 +203,5 @@ const TabOverview = () => {
 		</div>
 	);
 };
-
-// TODO: This list should be refactored into a separate module, maybe utils/thingsToDoNext.js
-const todosDataDefault = [
-	{
-		value: 'paypal_later_messaging',
-		description: __(
-			'Enable Pay Later messaging',
-			'woocommerce-paypal-payments'
-		),
-	},
-	{
-		value: 'capture_authorized_payments',
-		description: __(
-			'Capture authorized payments',
-			'woocommerce-paypal-payments'
-		),
-	},
-	{
-		value: 'enable_google_pay',
-		description: __( 'Enable Google Pay', 'woocommerce-paypal-payments' ),
-	},
-	{
-		value: 'paypal_shortcut',
-		description: __(
-			'Add PayPal shortcut to the Cart page',
-			'woocommerce-paypal-payments'
-		),
-	},
-	{
-		value: 'advanced_cards',
-		description: __(
-			'Add Advanced Cards to Blocks Checkout',
-			'woocommerce-paypal-payments'
-		),
-	},
-];
 
 export default TabOverview;
