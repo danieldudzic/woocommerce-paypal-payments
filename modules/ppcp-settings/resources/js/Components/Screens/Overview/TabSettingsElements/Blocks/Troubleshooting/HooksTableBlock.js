@@ -3,6 +3,11 @@ import { CommonHooks } from '../../../../../../data';
 
 const HooksTableBlock = () => {
 	const { webhooks } = CommonHooks.useWebhooks();
+	const { url, events } = webhooks;
+
+	if ( ! url || ! events?.length ) {
+		return <div>...</div>;
+	}
 
 	return (
 		<table className="ppcp-r-table">
@@ -21,13 +26,12 @@ const HooksTableBlock = () => {
 			</thead>
 			<tbody>
 				<tr>
-					<td className="ppcp-r-table__hooks-url">
-						{ webhooks?.url }
+					<td className="ppcp-r-table__hooks-url">{ url }</td>
+					<td className="ppcp-r-table__hooks-events">
+						{ events.map( ( event, index ) => (
+							<div key={ index }>{ event }</div>
+						) ) }
 					</td>
-					<td
-						className="ppcp-r-table__hooks-events"
-						dangerouslySetInnerHTML={ { __html: webhooks?.events } }
-					></td>
 				</tr>
 			</tbody>
 		</table>
