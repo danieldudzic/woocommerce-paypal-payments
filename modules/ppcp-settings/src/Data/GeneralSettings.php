@@ -1,6 +1,6 @@
 <?php
 /**
- * Common settings class
+ * General plugin settings class
  *
  * @package WooCommerce\PayPalCommerce\Settings\Data
  */
@@ -13,7 +13,7 @@ use RuntimeException;
 use WooCommerce\PayPalCommerce\Settings\DTO\MerchantConnectionDTO;
 
 /**
- * Class CommonSettings
+ * Class GeneralSettings
  *
  * This class serves as a container for managing the common settings that
  * are used and managed in various areas of the settings UI
@@ -21,7 +21,7 @@ use WooCommerce\PayPalCommerce\Settings\DTO\MerchantConnectionDTO;
  * Those settings mainly describe connection details and are initially collected
  * in the onboarding wizard, and also appear in the settings screen.
  */
-class CommonSettings extends AbstractDataModel {
+class GeneralSettings extends AbstractDataModel {
 
 	/**
 	 * Option key where profile details are stored.

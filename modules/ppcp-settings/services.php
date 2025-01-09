@@ -11,7 +11,7 @@ namespace WooCommerce\PayPalCommerce\Settings;
 
 use WooCommerce\PayPalCommerce\ApiClient\Helper\Cache;
 use WooCommerce\PayPalCommerce\Settings\Ajax\SwitchSettingsUiEndpoint;
-use WooCommerce\PayPalCommerce\Settings\Data\CommonSettings;
+use WooCommerce\PayPalCommerce\Settings\Data\GeneralSettings;
 use WooCommerce\PayPalCommerce\Settings\Data\OnboardingProfile;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\AuthenticationRestEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\CommonRestEndpoint;
@@ -57,8 +57,8 @@ return array(
 			$can_use_subscriptions
 		);
 	},
-	'settings.data.common'                        => static function ( ContainerInterface $container ) : CommonSettings {
-		return new CommonSettings(
+	'settings.data.general'                       => static function ( ContainerInterface $container ) : GeneralSettings {
+		return new GeneralSettings(
 			$container->get( 'api.shop.country' ),
 			$container->get( 'api.shop.currency.getter' )->get(),
 		);
@@ -67,7 +67,7 @@ return array(
 		return new OnboardingRestEndpoint( $container->get( 'settings.data.onboarding' ) );
 	},
 	'settings.rest.common'                        => static function ( ContainerInterface $container ) : CommonRestEndpoint {
-		return new CommonRestEndpoint( $container->get( 'settings.data.common' ) );
+		return new CommonRestEndpoint( $container->get( 'settings.data.general' ) );
 	},
 	'settings.rest.refresh_feature_status'        => static function ( ContainerInterface $container ) : RefreshFeatureStatusEndpoint {
 		return new RefreshFeatureStatusEndpoint(
@@ -178,7 +178,7 @@ return array(
 	},
 	'settings.service.authentication_manager'     => static function ( ContainerInterface $container ) : AuthenticationManager {
 		return new AuthenticationManager(
-			$container->get( 'settings.data.common' ),
+			$container->get( 'settings.data.general' ),
 			$container->get( 'api.env.paypal-host' ),
 			$container->get( 'api.env.endpoint.login-seller' ),
 			$container->get( 'api.repository.partner-referrals-data' ),

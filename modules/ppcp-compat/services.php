@@ -129,16 +129,16 @@ return array(
 
 		return array(
 			new SettingsMap(
-				$container->get( 'settings.data.common' ),
+				$container->get( 'settings.data.general' ),
 				array(
 					'client_id'     => 'client_id',
 					'client_secret' => 'client_secret',
 				)
 			),
 			new SettingsMap(
-				$container->get( 'settings.data.common' ),
+				$container->get( 'settings.data.general' ),
 				/**
-				 * The new CommonSettings class stores the current connection
+				 * The new GeneralSettings class stores the current connection
 				 * details, without adding an environment-suffix (no `_sandbox`
 				 * or `_production` in the field name)
 				 * Only the `sandbox_merchant` flag indicates, which environment
