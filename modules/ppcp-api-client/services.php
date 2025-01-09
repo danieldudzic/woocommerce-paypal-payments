@@ -840,6 +840,9 @@ return array(
 			$container->get( 'wcgateway.settings' )
 		);
 	},
+	'api.paypal-bearer-cache'                        => static function( ContainerInterface $container ): Cache {
+		return new Cache( 'ppcp-paypal-bearer' );
+	},
 	'api.client-credentials-cache'                   => static function( ContainerInterface $container ): Cache {
 		return new Cache( 'ppcp-client-credentials-cache' );
 	},
