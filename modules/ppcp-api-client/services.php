@@ -881,7 +881,11 @@ return array(
 		return CONNECT_WOO_SANDBOX_MERCHANT_ID;
 	},
 	'api.env.paypal-host'                            => static function ( ContainerInterface $container ) : EnvironmentConfig {
-		/** @type EnvironmentConfig<string> Configuration object */
+		/**
+		 * Environment specific API host names.
+		 *
+		 * @type EnvironmentConfig<string>
+		 */
 		return EnvironmentConfig::create(
 			'string',
 			$container->get( 'api.paypal-host-production' ),
@@ -889,7 +893,11 @@ return array(
 		);
 	},
 	'api.env.endpoint.login-seller'                  => static function ( ContainerInterface $container ) : EnvironmentConfig {
-		/** @type EnvironmentConfig<LoginSeller> Configuration object */
+		/**
+		 * Environment specific LoginSeller API instances.
+		 *
+		 * @type EnvironmentConfig<LoginSeller>
+		 */
 		return EnvironmentConfig::create(
 			LoginSeller::class,
 			$container->get( 'api.endpoint.login-seller-production' ),
@@ -897,7 +905,11 @@ return array(
 		);
 	},
 	'api.env.endpoint.partner-referrals'             => static function ( ContainerInterface $container ) : EnvironmentConfig {
-		/** @type EnvironmentConfig<PartnerReferrals> Configuration object */
+		/**
+		 * Environment specific PartnerReferrals API instances.
+		 *
+		 * @type EnvironmentConfig<PartnerReferrals>
+		 */
 		return EnvironmentConfig::create(
 			PartnerReferrals::class,
 			$container->get( 'api.endpoint.partner-referrals-production' ),
