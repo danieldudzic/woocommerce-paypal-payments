@@ -235,15 +235,12 @@ class AuthenticationManager {
 		 * is invoked during the page reload, once the user clicks the blue
 		 * "Return to Store" button in PayPal's login popup.
 		 */
-		$empty_email = '';
+		$connection = $this->common_settings->get_merchant_data();
 
-		$connection = new MerchantConnectionDTO(
-			$use_sandbox,
-			$credentials['client_id'],
-			$credentials['client_secret'],
-			$credentials['merchant_id'],
-			$empty_email
-		);
+		$connection->is_sandbox    = $use_sandbox;
+		$connection->client_id     = $credentials['client_id'];
+		$connection->client_secret = $credentials['client_secret'];
+		$connection->merchant_id   = $credentials['merchant_id'];
 
 		$this->update_connection_details( $connection );
 	}
@@ -267,10 +264,11 @@ class AuthenticationManager {
 
 		$connection = $this->common_settings->get_merchant_data();
 
-		if ( $connection->merchant_id !== $merchant_id ) {
+		if ( $connection->merchant_id && $connection->merchant_id !== $merchant_id ) {
 			throw new RuntimeException( 'Unexpected merchant ID in request' );
 		}
 
+		$connection->merchant_id    = $merchant_id;
 		$connection->merchant_email = $merchant_email;
 
 		$this->update_connection_details( $connection );
