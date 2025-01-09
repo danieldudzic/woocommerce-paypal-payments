@@ -76,7 +76,7 @@ class WebhookSettingsEndpoint extends RestEndpoint {
 	/**
 	 * Configure REST API routes.
 	 */
-	public function register_routes() {
+	public function register_routes() : void {
 		register_rest_route(
 			$this->namespace,
 			'/' . $this->rest_base,
@@ -181,9 +181,7 @@ class WebhookSettingsEndpoint extends RestEndpoint {
 			$state = $this->webhook_simulation->get_state();
 
 			return $this->return_success(
-				array(
-					'state' => $state,
-				)
+				array( 'state' => $state )
 			);
 
 		} catch ( \Exception $error ) {
