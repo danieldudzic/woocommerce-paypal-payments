@@ -135,10 +135,8 @@ class WebhookSettingsEndpoint extends RestEndpoint {
 
 		return $this->return_success(
 			array(
-				'webhooks' => array(
-					'url'    => $webhook_url,
-					'events' => $webhook_events,
-				),
+				'url'    => $webhook_url,
+				'events' => $webhook_events,
 			)
 		);
 	}
