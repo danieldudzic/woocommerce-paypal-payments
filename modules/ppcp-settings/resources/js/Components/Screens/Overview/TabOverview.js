@@ -1,4 +1,4 @@
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 import { useState } from '@wordpress/element';
 import { Button, Icon } from '@wordpress/components';
 import { useDispatch } from '@wordpress/data';
@@ -11,7 +11,10 @@ import FeatureSettingsBlock from '../../ReusableComponents/SettingsBlocks/Featur
 import { TITLE_BADGE_POSITIVE } from '../../ReusableComponents/TitleBadge';
 import { useMerchantInfo } from '../../../data/common/hooks';
 import { STORE_NAME } from '../../../data/common';
-import {NOTIFICATION_ERROR, NOTIFICATION_SUCCESS} from "../../ReusableComponents/Icons";
+import {
+	NOTIFICATION_ERROR,
+	NOTIFICATION_SUCCESS,
+} from '../../ReusableComponents/Icons';
 
 const TabOverview = () => {
 	const [ todos, setTodos ] = useState( [] );
@@ -20,10 +23,8 @@ const TabOverview = () => {
 
 	const { merchant } = useMerchantInfo();
 	const { refreshFeatureStatuses } = useDispatch( STORE_NAME );
-    const {
-        createSuccessNotice,
-        createErrorNotice,
-    } = useDispatch( noticesStore );
+	const { createSuccessNotice, createErrorNotice } =
+		useDispatch( noticesStore );
 
 	const features = featuresDefault.map( ( feature ) => {
 		const merchantFeature = merchant?.features?.[ feature.id ];
@@ -39,29 +40,33 @@ const TabOverview = () => {
 		const result = await refreshFeatureStatuses();
 
 		if ( result && ! result.success ) {
-            createErrorNotice(
-                __(
-                    `Operation failed: ${result.message || 'Unknown error'}. Check WooCommerce logs for more details.`,
-                    'woocommerce-paypal-payments'
-                ),
-                {
-                    icon: NOTIFICATION_ERROR,
-                }
-            );
+			const errorMessage = sprintf(
+				/* translators: %s: error message */
+				__(
+					'Operation failed: %s Check WooCommerce logs for more details.',
+					'woocommerce-paypal-payments'
+				),
+				result.message ||
+					__( 'Unknown error', 'woocommerce-paypal-payments' )
+			);
+
+			createErrorNotice( errorMessage, {
+				icon: NOTIFICATION_ERROR,
+			} );
 			console.error(
 				'Failed to refresh features:',
 				result.message || 'Unknown error'
 			);
 		} else {
-            createSuccessNotice(
-                __(
-                    'Features refreshed successfully.',
-                    'woocommerce-paypal-payments'
-                ),
-                {
-                    icon: NOTIFICATION_SUCCESS,
-                }
-            );
+			createSuccessNotice(
+				__(
+					'Features refreshed successfully.',
+					'woocommerce-paypal-payments'
+				),
+				{
+					icon: NOTIFICATION_SUCCESS,
+				}
+			);
 			console.log( 'Features refreshed successfully.' );
 		}
 
@@ -133,7 +138,7 @@ const TabOverview = () => {
 						description={ feature.description }
 						actionProps={ {
 							buttons: feature.buttons,
-                            isBusy: isRefreshing,
+							isBusy: isRefreshing,
 							enabled: feature.enabled,
 							notes: feature.notes,
 							badge: feature.enabled

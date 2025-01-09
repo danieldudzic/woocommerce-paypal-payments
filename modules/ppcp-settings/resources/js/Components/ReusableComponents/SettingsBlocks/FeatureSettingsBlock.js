@@ -39,7 +39,7 @@ const FeatureSettingsBlock = ( { title, description, ...props } ) => {
 						<Button
 							className={ button.class ? button.class : '' }
 							href={ button.url }
-                            isBusy={ props.actionProps?.isBusy }
+							isBusy={ props.actionProps?.isBusy }
 							key={ button.text }
 							variant={ button.type }
 						>
