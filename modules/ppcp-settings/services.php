@@ -12,7 +12,6 @@ namespace WooCommerce\PayPalCommerce\Settings;
 use WooCommerce\PayPalCommerce\ApiClient\Helper\Cache;
 use WooCommerce\PayPalCommerce\Settings\Ajax\SwitchSettingsUiEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Data\CommonSettings;
-use WooCommerce\PayPalCommerce\Settings\Data\GeneralSettings;
 use WooCommerce\PayPalCommerce\Settings\Data\OnboardingProfile;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\AuthenticationRestEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\CommonRestEndpoint;
@@ -57,9 +56,6 @@ return array(
 			$can_use_card_payments,
 			$can_use_subscriptions
 		);
-	},
-	'settings.data.general'                       => static function ( ContainerInterface $container ) : GeneralSettings {
-		return new GeneralSettings();
 	},
 	'settings.data.common'                        => static function ( ContainerInterface $container ) : CommonSettings {
 		return new CommonSettings(
