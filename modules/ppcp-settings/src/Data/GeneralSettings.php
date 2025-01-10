@@ -53,8 +53,8 @@ class GeneralSettings extends AbstractDataModel {
 		$this->woo_settings['country']  = $country;
 		$this->woo_settings['currency'] = $currency;
 
-		$this->data['is_current_country_send_only'] = $is_send_only_country;
-		$this->data['merchant_connected']           = $this->is_merchant_connected();
+		$this->data['is_send_only_country'] = $is_send_only_country;
+		$this->data['merchant_connected']   = $this->is_merchant_connected();
 	}
 
 	/**
@@ -64,17 +64,17 @@ class GeneralSettings extends AbstractDataModel {
 	 */
 	protected function get_defaults() : array {
 		return array(
-			'use_sandbox'                  => false, // UI state, not a connection detail.
-			'use_manual_connection'        => false, // UI state, not a connection detail.
-			'is_current_country_send_only' => false, // Read-only flag.
+			'use_sandbox'           => false, // UI state, not a connection detail.
+			'use_manual_connection' => false, // UI state, not a connection detail.
+			'is_send_only_country'  => false, // Read-only flag.
 
 			// Details about connected merchant account.
-			'merchant_connected'           => false,
-			'sandbox_merchant'             => false,
-			'merchant_id'                  => '',
-			'merchant_email'               => '',
-			'client_id'                    => '',
-			'client_secret'                => '',
+			'merchant_connected'    => false,
+			'sandbox_merchant'      => false,
+			'merchant_id'           => '',
+			'merchant_email'        => '',
+			'client_id'             => '',
+			'client_secret'         => '',
 		);
 	}
 
