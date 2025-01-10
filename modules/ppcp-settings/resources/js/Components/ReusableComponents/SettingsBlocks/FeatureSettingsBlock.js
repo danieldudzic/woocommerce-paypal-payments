@@ -19,6 +19,27 @@ const FeatureSettingsBlock = ( { title, description, ...props } ) => {
 		);
 	};
 
+	const renderButton = ( button ) => {
+		const buttonElement = (
+			<Button
+				className={ button.class ? button.class : '' }
+				key={ button.text }
+				variant={ button.type }
+				onClick={ button.onClick }
+			>
+				{ button.text }
+			</Button>
+		);
+
+		return button.urls ? (
+			<a href={ button.urls.live } key={ button.text }>
+				{ buttonElement }
+			</a>
+		) : (
+			buttonElement
+		);
+	};
+
 	return (
 		<SettingsBlock { ...props } className="ppcp-r-settings-block__feature">
 			<Header>
@@ -35,17 +56,7 @@ const FeatureSettingsBlock = ( { title, description, ...props } ) => {
 			</Header>
 			<Action>
 				<div className="ppcp-r-feature-item__buttons">
-					{ props.actionProps?.buttons.map( ( button ) => (
-						<Button
-							className={ button.class ? button.class : '' }
-							href={ button.url }
-							isBusy={ props.actionProps?.isBusy }
-							key={ button.text }
-							variant={ button.type }
-						>
-							{ button.text }
-						</Button>
-					) ) }
+					{ props.actionProps?.buttons.map( renderButton ) }
 				</div>
 			</Action>
 		</SettingsBlock>
