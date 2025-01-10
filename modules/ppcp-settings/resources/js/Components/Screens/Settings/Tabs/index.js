@@ -1,8 +1,9 @@
 import { __ } from '@wordpress/i18n';
-import TabOverview from '../Overview/TabOverview';
-import TabPaymentMethods from '../Overview/TabPaymentMethods';
-import TabSettings from '../Overview/TabSettings';
-import TabStyling from '../Overview/TabStyling';
+
+import TabOverview from '../../Overview/TabOverview';
+import TabPaymentMethods from '../../Overview/TabPaymentMethods';
+import TabSettings from '../../Overview/TabSettings';
+import TabStyling from '../../Overview/TabStyling';
 
 export const getSettingsTabs = () => {
 	const tabs = [];
