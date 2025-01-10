@@ -156,6 +156,7 @@ return array(
 			$page_id,
 			$container->get( 'settings.service.onboarding-url-manager' ),
 			$container->get( 'settings.service.authentication_manager' ),
+			$container->get( 'http.redirector' ),
 			$container->get( 'woocommerce.logger.woocommerce' )
 		);
 	},
