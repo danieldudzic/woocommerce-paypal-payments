@@ -56,6 +56,7 @@ const ResubscribeBlock = () => {
 				'Click to remove the current webhook subscription and subscribe again, for example, if the website domain or URL structure changed.',
 				'woocommerce-paypal-payments'
 			) }
+			separatorAndGap={ false }
 			actionProps={ {
 				buttonType: 'secondary',
 				isBusy: resubscribing,
