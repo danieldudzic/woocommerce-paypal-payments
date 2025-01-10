@@ -1,10 +1,17 @@
 import { __ } from '@wordpress/i18n';
-import { useState } from '@wordpress/element';
+import { useState, useEffect } from '@wordpress/element';
+import {CommonHooks} from "../../data";
 
-const ConnectionInfo = ( { connectionStatusDataDefault } ) => {
-	const [ connectionData, setConnectionData ] = useState( {
-		...connectionStatusDataDefault,
-	} );
+
+const ConnectionInfo = () => {
+    const { merchant } = CommonHooks.useMerchantInfo();
+    const [connectionData, setConnectionData] = useState(getDefaultConnectionStatusData(merchant));
+
+    useEffect(() => {
+        if (merchant) {
+            setConnectionData(getDefaultConnectionStatusData(merchant));
+        }
+    }, [merchant]);
 
 	const toggleStatusClassName = [ 'ppcp-r-connection-status__status-toggle' ];
 
@@ -15,40 +22,47 @@ const ConnectionInfo = ( { connectionStatusDataDefault } ) => {
 	}
 
 	return (
-		<div className="ppcp-r-connection-status__data">
-			<div className="ppcp-r-connection-status__status-row ppcp-r-connection-status__status-row--first">
-				<span className="ppcp-r-connection-status__status-label">
-					{ __( 'Merchant ID', 'woocommerce-paypal-payments' ) }
-				</span>
-				<span className="ppcp-r-connection-status__status-value">
-					{ connectionData.merchantId }
-				</span>
-			</div>
-			<div className="ppcp-r-connection-status__status-row">
-				<span className="ppcp-r-connection-status__status-label">
-					{ __( 'Email address', 'woocommerce-paypal-payments' ) }
-				</span>
-				<span className="ppcp-r-connection-status__status-value">
-					{ connectionData.email }
-				</span>
-			</div>
-			<div className="ppcp-r-connection-status__status-row">
-				<span className="ppcp-r-connection-status__status-label">
-					{ __( 'Client ID', 'woocommerce-paypal-payments' ) }
-				</span>
-				<span className="ppcp-r-connection-status__status-value">
-					{ connectionData.clientId }
-				</span>
-			</div>
-		</div>
-	);
+        <div className="ppcp-r-connection-status__data">
+            {renderStatusRow(
+                __('Merchant ID', 'woocommerce-paypal-payments'),
+                connectionData.merchantId
+            )}
+            {renderStatusRow(
+                __('Email address', 'woocommerce-paypal-payments'),
+                connectionData.email
+            )}
+            {renderStatusRow(
+                __('Client ID', 'woocommerce-paypal-payments'),
+                connectionData.clientId
+            )}
+        </div>
+    );
 };
 export default ConnectionInfo;
+export const getDefaultConnectionStatusData = (merchant = null) => {
+    if (!merchant) {
+        const contextMerchant = CommonHooks.useMerchantInfo()?.merchant || {};
+        return {
+            connectionStatus: contextMerchant.isConnected || false,
+            showAllData: false,
+            email: contextMerchant.email || '',
+            merchantId: contextMerchant.id || '',
+            clientId: contextMerchant.clientId || '',
+        };
+    }
 
-export const connectionStatusDataDefault = {
-	connectionStatus: true,
-	showAllData: false,
-	email: 'bt_us@woocommerce.com',
-	merchantId: 'AT45V2DGMKLRY',
-	clientId: 'BAARTJLxtUNN4d2GMB6Eut3suMDYad72xQA-FntdIFuJ6FmFJITxAY8',
+    return {
+        connectionStatus: merchant.isConnected || false,
+        showAllData: false,
+        email: merchant.email || '',
+        merchantId: merchant.id || '',
+        clientId: merchant.clientId || '',
+    };
 };
+
+const renderStatusRow = (label, value) => (
+    <div className="ppcp-r-connection-status__status-row">
+        <span className="ppcp-r-connection-status__status-label">{label}</span>
+        <span className="ppcp-r-connection-status__status-value">{value}</span>
+    </div>
+);
