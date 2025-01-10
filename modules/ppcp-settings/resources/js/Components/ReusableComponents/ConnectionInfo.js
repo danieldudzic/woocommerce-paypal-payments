@@ -13,14 +13,6 @@ const ConnectionInfo = () => {
         }
     }, [merchant]);
 
-	const toggleStatusClassName = [ 'ppcp-r-connection-status__status-toggle' ];
-
-	if ( connectionData.showAllData ) {
-		toggleStatusClassName.push(
-			'ppcp-r-connection-status__status-toggle--toggled'
-		);
-	}
-
 	return (
         <div className="ppcp-r-connection-status__data">
             {renderStatusRow(
@@ -44,7 +36,6 @@ export const getDefaultConnectionStatusData = (merchant = null) => {
         const contextMerchant = CommonHooks.useMerchantInfo()?.merchant || {};
         return {
             connectionStatus: contextMerchant.isConnected || false,
-            showAllData: false,
             email: contextMerchant.email || '',
             merchantId: contextMerchant.id || '',
             clientId: contextMerchant.clientId || '',
@@ -53,7 +44,6 @@ export const getDefaultConnectionStatusData = (merchant = null) => {
 
     return {
         connectionStatus: merchant.isConnected || false,
-        showAllData: false,
         email: merchant.email || '',
         merchantId: merchant.id || '',
         clientId: merchant.clientId || '',
