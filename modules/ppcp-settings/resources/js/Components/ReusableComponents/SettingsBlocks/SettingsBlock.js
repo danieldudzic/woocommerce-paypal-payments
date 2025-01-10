@@ -1,9 +1,9 @@
-const SettingsBlock = ( { className, children } ) => {
-	const blockClassName = [ 'ppcp-r-settings-block', className ].filter(
-		Boolean
-	);
+import classNames from 'classnames';
 
-	return <div className={ blockClassName.join( ' ' ) }>{ children }</div>;
+const SettingsBlock = ( { className, children } ) => {
+	const blockClassName = classNames( 'ppcp-r-settings-block', className );
+
+	return <div className={ blockClassName }>{ children }</div>;
 };
 
 export default SettingsBlock;
