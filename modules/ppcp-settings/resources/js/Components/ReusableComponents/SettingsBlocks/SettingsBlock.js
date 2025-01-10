@@ -1,7 +1,9 @@
 import classNames from 'classnames';
 
-const SettingsBlock = ( { className, children } ) => {
-	const blockClassName = classNames( 'ppcp-r-settings-block', className );
+const SettingsBlock = ( { className, children, separatorAndGap = true } ) => {
+	const blockClassName = classNames( 'ppcp-r-settings-block', className, {
+		'no-gap': ! separatorAndGap,
+	} );
 
 	return <div className={ blockClassName }>{ children }</div>;
 };

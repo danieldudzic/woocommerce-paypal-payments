@@ -88,7 +88,7 @@
 		margin-left: 5px;
 	}
 
-	+ .ppcp-r-settings-block {
+	+ .ppcp-r-settings-block:not(.no-gap) {
 		margin-top: 32px;
 		padding-top: 32px;
 		border-top: 1px solid var(--color-gray-200);
