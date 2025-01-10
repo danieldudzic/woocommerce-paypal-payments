@@ -162,10 +162,10 @@ class PayLaterConfiguratorModule implements ServiceModule, ExtendingModule, Exec
 	 * The notice appears on any PayPal-Settings page, except for the Pay-Later settings page,
 	 * when no Pay-Later messaging is used yet.
 	 *
-	 * @param array              $message_locations   PayLater messaging locations.
-	 * @param bool               $is_settings_page    Whether the current page is a WC settings page.
-	 * @param string             $current_page_id     ID of current settings page tab.
-	 * @param OnboardingProfile  $onboarding_profile  Onboarding profile.
+	 * @param array             $message_locations   PayLater messaging locations.
+	 * @param bool              $is_settings_page    Whether the current page is a WC settings page.
+	 * @param string            $current_page_id     ID of current settings page tab.
+	 * @param OnboardingProfile $onboarding_profile  Onboarding profile.
 	 *
 	 * @return void
 	 */
