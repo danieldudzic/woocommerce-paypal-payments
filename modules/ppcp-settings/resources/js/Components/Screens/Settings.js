@@ -5,8 +5,8 @@ import classNames from 'classnames';
 import { OnboardingHooks } from '../../data';
 import SpinnerOverlay from '../ReusableComponents/SpinnerOverlay';
 
-import Onboarding from './Onboarding/Onboarding';
-import SettingsScreen from './SettingsScreen';
+import OnboardingScreen from './Onboarding';
+import SettingsScreen from './Settings';
 
 const Settings = () => {
 	const onboardingProgress = OnboardingHooks.useSteps();
@@ -39,7 +39,7 @@ const Settings = () => {
 		}
 
 		if ( ! onboardingProgress.completed ) {
-			return <Onboarding />;
+			return <OnboardingScreen />;
 		}
 
 		return <SettingsScreen />;

@@ -4,7 +4,7 @@ import { OnboardingHooks } from '../../../data';
 import { getSteps, getCurrentStep } from './Steps';
 import Navigation from './Components/Navigation';
 
-const Onboarding = () => {
+const OnboardingScreen = () => {
 	const { step, setStep, flags } = OnboardingHooks.useSteps();
 	const Steps = getSteps( flags );
 	const currentStep = getCurrentStep( step, Steps );
@@ -37,4 +37,4 @@ const Onboarding = () => {
 	);
 };
 
-export default Onboarding;
+export default OnboardingScreen;
