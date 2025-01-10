@@ -12,7 +12,7 @@ namespace WooCommerce\PayPalCommerce\Settings\Endpoint;
 use WP_REST_Server;
 use WP_REST_Response;
 use WP_REST_Request;
-use WooCommerce\PayPalCommerce\Settings\Data\CommonSettings;
+use WooCommerce\PayPalCommerce\Settings\Data\GeneralSettings;
 
 /**
  * REST controller for "common" settings, which are used and modified by
@@ -32,9 +32,9 @@ class CommonRestEndpoint extends RestEndpoint {
 	/**
 	 * The settings instance.
 	 *
-	 * @var CommonSettings
+	 * @var GeneralSettings
 	 */
-	protected CommonSettings $settings;
+	protected GeneralSettings $settings;
 
 	/**
 	 * Field mapping for request to profile transformation.
@@ -50,13 +50,8 @@ class CommonRestEndpoint extends RestEndpoint {
 			'js_name'  => 'useManualConnection',
 			'sanitize' => 'to_boolean',
 		),
-		'client_id'             => array(
-			'js_name'  => 'clientId',
-			'sanitize' => 'sanitize_text_field',
-		),
-		'client_secret'         => array(
-			'js_name'  => 'clientSecret',
-			'sanitize' => 'sanitize_text_field',
+		'webhooks'              => array(
+			'js_name' => 'webhooks',
 		),
 	);
 
@@ -77,6 +72,12 @@ class CommonRestEndpoint extends RestEndpoint {
 		),
 		'merchant_email'               => array(
 			'js_name' => 'email',
+		),
+		'client_id'                    => array(
+			'js_name' => 'clientId',
+		),
+		'client_secret'                => array(
+			'js_name' => 'clientSecret',
 		),
 		'is_current_country_send_only' => array(
 			'js_name' => 'isCurrentCountrySendOnly',
@@ -100,9 +101,9 @@ class CommonRestEndpoint extends RestEndpoint {
 	/**
 	 * Constructor.
 	 *
-	 * @param CommonSettings $settings The settings instance.
+	 * @param GeneralSettings $settings The settings instance.
 	 */
-	public function __construct( CommonSettings $settings ) {
+	public function __construct( GeneralSettings $settings ) {
 		$this->settings = $settings;
 	}
 
@@ -114,11 +115,9 @@ class CommonRestEndpoint extends RestEndpoint {
 			$this->namespace,
 			'/' . $this->rest_base,
 			array(
-				array(
-					'methods'             => WP_REST_Server::READABLE,
-					'callback'            => array( $this, 'get_details' ),
-					'permission_callback' => array( $this, 'check_permission' ),
-				),
+				'methods'             => WP_REST_Server::READABLE,
+				'callback'            => array( $this, 'get_details' ),
+				'permission_callback' => array( $this, 'check_permission' ),
 			)
 		);
 
@@ -126,11 +125,9 @@ class CommonRestEndpoint extends RestEndpoint {
 			$this->namespace,
 			'/' . $this->rest_base,
 			array(
-				array(
-					'methods'             => WP_REST_Server::EDITABLE,
-					'callback'            => array( $this, 'update_details' ),
-					'permission_callback' => array( $this, 'check_permission' ),
-				),
+				'methods'             => WP_REST_Server::EDITABLE,
+				'callback'            => array( $this, 'update_details' ),
+				'permission_callback' => array( $this, 'check_permission' ),
 			)
 		);
 
@@ -138,11 +135,9 @@ class CommonRestEndpoint extends RestEndpoint {
 			$this->namespace,
 			"/$this->rest_base/merchant",
 			array(
-				array(
-					'methods'             => WP_REST_Server::READABLE,
-					'callback'            => array( $this, 'get_merchant_details' ),
-					'permission_callback' => array( $this, 'check_permission' ),
-				),
+				'methods'             => WP_REST_Server::READABLE,
+				'callback'            => array( $this, 'get_merchant_details' ),
+				'permission_callback' => array( $this, 'check_permission' ),
 			)
 		);
 	}
@@ -209,10 +204,12 @@ class CommonRestEndpoint extends RestEndpoint {
 			$this->merchant_info_map
 		);
 
-		$extra_data['merchant'] = apply_filters(
-			'woocommerce_paypal_payments_rest_common_merchant_data',
-			$extra_data['merchant'],
-		);
+		if ( $this->settings->is_merchant_connected() ) {
+			$extra_data['features'] = apply_filters(
+				'woocommerce_paypal_payments_rest_common_merchant_data',
+				array(),
+			);
+		}
 
 		return $extra_data;
 	}

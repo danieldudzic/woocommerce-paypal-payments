@@ -9,7 +9,6 @@
 
 import { useDispatch, useSelect } from '@wordpress/data';
 import { useCallback } from '@wordpress/element';
-
 import { STORE_NAME } from './constants';
 
 const useTransient = ( key ) =>
@@ -29,28 +28,38 @@ const useHooks = () => {
 		persist,
 		setSandboxMode,
 		setManualConnectionMode,
-		setClientId,
-		setClientSecret,
-		connectToSandbox,
-		connectToProduction,
-		connectViaIdAndSecret,
+		sandboxOnboardingUrl,
+		productionOnboardingUrl,
+		authenticateWithCredentials,
+		authenticateWithOAuth,
+		setActiveModal,
+		startWebhookSimulation,
+		checkWebhookSimulationState,
 	} = useDispatch( STORE_NAME );
 
 	// Transient accessors.
 	const isReady = useTransient( 'isReady' );
+	const activeModal = useTransient( 'activeModal' );
 
 	// Persistent accessors.
-	const clientId = usePersistent( 'clientId' );
-	const clientSecret = usePersistent( 'clientSecret' );
 	const isSandboxMode = usePersistent( 'useSandbox' );
 	const isManualConnectionMode = usePersistent( 'useManualConnection' );
-
 	const merchant = useSelect(
 		( select ) => select( STORE_NAME ).merchant(),
 		[]
 	);
+
+	// Read-only properties.
 	const wooSettings = useSelect(
 		( select ) => select( STORE_NAME ).wooSettings(),
+		[]
+	);
+	const features = useSelect(
+		( select ) => select( STORE_NAME ).features(),
+		[]
+	);
+	const webhooks = useSelect(
+		( select ) => select( STORE_NAME ).webhooks(),
 		[]
 	);
 
@@ -61,6 +70,8 @@ const useHooks = () => {
 
 	return {
 		isReady,
+		activeModal,
+		setActiveModal,
 		isSandboxMode,
 		setSandboxMode: ( state ) => {
 			return savePersistent( setSandboxMode, state );
@@ -69,53 +80,44 @@ const useHooks = () => {
 		setManualConnectionMode: ( state ) => {
 			return savePersistent( setManualConnectionMode, state );
 		},
-		clientId,
-		setClientId: ( value ) => {
-			return savePersistent( setClientId, value );
-		},
-		clientSecret,
-		setClientSecret: ( value ) => {
-			return savePersistent( setClientSecret, value );
-		},
-		connectToSandbox,
-		connectToProduction,
-		connectViaIdAndSecret,
+		sandboxOnboardingUrl,
+		productionOnboardingUrl,
+		authenticateWithCredentials,
+		authenticateWithOAuth,
 		merchant,
 		wooSettings,
+		features,
+		webhooks,
+		startWebhookSimulation,
+		checkWebhookSimulationState,
 	};
 };
 
 export const useSandbox = () => {
-	const { isSandboxMode, setSandboxMode, connectToSandbox } = useHooks();
+	const { isSandboxMode, setSandboxMode, sandboxOnboardingUrl } = useHooks();
 
-	return { isSandboxMode, setSandboxMode, connectToSandbox };
+	return { isSandboxMode, setSandboxMode, sandboxOnboardingUrl };
 };
 
 export const useProduction = () => {
-	const { connectToProduction } = useHooks();
+	const { productionOnboardingUrl } = useHooks();
 
-	return { connectToProduction };
+	return { productionOnboardingUrl };
 };
 
-export const useManualConnection = () => {
+export const useAuthentication = () => {
 	const {
 		isManualConnectionMode,
 		setManualConnectionMode,
-		clientId,
-		setClientId,
-		clientSecret,
-		setClientSecret,
-		connectViaIdAndSecret,
+		authenticateWithCredentials,
+		authenticateWithOAuth,
 	} = useHooks();
 
 	return {
 		isManualConnectionMode,
 		setManualConnectionMode,
-		clientId,
-		setClientId,
-		clientSecret,
-		setClientSecret,
-		connectViaIdAndSecret,
+		authenticateWithCredentials,
+		authenticateWithOAuth,
 	};
 };
 
@@ -125,8 +127,24 @@ export const useWooSettings = () => {
 	return wooSettings;
 };
 
+export const useWebhooks = () => {
+	const {
+		webhooks,
+		setWebhooks,
+		registerWebhooks,
+		startWebhookSimulation,
+		checkWebhookSimulationState,
+	} = useHooks();
+	return {
+		webhooks,
+		setWebhooks,
+		registerWebhooks,
+		startWebhookSimulation,
+		checkWebhookSimulationState,
+	};
+};
 export const useMerchantInfo = () => {
-	const { merchant } = useHooks();
+	const { merchant, features } = useHooks();
 	const { refreshMerchantData } = useDispatch( STORE_NAME );
 
 	const verifyLoginStatus = useCallback( async () => {
@@ -142,8 +160,14 @@ export const useMerchantInfo = () => {
 
 	return {
 		merchant, // Merchant details
+		features, // Eligible merchant features
 		verifyLoginStatus, // Callback
 	};
+};
+
+export const useActiveModal = () => {
+	const { activeModal, setActiveModal } = useHooks();
+	return { activeModal, setActiveModal };
 };
 
 // -- Not using the `useHooks()` data provider --

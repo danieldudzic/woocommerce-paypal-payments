@@ -1,6 +1,7 @@
 import { Content, ContentWrapper } from './SettingsBlocks';
 
 const SettingsCard = ( {
+	id,
 	className: extraClassName,
 	title,
 	description,
@@ -17,8 +18,10 @@ const SettingsCard = ( {
 		if ( contentItems ) {
 			return (
 				<ContentWrapper>
-					{ contentItems.map( ( item, index ) => (
-						<Content key={ index }>{ item }</Content>
+					{ contentItems.map( ( item ) => (
+						<Content key={ item.key } id={ item.key }>
+							{ item }
+						</Content>
 					) ) }
 				</ContentWrapper>
 			);
@@ -33,7 +36,7 @@ const SettingsCard = ( {
 	};
 
 	return (
-		<div className={ className }>
+		<div id={ id } className={ className }>
 			<div className="ppcp-r-settings-card__header">
 				<div className="ppcp-r-settings-card__content-inner">
 					<span className="ppcp-r-settings-card__title">
