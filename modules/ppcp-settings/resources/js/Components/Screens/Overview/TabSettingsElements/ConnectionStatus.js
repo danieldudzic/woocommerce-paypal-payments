@@ -1,7 +1,7 @@
 import { __ } from '@wordpress/i18n';
 import SettingsCard from '../../../ReusableComponents/SettingsCard';
 import ConnectionInfo, {
-	connectionStatusDataDefault,
+    getDefaultConnectionStatusData,
 } from '../../../ReusableComponents/ConnectionInfo';
 import TitleBadge, {
 	TITLE_BADGE_NEGATIVE,
@@ -20,7 +20,7 @@ const ConnectionStatus = () => {
 			<div className="ppcp-r-connection-status">
 				<div className="ppcp-r-connection-status__status">
 					<div className="ppcp-r-connection-status__status-status">
-						{ connectionStatusDataDefault.connectionStatus ? (
+						{ getDefaultConnectionStatusData().connectionStatus ? (
 							<TitleBadge
 								type={ TITLE_BADGE_POSITIVE }
 								text={ __(
@@ -39,10 +39,10 @@ const ConnectionStatus = () => {
 						) }
 					</div>
 				</div>
-				{ connectionStatusDataDefault.connectionStatus && (
+				{ getDefaultConnectionStatusData().connectionStatus && (
 					<ConnectionInfo
 						connectionStatusDataDefault={
-							connectionStatusDataDefault
+                            getDefaultConnectionStatusData()
 						}
 					/>
 				) }
