@@ -2,13 +2,12 @@ import { useEffect, useMemo } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import classNames from 'classnames';
 
-import { OnboardingHooks } from '../../data';
-import SpinnerOverlay from '../ReusableComponents/SpinnerOverlay';
+import { OnboardingHooks } from '../data';
+import SpinnerOverlay from './ReusableComponents/SpinnerOverlay';
+import OnboardingScreen from './Screens/Onboarding';
+import SettingsScreen from './Screens/Settings';
 
-import OnboardingScreen from './Onboarding';
-import SettingsScreen from './Settings';
-
-const Settings = () => {
+const SettingsApp = () => {
 	const onboardingProgress = OnboardingHooks.useSteps();
 
 	// Disable the "Changes you made might not be saved" browser warning.
@@ -48,4 +47,4 @@ const Settings = () => {
 	return <div className={ wrapperClass }>{ Content }</div>;
 };
 
-export default Settings;
+export default SettingsApp;

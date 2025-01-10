@@ -1,6 +1,6 @@
 import { Button } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
-import data from '../../utils/data';
+import data from '../../../../utils/data';
 
 const SettingsNavigation = ( {} ) => {
 	return (

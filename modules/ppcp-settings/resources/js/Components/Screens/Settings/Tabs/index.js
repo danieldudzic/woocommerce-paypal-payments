@@ -5,32 +5,36 @@ import TabPaymentMethods from '../../Overview/TabPaymentMethods';
 import TabSettings from '../../Overview/TabSettings';
 import TabStyling from '../../Overview/TabStyling';
 
-export const getSettingsTabs = () => {
-	const tabs = [];
-
-	tabs.push( {
+/**
+ * List of all default settings tabs.
+ *
+ * The tabs are displayed in the order in which they appear in this array
+ *
+ * @type {[{name, title, Component}]}
+ */
+const DEFAULT_TABS = [
+	{
 		name: 'overview',
 		title: __( 'Overview', 'woocommerce-paypal-payments' ),
-		component: <TabOverview />,
-	} );
-
-	tabs.push( {
+		Component: <TabOverview />,
+	},
+	{
 		name: 'payment-methods',
 		title: __( 'Payment Methods', 'woocommerce-paypal-payments' ),
-		component: <TabPaymentMethods />,
-	} );
-
-	tabs.push( {
+		Component: <TabPaymentMethods />,
+	},
+	{
 		name: 'settings',
 		title: __( 'Settings', 'woocommerce-paypal-payments' ),
-		component: <TabSettings />,
-	} );
-
-	tabs.push( {
+		Component: <TabSettings />,
+	},
+	{
 		name: 'styling',
 		title: __( 'Styling', 'woocommerce-paypal-payments' ),
-		component: <TabStyling />,
-	} );
+		Component: <TabStyling />,
+	},
+];
 
-	return tabs;
+export const getSettingsTabs = () => {
+	return DEFAULT_TABS;
 };

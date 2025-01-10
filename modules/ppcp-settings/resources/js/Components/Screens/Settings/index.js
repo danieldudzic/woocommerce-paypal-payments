@@ -1,7 +1,7 @@
-import { getSettingsTabs } from './tabs';
-import SettingsNavigation from './Components/SettingsNavigation';
 import Container from '../../ReusableComponents/Container';
 import TabNavigation from '../../ReusableComponents/TabNavigation';
+import { getSettingsTabs } from './Tabs';
+import SettingsNavigation from './Components/SettingsNavigation';
 
 const SettingsScreen = () => {
 	const tabs = getSettingsTabs();
