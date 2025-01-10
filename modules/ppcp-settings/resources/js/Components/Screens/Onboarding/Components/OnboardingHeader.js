@@ -1,4 +1,4 @@
-import data from '../../utils/data';
+import data from '../../../../utils/data';
 
 const OnboardingHeader = ( props ) => {
 	return (
@@ -14,8 +14,10 @@ const OnboardingHeader = ( props ) => {
 				</h1>
 				{ props.description && (
 					<p
-                        className="ppcp-r-onboarding-header__description"
-                        dangerouslySetInnerHTML={ { __html: props.description, } }
+						className="ppcp-r-onboarding-header__description"
+						dangerouslySetInnerHTML={ {
+							__html: props.description,
+						} }
 					></p>
 				) }
 			</div>

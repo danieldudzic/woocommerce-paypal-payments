@@ -1,6 +1,6 @@
 import { __ } from '@wordpress/i18n';
 
-import OnboardingHeader from '../../ReusableComponents/OnboardingHeader';
+import OnboardingHeader from './Components/OnboardingHeader';
 import SelectBoxWrapper from '../../ReusableComponents/SelectBoxWrapper';
 import SelectBox from '../../ReusableComponents/SelectBox';
 import { OnboardingHooks, BUSINESS_TYPES } from '../../../data';

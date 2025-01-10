@@ -1,7 +1,7 @@
 import { __ } from '@wordpress/i18n';
 
 import { CommonHooks, OnboardingHooks } from '../../../data';
-import OnboardingHeader from '../../ReusableComponents/OnboardingHeader';
+import OnboardingHeader from './Components/OnboardingHeader';
 import SelectBoxWrapper from '../../ReusableComponents/SelectBoxWrapper';
 import SelectBox from '../../ReusableComponents/SelectBox';
 import OptionalPaymentMethods from '../../ReusableComponents/OptionalPaymentMethods/OptionalPaymentMethods';

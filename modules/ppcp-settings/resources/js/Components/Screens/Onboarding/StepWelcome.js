@@ -1,7 +1,7 @@
 import { __ } from '@wordpress/i18n';
 import { Button } from '@wordpress/components';
 
-import OnboardingHeader from '../../ReusableComponents/OnboardingHeader';
+import OnboardingHeader from './Components/OnboardingHeader';
 import PaymentMethodIcons from '../../ReusableComponents/PaymentMethodIcons';
 import Separator from '../../ReusableComponents/Separator';
 import WelcomeDocs from '../../ReusableComponents/WelcomeDocs/WelcomeDocs';
