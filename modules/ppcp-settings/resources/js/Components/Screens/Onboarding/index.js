@@ -11,9 +11,6 @@ const OnboardingScreen = () => {
 
 	const handleNext = () => setStep( currentStep.nextStep );
 	const handlePrev = () => setStep( currentStep.prevStep );
-	const handleExit = () => {
-		window.location.href = window.ppcpSettings.wcPaymentsTabUrl;
-	};
 
 	return (
 		<>
@@ -21,7 +18,6 @@ const OnboardingScreen = () => {
 				stepDetails={ currentStep }
 				onNext={ handleNext }
 				onPrev={ handlePrev }
-				onExit={ handleExit }
 			/>
 
 			<Container page="onboarding">
