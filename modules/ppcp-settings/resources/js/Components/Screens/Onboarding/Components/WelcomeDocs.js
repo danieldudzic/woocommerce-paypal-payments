@@ -1,6 +1,6 @@
 import { __ } from '@wordpress/i18n';
 
-import PricingDescription from '../PricingDescription';
+import PricingDescription from '../../../ReusableComponents/PricingDescription';
 import AcdcFlow from './AcdcFlow';
 import BcdcFlow from './BcdcFlow';
 

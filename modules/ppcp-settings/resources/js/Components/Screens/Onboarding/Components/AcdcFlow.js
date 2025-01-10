@@ -1,9 +1,11 @@
 import { __, sprintf } from '@wordpress/i18n';
 
-import BadgeBox, { BADGE_BOX_TITLE_BIG } from '../BadgeBox';
-import Separator from '../Separator';
-import OptionalPaymentMethods from '../OptionalPaymentMethods/OptionalPaymentMethods';
-import PricingTitleBadge from '../PricingTitleBadge';
+import BadgeBox, {
+	BADGE_BOX_TITLE_BIG,
+} from '../../../ReusableComponents/BadgeBox';
+import Separator from '../../../ReusableComponents/Separator';
+import PricingTitleBadge from '../../../ReusableComponents/PricingTitleBadge';
+import OptionalPaymentMethods from './OptionalPaymentMethods';
 
 const AcdcFlow = ( { isFastlane, isPayLater, storeCountry } ) => {
 	if ( isFastlane && isPayLater && storeCountry === 'US' ) {
@@ -53,9 +55,7 @@ const AcdcFlow = ( { isFastlane, isPayLater, storeCountry } ) => {
 						imageBadge={ [
 							'icon-payment-method-paypal-small.svg',
 						] }
-                        textBadge={
-                            <PricingTitleBadge item="plater" />
-                        }
+						textBadge={ <PricingTitleBadge item="plater" /> }
 						description={ sprintf(
 							// translators: %s: Link to PayPal business fees guide
 							__(

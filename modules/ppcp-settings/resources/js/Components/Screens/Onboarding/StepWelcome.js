@@ -1,12 +1,11 @@
 import { __ } from '@wordpress/i18n';
 import { Button } from '@wordpress/components';
 
-import OnboardingHeader from './Components/OnboardingHeader';
 import PaymentMethodIcons from '../../ReusableComponents/PaymentMethodIcons';
 import Separator from '../../ReusableComponents/Separator';
-import WelcomeDocs from '../../ReusableComponents/WelcomeDocs/WelcomeDocs';
 import AccordionSection from '../../ReusableComponents/AccordionSection';
-
+import OnboardingHeader from './Components/OnboardingHeader';
+import WelcomeDocs from './Components/WelcomeDocs';
 import AdvancedOptionsForm from './Components/AdvancedOptionsForm';
 import { CommonHooks } from '../../../data';
 import BusyStateWrapper from '../../ReusableComponents/BusyStateWrapper';
