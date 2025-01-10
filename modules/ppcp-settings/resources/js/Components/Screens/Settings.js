@@ -12,7 +12,10 @@ import SendOnlyMessage from './SendOnlyMessage';
 
 const Settings = () => {
 	const onboardingProgress = OnboardingHooks.useSteps();
-	const { merchant } = useMerchantInfo();
+	const {
+		isReady: merchantIsReady,
+		merchant: { isSendOnlyCountry },
+	} = useMerchantInfo();
 
 	// Disable the "Changes you made might not be saved" browser warning.
 	useEffect( () => {
@@ -33,7 +36,7 @@ const Settings = () => {
 	} );
 
 	const Content = useMemo( () => {
-		if ( ! onboardingProgress.isReady ) {
+		if ( ! onboardingProgress.isReady || ! merchantIsReady ) {
 			return (
 				<SpinnerOverlay
 					message={ __( 'Loading…', 'woocommerce-paypal-payments' ) }
@@ -41,7 +44,7 @@ const Settings = () => {
 			);
 		}
 
-		if ( merchant.isCurrentCountrySendOnly ) {
+		if ( isSendOnlyCountry ) {
 			return <SendOnlyMessage />;
 		}
 
@@ -50,7 +53,12 @@ const Settings = () => {
 		}
 
 		return <SettingsScreen />;
-	}, [ onboardingProgress ] );
+	}, [
+		isSendOnlyCountry,
+		merchantIsReady,
+		onboardingProgress.completed,
+		onboardingProgress.isReady,
+	] );
 
 	return <div className={ wrapperClass }>{ Content }</div>;
 };
