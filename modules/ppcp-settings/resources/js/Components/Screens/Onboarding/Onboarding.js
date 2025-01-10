@@ -1,7 +1,7 @@
 import Container from '../../ReusableComponents/Container';
 import { OnboardingHooks } from '../../../data';
 
-import { getSteps, getCurrentStep } from './availableSteps';
+import { getSteps, getCurrentStep } from './Steps';
 import Navigation from './Components/Navigation';
 
 const Onboarding = () => {

@@ -1,7 +1,7 @@
 import { __ } from '@wordpress/i18n';
 
-import OnboardingHeader from './Components/OnboardingHeader';
-import ConnectionButton from './Components/ConnectionButton';
+import OnboardingHeader from '../Components/OnboardingHeader';
+import ConnectionButton from '../Components/ConnectionButton';
 
 const StepCompleteSetup = () => {
 	return (

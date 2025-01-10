@@ -1,9 +1,9 @@
 import { __ } from '@wordpress/i18n';
 
-import SelectBox from '../../ReusableComponents/SelectBox';
-import SelectBoxWrapper from '../../ReusableComponents/SelectBoxWrapper';
-import { OnboardingHooks, PRODUCT_TYPES } from '../../../data';
-import OnboardingHeader from './Components/OnboardingHeader';
+import SelectBox from '../../../ReusableComponents/SelectBox';
+import SelectBoxWrapper from '../../../ReusableComponents/SelectBoxWrapper';
+import { OnboardingHooks, PRODUCT_TYPES } from '../../../../data';
+import OnboardingHeader from '../Components/OnboardingHeader';
 
 const PRODUCTS_CHECKBOX_GROUP_NAME = 'products';
 
