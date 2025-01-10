@@ -5,7 +5,7 @@ import { OnboardingHooks } from '../../../../data';
 import { useNavigation } from '../../../../hooks/useNavigation';
 import TopNavigation from '../../../ReusableComponents/TopNavigation';
 
-const Navigation = ( { stepDetails, onNext, onPrev } ) => {
+const OnboardingNavigation = ( { stepDetails, onNext, onPrev } ) => {
 	const { goToWooCommercePaymentsTab } = useNavigation();
 	const { title, isFirst, percentage, showNext, canProceed } = stepDetails;
 
@@ -37,4 +37,4 @@ const Navigation = ( { stepDetails, onNext, onPrev } ) => {
 	);
 };
 
-export default Navigation;
+export default OnboardingNavigation;

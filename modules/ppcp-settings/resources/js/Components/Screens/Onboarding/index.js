@@ -2,7 +2,7 @@ import Container from '../../ReusableComponents/Container';
 import { OnboardingHooks } from '../../../data';
 
 import { getSteps, getCurrentStep } from './Steps';
-import Navigation from './Components/Navigation';
+import OnboardingNavigation from './Components/Navigation';
 
 const OnboardingScreen = () => {
 	const { step, setStep, flags } = OnboardingHooks.useSteps();
@@ -14,7 +14,7 @@ const OnboardingScreen = () => {
 
 	return (
 		<>
-			<Navigation
+			<OnboardingNavigation
 				stepDetails={ currentStep }
 				onNext={ handleNext }
 				onPrev={ handlePrev }
