@@ -136,6 +136,34 @@ class VaultingModule implements ServiceModule, ExtendingModule, ExecutableModule
 			3
 		);
 
+		// Remove tokens from Block checkout page.
+		add_filter(
+			'woocommerce_saved_payment_methods_list',
+			function( $methods ) {
+
+				// Found no other way to manipulate the data only on that place
+				$exception = new \Exception();
+				$trace     = $exception->getTrace();
+				$found     = false;
+				foreach ( $trace as $value ) {
+					if ( $value['function'] === 'hydrate_customer_payment_methods' && $value['class'] === \Automattic\WooCommerce\Blocks\BlockTypes\Checkout::class ) {
+						$found = true;
+						break;
+					}
+				}
+
+				if ( ! $found ) {
+					return $methods;
+				}
+
+				unset( $methods['paypal'] );
+				unset( $methods['venmo'] );
+				unset( $methods['applepay'] );
+
+				return $methods;
+			}
+		);
+
 		add_filter(
 			'woocommerce_payment_methods_list_item',
 			/**
