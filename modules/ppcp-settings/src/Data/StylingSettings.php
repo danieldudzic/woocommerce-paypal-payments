@@ -1,6 +1,6 @@
 <?php
 /**
- * StylingSettings class
+ * Styling details class
  *
  * @package WooCommerce\PayPalCommerce\Settings\Data
  */
@@ -9,10 +9,10 @@ declare( strict_types = 1 );
 
 namespace WooCommerce\PayPalCommerce\Settings\Data;
 
-use RuntimeException;
-
 /**
- * This class serves as a container for managing the styling settings.
+ * Class StylingSettings
+ *
+ * Stores and manages the styling details.
  */
 class StylingSettings extends AbstractDataModel {
 
@@ -21,7 +21,7 @@ class StylingSettings extends AbstractDataModel {
 	 *
 	 * @var string
 	 */
-	protected const OPTION_KEY = 'woocommerce-ppcp-data-styling-settings';
+	protected const OPTION_KEY = 'woocommerce-ppcp-data-styling';
 
 	/**
 	 * Get default values for the model.
@@ -29,6 +29,8 @@ class StylingSettings extends AbstractDataModel {
 	 * @return array
 	 */
 	protected function get_defaults() : array {
-		return array();
+		return array(
+			'shape' => 'rect',
+		);
 	}
 }

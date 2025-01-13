@@ -180,6 +180,7 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 				$endpoints = array(
 					$container->get( 'settings.rest.onboarding' ),
 					$container->get( 'settings.rest.common' ),
+					$container->get( 'settings.rest.styling' ),
 					$container->get( 'settings.rest.connect_manual' ),
 					$container->get( 'settings.rest.login_link' ),
 					$container->get( 'settings.rest.webhooks' ),
