@@ -217,8 +217,8 @@ export const authenticateWithOAuth = function* (
  *
  * @return {Action} The action.
  */
-export const disconnectMerchant = function () {
-	return { type: ACTION_TYPES.DO_DISCONNECT_MERCHANT };
+export const disconnectMerchant = function* () {
+	return yield { type: ACTION_TYPES.DO_DISCONNECT_MERCHANT };
 };
 
 /**
