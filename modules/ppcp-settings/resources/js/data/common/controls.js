@@ -16,6 +16,7 @@ import {
 	REST_HYDRATE_MERCHANT_PATH,
 	REST_REFRESH_FEATURES_PATH,
 	REST_OAUTH_AUTHENTICATION_PATH,
+	REST_DISCONNECT_MERCHANT_PATH,
 	REST_WEBHOOKS,
 	REST_WEBHOOKS_SIMULATE,
 } from './constants';
@@ -96,6 +97,13 @@ export const controls = {
 				error: e,
 			};
 		}
+	},
+
+	async [ ACTION_TYPES.DO_DISCONNECT ]() {
+		return await apiFetch( {
+			path: REST_DISCONNECT_MERCHANT_PATH,
+			method: 'POST',
+		} );
 	},
 
 	async [ ACTION_TYPES.DO_REFRESH_MERCHANT ]() {

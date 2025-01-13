@@ -213,6 +213,15 @@ export const authenticateWithOAuth = function* (
 };
 
 /**
+ * Side effect. Checks webhook simulation.
+ *
+ * @return {Action} The action.
+ */
+export const disconnectMerchant = function () {
+	return { type: ACTION_TYPES.DO_DISCONNECT_MERCHANT };
+};
+
+/**
  * Side effect. Clears and refreshes the merchant data via a REST request.
  *
  * @return {Action} The action.

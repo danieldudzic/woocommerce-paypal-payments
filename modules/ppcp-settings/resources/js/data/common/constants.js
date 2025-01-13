@@ -57,6 +57,17 @@ export const REST_OAUTH_AUTHENTICATION_PATH =
 	'/wc/v3/wc_paypal/authenticate/oauth';
 
 /**
+ * REST path to disconnect the current merchant from PayPal.
+ *
+ * Used by: Controls
+ * See: AuthenticateRestEndpoint.php
+ *
+ * @type {string}
+ */
+export const REST_DISCONNECT_MERCHANT_PATH =
+	'/wc/v3/wc_paypal/authenticate/disconnect';
+
+/**
  * REST path to generate an ISU URL for the PayPal-login.
  *
  * Used by: Controls
