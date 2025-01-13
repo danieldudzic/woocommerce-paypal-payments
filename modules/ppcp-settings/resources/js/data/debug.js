@@ -33,11 +33,31 @@ export const addDebugTools = ( context, modules ) => {
 		/* eslint-enable no-console */
 	};
 
+	// Reset all Redux stores to their initial state.
 	context.resetStore = () => {
-		const stores = [ OnboardingStoreName, CommonStoreName ];
+		const stores = [];
+		const { isConnected } = wp.data.select( CommonStoreName ).merchant();
+
+		if ( isConnected ) {
+			// Make sure the Onboarding wizard is "completed".
+			const onboarding = wp.data.dispatch( OnboardingStoreName );
+			onboarding.setCompleted( true );
+			onboarding.persist();
+
+			// Reset all stores, except for the onboarding store.
+			stores.push( CommonStoreName );
+			// TODO: Add other stores here once they are available.
+		} else {
+			// Only reset the common & onboarding stores to restart the onboarding wizard.
+			stores.push( CommonStoreName );
+			stores.push( OnboardingStoreName );
+		}
 
 		stores.forEach( ( storeName ) => {
 			const store = wp.data.dispatch( storeName );
+
+			// eslint-disable-next-line no-console
+			console.log( `Reset store: ${ storeName }...` );
 
 			store.reset();
 			store.persist();
