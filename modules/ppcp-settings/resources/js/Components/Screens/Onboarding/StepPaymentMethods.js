@@ -21,7 +21,7 @@ const StepPaymentMethods = ( {} ) => {
 		<div className="ppcp-r-page-optional-payment-methods">
 			<OnboardingHeader
 				title={ __(
-					'Add optional payment methods to your Checkout',
+					'Add Expanded Checkout for more ways to pay',
 					'woocommerce-paypal-payments'
 				) }
 			/>
