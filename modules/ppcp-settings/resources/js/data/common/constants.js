@@ -93,5 +93,4 @@ export const REST_WEBHOOKS_SIMULATE = '/wc/v3/wc_paypal/webhooks/simulate';
  *
  * @type {string}
  */
-export const REST_REFRESH_FEATURES_PATH =
-	'/wc/v3/wc_paypal/refresh-feature-status';
+export const REST_REFRESH_FEATURES_PATH = '/wc/v3/wc_paypal/refresh-features';
