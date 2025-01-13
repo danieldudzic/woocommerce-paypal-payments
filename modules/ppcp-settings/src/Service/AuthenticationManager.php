@@ -126,7 +126,7 @@ class AuthenticationManager {
 		/**
 		 * Clear the APM eligibility flags from the default settings object.
 		 */
-		do_action( 'woocommerce_paypal_payments_clear_apm_product_status' );
+		do_action( 'woocommerce_paypal_payments_clear_apm_product_status', null );
 	}
 
 	/**
@@ -428,7 +428,7 @@ class AuthenticationManager {
 			/**
 			 * Clear the APM eligibility flags from the default settings object.
 			 */
-			do_action( 'woocommerce_paypal_payments_clear_apm_product_status' );
+			do_action( 'woocommerce_paypal_payments_clear_apm_product_status', null );
 
 			/**
 			 * Subscribe the new merchant to relevant PayPal webhooks.
