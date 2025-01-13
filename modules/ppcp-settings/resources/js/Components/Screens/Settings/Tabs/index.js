@@ -4,6 +4,7 @@ import TabOverview from '../../Overview/TabOverview';
 import TabPaymentMethods from '../../Overview/TabPaymentMethods';
 import TabSettings from '../../Overview/TabSettings';
 import TabStyling from '../../Overview/TabStyling';
+import TabPayLaterMessaging from '../../Overview/TabPayLaterMessaging';
 
 /**
  * List of all default settings tabs.
@@ -32,6 +33,11 @@ const DEFAULT_TABS = [
 		name: 'styling',
 		title: __( 'Styling', 'woocommerce-paypal-payments' ),
 		Component: <TabStyling />,
+	},
+	{
+		name: 'pay-later-messaging',
+		title: __( 'Pay Later Messaging', 'woocommerce-paypal-payments' ),
+		Component: <TabPayLaterMessaging />,
 	},
 ];
 
