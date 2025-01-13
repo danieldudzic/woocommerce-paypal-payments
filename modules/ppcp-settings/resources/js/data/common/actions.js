@@ -288,5 +288,5 @@ export const startWebhookSimulation = function* () {
  * @return {Action} The action.
  */
 export const checkWebhookSimulationState = function* () {
-	return yield { type: ACTION_TYPES.DO_CHECK_WEBHOOK_SIMULATION_STATE };
+	return yield { type: ACTION_TYPES.DO_CHECK_WEBHOOK_SIMULATION };
 };

@@ -138,7 +138,7 @@ export const controls = {
 		} );
 	},
 
-	async [ ACTION_TYPES.DO_CHECK_WEBHOOK_SIMULATION_STATE ]() {
+	async [ ACTION_TYPES.DO_CHECK_WEBHOOK_SIMULATION ]() {
 		return await apiFetch( {
 			path: REST_WEBHOOKS_SIMULATE,
 		} );
