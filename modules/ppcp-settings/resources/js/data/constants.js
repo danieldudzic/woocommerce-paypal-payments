@@ -1,10 +1,9 @@
-export const BUSINESS_TYPES = {
-	CASUAL_SELLER: 'casual_seller',
-	BUSINESS: 'business',
-};
+export { BUSINESS_TYPES, PRODUCT_TYPES } from './onboarding/constants';
 
-export const PRODUCT_TYPES = {
-	VIRTUAL: 'virtual',
-	PHYSICAL: 'physical',
-	SUBSCRIPTIONS: 'subscriptions',
-};
+export {
+	STYLING_LOCATIONS,
+	STYLING_LABELS,
+	STYLING_COLORS,
+	STYLING_LAYOUTS,
+	STYLING_SHAPES,
+} from './styling/constants';

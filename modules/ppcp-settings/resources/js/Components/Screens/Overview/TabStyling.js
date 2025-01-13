@@ -7,11 +7,13 @@ import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js';
 import {
 	defaultLocationSettings,
 	paymentMethodOptions,
-	colorOptions,
-	shapeOptions,
-	buttonLayoutOptions,
-	buttonLabelOptions,
 } from '../../../data/settings/tab-styling-data';
+import {
+	STYLING_LABELS,
+	STYLING_COLORS,
+	STYLING_LAYOUTS,
+	STYLING_SHAPES,
+} from '../../../data';
 
 const TabStyling = () => {
 	const [ location, setLocation ] = useState( 'cart' );
@@ -52,7 +54,7 @@ const TabStyling = () => {
 			},
 			[]
 		);
-	}, [] );
+	}, [ locationSettings ] );
 
 	const updateButtonSettings = ( key, value ) => {
 		setLocationSettings( {
@@ -223,7 +225,7 @@ const SectionButtonLayout = ( { locationSettings, updateButtonStyle } ) => {
 						updateButtonStyle( 'layout', newValue )
 					}
 					selected={ locationSettings.settings.style.layout }
-					options={ buttonLayoutOptions }
+					options={ Object.values( STYLING_LAYOUTS ) }
 				/>
 			</TabStylingSection>
 		)
@@ -242,7 +244,7 @@ const SectionButtonShape = ( { locationSettings, updateButtonStyle } ) => {
 					updateButtonStyle( 'shape', newValue )
 				}
 				selected={ locationSettings.settings.style.shape }
-				options={ shapeOptions }
+				options={ Object.values( STYLING_SHAPES ) }
 			/>
 		</TabStylingSection>
 	);
@@ -258,7 +260,7 @@ const SectionButtonLabel = ( { locationSettings, updateButtonStyle } ) => {
 				}
 				value={ locationSettings.settings.style.label }
 				label={ __( 'Button Label', 'woocommerce-paypal-payments' ) }
-				options={ buttonLabelOptions }
+				options={ Object.values( STYLING_LABELS ) }
 			/>
 		</TabStylingSection>
 	);
@@ -274,7 +276,7 @@ const SectionButtonColor = ( { locationSettings, updateButtonStyle } ) => {
 					updateButtonStyle( 'color', newValue )
 				}
 				value={ locationSettings.settings.style.color }
-				options={ colorOptions }
+				options={ Object.values( STYLING_COLORS ) }
 			/>
 		</TabStylingSection>
 	);
