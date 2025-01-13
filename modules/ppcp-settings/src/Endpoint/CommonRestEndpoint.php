@@ -111,6 +111,9 @@ class CommonRestEndpoint extends RestEndpoint {
 	 * Configure REST API routes.
 	 */
 	public function register_routes() {
+		/**
+		 * GET /wp-json/wc/v3/wc_paypal/common
+		 */
 		register_rest_route(
 			$this->namespace,
 			'/' . $this->rest_base,
@@ -121,6 +124,12 @@ class CommonRestEndpoint extends RestEndpoint {
 			)
 		);
 
+		/**
+		 * POST /wp-json/wc/v3/wc_paypal/common
+		 * {
+		 *     // Fields mentioned in $field_map[]['js_name']
+		 * }
+		 */
 		register_rest_route(
 			$this->namespace,
 			'/' . $this->rest_base,
@@ -131,6 +140,9 @@ class CommonRestEndpoint extends RestEndpoint {
 			)
 		);
 
+		/**
+		 * GET /wp-json/wc/v3/wc_paypal/common/merchant
+		 */
 		register_rest_route(
 			$this->namespace,
 			"/$this->rest_base/merchant",

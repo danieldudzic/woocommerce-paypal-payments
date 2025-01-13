@@ -83,6 +83,9 @@ class RefreshFeatureStatusEndpoint extends RestEndpoint {
 	 * Configure REST API routes.
 	 */
 	public function register_routes() {
+		/**
+		 * POST /wp-json/wc/v3/wc_paypal/refresh-feature-status
+		 */
 		register_rest_route(
 			$this->namespace,
 			'/' . $this->rest_base,

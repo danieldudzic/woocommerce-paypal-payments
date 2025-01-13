@@ -67,6 +67,14 @@ class AuthenticationRestEndpoint extends RestEndpoint {
 	 * Configure REST API routes.
 	 */
 	public function register_routes() : void {
+		/**
+		 * POST /wp-json/wc/v3/wc_paypal/authenticate/direct
+		 * {
+		 *     clientId
+		 *     clientSecret
+		 *     useSandbox
+		 * }
+		 */
 		register_rest_route(
 			$this->namespace,
 			'/' . $this->rest_base . '/direct',
@@ -97,6 +105,14 @@ class AuthenticationRestEndpoint extends RestEndpoint {
 			)
 		);
 
+		/**
+		 * POST /wp-json/wc/v3/wc_paypal/authenticate/isu
+		 * {
+		 *     sharedId
+		 *     authCode
+		 *     useSandbox
+		 * }
+		 */
 		register_rest_route(
 			$this->namespace,
 			'/' . $this->rest_base . '/isu',
@@ -123,6 +139,10 @@ class AuthenticationRestEndpoint extends RestEndpoint {
 				),
 			)
 		);
+
+		/**
+		 * POST /wp-json/wc/v3/wc_paypal/authenticate/disconnect
+		 */
 		register_rest_route(
 			$this->namespace,
 			'/' . $this->rest_base . '/disconnect',

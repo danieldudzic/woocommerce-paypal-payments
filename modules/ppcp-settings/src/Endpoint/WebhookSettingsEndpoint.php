@@ -77,6 +77,10 @@ class WebhookSettingsEndpoint extends RestEndpoint {
 	 * Configure REST API routes.
 	 */
 	public function register_routes() : void {
+		/**
+		 * GET /wp-json/wc/v3/wc_paypal/webhook_settings
+		 * POST /wp-json/wc/v3/wc_paypal/webhook_settings
+		 */
 		register_rest_route(
 			$this->namespace,
 			'/' . $this->rest_base,
@@ -94,6 +98,10 @@ class WebhookSettingsEndpoint extends RestEndpoint {
 			)
 		);
 
+		/**
+		 * GET /wp-json/wc/v3/wc_paypal/webhook_simulate
+		 * POST /wp-json/wc/v3/wc_paypal/webhook_simulate
+		 */
 		register_rest_route(
 			$this->namespace,
 			'/' . $this->rest_simulate_base,
