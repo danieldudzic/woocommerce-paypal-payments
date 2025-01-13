@@ -5,35 +5,31 @@ const ConnectionInfo = () => {
 	const { merchant } = CommonHooks.useMerchantInfo();
 
 	return (
-        <div className="ppcp-r-connection-status__data">
-            {renderStatusRow(
-                __('Merchant ID', 'woocommerce-paypal-payments'),
-                connectionData.merchantId
-            )}
-            {renderStatusRow(
-                __('Email address', 'woocommerce-paypal-payments'),
-                connectionData.email
-            )}
-            {renderStatusRow(
-                __('Client ID', 'woocommerce-paypal-payments'),
-                connectionData.clientId
-            )}
-        </div>
-    );
+		<div className="ppcp-r-connection-status__data">
+			<StatusRow
+				label={ __( 'Merchant ID', 'woocommerce-paypal-payments' ) }
+				value={ merchant.id }
+			/>
+			<StatusRow
+				label={ __( 'Email address', 'woocommerce-paypal-payments' ) }
+				value={ merchant.email }
+			/>
+			<StatusRow
+				label={ __( 'Client ID', 'woocommerce-paypal-payments' ) }
+				value={ merchant.clientId }
+			/>
+		</div>
+	);
 };
 export default ConnectionInfo;
 
-    return {
-        connectionStatus: merchant.isConnected || false,
-        email: merchant.email || '',
-        merchantId: merchant.id || '',
-        clientId: merchant.clientId || '',
-    };
-};
-
-const renderStatusRow = (label, value) => (
-    <div className="ppcp-r-connection-status__status-row">
-        <span className="ppcp-r-connection-status__status-label">{label}</span>
-        <span className="ppcp-r-connection-status__status-value">{value}</span>
-    </div>
+const StatusRow = ( { label, value } ) => (
+	<div className="ppcp-r-connection-status__status-row">
+		<span className="ppcp-r-connection-status__status-label">
+			{ label }
+		</span>
+		<span className="ppcp-r-connection-status__status-value">
+			{ value }
+		</span>
+	</div>
 );
