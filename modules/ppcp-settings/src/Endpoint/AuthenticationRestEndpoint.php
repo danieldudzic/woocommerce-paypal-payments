@@ -123,6 +123,15 @@ class AuthenticationRestEndpoint extends RestEndpoint {
 				),
 			)
 		);
+		register_rest_route(
+			$this->namespace,
+			'/' . $this->rest_base . '/disconnect',
+			array(
+				'methods'             => WP_REST_Server::EDITABLE,
+				'callback'            => array( $this, 'disconnect' ),
+				'permission_callback' => array( $this, 'check_permission' ),
+			)
+		);
 	}
 
 	/**
@@ -175,5 +184,16 @@ class AuthenticationRestEndpoint extends RestEndpoint {
 		$response = $this->sanitize_for_javascript( $this->response_map, $account );
 
 		return $this->return_success( $response );
+	}
+
+	/**
+	 * Disconnect the merchant and clear the authentication details.
+	 *
+	 * @return WP_REST_Response
+	 */
+	public function disconnect() : WP_REST_Response {
+		$this->authentication_manager->disconnect();
+
+		return $this->return_success( 'OK' );
 	}
 }
