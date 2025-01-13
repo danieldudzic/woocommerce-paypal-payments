@@ -15,7 +15,7 @@ import {
 	REST_CONNECTION_URL_PATH,
 	REST_HYDRATE_MERCHANT_PATH,
 	REST_REFRESH_FEATURES_PATH,
-	REST_ISU_AUTHENTICATION_PATH,
+	REST_OAUTH_AUTHENTICATION_PATH,
 	REST_WEBHOOKS,
 	REST_WEBHOOKS_SIMULATE,
 } from './constants';
@@ -82,7 +82,7 @@ export const controls = {
 	} ) {
 		try {
 			return await apiFetch( {
-				path: REST_ISU_AUTHENTICATION_PATH,
+				path: REST_OAUTH_AUTHENTICATION_PATH,
 				method: 'POST',
 				data: {
 					sharedId,
