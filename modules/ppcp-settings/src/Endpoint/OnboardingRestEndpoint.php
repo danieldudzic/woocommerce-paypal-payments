@@ -96,7 +96,7 @@ class OnboardingRestEndpoint extends RestEndpoint {
 	/**
 	 * Configure REST API routes.
 	 */
-	public function register_routes() {
+	public function register_routes() : void {
 		/**
 		 * GET /wp-json/wc/v3/wc_paypal/onboarding
 		 */
