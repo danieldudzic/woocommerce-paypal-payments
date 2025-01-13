@@ -5,6 +5,7 @@ export const addDebugTools = ( context, modules ) => {
 		return;
 	}
 
+	// Dump the current state of all our Redux stores.
 	context.dumpStore = async () => {
 		/* eslint-disable no-console */
 		if ( ! console?.groupCollapsed ) {
@@ -43,10 +44,15 @@ export const addDebugTools = ( context, modules ) => {
 		} );
 	};
 
-	context.startOnboarding = () => {
-		const onboarding = wp.data.dispatch( OnboardingStoreName );
-		onboarding.setCompleted( false );
-		onboarding.setStep( 0 );
-		onboarding.persist();
+	// Disconnect the merchant and display the onboarding wizard.
+	context.disconnect = () => {
+		const common = wp.data.dispatch( CommonStoreName );
+
+		common.disconnectMerchant();
+
+		// eslint-disable-next-line no-console
+		console.log( 'Disconnected from PayPal. Reloading the page...' );
+
+		window.location.reload();
 	};
 };
