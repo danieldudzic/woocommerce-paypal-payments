@@ -41,23 +41,17 @@ const useHooks = () => {
 	// TODO: Replace with real property.
 	const sampleValue = usePersistent( 'sampleValue' );
 
-	const savePersistent = async ( setter, value ) => {
-		setter( value );
-		await persist();
-	};
-
 	return {
+		persist,
 		isReady,
 		sampleValue,
-		setSampleValue: ( value ) => {
-			return savePersistent( setSampleValue, value );
-		},
+		setSampleValue,
 	};
 };
 
 export const useState = () => {
-	const { isReady } = useHooks();
-	return isReady;
+	const { persist, isReady } = useHooks();
+	return { persist, isReady };
 };
 
 // TODO: Replace with real hook.
