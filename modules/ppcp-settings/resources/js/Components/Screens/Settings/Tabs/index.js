@@ -38,9 +38,12 @@ const DEFAULT_TABS = [
 		name: 'pay-later-messaging',
 		title: __( 'Pay Later Messaging', 'woocommerce-paypal-payments' ),
 		Component: <TabPayLaterMessaging />,
+		showIf: () => !! window.ppcpSettings?.isPayLaterConfiguratorAvailable,
 	},
 ];
 
 export const getSettingsTabs = () => {
-	return DEFAULT_TABS;
+	return DEFAULT_TABS.filter( ( tab ) => {
+		return ! tab.showIf || tab.showIf();
+	} );
 };
