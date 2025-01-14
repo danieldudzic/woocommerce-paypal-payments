@@ -2,7 +2,6 @@ import { __, sprintf } from '@wordpress/i18n';
 import { SelectControl, RadioControl } from '@wordpress/components';
 import { PayPalCheckboxGroup } from '../../../ReusableComponents/Fields';
 import { useState, useMemo, useEffect } from '@wordpress/element';
-import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js';
 
 import {
 	defaultLocationSettings,
@@ -14,6 +13,7 @@ import {
 	STYLING_LAYOUTS,
 	STYLING_SHAPES,
 } from '../../../../data';
+import PaymentButtonPreview from '../Components/PaymentButtonPreview';
 
 const TabStyling = () => {
 	const [ location, setLocation ] = useState( 'cart' );
@@ -127,8 +127,8 @@ const TabStyling = () => {
 			</div>
 			<div className="ppcp-preview ppcp-r-button-preview ppcp-r-styling__preview">
 				<div className="ppcp-r-styling__preview-inner">
-					<SectionButtonPreview
-						locationSettings={ currentLocationSettings }
+					<PaymentButtonPreview
+						style={ currentLocationSettings.settings.style }
 					/>
 				</div>
 			</div>
@@ -310,28 +310,6 @@ const SectionButtonTagline = ( { locationSettings, updateButtonStyle } ) => {
 				/>
 			</TabStylingSection>
 		)
-	);
-};
-
-const SectionButtonPreview = ( { locationSettings } ) => {
-	return (
-		<PayPalScriptProvider
-			options={ {
-				clientId: 'test',
-				merchantId: 'QTQX5NP6N9WZU',
-				components: 'buttons,googlepay',
-				'disable-funding': 'card',
-				'buyer-country': 'US',
-				currency: 'USD',
-			} }
-		>
-			<PayPalButtons
-				style={ locationSettings.settings.style }
-				forceReRender={ [ locationSettings.settings.style ] }
-			>
-				Error
-			</PayPalButtons>
-		</PayPalScriptProvider>
 	);
 };
 
