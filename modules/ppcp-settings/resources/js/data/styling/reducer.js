@@ -19,7 +19,41 @@ const defaultTransient = Object.freeze( {
 
 // Persistent: Values that are loaded from the DB.
 const defaultPersistent = Object.freeze( {
-	shape: 'rect',
+	cart: {
+		enabled: true,
+		methods: [ 'venmo', 'applepay', 'googlepay', 'credit card' ],
+		shape: 'rect',
+		label: 'Pay',
+		color: 'gold',
+	},
+	'classic-checkout': {
+		enabled: true,
+		methods: [ 'venmo', 'applepay', 'googlepay', 'credit card' ],
+		shape: 'rect',
+		label: 'Checkout',
+		color: 'gold',
+	},
+	'express-checkout': {
+		enabled: true,
+		methods: [ 'venmo', 'applepay', 'googlepay', 'credit card' ],
+		shape: 'rect',
+		label: 'Checkout',
+		color: 'gold',
+	},
+	'mini-cart': {
+		enabled: true,
+		methods: [ 'venmo', 'applepay', 'googlepay', 'credit card' ],
+		shape: 'rect',
+		label: 'Pay',
+		color: 'gold',
+	},
+	product: {
+		enabled: true,
+		methods: [ 'venmo', 'applepay', 'googlepay', 'credit card' ],
+		shape: 'rect',
+		label: 'Buy',
+		color: 'gold',
+	},
 } );
 
 // Reducer logic.
