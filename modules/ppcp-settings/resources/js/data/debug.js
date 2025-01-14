@@ -1,4 +1,8 @@
-import { OnboardingStoreName, CommonStoreName } from './index';
+import {
+	OnboardingStoreName,
+	CommonStoreName,
+	PaymentStoreName,
+} from './index';
 
 export const addDebugTools = ( context, modules ) => {
 	if ( ! context || ! context?.debug ) {
@@ -33,7 +37,11 @@ export const addDebugTools = ( context, modules ) => {
 	};
 
 	context.resetStore = () => {
-		const stores = [ OnboardingStoreName, CommonStoreName ];
+		const stores = [
+			OnboardingStoreName,
+			CommonStoreName,
+			PaymentStoreName,
+		];
 
 		stores.forEach( ( storeName ) => {
 			const store = wp.data.dispatch( storeName );
