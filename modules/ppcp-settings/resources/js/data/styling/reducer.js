@@ -9,6 +9,7 @@
 
 import { createReducer, createSetters } from '../utils';
 import ACTION_TYPES from './action-types';
+import { STYLING_COLORS, STYLING_SHAPES } from './constants';
 
 // Store structure.
 
@@ -21,38 +22,38 @@ const defaultTransient = Object.freeze( {
 const defaultPersistent = Object.freeze( {
 	cart: {
 		enabled: true,
-		methods: [ 'venmo', 'applepay', 'googlepay', 'credit card' ],
-		shape: 'rect',
+		methods: [],
 		label: 'Pay',
-		color: 'gold',
+		shape: STYLING_SHAPES.rect.value,
+		color: STYLING_COLORS.gold.value,
 	},
 	'classic-checkout': {
 		enabled: true,
-		methods: [ 'venmo', 'applepay', 'googlepay', 'credit card' ],
-		shape: 'rect',
+		methods: [],
 		label: 'Checkout',
-		color: 'gold',
+		shape: STYLING_SHAPES.rect.value,
+		color: STYLING_COLORS.gold.value,
 	},
 	'express-checkout': {
 		enabled: true,
-		methods: [ 'venmo', 'applepay', 'googlepay', 'credit card' ],
-		shape: 'rect',
+		methods: [],
 		label: 'Checkout',
-		color: 'gold',
+		shape: STYLING_SHAPES.rect.value,
+		color: STYLING_COLORS.gold.value,
 	},
 	'mini-cart': {
 		enabled: true,
-		methods: [ 'venmo', 'applepay', 'googlepay', 'credit card' ],
-		shape: 'rect',
+		methods: [],
 		label: 'Pay',
-		color: 'gold',
+		shape: STYLING_SHAPES.rect.value,
+		color: STYLING_COLORS.gold.value,
 	},
 	product: {
 		enabled: true,
-		methods: [ 'venmo', 'applepay', 'googlepay', 'credit card' ],
-		shape: 'rect',
+		methods: [],
 		label: 'Buy',
-		color: 'gold',
+		shape: STYLING_SHAPES.rect.value,
+		color: STYLING_COLORS.gold.value,
 	},
 } );
 

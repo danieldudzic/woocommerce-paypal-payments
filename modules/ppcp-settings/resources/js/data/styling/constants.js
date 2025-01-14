@@ -33,6 +33,7 @@ export const STYLING_LOCATIONS = {
 	cart: {
 		value: 'cart',
 		label: __( 'Cart', 'woocommerce-paypal-payments' ),
+		// translators: %s is the URL to a documentation page.
 		description: __(
 			'Customize the appearance of the PayPal smart buttons on the <a href="%s">Cart page</a> and select which additional payment buttons to display in this location.',
 			'wooocommerce-paypal-payments'
@@ -42,6 +43,7 @@ export const STYLING_LOCATIONS = {
 	'classic-checkout': {
 		value: 'classic-checkout',
 		label: __( 'Classic Checkout', 'woocommerce-paypal-payments' ),
+		// translators: %s is the URL to a documentation page.
 		description: __(
 			'Customize the appearance of the PayPal smart buttons on the <a href="%s">Classic Checkout page</a> and choose which additional payment buttons to display in this location.',
 			'wooocommerce-paypal-payments'
@@ -51,6 +53,7 @@ export const STYLING_LOCATIONS = {
 	'express-checkout': {
 		value: 'express-checkout',
 		label: __( 'Express Checkout', 'woocommerce-paypal-payments' ),
+		// translators: %s is the URL to a documentation page.
 		description: __(
 			'Customize the appearance of the PayPal smart buttons on the <a href="%s">Express Checkout location</a> and choose which additional payment buttons to display in this location.',
 			'wooocommerce-paypal-payments'
@@ -60,6 +63,7 @@ export const STYLING_LOCATIONS = {
 	'mini-cart': {
 		value: 'mini-cart',
 		label: __( 'Mini Cart', 'woocommerce-paypel-payements' ),
+		// translators: %s is the URL to a documentation page.
 		description: __(
 			'Customize the appearance of the PayPal smart buttons on the <a href="%s">Mini Cart</a> and choose which additional payment buttons to display in this location.',
 			'wooocommerce-paypal-payments'
@@ -69,6 +73,7 @@ export const STYLING_LOCATIONS = {
 	'product-page': {
 		value: 'product-page',
 		label: __( 'Product Page', 'woocommerce-paypal-payments' ),
+		// translators: %s is the URL to a documentation page.
 		description: __(
 			'Customize the appearance of the PayPal smart buttons on the <a href="%s">Product Page</a> and choose which additional payment buttons to display in this location.',
 			'wooocommerce-paypal-payments'
