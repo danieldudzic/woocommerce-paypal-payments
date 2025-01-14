@@ -124,7 +124,7 @@ class VaultingModule implements ServiceModule, ExtendingModule, ExecutableModule
 					&& ! $is_post // Don't check on POST so we have all payment methods on form submissions.
 				) {
 					foreach ( $tokens as $index => $token ) {
-						if ( $token instanceof PaymentTokenApplePay ) {
+						if ( $token instanceof PaymentTokenApplePay || $token instanceof PaymentTokenPayPal || $token instanceof PaymentTokenVenmo ) {
 							unset( $tokens[ $index ] );
 						}
 					}
@@ -134,34 +134,6 @@ class VaultingModule implements ServiceModule, ExtendingModule, ExecutableModule
 			},
 			10,
 			3
-		);
-
-		// Remove tokens from Block checkout page.
-		add_filter(
-			'woocommerce_saved_payment_methods_list',
-			function( $methods ) {
-
-				// Found no other way to manipulate the data only on that place
-				$exception = new \Exception();
-				$trace     = $exception->getTrace();
-				$found     = false;
-				foreach ( $trace as $value ) {
-					if ( $value['function'] === 'hydrate_customer_payment_methods' && $value['class'] === \Automattic\WooCommerce\Blocks\BlockTypes\Checkout::class ) {
-						$found = true;
-						break;
-					}
-				}
-
-				if ( ! $found ) {
-					return $methods;
-				}
-
-				unset( $methods['paypal'] );
-				unset( $methods['venmo'] );
-				unset( $methods['applepay'] );
-
-				return $methods;
-			}
 		);
 
 		add_filter(
