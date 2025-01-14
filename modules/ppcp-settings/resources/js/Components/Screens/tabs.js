@@ -32,11 +32,13 @@ export const getSettingsTabs = () => {
 		component: <TabStyling />,
 	} );
 
-	tabs.push( {
-		name: 'pay-later-messaging',
-		title: __( 'Pay Later Messaging', 'woocommerce-paypal-payments' ),
-		component: <TabPayLaterMessaging />,
-	} );
+	if ( window.ppcpSettings.isPayLaterConfiguratorAvailable ) {
+		tabs.push( {
+			name: 'pay-later-messaging',
+			title: __( 'Pay Later Messaging', 'woocommerce-paypal-payments' ),
+			component: <TabPayLaterMessaging />,
+		} );
+	}
 
 	return tabs;
 };
