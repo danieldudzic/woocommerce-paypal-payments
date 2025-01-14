@@ -1,9 +1,11 @@
 import { __, sprintf } from '@wordpress/i18n';
 
-import BadgeBox, { BADGE_BOX_TITLE_BIG } from '../BadgeBox';
-import Separator from '../Separator';
-import OptionalPaymentMethods from '../OptionalPaymentMethods/OptionalPaymentMethods';
-import PricingTitleBadge from '../PricingTitleBadge';
+import BadgeBox, {
+	BADGE_BOX_TITLE_BIG,
+} from '../../../ReusableComponents/BadgeBox';
+import Separator from '../../../ReusableComponents/Separator';
+import PricingTitleBadge from '../../../ReusableComponents/PricingTitleBadge';
+import OptionalPaymentMethods from './OptionalPaymentMethods';
 
 const BcdcFlow = ( { isPayLater, storeCountry } ) => {
 	if ( isPayLater && storeCountry === 'US' ) {
@@ -92,12 +94,12 @@ const BcdcFlow = ( { isPayLater, storeCountry } ) => {
 				<div className="ppcp-r-welcome-docs__col">
 					<BadgeBox
 						title={ __(
-							'Optional payment methods',
+							'Expanded Checkout',
 							'woocommerce-paypal-payments'
 						) }
 						titleType={ BADGE_BOX_TITLE_BIG }
 						description={ __(
-							'with additional application',
+							'Accept debit/credit cards, PayPal, Apple Pay, Google Pay, and more. Note: Additional application required for more methods',
 							'woocommerce-paypal-payments'
 						) }
 					/>

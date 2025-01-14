@@ -1,11 +1,11 @@
 import { __ } from '@wordpress/i18n';
 
-import { CommonHooks, OnboardingHooks } from '../../../data';
-import OnboardingHeader from '../../ReusableComponents/OnboardingHeader';
-import SelectBoxWrapper from '../../ReusableComponents/SelectBoxWrapper';
-import SelectBox from '../../ReusableComponents/SelectBox';
-import OptionalPaymentMethods from '../../ReusableComponents/OptionalPaymentMethods/OptionalPaymentMethods';
-import PricingDescription from '../../ReusableComponents/PricingDescription';
+import { CommonHooks, OnboardingHooks } from '../../../../data';
+import SelectBoxWrapper from '../../../ReusableComponents/SelectBoxWrapper';
+import SelectBox from '../../../ReusableComponents/SelectBox';
+import PricingDescription from '../../../ReusableComponents/PricingDescription';
+import OnboardingHeader from '../Components/OnboardingHeader';
+import OptionalPaymentMethods from '../Components/OptionalPaymentMethods';
 
 const OPM_RADIO_GROUP_NAME = 'optional-payment-methods';
 
@@ -17,14 +17,21 @@ const StepPaymentMethods = ( {} ) => {
 
 	const { storeCountry, storeCurrency } = CommonHooks.useWooSettings();
 
+	let screenTitle = __(
+		'Add optional payment methods to your Checkout',
+		'woocommerce-paypal-payments'
+	);
+
+	if ( 'US' === storeCountry ) {
+		screenTitle = __(
+			'Add Expanded Checkout for More Ways to Pay',
+			'woocommerce-paypal-payments'
+		);
+	}
+
 	return (
 		<div className="ppcp-r-page-optional-payment-methods">
-			<OnboardingHeader
-				title={ __(
-					'Add optional payment methods to your Checkout',
-					'woocommerce-paypal-payments'
-				) }
-			/>
+			<OnboardingHeader title={ screenTitle } />
 			<div className="ppcp-r-inner-container">
 				<SelectBoxWrapper>
 					<SelectBox

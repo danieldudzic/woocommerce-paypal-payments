@@ -1,11 +1,13 @@
-import data from '../../utils/data';
+import { Icon } from '@wordpress/components';
+
+import { logoPayPal } from '../../../ReusableComponents/Icons';
 
 const OnboardingHeader = ( props ) => {
 	return (
 		<section className="ppcp-r-onboarding-header">
 			<div className="ppcp-r-onboarding-header__logo">
 				<div className="ppcp-r-onboarding-header__logo-wrapper">
-					{ data().getImage( 'logo-paypal.svg' ) }
+					<Icon icon={ logoPayPal } width="auto" height={ 38 } />
 				</div>
 			</div>
 			<div className="ppcp-r-onboarding-header__content">
@@ -14,8 +16,10 @@ const OnboardingHeader = ( props ) => {
 				</h1>
 				{ props.description && (
 					<p
-                        className="ppcp-r-onboarding-header__description"
-                        dangerouslySetInnerHTML={ { __html: props.description, } }
+						className="ppcp-r-onboarding-header__description"
+						dangerouslySetInnerHTML={ {
+							__html: props.description,
+						} }
 					></p>
 				) }
 			</div>

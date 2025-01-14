@@ -1,0 +1,63 @@
+/*
+ Styles the `SettingsCard` layout component.
+
+ This is a 2-column row that displays a title + description on the
+ left side, and a "card" with settings content on the right side.
+ */
+.ppcp-r-settings-card {
+
+	// -- Theming
+
+	--card-width-header: 100%;
+	--card-width-content: 100%;
+	--card-gap: 0;
+	--card-layout: block;
+
+	@media screen and (min-width: 960px) {
+		--card-width-header: 280px;
+		--card-width-content: 610px;
+		--card-gap: 48px;
+		--card-layout: flex;
+	}
+
+	// -- Styling
+
+	display: var(--card-layout);
+	gap: var(--card-gap);
+	margin: 0 0 var(--card-gap) 0;
+
+	.ppcp-r-settings-card__header {
+		display: var(--card-layout);
+		width: var(--card-width-header);
+		flex: 0 0 var(--card-width-header);
+		gap: 18px;
+		padding-bottom: 18px;
+	}
+
+	.ppcp-r-settings-card__content-wrapper {
+		display: flex;
+		flex-direction: column;
+		gap: 24px;
+	}
+
+	.ppcp-r-settings-card__content {
+		flex: 1;
+		max-width: var(--card-width-content);
+		border: 1px solid var(--color-gray-200);
+		border-radius: 4px;
+		padding: 24px;
+	}
+
+	.ppcp-r-settings-card__title {
+		@include font(13, 24, 600);
+		color: var(--color-text-main);
+		margin: 0 0 4px 0;
+		display: block;
+	}
+
+	.ppcp-r-settings-card__description {
+		@include font(13, 20, 400);
+		color: var(--color-text-teriary);
+		margin: 0;
+	}
+}

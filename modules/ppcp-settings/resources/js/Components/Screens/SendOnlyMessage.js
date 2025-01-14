@@ -2,7 +2,7 @@ import { __, sprintf } from '@wordpress/i18n';
 
 import Container from '../ReusableComponents/Container';
 import SettingsCard from '../ReusableComponents/SettingsCard';
-import SettingsNavigation from './SettingsNavigation';
+import SettingsNavigation from './Settings/Components/Navigation';
 
 const SendOnlyMessage = () => {
 	const settingsPageUrl = '/wp-admin/admin.php?page=wc-settings';
@@ -38,7 +38,7 @@ const SendOnlyMessage = () => {
 							__html: sprintf(
 								/* translators: 1: URL to the WooCommerce store location settings */
 								__(
-									'To activate PayPal, please update your <a href="%1$s">WooCommerce store location</a> to a supported region and connect a PayPal account eligible for receiving payments.',
+									'To activate PayPal, please <a href="%1$s">update your WooCommerce store location</a> to a supported region and connect a PayPal account eligible for receiving payments.',
 									'woocommerce-paypal-payments'
 								),
 								settingsPageUrl

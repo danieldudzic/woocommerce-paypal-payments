@@ -1,6 +1,9 @@
 import { __ } from '@wordpress/i18n';
 import { CommonHooks } from '../../../../../../data';
-import { Title } from '../../../../../ReusableComponents/SettingsBlocks';
+import {
+	SettingsBlock,
+	Title,
+} from '../../../../../ReusableComponents/SettingsBlocks';
 
 const HooksTableBlock = () => {
 	const { webhooks } = CommonHooks.useWebhooks();
@@ -11,10 +14,10 @@ const HooksTableBlock = () => {
 	}
 
 	return (
-		<>
+		<SettingsBlock separatorAndGap={ false }>
 			<WebhookUrl url={ url } />
 			<WebhookEvents events={ events } />
-		</>
+		</SettingsBlock>
 	);
 };
 

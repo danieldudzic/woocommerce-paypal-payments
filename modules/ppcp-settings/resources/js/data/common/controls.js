@@ -11,11 +11,12 @@ import apiFetch from '@wordpress/api-fetch';
 
 import {
 	REST_PERSIST_PATH,
-	REST_DIRECT_AUTHENTICATION_PATH,
 	REST_CONNECTION_URL_PATH,
 	REST_HYDRATE_MERCHANT_PATH,
 	REST_REFRESH_FEATURES_PATH,
-	REST_ISU_AUTHENTICATION_PATH,
+	REST_DIRECT_AUTHENTICATION_PATH,
+	REST_OAUTH_AUTHENTICATION_PATH,
+	REST_DISCONNECT_MERCHANT_PATH,
 	REST_WEBHOOKS,
 	REST_WEBHOOKS_SIMULATE,
 } from './constants';
@@ -82,7 +83,7 @@ export const controls = {
 	} ) {
 		try {
 			return await apiFetch( {
-				path: REST_ISU_AUTHENTICATION_PATH,
+				path: REST_OAUTH_AUTHENTICATION_PATH,
 				method: 'POST',
 				data: {
 					sharedId,
@@ -96,6 +97,13 @@ export const controls = {
 				error: e,
 			};
 		}
+	},
+
+	async [ ACTION_TYPES.DO_DISCONNECT_MERCHANT ]() {
+		return await apiFetch( {
+			path: REST_DISCONNECT_MERCHANT_PATH,
+			method: 'POST',
+		} );
 	},
 
 	async [ ACTION_TYPES.DO_REFRESH_MERCHANT ]() {
@@ -138,7 +146,7 @@ export const controls = {
 		} );
 	},
 
-	async [ ACTION_TYPES.DO_CHECK_WEBHOOK_SIMULATION_STATE ]() {
+	async [ ACTION_TYPES.DO_CHECK_WEBHOOK_SIMULATION ]() {
 		return await apiFetch( {
 			path: REST_WEBHOOKS_SIMULATE,
 		} );

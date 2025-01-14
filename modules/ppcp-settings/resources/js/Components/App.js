@@ -2,20 +2,18 @@ import { useEffect, useMemo } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import classNames from 'classnames';
 
-import { OnboardingHooks } from '../../data';
-import SpinnerOverlay from '../ReusableComponents/SpinnerOverlay';
+import { OnboardingHooks, CommonHooks } from '../data';
+import SpinnerOverlay from './ReusableComponents/SpinnerOverlay';
+import SendOnlyMessage from './Screens/SendOnlyMessage';
+import OnboardingScreen from './Screens/Onboarding';
+import SettingsScreen from './Screens/Settings';
 
-import Onboarding from './Onboarding/Onboarding';
-import SettingsScreen from './SettingsScreen';
-import { useMerchantInfo } from '../../data/common/hooks';
-import SendOnlyMessage from './SendOnlyMessage';
-
-const Settings = () => {
+const SettingsApp = () => {
 	const onboardingProgress = OnboardingHooks.useSteps();
 	const {
 		isReady: merchantIsReady,
 		merchant: { isSendOnlyCountry },
-	} = useMerchantInfo();
+	} = CommonHooks.useMerchantInfo();
 
 	// Disable the "Changes you made might not be saved" browser warning.
 	useEffect( () => {
@@ -49,7 +47,7 @@ const Settings = () => {
 		}
 
 		if ( ! onboardingProgress.completed ) {
-			return <Onboarding />;
+			return <OnboardingScreen />;
 		}
 
 		return <SettingsScreen />;
@@ -63,4 +61,4 @@ const Settings = () => {
 	return <div className={ wrapperClass }>{ Content }</div>;
 };
 
-export default Settings;
+export default SettingsApp;

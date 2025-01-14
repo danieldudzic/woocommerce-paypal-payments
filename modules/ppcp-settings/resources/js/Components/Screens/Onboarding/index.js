@@ -1,27 +1,23 @@
 import Container from '../../ReusableComponents/Container';
 import { OnboardingHooks } from '../../../data';
 
-import { getSteps, getCurrentStep } from './availableSteps';
-import Navigation from './Components/Navigation';
+import { getSteps, getCurrentStep } from './Steps';
+import OnboardingNavigation from './Components/Navigation';
 
-const Onboarding = () => {
+const OnboardingScreen = () => {
 	const { step, setStep, flags } = OnboardingHooks.useSteps();
 	const Steps = getSteps( flags );
 	const currentStep = getCurrentStep( step, Steps );
 
 	const handleNext = () => setStep( currentStep.nextStep );
 	const handlePrev = () => setStep( currentStep.prevStep );
-	const handleExit = () => {
-		window.location.href = window.ppcpSettings.wcPaymentsTabUrl;
-	};
 
 	return (
 		<>
-			<Navigation
+			<OnboardingNavigation
 				stepDetails={ currentStep }
 				onNext={ handleNext }
 				onPrev={ handlePrev }
-				onExit={ handleExit }
 			/>
 
 			<Container page="onboarding">
@@ -37,4 +33,4 @@ const Onboarding = () => {
 	);
 };
 
-export default Onboarding;
+export default OnboardingScreen;
