@@ -97,8 +97,7 @@ const BcdcFlow = ( { isPayLater, storeCountry } ) => {
 						) }
 						titleType={ BADGE_BOX_TITLE_BIG }
 						description={ __(
-							'Accept debit/credit cards, PayPal, Apple Pay, Google Pay, and more.\n' +
-                            'Note: Additional application required for more methods',
+							'Accept debit/credit cards, PayPal, Apple Pay, Google Pay, and more. Note: Additional application required for more methods',
 							'woocommerce-paypal-payments'
 						) }
 					/>
@@ -159,13 +158,12 @@ const BcdcFlow = ( { isPayLater, storeCountry } ) => {
 			<Separator className="ppcp-r-page-welcome-mode-separator" />
 			<BadgeBox
 				title={ __(
-					'Expanded Checkout',
+					'Optional payment methods',
 					'woocommerce-paypal-payments'
 				) }
 				titleType={ BADGE_BOX_TITLE_BIG }
 				description={ __(
-					'Accept debit/credit cards, PayPal, Apple Pay, Google Pay, and more.\n' +
-                    'Note: Additional application required for more methods',
+					'with additional application',
 					'woocommerce-paypal-payments'
 				) }
 			/>
