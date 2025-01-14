@@ -1,19 +1,19 @@
 import { __, sprintf } from '@wordpress/i18n';
 import { SelectControl, RadioControl } from '@wordpress/components';
-import { PayPalCheckboxGroup } from '../../ReusableComponents/Fields';
+import { PayPalCheckboxGroup } from '../../../ReusableComponents/Fields';
 import { useState, useMemo, useEffect } from '@wordpress/element';
 import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js';
 
 import {
 	defaultLocationSettings,
 	paymentMethodOptions,
-} from '../../../data/settings/tab-styling-data';
+} from '../../../../data/settings/tab-styling-data';
 import {
 	STYLING_LABELS,
 	STYLING_COLORS,
 	STYLING_LAYOUTS,
 	STYLING_SHAPES,
-} from '../../../data';
+} from '../../../../data';
 
 const TabStyling = () => {
 	const [ location, setLocation ] = useState( 'cart' );
