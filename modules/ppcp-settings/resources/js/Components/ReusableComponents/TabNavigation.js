@@ -43,9 +43,7 @@ const TabNavigation = ( { tabs } ) => {
 			onSelect={ updateActivePanel }
 			tabs={ tabs }
 		>
-			{ ( tab ) => {
-				return tab.component || <>{ tab.title ?? tab.name }</>;
-			} }
+			{ ( { Component } ) => Component }
 		</TabPanel>
 	);
 };
