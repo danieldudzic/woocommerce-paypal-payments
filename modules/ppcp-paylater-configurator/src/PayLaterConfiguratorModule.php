@@ -9,11 +9,9 @@ declare(strict_types=1);
 
 namespace WooCommerce\PayPalCommerce\PayLaterConfigurator;
 
-use WooCommerce\PayPalCommerce\Onboarding\State;
 use WooCommerce\PayPalCommerce\PayLaterConfigurator\Endpoint\GetConfig;
 use WooCommerce\PayPalCommerce\PayLaterConfigurator\Endpoint\SaveConfig;
 use WooCommerce\PayPalCommerce\PayLaterConfigurator\Factory\ConfigFactory;
-use WooCommerce\PayPalCommerce\Settings\Data\OnboardingProfile;
 use WooCommerce\PayPalCommerce\Vendor\Inpsyde\Modularity\Module\ExecutableModule;
 use WooCommerce\PayPalCommerce\Vendor\Inpsyde\Modularity\Module\ExtendingModule;
 use WooCommerce\PayPalCommerce\Vendor\Inpsyde\Modularity\Module\ModuleClassNameIdTrait;
@@ -71,14 +69,11 @@ class PayLaterConfiguratorModule implements ServiceModule, ExtendingModule, Exec
 				$is_wc_settings_page = $c->get( 'wcgateway.is-wc-settings-page' );
 				$messaging_locations = $c->get( 'paylater-configurator.messaging-locations' );
 
-				if ( $c->has( 'settings.data.onboarding' ) &&
-					$c->get( 'settings.data.onboarding' )->get_completed() === true ) {
-						self::add_paylater_update_notice(
-							$messaging_locations,
-							$is_wc_settings_page,
-							$current_page_id
-						);
-				}
+				self::add_paylater_update_notice(
+					$messaging_locations,
+					$is_wc_settings_page,
+					$current_page_id
+				);
 
 				$settings = $c->get( 'wcgateway.settings' );
 				assert( $settings instanceof Settings );
