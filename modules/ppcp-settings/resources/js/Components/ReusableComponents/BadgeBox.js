@@ -1,40 +1,62 @@
 import data from '../../utils/data';
 
-const BadgeBox = ( props ) => {
-	const titleSize =
-		props.titleType && props.titleType === BADGE_BOX_TITLE_BIG
-			? BADGE_BOX_TITLE_BIG
-			: BADGE_BOX_TITLE_SMALL;
+const ImageBadge = ( { images } ) => {
+	if ( ! images || ! images.length ) {
+		return null;
+	}
+
+	return (
+		<BadgeContent>
+			<span className="ppcp-r-badge-box__title-image-badge">
+				{ images.map( ( badge ) => data().getImage( badge ) ) }
+			</span>
+		</BadgeContent>
+	);
+};
+
+// If `children` is not empty, it's output and wrapped in spaces.
+const BadgeContent = ( { children } ) => {
+	if ( ! children ) {
+		return null;
+	}
+	return <> { children } </>;
+};
+
+const BadgeBox = ( {
+	title,
+	textBadge,
+	imageBadge = [],
+	titleType = BADGE_BOX_TITLE_BIG,
+	description = '',
+} ) => {
+	let titleSize = BADGE_BOX_TITLE_SMALL;
+	if ( BADGE_BOX_TITLE_BIG === titleType ) {
+		titleSize = BADGE_BOX_TITLE_BIG;
+	}
 
 	const titleTextClassName =
 		'ppcp-r-badge-box__title-text ' +
 		`ppcp-r-badge-box__title-text--${ titleSize }`;
 
 	const titleBaseClassName = 'ppcp-r-badge-box__title';
-	const titleClassName = props.imageBadge
+	const titleClassName = imageBadge.length
 		? `${ titleBaseClassName } ppcp-r-badge-box__title--has-image-badge`
 		: titleBaseClassName;
+
 	return (
 		<div className="ppcp-r-badge-box">
 			<span className={ titleClassName }>
-				<span className={ titleTextClassName }>{ props.title }</span>
+				<span className={ titleTextClassName }>{ title }</span>
 
-				{ props.imageBadge && (
-					<span className="ppcp-r-badge-box__title-image-badge">
-						{ props.imageBadge.map( ( badge ) =>
-							data().getImage( badge )
-						) }
-					</span>
-				) }
-
-				{ props.textBadge }
+				<ImageBadge images={ imageBadge } />
+				<BadgeContent>{ textBadge }</BadgeContent>
 			</span>
 			<div className="ppcp-r-badge-box__description">
-				{ props?.description && (
+				{ description && (
 					<p
 						className="ppcp-r-badge-box__description"
 						dangerouslySetInnerHTML={ {
-							__html: props.description,
+							__html: description,
 						} }
 					></p>
 				) }

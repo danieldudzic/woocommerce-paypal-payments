@@ -17,14 +17,21 @@ const StepPaymentMethods = ( {} ) => {
 
 	const { storeCountry, storeCurrency } = CommonHooks.useWooSettings();
 
+	let screenTitle = __(
+		'Add optional payment methods to your Checkout',
+		'woocommerce-paypal-payments'
+	);
+
+	if ( 'US' === storeCountry ) {
+		screenTitle = __(
+			'Add Expanded Checkout for More Ways to Pay',
+			'woocommerce-paypal-payments'
+		);
+	}
+
 	return (
 		<div className="ppcp-r-page-optional-payment-methods">
-			<OnboardingHeader
-				title={ __(
-					'Add optional payment methods to your Checkout',
-					'woocommerce-paypal-payments'
-				) }
-			/>
+			<OnboardingHeader title={ screenTitle } />
 			<div className="ppcp-r-inner-container">
 				<SelectBoxWrapper>
 					<SelectBox

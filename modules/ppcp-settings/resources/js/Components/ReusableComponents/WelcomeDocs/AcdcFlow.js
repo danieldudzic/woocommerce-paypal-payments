@@ -53,9 +53,7 @@ const AcdcFlow = ( { isFastlane, isPayLater, storeCountry } ) => {
 						imageBadge={ [
 							'icon-payment-method-paypal-small.svg',
 						] }
-                        textBadge={
-                            <PricingTitleBadge item="plater" />
-                        }
+						textBadge={ <PricingTitleBadge item="plater" /> }
 						description={ sprintf(
 							// translators: %s: Link to PayPal business fees guide
 							__(
@@ -95,12 +93,12 @@ const AcdcFlow = ( { isFastlane, isPayLater, storeCountry } ) => {
 				<div className="ppcp-r-welcome-docs__col">
 					<BadgeBox
 						title={ __(
-							'Optional payment methods',
+							'Expanded Checkout',
 							'woocommerce-paypal-payments'
 						) }
 						titleType={ BADGE_BOX_TITLE_BIG }
 						description={ __(
-							'with additional application',
+							'Accept debit/credit cards, PayPal, Apple Pay, Google Pay, and more. Note: Additional application required for more methods',
 							'woocommerce-paypal-payments'
 						) }
 					/>
