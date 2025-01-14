@@ -1,4 +1,4 @@
-import { useCallback } from '@wordpress/element';
+import { useCallback, useLayoutEffect } from '@wordpress/element';
 import { Button, Icon } from '@wordpress/components';
 import { chevronLeft } from '@wordpress/icons';
 import classNames from 'classnames';
@@ -33,6 +33,11 @@ const TopNavigation = ( {
 			onTitleClick();
 		}
 	}, [ exitOnTitleClick, goToWooCommercePaymentsTab, onTitleClick ] );
+
+	// Removes the excess padding at the top of the navigation bar.
+	useLayoutEffect( () => {
+		window.dispatchEvent( new Event( 'resize' ) );
+	}, [] );
 
 	return (
 		<div className={ className }>
