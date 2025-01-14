@@ -9,6 +9,8 @@ declare( strict_types = 1 );
 
 namespace WooCommerce\PayPalCommerce\Settings;
 
+use WooCommerce\PayPalCommerce\PayLaterConfigurator\Endpoint\GetConfig;
+use WooCommerce\PayPalCommerce\PayLaterConfigurator\Endpoint\SaveConfig;
 use WooCommerce\PayPalCommerce\Settings\Ajax\SwitchSettingsUiEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Data\OnboardingProfile;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\RestEndpoint;
@@ -17,6 +19,7 @@ use WooCommerce\PayPalCommerce\Vendor\Inpsyde\Modularity\Module\ExecutableModule
 use WooCommerce\PayPalCommerce\Vendor\Inpsyde\Modularity\Module\ModuleClassNameIdTrait;
 use WooCommerce\PayPalCommerce\Vendor\Inpsyde\Modularity\Module\ServiceModule;
 use WooCommerce\PayPalCommerce\Vendor\Psr\Container\ContainerInterface;
+use WooCommerce\PayPalCommerce\WcGateway\Settings\Settings;
 
 /**
  * Class SettingsModule
@@ -146,19 +149,46 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 					$style_asset_file['version']
 				);
 
+				$settings = $container->get( 'wcgateway.settings' );
+				assert( $settings instanceof Settings );
+
 				wp_enqueue_style( 'ppcp-admin-settings' );
 
 				wp_enqueue_style( 'ppcp-admin-settings-font', 'https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap', array(), $style_asset_file['version'] );
+
+				$is_pay_later_configurator_available = $container->get( 'paylater-configurator.is-available' );
+
+				$script_data = array(
+					'assets'                          => array(
+						'imagesUrl' => $module_url . '/images/',
+					),
+					'wcPaymentsTabUrl'                => admin_url( 'admin.php?page=wc-settings&tab=checkout' ),
+					'debug'                           => defined( 'WP_DEBUG' ) && WP_DEBUG,
+					'isPayLaterConfiguratorAvailable' => $is_pay_later_configurator_available,
+				);
+
+				if ( $is_pay_later_configurator_available ) {
+					wp_enqueue_script(
+						'ppcp-paylater-configurator-lib',
+						'https://www.paypalobjects.com/merchant-library/merchant-configurator.js',
+						array(),
+						$script_asset_file['version'],
+						true
+					);
+
+					$script_data['PcpPayLaterConfigurator'] = array(
+						'config'           => array(),
+						'merchantClientId' => $settings->get( 'client_id' ),
+						'merchantClientId' => 'BAAIfEA1GuGq3IB27pvY0vRNkeL0ZxB2NczyPIl4cqA7OFYRUQsObu77A-1z-s4ZjZxvtQJ4R4Jz0nLYTE',
+						'partnerClientId'  => $container->get( 'api.partner_merchant_id' ),
+						'bnCode'           => PPCP_PAYPAL_BN_CODE,
+					);
+				}
+
 				wp_localize_script(
 					'ppcp-admin-settings',
 					'ppcpSettings',
-					array(
-						'assets'           => array(
-							'imagesUrl' => $module_url . '/images/',
-						),
-						'wcPaymentsTabUrl' => admin_url( 'admin.php?page=wc-settings&tab=checkout' ),
-						'debug'            => defined( 'WP_DEBUG' ) && WP_DEBUG,
-					)
+					$script_data
 				);
 			}
 		);
