@@ -29,14 +29,7 @@ class WebhookSettingsEndpoint extends RestEndpoint {
 	 *
 	 * @var string
 	 */
-	protected $rest_base = 'webhook_settings';
-
-	/**
-	 * Endpoint base to start webhook simulation and check the state
-	 *
-	 * @var string
-	 */
-	protected string $rest_simulate_base = 'webhook_simulate';
+	protected $rest_base = 'webhooks';
 
 	/**
 	 * Application webhook endpoint
@@ -67,7 +60,11 @@ class WebhookSettingsEndpoint extends RestEndpoint {
 	 * @param WebhookRegistrar  $webhook_registrar  A service that allows resubscribing webhooks.
 	 * @param WebhookSimulation $webhook_simulation A service that allows webhook simulations.
 	 */
-	public function __construct( WebhookEndpoint $webhook_endpoint, WebhookRegistrar $webhook_registrar, WebhookSimulation $webhook_simulation ) {
+	public function __construct(
+		WebhookEndpoint $webhook_endpoint,
+		WebhookRegistrar $webhook_registrar,
+		WebhookSimulation $webhook_simulation
+	) {
 		$this->webhook_endpoint   = $webhook_endpoint;
 		$this->webhook_registrar  = $webhook_registrar;
 		$this->webhook_simulation = $webhook_simulation;
@@ -77,6 +74,10 @@ class WebhookSettingsEndpoint extends RestEndpoint {
 	 * Configure REST API routes.
 	 */
 	public function register_routes() : void {
+		/**
+		 * GET /wp-json/wc/v3/wc_paypal/webhooks
+		 * POST /wp-json/wc/v3/wc_paypal/webhooks
+		 */
 		register_rest_route(
 			$this->namespace,
 			'/' . $this->rest_base,
@@ -94,9 +95,13 @@ class WebhookSettingsEndpoint extends RestEndpoint {
 			)
 		);
 
+		/**
+		 * GET /wp-json/wc/v3/wc_paypal/webhooks/simulate
+		 * POST /wp-json/wc/v3/wc_paypal/webhooks/simulate
+		 */
 		register_rest_route(
 			$this->namespace,
-			'/' . $this->rest_simulate_base,
+			'/' . $this->rest_base . '/simulate',
 			array(
 				array(
 					'methods'             => WP_REST_Server::READABLE,

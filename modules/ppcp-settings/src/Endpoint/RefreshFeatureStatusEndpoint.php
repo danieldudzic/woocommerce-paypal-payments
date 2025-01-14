@@ -25,7 +25,7 @@ class RefreshFeatureStatusEndpoint extends RestEndpoint {
 	 *
 	 * @var string
 	 */
-	protected $rest_base = 'refresh-feature-status';
+	protected $rest_base = 'refresh-features';
 
 	/**
 	 * Cache timeout in seconds.
@@ -82,7 +82,10 @@ class RefreshFeatureStatusEndpoint extends RestEndpoint {
 	/**
 	 * Configure REST API routes.
 	 */
-	public function register_routes() {
+	public function register_routes() : void {
+		/**
+		 * POST /wp-json/wc/v3/wc_paypal/refresh-features
+		 */
 		register_rest_route(
 			$this->namespace,
 			'/' . $this->rest_base,

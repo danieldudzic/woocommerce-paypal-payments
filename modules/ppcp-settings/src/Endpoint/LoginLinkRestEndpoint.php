@@ -52,6 +52,13 @@ class LoginLinkRestEndpoint extends RestEndpoint {
 	 * Configure REST API routes.
 	 */
 	public function register_routes() : void {
+		/**
+		 * POST /wp-json/wc/v3/wc_paypal/login_link
+		 * {
+		 *     useSandbox
+		 *     products
+		 * }
+		 */
 		register_rest_route(
 			$this->namespace,
 			'/' . $this->rest_base,

@@ -67,6 +67,14 @@ class AuthenticationRestEndpoint extends RestEndpoint {
 	 * Configure REST API routes.
 	 */
 	public function register_routes() : void {
+		/**
+		 * POST /wp-json/wc/v3/wc_paypal/authenticate/direct
+		 * {
+		 *     clientId
+		 *     clientSecret
+		 *     useSandbox
+		 * }
+		 */
 		register_rest_route(
 			$this->namespace,
 			'/' . $this->rest_base . '/direct',
@@ -97,12 +105,20 @@ class AuthenticationRestEndpoint extends RestEndpoint {
 			)
 		);
 
+		/**
+		 * POST /wp-json/wc/v3/wc_paypal/authenticate/oauth
+		 * {
+		 *     sharedId
+		 *     authCode
+		 *     useSandbox
+		 * }
+		 */
 		register_rest_route(
 			$this->namespace,
-			'/' . $this->rest_base . '/isu',
+			'/' . $this->rest_base . '/oauth',
 			array(
 				'methods'             => WP_REST_Server::EDITABLE,
-				'callback'            => array( $this, 'connect_isu' ),
+				'callback'            => array( $this, 'connect_oauth' ),
 				'permission_callback' => array( $this, 'check_permission' ),
 				'args'                => array(
 					'sharedId'   => array(
@@ -121,6 +137,19 @@ class AuthenticationRestEndpoint extends RestEndpoint {
 						'sanitize_callback' => array( $this, 'to_boolean' ),
 					),
 				),
+			)
+		);
+
+		/**
+		 * POST /wp-json/wc/v3/wc_paypal/authenticate/disconnect
+		 */
+		register_rest_route(
+			$this->namespace,
+			'/' . $this->rest_base . '/disconnect',
+			array(
+				'methods'             => WP_REST_Server::EDITABLE,
+				'callback'            => array( $this, 'disconnect' ),
+				'permission_callback' => array( $this, 'check_permission' ),
 			)
 		);
 	}
@@ -152,14 +181,14 @@ class AuthenticationRestEndpoint extends RestEndpoint {
 	}
 
 	/**
-	 * ISU login: Retrieves clientId and clientSecret using a sharedId and authCode.
+	 * OAuth login: Retrieves clientId and clientSecret using a sharedId and authCode.
 	 *
-	 * This is the final step in the UI-driven login via the ISU popup, which
+	 * This is the final step in the UI-driven login via the OAuth popup, which
 	 * is triggered by the LoginLinkRestEndpoint URL.
 	 *
 	 * @param WP_REST_Request $request Full data about the request.
 	 */
-	public function connect_isu( WP_REST_Request $request ) : WP_REST_Response {
+	public function connect_oauth( WP_REST_Request $request ) : WP_REST_Response {
 		$shared_id   = $request->get_param( 'sharedId' );
 		$auth_code   = $request->get_param( 'authCode' );
 		$use_sandbox = $request->get_param( 'useSandbox' );
@@ -175,5 +204,16 @@ class AuthenticationRestEndpoint extends RestEndpoint {
 		$response = $this->sanitize_for_javascript( $this->response_map, $account );
 
 		return $this->return_success( $response );
+	}
+
+	/**
+	 * Disconnect the merchant and clear the authentication details.
+	 *
+	 * @return WP_REST_Response
+	 */
+	public function disconnect() : WP_REST_Response {
+		$this->authentication_manager->disconnect();
+
+		return $this->return_success( 'OK' );
 	}
 }
