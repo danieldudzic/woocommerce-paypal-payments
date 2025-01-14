@@ -179,7 +179,6 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 					$script_data['PcpPayLaterConfigurator'] = array(
 						'config'           => array(),
 						'merchantClientId' => $settings->get( 'client_id' ),
-						'merchantClientId' => 'BAAIfEA1GuGq3IB27pvY0vRNkeL0ZxB2NczyPIl4cqA7OFYRUQsObu77A-1z-s4ZjZxvtQJ4R4Jz0nLYTE',
 						'partnerClientId'  => $container->get( 'api.partner_merchant_id' ),
 						'bnCode'           => PPCP_PAYPAL_BN_CODE,
 					);
