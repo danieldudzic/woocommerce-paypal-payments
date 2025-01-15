@@ -1,9 +1,11 @@
 import { __, sprintf } from '@wordpress/i18n';
 
-import BadgeBox, { BADGE_BOX_TITLE_BIG } from '../BadgeBox';
-import Separator from '../Separator';
-import OptionalPaymentMethods from '../OptionalPaymentMethods/OptionalPaymentMethods';
-import PricingTitleBadge from '../PricingTitleBadge';
+import BadgeBox, {
+	BADGE_BOX_TITLE_BIG,
+} from '../../../ReusableComponents/BadgeBox';
+import Separator from '../../../ReusableComponents/Separator';
+import PricingTitleBadge from '../../../ReusableComponents/PricingTitleBadge';
+import OptionalPaymentMethods from './OptionalPaymentMethods';
 
 const BcdcFlow = ( { isPayLater, storeCountry } ) => {
 	if ( isPayLater && storeCountry === 'US' ) {
@@ -97,8 +99,7 @@ const BcdcFlow = ( { isPayLater, storeCountry } ) => {
 						) }
 						titleType={ BADGE_BOX_TITLE_BIG }
 						description={ __(
-							'Accept debit/credit cards, PayPal, Apple Pay, Google Pay, and more.\n' +
-                            'Note: Additional application required for more methods',
+							'Accept debit/credit cards, PayPal, Apple Pay, Google Pay, and more. Note: Additional application required for more methods',
 							'woocommerce-paypal-payments'
 						) }
 					/>
@@ -159,13 +160,12 @@ const BcdcFlow = ( { isPayLater, storeCountry } ) => {
 			<Separator className="ppcp-r-page-welcome-mode-separator" />
 			<BadgeBox
 				title={ __(
-					'Expanded Checkout',
+					'Optional payment methods',
 					'woocommerce-paypal-payments'
 				) }
 				titleType={ BADGE_BOX_TITLE_BIG }
 				description={ __(
-					'Accept debit/credit cards, PayPal, Apple Pay, Google Pay, and more.\n' +
-                    'Note: Additional application required for more methods',
+					'with additional application',
 					'woocommerce-paypal-payments'
 				) }
 			/>

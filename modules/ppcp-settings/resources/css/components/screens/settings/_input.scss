@@ -1,0 +1,77 @@
+// Fields
+.ppcp-r {
+	input[type='text'] {
+		border-color: $color-gray-700;
+		width: 100%;
+		max-width: 100%;
+		color: $color-gray-800;
+
+		&::placeholder {
+			color: $color-gray-700;
+		}
+	}
+}
+
+// MultiSelect control
+.ppcp-r {
+	&__radio-wrapper {
+		align-items: flex-start;
+		gap: 12px;
+	}
+
+	&__radio-content {
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+
+		label {
+			font-weight: 600;
+		}
+	}
+
+	&__radio-content-additional {
+		padding-left: 32px;
+	}
+
+	// Select control styles
+	&__control {
+		border-radius: 2px;
+		border-color: $color-gray-700;
+		min-height: auto;
+		padding: 0;
+	}
+
+	&__input-container {
+		padding: 0;
+		margin: 0;
+	}
+
+	&__value-container {
+		padding: 0 0 0 7px;
+	}
+
+	&__indicator {
+		padding: 5px;
+	}
+
+	&__indicator-separator {
+		display: none;
+	}
+
+	&__value-container--has-value {
+		.ppcp-r__single-value {
+			color: $color-gray-800;
+		}
+	}
+
+	&__placeholder,
+	&__single-value {
+		@include font(13, 20, 400);
+	}
+
+	&__option {
+		&--is-selected {
+			background-color: $color-gray-200;
+		}
+	}
+}

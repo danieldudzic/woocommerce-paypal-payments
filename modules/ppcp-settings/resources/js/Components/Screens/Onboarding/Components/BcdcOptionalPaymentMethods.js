@@ -1,7 +1,7 @@
 import { __, sprintf } from '@wordpress/i18n';
 
-import BadgeBox from '../BadgeBox';
-import PricingTitleBadge from '../PricingTitleBadge';
+import BadgeBox from '../../../ReusableComponents/BadgeBox';
+import PricingTitleBadge from '../../../ReusableComponents/PricingTitleBadge';
 
 const BcdcOptionalPaymentMethods = ( { isPayLater, storeCountry } ) => {
 	if ( isPayLater && storeCountry === 'us' ) {

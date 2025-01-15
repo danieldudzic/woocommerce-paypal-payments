@@ -107,23 +107,20 @@ const SimulationBlock = () => {
 	};
 
 	return (
-		<>
-			<ButtonSettingsBlock
-				title={ __(
-					'Simulate webhooks',
-					'woocommerce-paypal-payments'
-				) }
-				actionProps={ {
-					buttonType: 'secondary',
-					isBusy: simulating,
-					callback: () => startSimulation( 30 ),
-					value: __(
-						'Simulate webhooks',
-						'woocommerce-paypal-payments'
-					),
-				} }
-			/>
-		</>
+		<ButtonSettingsBlock
+			title={ __( 'Test webhooks', 'woocommerce-paypal-payments' ) }
+			description={ __(
+				'Send a test-webhook from PayPal to confirm that webhooks are being received and processed correctly.',
+				'woocommerce-paypal-payments'
+			) }
+			separatorAndGap={ false }
+			actionProps={ {
+				buttonType: 'secondary',
+				isBusy: simulating,
+				callback: () => startSimulation( 30 ),
+				value: __( 'Simulate webhooks', 'woocommerce-paypal-payments' ),
+			} }
+		/>
 	);
 };
 export default SimulationBlock;

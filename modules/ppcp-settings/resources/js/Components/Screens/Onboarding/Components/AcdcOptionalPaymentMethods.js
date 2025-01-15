@@ -1,8 +1,8 @@
 import { __, sprintf } from '@wordpress/i18n';
 
-import BadgeBox from '../BadgeBox';
-import Separator from '../Separator';
-import PricingTitleBadge from '../PricingTitleBadge';
+import BadgeBox from '../../../ReusableComponents/BadgeBox';
+import Separator from '../../../ReusableComponents/Separator';
+import PricingTitleBadge from '../../../ReusableComponents/PricingTitleBadge';
 
 const AcdcOptionalPaymentMethods = ( {
 	isFastlane,
