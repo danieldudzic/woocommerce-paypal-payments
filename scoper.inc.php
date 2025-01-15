@@ -30,7 +30,10 @@ return array(
 	'prefix'                  => 'WooCommerce\\PayPalCommerce\\Vendor',
 	'finders'                 => $finders,
 	'patchers'                => array(),
-	'exclude-files'           => array( '/uninstall.php' ), // list<string>.
+	'exclude-files'           => array(
+		// Explicitly exclude the root files or any other files that should not be scoped.
+		__DIR__ . '/*.php',
+	), // list<string>.
 	'exclude-namespaces'      => array(
 		'/^(?!Psr).*/',
 	), // list<string|regex>.
