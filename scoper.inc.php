@@ -12,18 +12,24 @@ use Isolated\Symfony\Component\Finder\Finder;
 return array(
 	'prefix'             => 'WooCommerce\\PayPalCommerce\\Vendor',
 	'finders'            => array(
-		// Only scope the psr/log package.
+		// Include only the Psr\Log package for scoping.
 		Finder::create()
 			->files()
-			->in(__DIR__ . '/vendor/psr/log'),
+			->in( __DIR__ . '/vendor/psr/log' ),
+
+		// Exclude all other project files from scoping.
+		Finder::create()
+			->files()
+			->in( __DIR__ )
+			->exclude( array( 'vendor' ) ),
+	),
+	'exclude-classes'    => array(
+		// Expose all project namespaces to prevent scoping.
+		'*',
 	),
 	'exclude-namespaces' => array(
-		// Do not scope any other namespaces.
-		'WooCommerce\\PayPalCommerce\\*',
+		'*',
 	),
-	'exclude-files'      => array(
-		// Explicitly exclude the root files or any other files that should not be scoped.
-		__DIR__ . '/*.php',
-	),
+	'exclude-files'      => array(),
 	'patchers'           => array(),
 );
