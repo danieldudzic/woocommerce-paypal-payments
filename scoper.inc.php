@@ -15,6 +15,15 @@ return array(
 		// Include only the Psr\Log package for scoping.
 		Finder::create()
 			->files()
+			->exclude(
+				array(
+					'src',
+					'tests',
+					'modules',
+					'lib',
+					'api',
+				)
+			)
 			->in( __DIR__ . '/vendor/psr/log' ),
 	),
 	'exclude-files'           => array(
