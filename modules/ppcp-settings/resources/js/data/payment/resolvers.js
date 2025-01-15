@@ -26,7 +26,6 @@ export const resolvers = {
 			yield dispatch( STORE_NAME ).setIsReady( true );
 		} catch ( e ) {
 			yield dispatch( 'core/notices' ).createErrorNotice(
-				// TODO: Add the module name to the error message.
 				__(
 					'Error retrieving payment details.',
 					'woocommerce-paypal-payments'

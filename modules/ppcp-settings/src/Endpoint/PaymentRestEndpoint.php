@@ -9,6 +9,17 @@ declare( strict_types = 1 );
 
 namespace WooCommerce\PayPalCommerce\Settings\Endpoint;
 
+use WooCommerce\PayPalCommerce\Googlepay\GooglePayGateway;
+use WooCommerce\PayPalCommerce\LocalAlternativePaymentMethods\BancontactGateway;
+use WooCommerce\PayPalCommerce\LocalAlternativePaymentMethods\BlikGateway;
+use WooCommerce\PayPalCommerce\LocalAlternativePaymentMethods\IDealGateway;
+use WooCommerce\PayPalCommerce\LocalAlternativePaymentMethods\MultibancoGateway;
+use WooCommerce\PayPalCommerce\LocalAlternativePaymentMethods\MyBankGateway;
+use WooCommerce\PayPalCommerce\LocalAlternativePaymentMethods\P24Gateway;
+use WooCommerce\PayPalCommerce\LocalAlternativePaymentMethods\TrustlyGateway;
+use WooCommerce\PayPalCommerce\WcGateway\Gateway\CardButtonGateway;
+use WooCommerce\PayPalCommerce\WcGateway\Gateway\CreditCardGateway;
+use WooCommerce\PayPalCommerce\WcGateway\Gateway\PayPalGateway;
 use WP_REST_Server;
 use WP_REST_Response;
 use WP_REST_Request;
@@ -35,11 +46,21 @@ class PaymentRestEndpoint extends RestEndpoint {
 	 * @var array
 	 */
 	private array $gateway_ids = array(
-		'ppcp-gateway',
-		'ppcp-credit-card-gateway',
+		PayPalGateway::ID,
+		CardButtonGateway::ID,
+
+		CreditCardGateway::ID,
 		ApplePayGateway::ID,
+		GooglePayGateway::ID,
+
+		BancontactGateway::ID,
+		BlikGateway::ID,
 		EPSGateway::ID,
-		// Todo: Add all payment methods. Maybe via a filter instead of hard-coding it?
+		IDealGateway::ID,
+		MyBankGateway::ID,
+		P24Gateway::ID,
+		TrustlyGateway::ID,
+		MultibancoGateway::ID,
 	);
 
 	/**
