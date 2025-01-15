@@ -1,14 +1,14 @@
 import { SelectControl } from '@wordpress/components';
 import { __, sprintf } from '@wordpress/i18n';
 
+// Dummy hook.
+import { useStylingProps } from '../../Tabs/TabStyling';
+
 import StylingSection from './StylingSection';
 
-const LocationSelector = ( { choices = [], location, setLocation } ) => {
-	// TODO. move to store/hook.
-	const locationData = choices.find(
-		( choice ) => choice.value === location
-	);
-	const { description, link } = locationData || {};
+const LocationSelector = ( { location, setLocation } ) => {
+	const { locationChoices, locationDetails } = useStylingProps( location );
+	const { description, link } = locationDetails || {};
 	const locationDescription = sprintf( description, link );
 
 	return (
@@ -23,9 +23,9 @@ const LocationSelector = ( { choices = [], location, setLocation } ) => {
 			<SelectControl
 				className="ppcp-r-styling__select"
 				label={ __( 'Locations', 'woocommerce-paypal-payments' ) }
+				options={ locationChoices }
 				value={ location }
-				options={ choices }
-				onChange={ ( choice ) => setLocation( choice ) }
+				onChange={ setLocation }
 			/>
 			<p dangerouslySetInnerHTML={ { __html: locationDescription } } />
 		</StylingSection>

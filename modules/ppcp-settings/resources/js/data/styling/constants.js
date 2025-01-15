@@ -145,3 +145,22 @@ export const STYLING_SHAPES = {
 		label: __( 'Rectangle', 'woocommerce-paypal-payments' ),
 	},
 };
+
+export const STYLING_PAYMENT_METHODS = {
+	venmo: {
+		value: 'venmo',
+		label: __( 'Venmo', 'woocommerce-paypal-payments' ),
+	},
+	paylater: {
+		value: 'paylater',
+		label: __( 'Pay Later', 'woocommerce-paypal-payments' ),
+	},
+	googlepay: {
+		value: 'googlepay',
+		label: __( 'Google Pay', 'woocommerce-paypal-payments' ),
+	},
+	applepay: {
+		value: 'applepay',
+		label: __( 'Apple Pay', 'woocommerce-paypal-payments' ),
+	},
+};

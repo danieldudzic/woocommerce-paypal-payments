@@ -1,22 +1,113 @@
-import { useState } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
+import { useCallback, useState } from '@wordpress/element';
 
-import { defaultLocationSettings } from '../../../../data/settings/tab-styling-data';
+import {
+	STYLING_COLORS,
+	STYLING_LABELS,
+	STYLING_LAYOUTS,
+	STYLING_LOCATIONS,
+	STYLING_PAYMENT_METHODS,
+	STYLING_SHAPES,
+} from '../../../../data/styling/constants';
 
 import PreviewPanel from '../Components/Styling/PreviewPanel';
 import SettingsPanel from '../Components/Styling/SettingsPanel';
 
-const TabStyling = () => {
-	const [ locationSettings, setLocationSettings ] = useState( {
-		...defaultLocationSettings,
-	} );
-
-	return (
-		<div className="ppcp-r-styling">
-			<SettingsPanel />
-
-			<PreviewPanel settings={ locationSettings.settings } />
-		</div>
-	);
-};
+const TabStyling = () => (
+	<div className="ppcp-r-styling">
+		<SettingsPanel />
+		<PreviewPanel />
+	</div>
+);
 
 export default TabStyling;
+
+// ----------------------------------------------------------------------------
+
+// Temporary "hook" to extract logic before moving it to the Redux store.
+export const useStylingLocation = () => {
+	const [ location, setLocation ] = useState( 'cart' );
+
+	return { location, setLocation };
+};
+
+export const useStylingProps = ( location ) => {
+	const defaultStyle = {
+		paymentMethods: [],
+		color: 'gold',
+		shape: 'rect',
+		label: 'paypal',
+		layout: 'vertical',
+		tagline: false,
+	};
+
+	const [ styles, setStyles ] = useState( {
+		cart: { ...defaultStyle, label: 'checkout' },
+		'classic-checkout': { ...defaultStyle },
+		'express-checkout': { ...defaultStyle, label: 'pay' },
+		'mini-cart': { ...defaultStyle, label: 'pay' },
+		'product-page': { ...defaultStyle },
+	} );
+
+	const getLocationStyle = useCallback(
+		( prop ) => styles[ location ]?.[ prop ],
+		[ location, styles ]
+	);
+
+	const setLocationStyle = useCallback(
+		( prop, value ) => {
+			setStyles( ( prevState ) => ( {
+				...prevState,
+				[ location ]: {
+					...prevState[ location ],
+					[ prop ]: value,
+				},
+			} ) );
+		},
+		[ location ]
+	);
+
+	return {
+		// Location (drop down).
+		locationChoices: Object.values( STYLING_LOCATIONS ),
+		locationDetails: STYLING_LOCATIONS[ location ],
+
+		// Payment methods (checkboxes).
+		paymentMethodChoices: Object.values( STYLING_PAYMENT_METHODS ),
+		paymentMethods: getLocationStyle( 'paymentMethods' ),
+		setPaymentMethods: ( methods ) =>
+			setLocationStyle( 'paymentMethods', methods ),
+
+		// Color (dropdown).
+		colorChoices: Object.values( STYLING_COLORS ),
+		color: getLocationStyle( 'color' ),
+		setColor: ( color ) => setLocationStyle( 'color', color ),
+
+		// Shape (radio).
+		shapeChoices: Object.values( STYLING_SHAPES ),
+		shape: getLocationStyle( 'shape' ),
+		setShape: ( shape ) => setLocationStyle( 'shape', shape ),
+
+		// Label (dropdown).
+		labelChoices: Object.values( STYLING_LABELS ),
+		label: getLocationStyle( 'label' ),
+		setLabel: ( label ) => setLocationStyle( 'label', label ),
+
+		// Layout (radio).
+		layoutChoices: Object.values( STYLING_LAYOUTS ),
+		supportsLayout: true,
+		layout: getLocationStyle( 'layout' ),
+		setLayout: ( layout ) => setLocationStyle( 'layout', layout ),
+
+		// Tagline (checkbox).
+		taglineChoices: [
+			{
+				value: 'tagline',
+				label: __( 'Enable Tagline', 'woocommerce-paypal-payments' ),
+			},
+		],
+		supportsTagline: true,
+		tagline: getLocationStyle( 'tagline' ),
+		setTagline: ( tagline ) => setLocationStyle( 'tagline', tagline ),
+	};
+};

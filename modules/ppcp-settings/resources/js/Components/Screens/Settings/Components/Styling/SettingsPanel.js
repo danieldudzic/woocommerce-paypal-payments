@@ -1,54 +1,28 @@
 import { __ } from '@wordpress/i18n';
-import { useState } from '@wordpress/element';
 import { RadioControl, SelectControl } from '@wordpress/components';
 
-import { STYLING_LOCATIONS } from '../../../../../data';
+// Dummy hook.
+import { useStylingLocation, useStylingProps } from '../../Tabs/TabStyling';
+
 import { PayPalCheckboxGroup } from '../../../../ReusableComponents/Fields';
 import LocationSelector from './LocationSelector';
 import StylingSection from './StylingSection';
 
 const SettingsPanel = () => {
-	const { location, setLocation } = useState( 'cart' );
-
-	const currentLocationSettings = {
-		settings: { shape: '', label: '', color: '' },
-	};
-	const handleChange = () => {};
+	const { location, setLocation } = useStylingLocation();
 
 	return (
 		<div className="settings-panel">
 			<LocationSelector
-				choices={ Object.values( STYLING_LOCATIONS ) }
 				location={ location }
 				setLocation={ setLocation }
 			/>
-
-			<SectionPaymentMethods
-				locationSettings={ currentLocationSettings }
-				updateButtonSettings={ handleChange }
-			/>
-
-			<SectionButtonLayout
-				locationSettings={ currentLocationSettings }
-				updateButtonStyle={ handleChange }
-			/>
-
-			<SectionButtonShape
-				locationSettings={ currentLocationSettings }
-				updateButtonStyle={ handleChange }
-			/>
-			<SectionButtonLabel
-				locationSettings={ currentLocationSettings }
-				updateButtonStyle={ handleChange }
-			/>
-			<SectionButtonColor
-				locationSettings={ currentLocationSettings }
-				updateButtonStyle={ handleChange }
-			/>
-			<SectionButtonTagline
-				locationSettings={ currentLocationSettings }
-				updateButtonStyle={ handleChange }
-			/>
+			<SectionPaymentMethods location={ location } />
+			<SectionButtonLayout location={ location } />
+			<SectionButtonShape location={ location } />
+			<SectionButtonLabel location={ location } />
+			<SectionButtonColor location={ location } />
+			<SectionButtonTagline location={ location } />
 		</div>
 	);
 };
@@ -56,129 +30,115 @@ const SettingsPanel = () => {
 export default SettingsPanel;
 
 // -----
-const SectionPaymentMethods = ( {
-	locationSettings,
-	updateButtonSettings,
-} ) => {
-	const paymentMethodOptions = [];
+const SectionPaymentMethods = ( { location } ) => {
+	const { paymentMethods, setPaymentMethods, paymentMethodChoices } =
+		useStylingProps( location );
 
 	return (
 		<StylingSection
 			title={ __( 'Payment Methods', 'woocommerce-paypal-payments' ) }
-			className="ppcp-r-styling__section--rc"
+			className="payment-methods"
 		>
-			<div className="ppcp-r-styling__payment-method-checkboxes">
-				<PayPalCheckboxGroup
-					value={ paymentMethodOptions }
-					changeCallback={ ( newValue ) =>
-						updateButtonSettings( 'paymentMethods', newValue )
-					}
-					currentValue={ locationSettings.paymentMethods }
-				/>
-			</div>
+			<PayPalCheckboxGroup
+				value={ paymentMethodChoices }
+				currentValue={ paymentMethods }
+				changeCallback={ setPaymentMethods }
+			/>
 		</StylingSection>
 	);
 };
 
-const SectionButtonLayout = ( { locationSettings, updateButtonStyle } ) => {
-	const buttonLayoutIsAllowed =
-		locationSettings.layout && locationSettings.tagline === false;
-	return (
-		buttonLayoutIsAllowed && (
-			<StylingSection
-				className="ppcp-r-styling__section--rc"
-				title={ __( 'Button Layout', 'woocommerce-paypal-payments' ) }
-			>
-				<RadioControl
-					className="ppcp-r__horizontal-control"
-					onChange={ ( newValue ) =>
-						updateButtonStyle( 'layout', newValue )
-					}
-					selected={ locationSettings.layout }
-					options={ [] }
-				/>
-			</StylingSection>
-		)
-	);
-};
+const SectionButtonLayout = ( { location } ) => {
+	const { supportsLayout, layout, setLayout, layoutChoices } =
+		useStylingProps( location );
 
-const SectionButtonShape = ( { locationSettings, updateButtonStyle } ) => {
+	if ( ! supportsLayout ) {
+		return null;
+	}
+
 	return (
 		<StylingSection
-			title={ __( 'Shape', 'woocommerce-paypal-payments' ) }
-			className="ppcp-r-styling__section--rc"
+			className="button-layout"
+			title={ __( 'Button Layout', 'woocommerce-paypal-payments' ) }
 		>
 			<RadioControl
 				className="ppcp-r__horizontal-control"
-				onChange={ ( newValue ) =>
-					updateButtonStyle( 'shape', newValue )
-				}
-				selected={ locationSettings.shape }
-				options={ [] }
+				options={ layoutChoices }
+				selected={ layout }
+				onChange={ setLayout }
 			/>
 		</StylingSection>
 	);
 };
 
-const SectionButtonLabel = ( { locationSettings, updateButtonStyle } ) => {
+const SectionButtonShape = ( { location } ) => {
+	const { shape, setShape, shapeChoices } = useStylingProps( location );
+
+	return (
+		<StylingSection
+			title={ __( 'Shape', 'woocommerce-paypal-payments' ) }
+			className="button-shape"
+		>
+			<RadioControl
+				className="ppcp-r__horizontal-control"
+				options={ shapeChoices }
+				selected={ shape }
+				onChange={ setShape }
+			/>
+		</StylingSection>
+	);
+};
+
+const SectionButtonLabel = ( { location } ) => {
+	const { label, setLabel, labelChoices } = useStylingProps( location );
+
 	return (
 		<StylingSection>
 			<SelectControl
-				className="ppcp-r-styling__select"
-				onChange={ ( newValue ) =>
-					updateButtonStyle( 'label', newValue )
-				}
-				value={ locationSettings.label }
 				label={ __( 'Button Label', 'woocommerce-paypal-payments' ) }
-				options={ [] }
+				className="ppcp-r-styling__select"
+				options={ labelChoices }
+				value={ label }
+				onChange={ setLabel }
 			/>
 		</StylingSection>
 	);
 };
 
-const SectionButtonColor = ( { locationSettings, updateButtonStyle } ) => {
+const SectionButtonColor = ( { location } ) => {
+	const { color, setColor, colorChoices } = useStylingProps( location );
+
 	return (
 		<StylingSection>
 			<SelectControl
-				className=" ppcp-r-styling__select"
 				label={ __( 'Button Color', 'woocommerce-paypal-payments' ) }
-				onChange={ ( newValue ) =>
-					updateButtonStyle( 'color', newValue )
-				}
-				value={ locationSettings.color }
-				options={ [] }
+				className=" ppcp-r-styling__select"
+				options={ colorChoices }
+				value={ color }
+				onChange={ setColor }
 			/>
 		</StylingSection>
 	);
 };
 
-const SectionButtonTagline = ( { locationSettings, updateButtonStyle } ) => {
-	const taglineIsAllowed =
-		locationSettings.hasOwnProperty( 'tagline' ) &&
-		locationSettings.layout === 'horizontal';
+const SectionButtonTagline = ( { location } ) => {
+	const { supportsTagline, tagline, setTagline, taglineChoices } =
+		useStylingProps( location );
+
+	if ( ! supportsTagline ) {
+		return null;
+	}
 
 	return (
-		taglineIsAllowed && (
-			<StylingSection
-				title={ __( 'Tagline', 'woocommerce-paypal-payments' ) }
-				className="ppcp-r-styling__section--rc"
-			>
-				<PayPalCheckboxGroup
-					value={ [
-						{
-							value: 'tagline',
-							label: __(
-								'Enable Tagline',
-								'woocommerce-paypal-payments'
-							),
-						},
-					] }
-					changeCallback={ ( newValue ) => {
-						updateButtonStyle( 'tagline', newValue );
-					} }
-					currentValue={ locationSettings.tagline }
-				/>
-			</StylingSection>
-		)
+		<StylingSection
+			title={ __( 'Tagline', 'woocommerce-paypal-payments' ) }
+			className="tagline"
+		>
+			<PayPalCheckboxGroup
+				value={ taglineChoices }
+				currentValue={ tagline }
+				changeCallback={ setTagline }
+			/>
+		</StylingSection>
 	);
 };
