@@ -28,16 +28,15 @@ use WP_User_Query;
 
 /**
  * Class StatusReportModule
+ * @psalm-suppress MissingConstructor
  */
 class VaultingModule implements ServiceModule, ExtendingModule, ExecutableModule {
 	use ModuleClassNameIdTrait, ContextTrait;
 
 	/**
-	 * Session handler.
-	 *
 	 * @var SessionHandler
 	 */
-	protected $session_handler;
+	protected SessionHandler $session_handler;
 
 	/**
 	 * {@inheritDoc}
