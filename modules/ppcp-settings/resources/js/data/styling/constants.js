@@ -35,7 +35,7 @@ export const STYLING_LOCATIONS = {
 		label: __( 'Cart', 'woocommerce-paypal-payments' ),
 		// translators: %s is the URL to a documentation page.
 		description: __(
-			'Customize the appearance of the PayPal smart buttons on the <a href="%s">Cart page</a> and select which additional payment buttons to display in this location.',
+			'More details on the <a href="%s">Cart page</a>.',
 			'wooocommerce-paypal-payments'
 		),
 		link: '#',
@@ -45,7 +45,7 @@ export const STYLING_LOCATIONS = {
 		label: __( 'Classic Checkout', 'woocommerce-paypal-payments' ),
 		// translators: %s is the URL to a documentation page.
 		description: __(
-			'Customize the appearance of the PayPal smart buttons on the <a href="%s">Classic Checkout page</a> and choose which additional payment buttons to display in this location.',
+			'More details on the <a href="%s">Classic Checkout page</a>.',
 			'wooocommerce-paypal-payments'
 		),
 		link: '#',
@@ -55,7 +55,7 @@ export const STYLING_LOCATIONS = {
 		label: __( 'Express Checkout', 'woocommerce-paypal-payments' ),
 		// translators: %s is the URL to a documentation page.
 		description: __(
-			'Customize the appearance of the PayPal smart buttons on the <a href="%s">Express Checkout location</a> and choose which additional payment buttons to display in this location.',
+			'More details on the <a href="%s">Express Checkout location</a>.',
 			'wooocommerce-paypal-payments'
 		),
 		link: '#',
@@ -65,7 +65,7 @@ export const STYLING_LOCATIONS = {
 		label: __( 'Mini Cart', 'woocommerce-paypel-payements' ),
 		// translators: %s is the URL to a documentation page.
 		description: __(
-			'Customize the appearance of the PayPal smart buttons on the <a href="%s">Mini Cart</a> and choose which additional payment buttons to display in this location.',
+			'More details on the <a href="%s">Mini Cart</a>.',
 			'wooocommerce-paypal-payments'
 		),
 		link: '#',
@@ -75,7 +75,7 @@ export const STYLING_LOCATIONS = {
 		label: __( 'Product Page', 'woocommerce-paypal-payments' ),
 		// translators: %s is the URL to a documentation page.
 		description: __(
-			'Customize the appearance of the PayPal smart buttons on the <a href="%s">Product Page</a> and choose which additional payment buttons to display in this location.',
+			'More details on the <a href="%s">Product Page</a>.',
 			'wooocommerce-paypal-payments'
 		),
 		link: '#',
