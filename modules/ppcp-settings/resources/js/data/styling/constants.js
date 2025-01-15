@@ -147,6 +147,12 @@ export const STYLING_SHAPES = {
 };
 
 export const STYLING_PAYMENT_METHODS = {
+	paypal: {
+		value: '',
+		label: __( 'PayPal', 'woocommerce-paypal-payments' ),
+		checked: true,
+		disabled: true,
+	},
 	venmo: {
 		value: 'venmo',
 		label: __( 'Venmo', 'woocommerce-paypal-payments' ),

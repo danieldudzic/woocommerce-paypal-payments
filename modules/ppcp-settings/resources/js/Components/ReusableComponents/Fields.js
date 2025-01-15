@@ -1,107 +1,136 @@
 import { CheckboxControl } from '@wordpress/components';
+import classNames from 'classnames';
 
-export const PayPalCheckbox = ( props ) => {
-	let isChecked = null;
+export const PayPalCheckbox = ( {
+	currentValue,
+	label,
+	value,
+	checked = null,
+	disabled = null,
+	changeCallback,
+} ) => {
+	let isChecked = checked;
 
-	if ( Array.isArray( props.currentValue ) ) {
-		isChecked = props.currentValue.includes( props.value );
-	} else {
-		isChecked = props.currentValue;
+	if ( null === isChecked ) {
+		if ( Array.isArray( currentValue ) ) {
+			isChecked = currentValue.includes( value );
+		} else {
+			isChecked = currentValue;
+		}
 	}
+
+	const onChange = ( newState ) => {
+		let newValue;
+
+		if ( ! Array.isArray( currentValue ) ) {
+			newValue = newState;
+		} else if ( newState ) {
+			newValue = [ ...currentValue, value ];
+		} else {
+			newValue = currentValue.filter(
+				( optionValue ) => optionValue !== value
+			);
+		}
+
+		changeCallback( newValue );
+	};
 
 	return (
 		<div className="ppcp-r__checkbox">
+			{ /* todo: Can we remove the wrapper div? */ }
 			<CheckboxControl
-				label={ props?.label ? props.label : '' }
-				value={ props.value }
+				label={ label ?? '' }
+				value={ value }
 				checked={ isChecked }
-				onChange={ ( checked ) =>
-					handleCheckboxState( checked, props )
-				}
+				disabled={ disabled }
+				onChange={ onChange }
 			/>
 		</div>
 	);
 };
 
-export const PayPalCheckboxGroup = ( props ) => {
-	const renderCheckboxGroup = () => {
-		return props.value.map( ( checkbox ) => {
-			return (
-				<PayPalCheckbox
-					label={ checkbox.label }
-					value={ checkbox.value }
-					key={ checkbox.value }
-					currentValue={ props.currentValue }
-					changeCallback={ props.changeCallback }
-				/>
-			);
-		} );
-	};
+export const CheckboxGroup = ( { options, value, onChange } ) => (
+	<>
+		{ options.map( ( checkbox ) => (
+			<PayPalCheckbox
+				key={ checkbox.value }
+				label={ checkbox.label }
+				value={ checkbox.value }
+				checked={ checkbox.checked }
+				disabled={ checkbox.disabled }
+				currentValue={ value }
+				changeCallback={ onChange }
+			/>
+		) ) }
+	</>
+);
 
-	return <>{ renderCheckboxGroup() }</>;
-};
-
-export const PayPalRdb = ( props ) => {
+export const PayPalRdb = ( {
+	id,
+	name,
+	value,
+	currentValue,
+	handleRdbState,
+} ) => {
 	return (
 		<div className="ppcp-r__radio">
+			{ /* todo: Can we remove the wrapper div? */ }
 			<input
-				id={ props?.id }
 				className="ppcp-r__radio-value"
 				type="radio"
-				checked={ props.value === props.currentValue }
-				name={ props.name }
-				value={ props.value }
-				onChange={ () => props.handleRdbState( props.value ) }
+				id={ id }
+				checked={ value === currentValue }
+				name={ name }
+				value={ value }
+				onChange={ () => handleRdbState( value ) }
 			/>
 			<span className="ppcp-r__radio-presentation"></span>
 		</div>
 	);
 };
 
-export const PayPalRdbWithContent = ( props ) => {
-	const className = [ 'ppcp-r__radio-wrapper' ];
-
-	if ( props?.className ) {
-		className.push( props.className );
-	}
+export const PayPalRdbWithContent = ( {
+	className,
+	id,
+	name,
+	label,
+	description,
+	value,
+	currentValue,
+	handleRdbState,
+	toggleAdditionalContent,
+	children,
+} ) => {
+	const wrapperClasses = classNames( 'ppcp-r__radio-wrapper', className );
 
 	return (
 		<div className="ppcp-r__radio-outer-wrapper">
-			<div className={ className }>
-				<PayPalRdb { ...props } />
+			<div className={ wrapperClasses }>
+				<PayPalRdb
+					id={ id }
+					name={ name }
+					value={ value }
+					currentValue={ currentValue }
+					handleRdbState={ handleRdbState }
+				/>
+
 				<div className="ppcp-r__radio-content">
-					<label htmlFor={ props?.id }>{ props.label }</label>
-					{ props.description && (
+					<label htmlFor={ id }>{ label }</label>
+					{ description && (
 						<p
 							className="ppcp-r__radio-description"
 							dangerouslySetInnerHTML={ {
-								__html: props.description,
+								__html: description,
 							} }
 						/>
 					) }
 				</div>
 			</div>
-			{ props?.toggleAdditionalContent &&
-				props.children &&
-				props.value === props.currentValue && (
-					<div className="ppcp-r__radio-content-additional">
-						{ props.children }
-					</div>
-				) }
+			{ toggleAdditionalContent && children && value === currentValue && (
+				<div className="ppcp-r__radio-content-additional">
+					{ children }
+				</div>
+			) }
 		</div>
 	);
-};
-
-export const handleCheckboxState = ( checked, props ) => {
-	let newValue = null;
-	if ( ! Array.isArray( props.currentValue ) ) {
-		newValue = checked;
-	} else if ( checked ) {
-		newValue = [ ...props.currentValue, props.value ];
-	} else {
-		newValue = props.currentValue.filter(
-			( value ) => value !== props.value
-		);
-	}
-	props.changeCallback( newValue );
 };
