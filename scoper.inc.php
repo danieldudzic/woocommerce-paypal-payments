@@ -9,24 +9,9 @@ declare(strict_types=1);
 
 use Isolated\Symfony\Component\Finder\Finder;
 
-$wp_classes   = json_decode(
-	file_get_contents(
-		__DIR__ . '/vendor/sniccowp/php-scoper-wordpress-excludes/generated/exclude-wordpress-classes.json'
-	),
-	true
-);
-$wp_constants = json_decode(
-	file_get_contents(
-		__DIR__ . '/vendor/sniccowp/php-scoper-wordpress-excludes/generated/exclude-wordpress-constants.json'
-	),
-	true
-);
-$wp_functions = json_decode(
-	file_get_contents(
-		__DIR__ . '/vendor/sniccowp/php-scoper-wordpress-excludes/generated/exclude-wordpress-functions.json'
-	),
-	true
-);
+$wp_classes   = array();
+$wp_constants = array();
+$wp_functions = array();
 
 $finders = array(
 	Finder::create()
