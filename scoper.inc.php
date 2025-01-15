@@ -19,7 +19,6 @@ return array(
 	),
 	'exclude-files'           => array(
 		// Exclude all files in the root directory explicitly.
-		__DIR__ . '/*.php',
 		__DIR__ . '/vendor/*', // Optionally, exclude other files you do not want to scope.
 	),
 	'expose-global-constants' => true,
