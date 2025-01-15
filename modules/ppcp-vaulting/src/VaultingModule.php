@@ -13,6 +13,8 @@ use Psr\Log\LoggerInterface;
 use RuntimeException;
 use WC_Payment_Token;
 use WC_Payment_Tokens;
+use WooCommerce\PayPalCommerce\Button\Helper\ContextTrait;
+use WooCommerce\PayPalCommerce\Session\SessionHandler;
 use WooCommerce\PayPalCommerce\Vendor\Inpsyde\Modularity\Module\ExecutableModule;
 use WooCommerce\PayPalCommerce\Vendor\Inpsyde\Modularity\Module\ExtendingModule;
 use WooCommerce\PayPalCommerce\Vendor\Inpsyde\Modularity\Module\ModuleClassNameIdTrait;
@@ -28,7 +30,14 @@ use WP_User_Query;
  * Class StatusReportModule
  */
 class VaultingModule implements ServiceModule, ExtendingModule, ExecutableModule {
-	use ModuleClassNameIdTrait;
+	use ModuleClassNameIdTrait, ContextTrait;
+
+	/**
+	 * Session handler.
+	 *
+	 * @var SessionHandler
+	 */
+	protected $session_handler;
 
 	/**
 	 * {@inheritDoc}
@@ -103,6 +112,7 @@ class VaultingModule implements ServiceModule, ExtendingModule, ExecutableModule
 			}
 		);
 
+		$this->session_handler = $container->get( 'session.handler' );
 		add_filter(
 			'woocommerce_get_customer_payment_tokens',
 			/**
@@ -125,6 +135,14 @@ class VaultingModule implements ServiceModule, ExtendingModule, ExecutableModule
 				) {
 					foreach ( $tokens as $index => $token ) {
 						if ( $token instanceof PaymentTokenApplePay ) {
+							unset( $tokens[ $index ] );
+						}
+					}
+				}
+
+				if ( is_checkout() && ! $is_post && $this->is_paypal_continuation() ) {
+					foreach ( $tokens as $index => $token ) {
+						if ( $token instanceof \WC_Payment_Token_CC && $token->get_gateway_id() === CreditCardGateway::ID ) {
 							unset( $tokens[ $index ] );
 						}
 					}
