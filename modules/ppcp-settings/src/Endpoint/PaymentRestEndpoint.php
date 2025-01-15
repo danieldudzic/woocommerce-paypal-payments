@@ -12,7 +12,8 @@ namespace WooCommerce\PayPalCommerce\Settings\Endpoint;
 use WP_REST_Server;
 use WP_REST_Response;
 use WP_REST_Request;
-use WooCommerce\PayPalCommerce\Settings\Data\PaymentSettings;
+use WooCommerce\PayPalCommerce\Applepay\ApplePayGateway;
+use WooCommerce\PayPalCommerce\LocalAlternativePaymentMethods\EPSGateway;
 
 /**
  * REST controller for the "Payment Methods" settings tab.
@@ -29,36 +30,23 @@ class PaymentRestEndpoint extends RestEndpoint {
 	protected $rest_base = 'payment';
 
 	/**
-	 * The settings instance.
-	 *
-	 * @var PaymentSettings
-	 */
-	protected PaymentSettings $settings;
-
-	/**
 	 * Field mapping for request to profile transformation.
 	 *
 	 * @var array
 	 */
-	private array $field_map = array(
-		'paymentMethodsPayPalCheckout' => array(
-			'js_name' => 'paymentMethodsPayPalCheckout',
-		),
-		'paymentMethodsOnlineCardPayments' => array(
-			'js_name' => 'paymentMethodsOnlineCardPayments',
-		),
-		'paymentMethodsAlternative' => array(
-			'js_name' => 'paymentMethodsAlternative',
-		),
+	private array $gateway_ids = array(
+		'ppcp-gateway',
+		'ppcp-credit-card-gateway',
+		ApplePayGateway::ID,
+		EPSGateway::ID,
+		// Todo: Add all payment methods. Maybe via a filter instead of hard-coding it?
 	);
 
 	/**
 	 * Constructor.
-	 *
-	 * @param PaymentSettings $settings The settings instance.
 	 */
-	public function __construct( PaymentSettings $settings ) {
-		$this->settings = $settings;
+	public function __construct() {
+		// Todo: Add DI instead of using `WC()->payment_gateways->payment_gateways()`?
 	}
 
 	/**
@@ -81,7 +69,11 @@ class PaymentRestEndpoint extends RestEndpoint {
 		/**
 		 * POST wc/v3/wc_paypal/payment
 		 * {
-		 *     // Fields mentioned in $field_map[]['js_name']
+		 *     [gateway_id]: {
+		 *         enabled
+		 *         title
+		 *         description
+		 *     }
 		 * }
 		 */
 		register_rest_route(
@@ -101,14 +93,28 @@ class PaymentRestEndpoint extends RestEndpoint {
 	 * @return WP_REST_Response The current payment methods details.
 	 */
 	public function get_details() : WP_REST_Response {
-		$js_data = $this->sanitize_for_javascript(
-			$this->settings->to_array(),
-			$this->field_map
-		);
+		// Todo: Change this to DI?
+		$all_gateways = WC()->payment_gateways->payment_gateways();
 
-		return $this->return_success(
-			$js_data
-		);
+		$gateway_settings = array();
+
+		foreach ( $this->gateway_ids as $gateway_id ) {
+			if ( ! isset( $all_gateways[ $gateway_id ] ) ) {
+				continue;
+			}
+
+			$gateway = $all_gateways[ $gateway_id ];
+
+			$gateway_settings[ $gateway_id ] = array(
+				'enabled'      => 'yes' === $gateway->enabled,
+				'title'        => $gateway->get_title(),
+				'description'  => $gateway->get_description(),
+				'method_title' => $gateway->get_method_title(),
+				'icon'         => $gateway->get_icon(),
+			);
+		}
+
+		return $this->return_success( $gateway_settings );
 	}
 
 	/**
@@ -119,13 +125,32 @@ class PaymentRestEndpoint extends RestEndpoint {
 	 * @return WP_REST_Response The updated payment methods details.
 	 */
 	public function update_details( WP_REST_Request $request ) : WP_REST_Response {
-		$wp_data = $this->sanitize_for_wordpress(
-			$request->get_params(),
-			$this->field_map
-		);
+		// Todo: Change this to DI?
+		$all_gateways = WC()->payment_gateways->payment_gateways();
 
-		$this->settings->from_array( $wp_data );
-		$this->settings->save();
+		$request_data = $request->get_params();
+
+		foreach ( $this->gateway_ids as $gateway_id ) {
+			// Check if the REST body contains details for this gateway.
+			if ( ! isset( $request_data[ $gateway_id ] ) || ! isset( $all_gateways[ $gateway_id ] ) ) {
+				continue;
+			}
+
+			$gateway  = $all_gateways[ $gateway_id ];
+			$new_data = $request_data[ $gateway_id ];
+
+			if ( isset( $new_data['enabled'] ) ) {
+				$gateway->update_option( 'enabled', $new_data['enabled'] ? 'yes' : 'no' );
+			}
+			if ( isset( $new_data['title'] ) ) {
+				$gateway->update_option( 'title', sanitize_text_field( $new_data['title'] ) );
+			}
+			if ( isset( $new_data['description'] ) ) {
+				$gateway->update_option( 'description', wp_kses_post( $new_data['description'] ) );
+			}
+
+			$gateway->process_admin_options();
+		}
 
 		return $this->get_details();
 	}
