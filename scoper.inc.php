@@ -7,6 +7,8 @@
 
 declare(strict_types=1);
 
+namespace WooCommerce\PayPalCommerce;
+
 use Isolated\Symfony\Component\Finder\Finder;
 
 $finders = array(
