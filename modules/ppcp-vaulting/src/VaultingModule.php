@@ -34,6 +34,8 @@ class VaultingModule implements ServiceModule, ExtendingModule, ExecutableModule
 	use ModuleClassNameIdTrait, ContextTrait;
 
 	/**
+	 * Session Handler
+	 *
 	 * @var SessionHandler
 	 */
 	protected SessionHandler $session_handler;
