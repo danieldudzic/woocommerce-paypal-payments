@@ -27,7 +27,7 @@ jobs:
 
   create_archive:
     needs: check_version
-    uses: inpsyde/reusable-workflows/.github/workflows/build-plugin-archive.yml
+    uses: inpsyde/reusable-workflows/.github/workflows/build-plugin-archive.yml@main
     with:
       PHP_VERSION: 7.4
       NODE_VERSION: 22
