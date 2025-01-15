@@ -38,7 +38,7 @@ return array(
 		'vendor/symfony/polyfill-php80/Resources/stubs/Stringable.php',
 	), // list<string>.
 	'exclude-namespaces'      => array(
-		'^(?!Psr).*',
+		'/^(?!Psr).*/',
 	), // list<string|regex>.
 	'exclude-constants'       => array_merge(
 		$wp_constants,
