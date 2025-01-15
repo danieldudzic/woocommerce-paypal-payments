@@ -9,27 +9,81 @@ declare(strict_types=1);
 
 use Isolated\Symfony\Component\Finder\Finder;
 
-return array(
-	'prefix'             => 'WooCommerce\\PayPalCommerce\\Vendor',
-	'finders'            => array(
-		// Include only the Psr\Log package for scoping.
-		Finder::create()
-			->files()
-			->in( __DIR__ . '/vendor/psr/log' ),
+$wp_classes   = json_decode(
+	file_get_contents(
+		__DIR__ . '/vendor/sniccowp/php-scoper-wordpress-excludes/generated/exclude-wordpress-classes.json'
+	),
+	true
+);
+$wp_constants = json_decode(
+	file_get_contents(
+		__DIR__ . '/vendor/sniccowp/php-scoper-wordpress-excludes/generated/exclude-wordpress-constants.json'
+	),
+	true
+);
+$wp_functions = json_decode(
+	file_get_contents(
+		__DIR__ . '/vendor/sniccowp/php-scoper-wordpress-excludes/generated/exclude-wordpress-functions.json'
+	),
+	true
+);
 
-		// Exclude all other project files from scoping.
-		Finder::create()
-			->files()
-			->in( __DIR__ )
-			->exclude( array( 'vendor' ) ),
-	),
-	'exclude-classes'    => array(
-		// Expose all project namespaces to prevent scoping.
-		'*',
-	),
-	'exclude-namespaces' => array(
-		'*',
-	),
-	'exclude-files'      => array(),
-	'patchers'           => array(),
+$finders = array(
+	Finder::create()
+		->files()
+		->ignoreVCS( true )
+		->ignoreDotFiles( false ) // We need to keep .distignore around.
+		->exclude(
+			array(
+				'.github',
+				'.ddev',
+				'.idea',
+				'.psalm',
+				'tests',
+			)
+		)
+		->in( '.' ),
+);
+
+return array(
+	'prefix'                  => 'WooCommerce\\PayPalCommerce\\Vendor',
+	'finders'                 => $finders,
+	'patchers'                => array(),
+	'exclude-files'           => array(
+		'vendor/symfony/polyfill-php80/Resources/stubs/Stringable.php',
+	), // list<string>.
+	'exclude-namespaces'      => array(
+		'WooCommerce\PayPalCommerce',
+		'Composer',
+		'Automattic',
+		'^WooCommerce',
+	), // list<string|regex>.
+	'exclude-constants'       => array_merge(
+		$wp_constants,
+		array(
+			'WC_VERSION',
+		)
+	), // list<string|regex>.
+	'exclude-classes'         => array_merge(
+		$wp_classes,
+		array(
+			'WooCommerce',
+			'/^WC_/',
+		)
+	),     // list<string|regex>.
+	'exclude-functions'       => array_merge(
+		$wp_functions,
+		array(
+			'/^wc/',
+		)
+	), // list<string|regex>.
+
+	'expose-global-constants' => false,   // bool.
+	'expose-global-classes'   => false,     // bool.
+	'expose-global-functions' => false,   // bool.
+
+	'expose-namespaces'       => array(), // list<string|regex>.
+	'expose-constants'        => array(),  // list<string|regex>.
+	'expose-classes'          => array(),    // list<string|regex>.
+	'expose-functions'        => array(),  // list<string|regex>.
 );
