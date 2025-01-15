@@ -1,25 +1,38 @@
 <?php
-/**
- * The PHP-Scoper configuration.
- *
- * @package WooCommerce\PayPalCommerce
- */
 
 declare(strict_types=1);
 
 use Isolated\Symfony\Component\Finder\Finder;
 
+$finders = array(
+	Finder::create()
+		->files()
+		->ignoreVCS( true )
+		->ignoreDotFiles( false ) // We need to keep .distignore around.
+		->exclude(
+			array(
+				'.github',
+				'.ddev',
+				'.idea',
+				'modules',
+				'tests',
+				'api',
+				'lib',
+				'src',
+				'vendor',
+			)
+		)
+		->in( '.' ),
+);
+
 return array(
 	'prefix'                  => 'WooCommerce\\PayPalCommerce\\Vendor',
-	'finders'                 => array(
-		// Only include files from the psr/log package for scoping.
-		Finder::create()
-			->files()
-			->in( __DIR__ . '/vendor/psr/log' ), // Only include the 'psr/log' directory.
-	),
+	'finders'                 => $finders,
+	'patchers'                => array(),
+	'exclude-namespaces'      => array(),
 	'exclude-files'           => array(
 		// Exclude all files in the root directory explicitly.
-		__DIR__ . '/vendor/*', // Optionally, exclude other files you do not want to scope.
+		__DIR__ . '/*.php',
 	),
 	'expose-global-constants' => true,
 	'expose-global-functions' => true,
