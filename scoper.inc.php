@@ -21,17 +21,10 @@ return array(
 		Finder::create()
 			->files()
 			->in( __DIR__ )
-			->exclude( 'vendor' ),
+			->exclude( array( 'vendor', 'api' ) ),
 	),
-	'expose-classes'     => array(
-		// Expose all project namespaces to prevent scoping.
-		'*',
-	),
-	'exclude-namespaces' => array(
-		'*',
-	),
-	'exclude-files'      => array(
-		__DIR__ . '/api/*',
-	),
+	'expose-classes'     => array(),
+	'exclude-namespaces' => array(),
+	'exclude-files'      => array(),
 	'patchers'           => array(),
 );
