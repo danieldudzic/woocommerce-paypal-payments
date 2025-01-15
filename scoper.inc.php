@@ -28,10 +28,10 @@ return array(
 		'*',
 	),
 	'exclude-namespaces' => array(
-		// Do not exclude any namespace to allow Psr\Log to be scoped.
+		'*',
 	),
 	'exclude-files'      => array(
-		// Optionally exclude specific files, if required.
+		__DIR__ . '/api/*',
 	),
 	'patchers'           => array(),
 );
