@@ -22,6 +22,7 @@
 
 	&:hover {
 		cursor: pointer;
+
 		.ppcp-r-todo-item__inner {
 			.ppcp-r-todo-item__description {
 				color: $color-text-text;
@@ -117,7 +118,7 @@
 			font-weight: 500;
 		}
 
-		margin-top:24px;
+		margin-top: 24px;
 	}
 }
 
@@ -137,10 +138,6 @@
 		}
 	}
 
-	&__show-all-data {
-		margin-left: 12px;
-	}
-
 	&__status-label {
 		@include font(11, 22, 600);
 		color: $color-gray-900;
@@ -151,12 +148,16 @@
 	&__status-value {
 		@include font(13, 26, 400);
 		color: $color-text-tertiary;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
 	}
 
 	&__data {
 		display: flex;
 		flex-direction: column;
 		gap: 12px;
+		width: 100%;
 	}
 
 	&__status-toggle--toggled {
@@ -168,9 +169,7 @@
 	&__status-row {
 		display: flex;
 		flex-direction: column;
-		* {
-			user-select: none;
-		}
+
 		strong {
 			@include font(14, 24, 600);
 			color: $color-gray-800;
@@ -181,11 +180,6 @@
 		.ppcp-r-connection-status__status-toggle {
 			line-height: 0;
 		}
-		&--first {
-			&:hover {
-				cursor: pointer;
-			}
-		}
 	}
 
 	@media screen and (max-width: 767px) {
@@ -195,9 +189,11 @@
 		}
 		&__status-row {
 			flex-wrap: wrap;
+
 			strong {
 				width: 100%;
 			}
+
 			span {
 				word-break: break-all;
 			}

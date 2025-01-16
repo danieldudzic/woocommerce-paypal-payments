@@ -4,7 +4,7 @@
 .ppcp-r-settings-block {
 	display: flex;
 	flex-direction: column;
-	gap: var(--block-item-gap, 16px) 0;
+	gap: var(--block-item-gap, 16px);
 
 	&.ppcp-r-settings-block__input,
 	&.ppcp-r-settings-block__select {
@@ -95,6 +95,15 @@
 		color: var(--color-text-teriary);
 		text-transform: none;
 		margin-left: 5px;
+	}
+
+	.ppcp-r-settings-block__action {
+		display: flex;
+		align-items: center;
+
+		.components-flex {
+			row-gap: 0;
+		}
 	}
 
 	+ .ppcp-r-settings-block:not(.no-gap) {
