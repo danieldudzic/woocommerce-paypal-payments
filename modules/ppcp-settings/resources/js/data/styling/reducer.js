@@ -9,7 +9,7 @@
 
 import { createReducer, createSetters } from '../utils';
 import ACTION_TYPES from './action-types';
-import { STYLING_COLORS, STYLING_SHAPES } from './constants';
+import { STYLING_COLORS, STYLING_SHAPES } from './configuration';
 
 // Store structure.
 
