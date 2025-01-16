@@ -9,7 +9,7 @@
 
 import { useSelect, useDispatch } from '@wordpress/data';
 
-import { PRODUCT_TYPES } from '../constants';
+import { PRODUCT_TYPES } from './configuration';
 import { STORE_NAME } from './constants';
 
 const useTransient = ( key ) =>

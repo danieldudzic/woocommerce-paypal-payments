@@ -26,24 +26,3 @@ export const REST_HYDRATE_PATH = '/wc/v3/wc_paypal/onboarding';
  * @type {string}
  */
 export const REST_PERSIST_PATH = '/wc/v3/wc_paypal/onboarding';
-
-/**
- * Onboarding options for StepBusiness
- *
- * @type {Object}
- */
-export const BUSINESS_TYPES = {
-	CASUAL_SELLER: 'casual_seller',
-	BUSINESS: 'business',
-};
-
-/**
- * Onboarding options for StepProducts
- *
- * @type {Object}
- */
-export const PRODUCT_TYPES = {
-	VIRTUAL: 'virtual',
-	PHYSICAL: 'physical',
-	SUBSCRIPTIONS: 'subscriptions',
-};

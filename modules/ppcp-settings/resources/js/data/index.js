@@ -15,6 +15,6 @@ export const OnboardingStoreName = Onboarding.STORE_NAME;
 export const CommonStoreName = Common.STORE_NAME;
 export const StylingStoreName = Styling.STORE_NAME;
 
-export * from './constants';
+export * from './configuration';
 
 addDebugTools( window.ppcpSettings, [ Onboarding, Common, Styling ] );
