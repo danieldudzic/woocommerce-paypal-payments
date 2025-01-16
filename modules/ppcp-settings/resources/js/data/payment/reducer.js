@@ -20,6 +20,8 @@ const defaultTransient = Object.freeze( {
 // Persistent: Values that are loaded from the DB.
 const defaultPersistent = Object.freeze( {
 	'ppcp-gateway': {},
+	venmo: {},
+	'pay-later': {},
 	'ppcp-card-button-gateway': {},
 	'ppcp-credit-card-gateway': {},
 	'ppcp-axo-gateway': {},

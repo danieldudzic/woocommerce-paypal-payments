@@ -39,8 +39,20 @@ const useHooks = () => {
 
 	// Persistent accessors.
 	const sampleValue = usePersistent( 'sampleValue' );
+
+	// PayPal checkout.
 	const paypal = usePersistent( 'ppcp-gateway' );
+	const venmo = usePersistent( 'venmo' );
+	const payLater = usePersistent( 'pay-later' );
+	const creditCard = usePersistent( 'ppcp-card-button-gateway' );
+
+	// Online card Payments.
 	const advancedCreditCard = usePersistent( 'ppcp-credit-card-gateway' );
+	const fastlane = usePersistent( 'ppcp-axo-gateway' );
+	const applePay = usePersistent( 'ppcp-applepay' );
+	const googlePay = usePersistent( 'ppcp-googlepay' );
+
+	// Alternative payment methods.
 	const bancontact = usePersistent( 'ppcp-bancontact' );
 	const blik = usePersistent( 'ppcp-blik' );
 	const eps = usePersistent( 'ppcp-eps' );
@@ -58,7 +70,13 @@ const useHooks = () => {
 		sampleValue,
 		setSampleValue,
 		paypal,
+		venmo,
+		payLater,
+		creditCard,
 		advancedCreditCard,
+		fastlane,
+		applePay,
+		googlePay,
 		bancontact,
 		blik,
 		eps,
@@ -88,8 +106,13 @@ export const useSampleValue = () => {
 };
 
 export const usePaymentMethodsPayPalCheckout = () => {
-	const { paypal } = useHooks();
-	const paymentMethodsPayPalCheckout = [ paypal ];
+	const { paypal, venmo, payLater, creditCard } = useHooks();
+	const paymentMethodsPayPalCheckout = [
+		paypal,
+		venmo,
+		payLater,
+		creditCard,
+	];
 
 	return {
 		paymentMethodsPayPalCheckout,
@@ -97,8 +120,13 @@ export const usePaymentMethodsPayPalCheckout = () => {
 };
 
 export const usePaymentMethodsOnlineCardPayments = () => {
-	const { advancedCreditCard } = useHooks();
-	const paymentMethodsOnlineCardPayments = [ advancedCreditCard ];
+	const { advancedCreditCard, fastlane, applePay, googlePay } = useHooks();
+	const paymentMethodsOnlineCardPayments = [
+		advancedCreditCard,
+		fastlane,
+		applePay,
+		googlePay,
+	];
 
 	return {
 		paymentMethodsOnlineCardPayments,
