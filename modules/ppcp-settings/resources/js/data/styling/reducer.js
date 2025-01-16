@@ -9,53 +9,69 @@
 
 import { createReducer, createSetters } from '../utils';
 import ACTION_TYPES from './action-types';
-import { STYLING_COLORS, STYLING_SHAPES } from './configuration';
+import {
+	STYLING_COLORS,
+	STYLING_LABELS,
+	STYLING_LAYOUTS,
+	STYLING_LOCATIONS,
+	STYLING_SHAPES,
+} from './configuration';
 
 // Store structure.
 
 // Transient: Values that are _not_ saved to the DB (like app lifecycle-flags).
 const defaultTransient = Object.freeze( {
 	isReady: false,
-	location: 'cart', // Which location is selected in the Styling tab.
+	location: STYLING_LOCATIONS.cart.value, // Which location is selected in the Styling tab.
 } );
 
 // Persistent: Values that are loaded from the DB.
 const defaultPersistent = Object.freeze( {
-	cart: {
+	[ STYLING_LOCATIONS.cart.value ]: Object.freeze( {
 		enabled: true,
 		methods: [],
-		label: 'Pay',
+		label: STYLING_LABELS.pay.value,
 		shape: STYLING_SHAPES.rect.value,
 		color: STYLING_COLORS.gold.value,
-	},
-	'classic-checkout': {
+		layout: STYLING_LAYOUTS.vertical.value,
+		tagline: false,
+	} ),
+	[ STYLING_LOCATIONS[ 'classic-checkout' ].value ]: Object.freeze( {
 		enabled: true,
 		methods: [],
-		label: 'Checkout',
+		label: STYLING_LABELS.checkout.value,
 		shape: STYLING_SHAPES.rect.value,
 		color: STYLING_COLORS.gold.value,
-	},
-	'express-checkout': {
+		layout: STYLING_LAYOUTS.vertical.value,
+		tagline: false,
+	} ),
+	[ STYLING_LOCATIONS[ 'express-checkout' ].value ]: Object.freeze( {
 		enabled: true,
 		methods: [],
-		label: 'Checkout',
+		label: STYLING_LABELS.checkout.value,
 		shape: STYLING_SHAPES.rect.value,
 		color: STYLING_COLORS.gold.value,
-	},
-	'mini-cart': {
+		layout: STYLING_LAYOUTS.vertical.value,
+		tagline: false,
+	} ),
+	[ STYLING_LOCATIONS[ 'mini-cart' ].value ]: Object.freeze( {
 		enabled: true,
 		methods: [],
-		label: 'Pay',
+		label: STYLING_LABELS.pay.value,
 		shape: STYLING_SHAPES.rect.value,
 		color: STYLING_COLORS.gold.value,
-	},
-	product: {
+		layout: STYLING_LAYOUTS.vertical.value,
+		tagline: false,
+	} ),
+	[ STYLING_LOCATIONS.product.value ]: Object.freeze( {
 		enabled: true,
 		methods: [],
-		label: 'Buy',
+		label: STYLING_LABELS.buynow.value,
 		shape: STYLING_SHAPES.rect.value,
 		color: STYLING_COLORS.gold.value,
-	},
+		layout: STYLING_LAYOUTS.vertical.value,
+		tagline: false,
+	} ),
 } );
 
 // Reducer logic.
