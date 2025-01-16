@@ -38,7 +38,7 @@ return array(
 	), // list<string|regex>.
 	'exclude-constants'       => array(), // list<string|regex>.
 	'exclude-classes'         => array(),     // list<string|regex>.
-	'exclude-functions'       => array( '/.*/' ), // list<string|regex>.
+	'exclude-functions'       => array(), // list<string|regex>.
 
 	'expose-global-constants' => false,   // bool.
 	'expose-global-classes'   => false,     // bool.
