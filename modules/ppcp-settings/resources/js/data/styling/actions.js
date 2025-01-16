@@ -37,6 +37,30 @@ export const hydrate = ( payload ) => ( {
 } );
 
 /**
+ * Generic transient-data updater.
+ *
+ * @param {string} prop  Name of the property to update.
+ * @param {any}    value The new value of the property.
+ * @return {Action} The action.
+ */
+export const setTransient = ( prop, value ) => ( {
+	type: ACTION_TYPES.SET_TRANSIENT,
+	payload: { [ prop ]: value },
+} );
+
+/**
+ * Generic persistent-data updater.
+ *
+ * @param {string} prop  Name of the property to update.
+ * @param {any}    value The new value of the property.
+ * @return {Action} The action.
+ */
+export const setPersistent = ( prop, value ) => ( {
+	type: ACTION_TYPES.SET_PERSISTENT,
+	payload: { [ prop ]: value },
+} );
+
+/**
  * Transient. Marks the store as "ready", i.e., fully initialized.
  *
  * @param {boolean} isReady
