@@ -33,13 +33,51 @@ const useHooks = () => {
 	const [ location, setLocation ] = useTransient( 'location' );
 
 	// Persistent accessors.
-	const [ shape, setShape ] = usePersistent( 'shape' );
+	// TODO - this is a dummy implementation.
+	const defaultStyle = {
+		paymentMethods: [],
+		color: 'gold',
+		shape: 'rect',
+		label: 'paypal',
+		layout: 'vertical',
+		tagline: false,
+	};
+
+	// This data-struct is already present in the Redux store via persistentData, e.g. "persistentData.cart.label"
+	const [ styles, setStyles ] = useState( {
+		cart: { ...defaultStyle, label: 'checkout' },
+		'classic-checkout': { ...defaultStyle },
+		'express-checkout': { ...defaultStyle, label: 'pay' },
+		'mini-cart': { ...defaultStyle, label: 'pay' },
+		'product-page': { ...defaultStyle },
+	} );
+
+	const getLocationProp = useCallback(
+		( prop ) => styles[ location ]?.[ prop ],
+		[ location, styles ]
+	);
+
+	const setLocationProp = useCallback(
+		( prop, value ) => {
+			setStyles( ( prevState ) => ( {
+				...prevState,
+				[ location ]: {
+					...prevState[ location ],
+					[ prop ]: value,
+				},
+			} ) );
+		},
+		[ location ]
+	);
+	// end of dummy implementation
 
 	return {
 		persist,
 		isReady,
 		location,
 		setLocation,
+		getLocationProp,
+		setLocationProp,
 	};
 };
 
@@ -54,40 +92,7 @@ export const useStylingLocation = () => {
 };
 
 export const useStylingProps = ( location ) => {
-	const defaultStyle = {
-		paymentMethods: [],
-		color: 'gold',
-		shape: 'rect',
-		label: 'paypal',
-		layout: 'vertical',
-		tagline: false,
-	};
-
-	const [ styles, setStyles ] = useState( {
-		cart: { ...defaultStyle, label: 'checkout' },
-		'classic-checkout': { ...defaultStyle },
-		'express-checkout': { ...defaultStyle, label: 'pay' },
-		'mini-cart': { ...defaultStyle, label: 'pay' },
-		'product-page': { ...defaultStyle },
-	} );
-
-	const getLocationStyle = useCallback(
-		( prop ) => styles[ location ]?.[ prop ],
-		[ location, styles ]
-	);
-
-	const setLocationStyle = useCallback(
-		( prop, value ) => {
-			setStyles( ( prevState ) => ( {
-				...prevState,
-				[ location ]: {
-					...prevState[ location ],
-					[ prop ]: value,
-				},
-			} ) );
-		},
-		[ location ]
-	);
+	const { getLocationProp, setLocationProp } = useHooks();
 
 	return {
 		// Location (drop down).
@@ -96,30 +101,30 @@ export const useStylingProps = ( location ) => {
 
 		// Payment methods (checkboxes).
 		paymentMethodChoices: Object.values( STYLING_PAYMENT_METHODS ),
-		paymentMethods: getLocationStyle( 'paymentMethods' ),
+		paymentMethods: getLocationProp( 'paymentMethods' ),
 		setPaymentMethods: ( methods ) =>
-			setLocationStyle( 'paymentMethods', methods ),
+			setLocationProp( 'paymentMethods', methods ),
 
 		// Color (dropdown).
 		colorChoices: Object.values( STYLING_COLORS ),
-		color: getLocationStyle( 'color' ),
-		setColor: ( color ) => setLocationStyle( 'color', color ),
+		color: getLocationProp( 'color' ),
+		setColor: ( color ) => setLocationProp( 'color', color ),
 
 		// Shape (radio).
 		shapeChoices: Object.values( STYLING_SHAPES ),
-		shape: getLocationStyle( 'shape' ),
-		setShape: ( shape ) => setLocationStyle( 'shape', shape ),
+		shape: getLocationProp( 'shape' ),
+		setShape: ( shape ) => setLocationProp( 'shape', shape ),
 
 		// Label (dropdown).
 		labelChoices: Object.values( STYLING_LABELS ),
-		label: getLocationStyle( 'label' ),
-		setLabel: ( label ) => setLocationStyle( 'label', label ),
+		label: getLocationProp( 'label' ),
+		setLabel: ( label ) => setLocationProp( 'label', label ),
 
 		// Layout (radio).
 		layoutChoices: Object.values( STYLING_LAYOUTS ),
 		supportsLayout: true,
-		layout: getLocationStyle( 'layout' ),
-		setLayout: ( layout ) => setLocationStyle( 'layout', layout ),
+		layout: getLocationProp( 'layout' ),
+		setLayout: ( layout ) => setLocationProp( 'layout', layout ),
 
 		// Tagline (checkbox).
 		taglineChoices: [
@@ -129,7 +134,7 @@ export const useStylingProps = ( location ) => {
 			},
 		],
 		supportsTagline: true,
-		tagline: getLocationStyle( 'tagline' ),
-		setTagline: ( tagline ) => setLocationStyle( 'tagline', tagline ),
+		tagline: getLocationProp( 'tagline' ),
+		setTagline: ( tagline ) => setLocationProp( 'tagline', tagline ),
 	};
 };
