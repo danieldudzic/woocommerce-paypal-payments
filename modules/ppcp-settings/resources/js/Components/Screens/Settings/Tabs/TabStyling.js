@@ -8,7 +8,7 @@ import {
 	STYLING_LOCATIONS,
 	STYLING_PAYMENT_METHODS,
 	STYLING_SHAPES,
-} from '../../../../data/styling/constants';
+} from '../../../../data';
 
 import PreviewPanel from '../Components/Styling/PreviewPanel';
 import SettingsPanel from '../Components/Styling/SettingsPanel';
