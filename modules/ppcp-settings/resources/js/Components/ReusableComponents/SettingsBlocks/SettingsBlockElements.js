@@ -1,9 +1,20 @@
+import classNames from 'classnames';
+
 // Block Elements
-export const Title = ( { children, className = '' } ) => (
-	<span className={ `ppcp-r-settings-block__title ${ className }`.trim() }>
-		{ children }
-	</span>
-);
+export const Title = ( {
+	children,
+	altStyle = false,
+	big = false,
+	className = '',
+} ) => {
+	className = classNames( 'ppcp-r-settings-block__title', className, {
+		'style-alt': altStyle,
+		'style-big': big,
+	} );
+
+	return <span className={ className }>{ children }</span>;
+};
+
 export const TitleWrapper = ( { children } ) => (
 	<span className="ppcp-r-settings-block__title-wrapper">{ children }</span>
 );
@@ -14,13 +25,25 @@ export const SupplementaryLabel = ( { children } ) => (
 	</span>
 );
 
-export const Description = ( { children, className = '' } ) => (
-	<span
-		className={ `ppcp-r-settings-block__description ${ className }`.trim() }
-	>
-		{ children }
-	</span>
-);
+export const Description = ( { children, asHtml = false, className = '' } ) => {
+	// Don't output anything if description is empty.
+	if ( ! children ) {
+		return null;
+	}
+
+	className = classNames( 'ppcp-r-settings-block__description', className );
+
+	if ( ! asHtml ) {
+		return <span className={ className }>{ children }</span>;
+	}
+
+	return (
+		<span
+			className={ className }
+			dangerouslySetInnerHTML={ { __html: children } }
+		/>
+	);
+};
 
 export const Action = ( { children } ) => (
 	<div className="ppcp-r-settings-block__action">{ children }</div>

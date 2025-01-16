@@ -19,6 +19,8 @@ export const PayPalCheckbox = ( {
 		}
 	}
 
+	const className = classNames( { 'is-disabled': disabled } );
+
 	const onChange = ( newState ) => {
 		let newValue;
 
@@ -36,16 +38,14 @@ export const PayPalCheckbox = ( {
 	};
 
 	return (
-		<div className="ppcp-r__checkbox">
-			{ /* todo: Can we remove the wrapper div? */ }
-			<CheckboxControl
-				label={ label ?? '' }
-				value={ value }
-				checked={ isChecked }
-				disabled={ disabled }
-				onChange={ onChange }
-			/>
-		</div>
+		<CheckboxControl
+			label={ label }
+			value={ value }
+			checked={ isChecked }
+			disabled={ disabled }
+			onChange={ onChange }
+			className={ className }
+		/>
 	);
 };
 
@@ -58,6 +58,8 @@ export const CheckboxGroup = ( { options, value, onChange } ) => (
 				value={ checkbox.value }
 				checked={ checkbox.checked }
 				disabled={ checkbox.disabled }
+				description={ checkbox.description }
+				tooltip={ checkbox.tooltip }
 				currentValue={ value }
 				changeCallback={ onChange }
 			/>
