@@ -30,6 +30,7 @@ const useHooks = () => {
 
 	// Transient accessors.
 	const [ isReady ] = useTransient( 'isReady' );
+	const [ location, setLocation ] = useTransient( 'location' );
 
 	// Persistent accessors.
 	const [ shape, setShape ] = usePersistent( 'shape' );
@@ -37,6 +38,8 @@ const useHooks = () => {
 	return {
 		persist,
 		isReady,
+		location,
+		setLocation,
 	};
 };
 
@@ -46,7 +49,7 @@ export const useStore = () => {
 };
 
 export const useStylingLocation = () => {
-	const [ location, setLocation ] = useState( 'cart' );
+	const { location, setLocation } = useHooks();
 	return { location, setLocation };
 };
 

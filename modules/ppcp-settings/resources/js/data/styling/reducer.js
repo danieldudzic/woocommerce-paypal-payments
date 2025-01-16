@@ -16,6 +16,7 @@ import { STYLING_COLORS, STYLING_SHAPES } from './configuration';
 // Transient: Values that are _not_ saved to the DB (like app lifecycle-flags).
 const defaultTransient = Object.freeze( {
 	isReady: false,
+	location: 'cart', // Which location is selected in the Styling tab.
 } );
 
 // Persistent: Values that are loaded from the DB.
