@@ -9,7 +9,7 @@
 
 import { __ } from '@wordpress/i18n';
 import { useCallback, useState } from '@wordpress/element'; // Temporary
-import { useSelect, useDispatch } from '@wordpress/data';
+import { useDispatch } from '@wordpress/data';
 
 import { createHooksForStore } from '../utils';
 import { STORE_NAME } from './constants';
@@ -37,8 +37,6 @@ const useHooks = () => {
 	return {
 		persist,
 		isReady,
-		shape,
-		setShape,
 	};
 };
 
