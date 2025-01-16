@@ -4,7 +4,9 @@ import { __, sprintf } from '@wordpress/i18n';
 // Dummy hook.
 import { useStylingProps } from '../../Tabs/TabStyling';
 
+import { Description } from '../../../../ReusableComponents/SettingsBlocks';
 import StylingSection from './StylingSection';
+import StylingSectionWithSelect from './StylingSectionWithSelect';
 
 const LocationSelector = ( { location, setLocation } ) => {
 	const { locationChoices, locationDetails } = useStylingProps( location );
@@ -12,23 +14,29 @@ const LocationSelector = ( { location, setLocation } ) => {
 	const locationDescription = sprintf( description, link );
 
 	return (
-		<StylingSection
-			className="header-section"
-			title={ __( 'Button Styling', 'wooocommerce-paypal-payments' ) }
-			description={ __(
-				'Customize the appearance of the PayPal smart buttons on your website and choose which payment buttons to display.',
-				'woocommerce-paypal-payments'
-			) }
-		>
-			<SelectControl
-				className="ppcp-r-styling__select"
-				label={ __( 'Locations', 'woocommerce-paypal-payments' ) }
+		<>
+			<StylingSection
+				className="header-section"
+				bigTitle={ true }
+				title={ __( 'Button Styling', 'wooocommerce-paypal-payments' ) }
+				description={ __(
+					'Customize the appearance of the PayPal smart buttons on your website and choose which payment buttons to display.',
+					'woocommerce-paypal-payments'
+				) }
+			></StylingSection>
+			<StylingSectionWithSelect
+				className="location-selector"
+				title={ __( 'Locations', 'woocommerce-paypal-payments' ) }
+				separatorAndGap={ false }
 				options={ locationChoices }
 				value={ location }
 				onChange={ setLocation }
-			/>
-			<p dangerouslySetInnerHTML={ { __html: locationDescription } } />
-		</StylingSection>
+			>
+				<Description asHtml={ true }>
+					{ locationDescription }
+				</Description>
+			</StylingSectionWithSelect>
+		</>
 	);
 };
 

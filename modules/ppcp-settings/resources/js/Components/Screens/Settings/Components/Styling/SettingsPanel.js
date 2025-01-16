@@ -1,13 +1,12 @@
 import { __ } from '@wordpress/i18n';
-import { RadioControl, SelectControl } from '@wordpress/components';
 
 // Dummy hook.
 import { useStylingLocation, useStylingProps } from '../../Tabs/TabStyling';
 
-import { CheckboxGroup } from '../../../../ReusableComponents/Fields';
-import HStack from '../../../../ReusableComponents/HStack';
 import LocationSelector from './LocationSelector';
-import StylingSection from './StylingSection';
+import StylingSectionWithSelect from './StylingSectionWithSelect';
+import StylingSectionWithCheckboxes from './StylingSectionWithCheckboxes';
+import StylingSectionWithRadiobuttons from './StylingSectionWithRadiobuttons';
 
 const SettingsPanel = () => {
 	const { location, setLocation } = useStylingLocation();
@@ -37,18 +36,13 @@ const SectionPaymentMethods = ( { location } ) => {
 		useStylingProps( location );
 
 	return (
-		<StylingSection
+		<StylingSectionWithCheckboxes
 			title={ __( 'Payment Methods', 'woocommerce-paypal-payments' ) }
 			className="payment-methods"
-		>
-			<HStack spacing={ 6 }>
-				<CheckboxGroup
-					options={ paymentMethodChoices }
-					value={ paymentMethods }
-					onChange={ setPaymentMethods }
-				/>
-			</HStack>
-		</StylingSection>
+			options={ paymentMethodChoices }
+			value={ paymentMethods }
+			onChange={ setPaymentMethods }
+		/>
 	);
 };
 
@@ -61,18 +55,13 @@ const SectionButtonLayout = ( { location } ) => {
 	}
 
 	return (
-		<StylingSection
+		<StylingSectionWithRadiobuttons
 			className="button-layout"
 			title={ __( 'Button Layout', 'woocommerce-paypal-payments' ) }
-		>
-			<HStack>
-				<RadioControl
-					options={ layoutChoices }
-					selected={ layout }
-					onChange={ setLayout }
-				/>
-			</HStack>
-		</StylingSection>
+			options={ layoutChoices }
+			selected={ layout }
+			onChange={ setLayout }
+		/>
 	);
 };
 
@@ -80,18 +69,13 @@ const SectionButtonShape = ( { location } ) => {
 	const { shape, setShape, shapeChoices } = useStylingProps( location );
 
 	return (
-		<StylingSection
+		<StylingSectionWithRadiobuttons
 			title={ __( 'Shape', 'woocommerce-paypal-payments' ) }
 			className="button-shape"
-		>
-			<HStack>
-				<RadioControl
-					options={ shapeChoices }
-					selected={ shape }
-					onChange={ setShape }
-				/>
-			</HStack>
-		</StylingSection>
+			options={ shapeChoices }
+			selected={ shape }
+			onChange={ setShape }
+		/>
 	);
 };
 
@@ -99,16 +83,13 @@ const SectionButtonLabel = ( { location } ) => {
 	const { label, setLabel, labelChoices } = useStylingProps( location );
 
 	return (
-		<StylingSection
+		<StylingSectionWithSelect
 			title={ __( 'Button Label', 'woocommerce-paypal-payments' ) }
 			className="button-label"
-		>
-			<SelectControl
-				options={ labelChoices }
-				value={ label }
-				onChange={ setLabel }
-			/>
-		</StylingSection>
+			options={ labelChoices }
+			value={ label }
+			onChange={ setLabel }
+		/>
 	);
 };
 
@@ -116,16 +97,13 @@ const SectionButtonColor = ( { location } ) => {
 	const { color, setColor, colorChoices } = useStylingProps( location );
 
 	return (
-		<StylingSection
+		<StylingSectionWithSelect
 			title={ __( 'Button Color', 'woocommerce-paypal-payments' ) }
 			className="button-color"
-		>
-			<SelectControl
-				options={ colorChoices }
-				value={ color }
-				onChange={ setColor }
-			/>
-		</StylingSection>
+			options={ colorChoices }
+			value={ color }
+			onChange={ setColor }
+		/>
 	);
 };
 
@@ -138,17 +116,12 @@ const SectionButtonTagline = ( { location } ) => {
 	}
 
 	return (
-		<StylingSection
+		<StylingSectionWithCheckboxes
 			title={ __( 'Tagline', 'woocommerce-paypal-payments' ) }
 			className="tagline"
-		>
-			<HStack>
-				<CheckboxGroup
-					options={ taglineChoices }
-					value={ tagline }
-					onChange={ setTagline }
-				/>
-			</HStack>
-		</StylingSection>
+			options={ taglineChoices }
+			value={ tagline }
+			onChange={ setTagline }
+		/>
 	);
 };
