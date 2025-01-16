@@ -8,8 +8,8 @@
  */
 
 import { __ } from '@wordpress/i18n';
-import { useCallback, useState } from '@wordpress/element'; // Temporary
-import { useDispatch } from '@wordpress/data';
+import { useCallback } from '@wordpress/element'; // Temporary
+import { useDispatch, useSelect } from '@wordpress/data';
 
 import { createHooksForStore } from '../utils';
 import { STORE_NAME } from './constants';
@@ -33,43 +33,29 @@ const useHooks = () => {
 	const [ location, setLocation ] = useTransient( 'location' );
 
 	// Persistent accessors.
-	// TODO - this is a dummy implementation.
-	const defaultStyle = {
-		paymentMethods: [],
-		color: 'gold',
-		shape: 'rect',
-		label: 'paypal',
-		layout: 'vertical',
-		tagline: false,
-	};
+	const persistentData = useSelect(
+		( select ) => select( STORE_NAME ).persistentData(),
+		[]
+	);
 
-	// This data-struct is already present in the Redux store via persistentData, e.g. "persistentData.cart.label"
-	const [ styles, setStyles ] = useState( {
-		cart: { ...defaultStyle, label: 'checkout' },
-		'classic-checkout': { ...defaultStyle },
-		'express-checkout': { ...defaultStyle, label: 'pay' },
-		'mini-cart': { ...defaultStyle, label: 'pay' },
-		'product-page': { ...defaultStyle },
-	} );
+	const [ locationStyles, setLocationStyles ] = usePersistent( location );
 
 	const getLocationProp = useCallback(
-		( prop ) => styles[ location ]?.[ prop ],
-		[ location, styles ]
+		( prop ) => {
+			return persistentData[ location ]?.[ prop ];
+		},
+		[ location, persistentData ]
 	);
 
 	const setLocationProp = useCallback(
 		( prop, value ) => {
-			setStyles( ( prevState ) => ( {
-				...prevState,
-				[ location ]: {
-					...prevState[ location ],
-					[ prop ]: value,
-				},
-			} ) );
+			setLocationStyles( {
+				...locationStyles,
+				[ prop ]: value,
+			} );
 		},
-		[ location ]
+		[ locationStyles, setLocationStyles ]
 	);
-	// end of dummy implementation
 
 	return {
 		persist,
