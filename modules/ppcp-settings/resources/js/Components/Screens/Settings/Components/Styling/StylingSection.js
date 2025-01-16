@@ -1,28 +1,32 @@
-import classnames from 'classnames';
+import SettingsBlock from '../../../../ReusableComponents/SettingsBlocks/SettingsBlock';
+import {
+	Description,
+	Header,
+	Title,
+} from '../../../../ReusableComponents/SettingsBlocks';
 
 const StylingSection = ( {
 	title,
+	bigTitle = false,
 	className = '',
 	description = '',
+	separatorAndGap = true,
 	children,
 } ) => {
-	const sectionClasses = classnames( 'ppcp-r-styling__section', className );
-
 	return (
-		<div className={ sectionClasses }>
-			<span className="ppcp-r-styling__title">{ title }</span>
-
-			{ description && (
-				<p
-					className="ppcp-r-styling__description"
-					dangerouslySetInnerHTML={ {
-						__html: description,
-					} }
-				/>
-			) }
+		<SettingsBlock
+			className={ className }
+			separatorAndGap={ separatorAndGap }
+		>
+			<Header>
+				<Title altStyle={ true } big={ bigTitle }>
+					{ title }
+				</Title>
+				<Description>{ description }</Description>
+			</Header>
 
 			{ children }
-		</div>
+		</SettingsBlock>
 	);
 };
 

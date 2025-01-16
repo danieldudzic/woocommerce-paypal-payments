@@ -1,21 +1,29 @@
 $width-settings-panel: 422px;
 
 .ppcp-r-styling {
+	--block-item-gap: 0;
+	--block-separator-gap: 24px;
+	--block-header-gap: 18px;
+
 	display: flex;
 	border: 1px solid var(--color-separators);
 	border-radius: 8px;
 	overflow: hidden;
 
-	.ppcp-r-styling__title {
-		@include font(14, 16, 600);
+	.ppcp-r-settings-block {
+		&.header-section {
+			margin-bottom: 22px
+		}
 
-		color: var(--color-text-title);
-		display: block;
-		margin: 0 0 18px 0;
-	}
+		// Select-fields have a smaller gap between the header and input field.
+		&.has-select {
+			--block-header-gap: 8px;
+		}
 
-	.header-section .ppcp-r-styling__title {
-		@include font(16, 20, 600);
+		// Above the payment methods is a slightly larger gap.
+		&.payment-methods {
+			--block-separator-gap: 28px;
+		}
 	}
 
 	/* The settings-panel (left side) */
@@ -28,6 +36,7 @@ $width-settings-panel: 422px;
 			margin-bottom: 28px;
 			border-bottom: 1px solid var(--color-separators);
 
+			&.no-gap,
 			&:last-child {
 				padding-bottom: 0;
 				margin-bottom: 0;
@@ -35,6 +44,7 @@ $width-settings-panel: 422px;
 			}
 		}
 
+		// Horizontal radio buttons have a width of 100px.
 		.components-radio-control__option {
 			min-width: 100px;
 		}
@@ -52,30 +62,4 @@ $width-settings-panel: 422px;
 			padding: 24px;
 		}
 	}
-
-	/* --- *
-
-	&__select {
-		label {
-			@include font(13, 16, 600);
-			color: $color-black;
-			margin: 0;
-			text-transform: none;
-		}
-
-		select {
-			@include font(13, 20, 400);
-		}
-	}
-
-	.ppcp-r__checkbox {
-		.components-checkbox-control {
-			&__label {
-				@include font(13, 20, 400);
-				color: $color-black;
-			}
-		}
-	}
-}
-//*/
 }
