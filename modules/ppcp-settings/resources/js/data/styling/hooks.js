@@ -92,9 +92,8 @@ export const useStylingProps = ( location ) => {
 
 		// Payment methods (checkboxes).
 		paymentMethodChoices: Object.values( STYLING_PAYMENT_METHODS ),
-		paymentMethods: getLocationProp( 'paymentMethods' ),
-		setPaymentMethods: ( methods ) =>
-			setLocationProp( 'paymentMethods', methods ),
+		paymentMethods: getLocationProp( 'methods' ),
+		setPaymentMethods: ( methods ) => setLocationProp( 'methods', methods ),
 
 		// Color (dropdown).
 		colorChoices: Object.values( STYLING_COLORS ),

@@ -47,8 +47,8 @@ export const STYLING_LOCATIONS = {
 		),
 		link: '#',
 	},
-	'product-page': {
-		value: 'product-page',
+	product: {
+		value: 'product',
 		label: __( 'Product Page', 'woocommerce-paypal-payments' ),
 		// translators: %s is the URL to a documentation page.
 		description: __(
@@ -113,13 +113,13 @@ export const STYLING_LAYOUTS = {
 };
 
 export const STYLING_SHAPES = {
-	pill: {
-		value: 'pill',
-		label: __( 'Pill', 'woocommerce-paypal-payments' ),
-	},
 	rect: {
 		value: 'rect',
 		label: __( 'Rectangle', 'woocommerce-paypal-payments' ),
+	},
+	pill: {
+		value: 'pill',
+		label: __( 'Pill', 'woocommerce-paypal-payments' ),
 	},
 };
 
