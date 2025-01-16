@@ -310,19 +310,18 @@ class PaymentRestEndpoint extends RestEndpoint {
 	 * @return WP_REST_Response The updated payment methods details.
 	 */
 	public function update_details( WP_REST_Request $request ) : WP_REST_Response {
-		// Todo: Change this to DI?
 		$all_gateways = WC()->payment_gateways->payment_gateways();
 
 		$request_data = $request->get_params();
 
-		foreach ( $this->gateways as $gateway_id ) {
+		foreach ( $this->gateways() as $key => $value) {
 			// Check if the REST body contains details for this gateway.
-			if ( ! isset( $request_data[ $gateway_id ] ) || ! isset( $all_gateways[ $gateway_id ] ) ) {
+			if ( ! isset( $request_data[ $key ] ) || ! isset( $all_gateways[ $key ] ) ) {
 				continue;
 			}
 
-			$gateway  = $all_gateways[ $gateway_id ];
-			$new_data = $request_data[ $gateway_id ];
+			$gateway  = $all_gateways[ $key ];
+			$new_data = $request_data[ $key ];
 
 			if ( isset( $new_data['enabled'] ) ) {
 				$gateway->update_option( 'enabled', $new_data['enabled'] ? 'yes' : 'no' );
