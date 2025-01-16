@@ -34,7 +34,7 @@ return array(
 	'patchers'                => array(),
 	'exclude-files'           => array(), // list<string>.
 	'exclude-namespaces'      => array(
-		'/^(?!Psr).*/',
+		'/^(?!Psr).*/', // Exclude all namespaces except those starting with "Psr".
 	), // list<string|regex>.
 	'exclude-constants'       => array(), // list<string|regex>.
 	'exclude-classes'         => array(),     // list<string|regex>.
