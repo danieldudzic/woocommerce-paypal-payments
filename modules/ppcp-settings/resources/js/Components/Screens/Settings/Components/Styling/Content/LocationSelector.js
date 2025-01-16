@@ -1,9 +1,8 @@
 import { __, sprintf } from '@wordpress/i18n';
 
-import { StylingHooks } from '../../../../../data';
-import { Description } from '../../../../ReusableComponents/SettingsBlocks';
-import StylingSection from './StylingSection';
-import StylingSectionWithSelect from './StylingSectionWithSelect';
+import { StylingHooks } from '../../../../../../data';
+import { Description } from '../../../../../ReusableComponents/SettingsBlocks';
+import { SelectStylingSection, StylingSection } from '../Layout';
 
 const LocationSelector = ( { location, setLocation } ) => {
 	const { locationChoices, locationDetails } =
@@ -22,9 +21,9 @@ const LocationSelector = ( { location, setLocation } ) => {
 					'woocommerce-paypal-payments'
 				) }
 			></StylingSection>
-			<StylingSectionWithSelect
+			<SelectStylingSection
 				className="location-selector"
-				title={ __( 'Locations', 'woocommerce-paypal-payments' ) }
+				title={ __( 'Location', 'woocommerce-paypal-payments' ) }
 				separatorAndGap={ false }
 				options={ locationChoices }
 				value={ location }
@@ -33,7 +32,7 @@ const LocationSelector = ( { location, setLocation } ) => {
 				<Description asHtml={ true }>
 					{ locationDescription }
 				</Description>
-			</StylingSectionWithSelect>
+			</SelectStylingSection>
 		</>
 	);
 };

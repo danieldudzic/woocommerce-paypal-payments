@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 
-import { CheckboxGroup } from '../../../../ReusableComponents/Fields';
-import HStack from '../../../../ReusableComponents/HStack';
+import { CheckboxGroup } from '../../../../../ReusableComponents/Fields';
+import HStack from '../../../../../ReusableComponents/HStack';
 import StylingSection from './StylingSection';
 
 const StylingSectionWithCheckboxes = ( {

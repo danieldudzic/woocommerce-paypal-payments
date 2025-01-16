@@ -1,9 +1,9 @@
-import SettingsBlock from '../../../../ReusableComponents/SettingsBlocks/SettingsBlock';
+import SettingsBlock from '../../../../../ReusableComponents/SettingsBlocks/SettingsBlock';
 import {
 	Description,
 	Header,
 	Title,
-} from '../../../../ReusableComponents/SettingsBlocks';
+} from '../../../../../ReusableComponents/SettingsBlocks';
 
 const StylingSection = ( {
 	title,
