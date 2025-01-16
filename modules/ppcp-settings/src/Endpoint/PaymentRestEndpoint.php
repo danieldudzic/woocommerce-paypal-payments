@@ -9,6 +9,7 @@ declare( strict_types = 1 );
 
 namespace WooCommerce\PayPalCommerce\Settings\Endpoint;
 
+use WooCommerce\PayPalCommerce\Axo\Gateway\AxoGateway;
 use WooCommerce\PayPalCommerce\Googlepay\GooglePayGateway;
 use WooCommerce\PayPalCommerce\LocalAlternativePaymentMethods\BancontactGateway;
 use WooCommerce\PayPalCommerce\LocalAlternativePaymentMethods\BlikGateway;
@@ -19,7 +20,9 @@ use WooCommerce\PayPalCommerce\LocalAlternativePaymentMethods\P24Gateway;
 use WooCommerce\PayPalCommerce\LocalAlternativePaymentMethods\TrustlyGateway;
 use WooCommerce\PayPalCommerce\WcGateway\Gateway\CardButtonGateway;
 use WooCommerce\PayPalCommerce\WcGateway\Gateway\CreditCardGateway;
+use WooCommerce\PayPalCommerce\WcGateway\Gateway\OXXO\OXXO;
 use WooCommerce\PayPalCommerce\WcGateway\Gateway\PayPalGateway;
+use WooCommerce\PayPalCommerce\WcGateway\Gateway\PayUponInvoice\PayUponInvoiceGateway;
 use WP_REST_Server;
 use WP_REST_Response;
 use WP_REST_Request;
@@ -45,22 +48,58 @@ class PaymentRestEndpoint extends RestEndpoint {
 	 *
 	 * @var array
 	 */
-	private array $gateway_ids = array(
-		PayPalGateway::ID,
-		CardButtonGateway::ID,
+	private array $gateways = array(
+		PayPalGateway::ID         => array(
+			'id'   => 'paypal',
+			'icon' => 'payment-method-paypal',
+		),
+		CardButtonGateway::ID     => array(
+			'icon' => 'payment-method-cards',
+		),
 
-		CreditCardGateway::ID,
-		ApplePayGateway::ID,
-		GooglePayGateway::ID,
+		CreditCardGateway::ID     => array(
+			'icon' => 'payment-method-advanced-cards',
+		),
+		AxoGateway::ID            => array(
+			'icon' => 'payment-method-fastlane',
+		),
+		ApplePayGateway::ID       => array(
+			'icon' => 'payment-method-apple-pay',
+		),
+		GooglePayGateway::ID      => array(
+			'icon' => 'payment-method-google-pay',
+		),
 
-		BancontactGateway::ID,
-		BlikGateway::ID,
-		EPSGateway::ID,
-		IDealGateway::ID,
-		MyBankGateway::ID,
-		P24Gateway::ID,
-		TrustlyGateway::ID,
-		MultibancoGateway::ID,
+		BancontactGateway::ID     => array(
+			'icon' => 'payment-method-bancontact',
+		),
+		BlikGateway::ID           => array(
+			'icon' => 'payment-method-blik',
+		),
+		EPSGateway::ID            => array(
+			'icon' => 'payment-method-eps',
+		),
+		IDealGateway::ID          => array(
+			'icon' => 'payment-method-ideal',
+		),
+		MyBankGateway::ID         => array(
+			'icon' => 'payment-method-mybank',
+		),
+		P24Gateway::ID            => array(
+			'icon' => 'payment-method-przelewy24',
+		),
+		TrustlyGateway::ID        => array(
+			'icon' => 'payment-method-trustly',
+		),
+		MultibancoGateway::ID     => array(
+			'icon' => 'payment-method-multibanco',
+		),
+		PayUponInvoiceGateway::ID => array(
+			'icon' => 'payment-method-multibanco',
+		),
+		OXXO::ID                  => array(
+			'icon' => 'payment-method-multibanco',
+		),
 	);
 
 	/**
@@ -119,19 +158,20 @@ class PaymentRestEndpoint extends RestEndpoint {
 
 		$gateway_settings = array();
 
-		foreach ( $this->gateway_ids as $gateway_id ) {
-			if ( ! isset( $all_gateways[ $gateway_id ] ) ) {
+		foreach ( $this->gateways as $key => $value ) {
+			if ( ! isset( $all_gateways[ $key ] ) ) {
 				continue;
 			}
 
-			$gateway = $all_gateways[ $gateway_id ];
+			$gateway = $all_gateways[ $key ];
 
-			$gateway_settings[ $gateway_id ] = array(
+			$gateway_settings[ $key ] = array(
 				'enabled'      => 'yes' === $gateway->enabled,
 				'title'        => $gateway->get_title(),
 				'description'  => $gateway->get_description(),
 				'method_title' => $gateway->get_method_title(),
-				'icon'         => $gateway->get_icon(),
+				'id'           => $this->gateways[ $key ]['id'] ?? $key,
+				'icon'         => $this->gateways[ $key ]['icon'] ?? '',
 			);
 		}
 
@@ -151,7 +191,7 @@ class PaymentRestEndpoint extends RestEndpoint {
 
 		$request_data = $request->get_params();
 
-		foreach ( $this->gateway_ids as $gateway_id ) {
+		foreach ( $this->gateways as $gateway_id ) {
 			// Check if the REST body contains details for this gateway.
 			if ( ! isset( $request_data[ $gateway_id ] ) || ! isset( $all_gateways[ $gateway_id ] ) ) {
 				continue;

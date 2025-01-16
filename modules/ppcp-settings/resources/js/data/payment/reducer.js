@@ -19,8 +19,22 @@ const defaultTransient = Object.freeze( {
 
 // Persistent: Values that are loaded from the DB.
 const defaultPersistent = Object.freeze( {
-	// TODO: Add real DB properties here.
-	sampleValue: 'foo',
+	'ppcp-gateway': {},
+	'ppcp-card-button-gateway': {},
+	'ppcp-credit-card-gateway': {},
+	'ppcp-axo-gateway': {},
+	'ppcp-applepay': {},
+	'ppcp-googlepay': {},
+	'ppcp-bancontact': {},
+	'ppcp-blik': {},
+	'ppcp-eps': {},
+	'ppcp-ideal': {},
+	'ppcp-mybank': {},
+	'ppcp-p24': {},
+	'ppcp-trustly': {},
+	'ppcp-multibanco': {},
+	'ppcp-pay-upon-invoice-gateway': {},
+	'ppcp-oxxo-gateway': {},
 } );
 
 // Reducer logic.

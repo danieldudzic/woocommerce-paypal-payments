@@ -38,14 +38,37 @@ const useHooks = () => {
 	const isReady = useTransient( 'isReady' );
 
 	// Persistent accessors.
-	// TODO: Replace with real property.
 	const sampleValue = usePersistent( 'sampleValue' );
+	const paypal = usePersistent( 'ppcp-gateway' );
+	const advancedCreditCard = usePersistent( 'ppcp-credit-card-gateway' );
+	const bancontact = usePersistent( 'ppcp-bancontact' );
+	const blik = usePersistent( 'ppcp-blik' );
+	const eps = usePersistent( 'ppcp-eps' );
+	const ideal = usePersistent( 'ppcp-ideal' );
+	const mybank = usePersistent( 'ppcp-mybank' );
+	const p24 = usePersistent( 'ppcp-p24' );
+	const trustly = usePersistent( 'ppcp-trustly' );
+	const multibanco = usePersistent( 'ppcp-multibanco' );
+	const pui = usePersistent( 'ppcp-pay-upon-invoice-gateway' );
+	const oxxo = usePersistent( 'ppcp-oxxo-gateway' );
 
 	return {
 		persist,
 		isReady,
 		sampleValue,
 		setSampleValue,
+		paypal,
+		advancedCreditCard,
+		bancontact,
+		blik,
+		eps,
+		ideal,
+		mybank,
+		p24,
+		trustly,
+		multibanco,
+		pui,
+		oxxo,
 	};
 };
 
@@ -61,5 +84,55 @@ export const useSampleValue = () => {
 	return {
 		sampleValue,
 		setSampleValue,
+	};
+};
+
+export const usePaymentMethodsPayPalCheckout = () => {
+	const { paypal } = useHooks();
+	const paymentMethodsPayPalCheckout = [ paypal ];
+
+	return {
+		paymentMethodsPayPalCheckout,
+	};
+};
+
+export const usePaymentMethodsOnlineCardPayments = () => {
+	const { advancedCreditCard } = useHooks();
+	const paymentMethodsOnlineCardPayments = [ advancedCreditCard ];
+
+	return {
+		paymentMethodsOnlineCardPayments,
+	};
+};
+
+export const usePaymentMethodsAlternative = () => {
+	const {
+		bancontact,
+		blik,
+		eps,
+		ideal,
+		mybank,
+		p24,
+		trustly,
+		multibanco,
+		pui,
+		oxxo,
+	} = useHooks();
+
+	const paymentMethodsAlternative = [
+		bancontact,
+		blik,
+		eps,
+		ideal,
+		mybank,
+		p24,
+		trustly,
+		multibanco,
+		pui,
+		oxxo,
+	];
+
+	return {
+		paymentMethodsAlternative,
 	};
 };
