@@ -42,6 +42,11 @@ const useHooks = () => {
 
 	const getLocationProp = useCallback(
 		( prop ) => {
+			if ( undefined === persistentData[ location ]?.[ prop ] ) {
+				console.error(
+					`Trying to access non-existent style property: ${ location }.${ prop }. Possibly wrong style name - review the reducer.`
+				);
+			}
 			return persistentData[ location ]?.[ prop ];
 		},
 		[ location, persistentData ]

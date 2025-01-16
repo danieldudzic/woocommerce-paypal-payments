@@ -107,7 +107,13 @@ export const createHooksForStore = ( storeName ) => {
 						`Please create the selector "${ selector }" for store "${ storeName }"`
 					);
 				}
-				return store[ selector ]()?.[ key ];
+				const selectorResult = store[ selector ]();
+				if ( undefined === selectorResult?.[ key ] ) {
+					console.error(
+						`Warning: ${ selector }()[${ key }] is undefined in store "${ storeName }". This may indicate a bug.`
+					);
+				}
+				return selectorResult?.[ key ];
 			},
 			[ key ]
 		);
