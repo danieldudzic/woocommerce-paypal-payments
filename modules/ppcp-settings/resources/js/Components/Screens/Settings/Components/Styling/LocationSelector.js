@@ -1,15 +1,13 @@
-import { SelectControl } from '@wordpress/components';
 import { __, sprintf } from '@wordpress/i18n';
 
-// Dummy hook.
-import { useStylingProps } from '../../Tabs/TabStyling';
-
+import { StylingHooks } from '../../../../../data';
 import { Description } from '../../../../ReusableComponents/SettingsBlocks';
 import StylingSection from './StylingSection';
 import StylingSectionWithSelect from './StylingSectionWithSelect';
 
 const LocationSelector = ( { location, setLocation } ) => {
-	const { locationChoices, locationDetails } = useStylingProps( location );
+	const { locationChoices, locationDetails } =
+		StylingHooks.useStylingProps( location );
 	const { description, link } = locationDetails || {};
 	const locationDescription = sprintf( description, link );
 

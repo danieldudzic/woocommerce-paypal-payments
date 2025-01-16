@@ -1,15 +1,13 @@
 import { __ } from '@wordpress/i18n';
 
-// Dummy hook.
-import { useStylingLocation, useStylingProps } from '../../Tabs/TabStyling';
-
+import { StylingHooks } from '../../../../../data';
 import LocationSelector from './LocationSelector';
 import StylingSectionWithSelect from './StylingSectionWithSelect';
 import StylingSectionWithCheckboxes from './StylingSectionWithCheckboxes';
 import StylingSectionWithRadiobuttons from './StylingSectionWithRadiobuttons';
 
 const SettingsPanel = () => {
-	const { location, setLocation } = useStylingLocation();
+	const { location, setLocation } = StylingHooks.useStylingLocation();
 
 	return (
 		<div className="settings-panel">
@@ -33,7 +31,7 @@ export default SettingsPanel;
 
 const SectionPaymentMethods = ( { location } ) => {
 	const { paymentMethods, setPaymentMethods, paymentMethodChoices } =
-		useStylingProps( location );
+		StylingHooks.useStylingProps( location );
 
 	return (
 		<StylingSectionWithCheckboxes
@@ -48,7 +46,7 @@ const SectionPaymentMethods = ( { location } ) => {
 
 const SectionButtonLayout = ( { location } ) => {
 	const { supportsLayout, layout, setLayout, layoutChoices } =
-		useStylingProps( location );
+		StylingHooks.useStylingProps( location );
 
 	if ( ! supportsLayout ) {
 		return null;
@@ -66,7 +64,8 @@ const SectionButtonLayout = ( { location } ) => {
 };
 
 const SectionButtonShape = ( { location } ) => {
-	const { shape, setShape, shapeChoices } = useStylingProps( location );
+	const { shape, setShape, shapeChoices } =
+		StylingHooks.useStylingProps( location );
 
 	return (
 		<StylingSectionWithRadiobuttons
@@ -80,7 +79,8 @@ const SectionButtonShape = ( { location } ) => {
 };
 
 const SectionButtonLabel = ( { location } ) => {
-	const { label, setLabel, labelChoices } = useStylingProps( location );
+	const { label, setLabel, labelChoices } =
+		StylingHooks.useStylingProps( location );
 
 	return (
 		<StylingSectionWithSelect
@@ -94,7 +94,8 @@ const SectionButtonLabel = ( { location } ) => {
 };
 
 const SectionButtonColor = ( { location } ) => {
-	const { color, setColor, colorChoices } = useStylingProps( location );
+	const { color, setColor, colorChoices } =
+		StylingHooks.useStylingProps( location );
 
 	return (
 		<StylingSectionWithSelect
@@ -109,7 +110,7 @@ const SectionButtonColor = ( { location } ) => {
 
 const SectionButtonTagline = ( { location } ) => {
 	const { supportsTagline, tagline, setTagline, taglineChoices } =
-		useStylingProps( location );
+		StylingHooks.useStylingProps( location );
 
 	if ( ! supportsTagline ) {
 		return null;
