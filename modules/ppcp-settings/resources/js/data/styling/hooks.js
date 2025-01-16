@@ -11,6 +11,7 @@ import { __ } from '@wordpress/i18n';
 import { useCallback, useState } from '@wordpress/element'; // Temporary
 import { useSelect, useDispatch } from '@wordpress/data';
 
+import { createHooksForStore } from '../utils';
 import { STORE_NAME } from './constants';
 import {
 	STYLING_COLORS,
@@ -21,28 +22,17 @@ import {
 	STYLING_SHAPES,
 } from './configuration';
 
-const useTransient = ( key ) =>
-	useSelect(
-		( select ) => select( STORE_NAME ).transientData()?.[ key ],
-		[ key ]
-	);
-
-const usePersistent = ( key ) =>
-	useSelect(
-		( select ) => select( STORE_NAME ).persistentData()?.[ key ],
-		[ key ]
-	);
-
 const useHooks = () => {
-	const { persist, setShape } = useDispatch( STORE_NAME );
+	const { useTransient, usePersistent } = createHooksForStore( STORE_NAME );
+	const { persist } = useDispatch( STORE_NAME );
 
 	// Read-only flags and derived state.
 
 	// Transient accessors.
-	const isReady = useTransient( 'isReady' );
+	const [ isReady ] = useTransient( 'isReady' );
 
 	// Persistent accessors.
-	const shape = usePersistent( 'shape' );
+	const [ shape, setShape ] = usePersistent( 'shape' );
 
 	return {
 		persist,
