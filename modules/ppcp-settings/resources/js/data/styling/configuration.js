@@ -13,20 +13,20 @@ export const STYLING_LOCATIONS = {
 		link: 'https://woocommerce.com/document/woocommerce-paypal-payments/#button-on-cart',
 		props: { layout: false, tagline: false },
 	},
-	'classic-checkout': {
-		value: 'classic-checkout',
+	classicCheckout: {
+		value: 'classicCheckout',
 		label: __( 'Classic Checkout', 'woocommerce-paypal-payments' ),
 		link: 'https://woocommerce.com/document/woocommerce-paypal-payments/#button-on-checkout',
 		props: { layout: true, tagline: true },
 	},
-	'express-checkout': {
-		value: 'express-checkout',
+	expressCheckout: {
+		value: 'expressCheckout',
 		label: __( 'Express Checkout', 'woocommerce-paypal-payments' ),
 		link: 'https://woocommerce.com/document/woocommerce-paypal-payments/#button-on-block-express-checkout',
 		props: { layout: false, tagline: false },
 	},
-	'mini-cart': {
-		value: 'mini-cart',
+	miniCart: {
+		value: 'miniCart',
 		label: __( 'Mini Cart', 'woocommerce-paypel-payements' ),
 		link: 'https://woocommerce.com/document/woocommerce-paypal-payments/#button-on-mini-cart',
 		props: { layout: true, tagline: true },
