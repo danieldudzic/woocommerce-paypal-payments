@@ -138,10 +138,11 @@ export const useLabelProps = ( location ) => {
 
 export const useLayoutProps = ( location ) => {
 	const { getLocationProp, setLocationProp } = useHooks();
+	const { details } = useLocationProps( location );
 
 	return {
 		choices: Object.values( STYLING_LAYOUTS ),
-		isAvailable: true,
+		isAvailable: false !== details.props.layout,
 		layout: getLocationProp( location, 'layout' ),
 		setLayout: ( layout ) => setLocationProp( location, 'layout', layout ),
 	};
@@ -149,6 +150,7 @@ export const useLayoutProps = ( location ) => {
 
 export const useTaglineProps = ( location ) => {
 	const { getLocationProp, setLocationProp } = useHooks();
+	const { details } = useLocationProps( location );
 
 	return {
 		choices: [
@@ -157,7 +159,10 @@ export const useTaglineProps = ( location ) => {
 				label: __( 'Enable Tagline', 'woocommerce-paypal-payments' ),
 			},
 		],
-		isAvailable: true,
+		isAvailable:
+			false !== details.props.tagline &&
+			STYLING_LAYOUTS.horizontal.value ===
+				getLocationProp( location, 'layout' ),
 		tagline: getLocationProp( location, 'tagline' ),
 		setTagline: ( tagline ) =>
 			setLocationProp( location, 'tagline', tagline ),

@@ -16,6 +16,7 @@ export const STYLING_LOCATIONS = {
 			'wooocommerce-paypal-payments'
 		),
 		link: '#',
+		props: { layout: false, tagline: false },
 	},
 	'classic-checkout': {
 		value: 'classic-checkout',
@@ -26,6 +27,7 @@ export const STYLING_LOCATIONS = {
 			'wooocommerce-paypal-payments'
 		),
 		link: '#',
+		props: { layout: true, tagline: true },
 	},
 	'express-checkout': {
 		value: 'express-checkout',
@@ -36,6 +38,7 @@ export const STYLING_LOCATIONS = {
 			'wooocommerce-paypal-payments'
 		),
 		link: '#',
+		props: { layout: false, tagline: false },
 	},
 	'mini-cart': {
 		value: 'mini-cart',
@@ -46,6 +49,7 @@ export const STYLING_LOCATIONS = {
 			'wooocommerce-paypal-payments'
 		),
 		link: '#',
+		props: { layout: true, tagline: true },
 	},
 	product: {
 		value: 'product',
@@ -56,6 +60,7 @@ export const STYLING_LOCATIONS = {
 			'wooocommerce-paypal-payments'
 		),
 		link: '#',
+		props: { layout: true, tagline: true },
 	},
 };
 

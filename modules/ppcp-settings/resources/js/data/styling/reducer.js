@@ -33,8 +33,6 @@ const defaultPersistent = Object.freeze( {
 		label: STYLING_LABELS.pay.value,
 		shape: STYLING_SHAPES.rect.value,
 		color: STYLING_COLORS.gold.value,
-		layout: STYLING_LAYOUTS.vertical.value,
-		tagline: false,
 	} ),
 	[ STYLING_LOCATIONS[ 'classic-checkout' ].value ]: Object.freeze( {
 		enabled: true,
@@ -51,8 +49,6 @@ const defaultPersistent = Object.freeze( {
 		label: STYLING_LABELS.checkout.value,
 		shape: STYLING_SHAPES.rect.value,
 		color: STYLING_COLORS.gold.value,
-		layout: STYLING_LAYOUTS.vertical.value,
-		tagline: false,
 	} ),
 	[ STYLING_LOCATIONS[ 'mini-cart' ].value ]: Object.freeze( {
 		enabled: true,
