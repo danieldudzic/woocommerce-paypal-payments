@@ -7,8 +7,7 @@
  * @file
  */
 
-import { __, sprintf } from '@wordpress/i18n';
-import { useCallback } from '@wordpress/element'; // Temporary
+import { useCallback } from '@wordpress/element';
 import { useDispatch, useSelect } from '@wordpress/data';
 
 import { createHooksForStore } from '../utils';
@@ -26,8 +25,6 @@ const useHooks = () => {
 	const { useTransient } = createHooksForStore( STORE_NAME );
 	const { persist, setPersistent } = useDispatch( STORE_NAME );
 
-	// Read-only flags and derived state.
-
 	// Transient accessors.
 	const [ isReady ] = useTransient( 'isReady' );
 	const [ location, setLocation ] = useTransient( 'location' );
@@ -39,13 +36,13 @@ const useHooks = () => {
 	);
 
 	const getLocationProp = useCallback(
-		( locatonId, prop ) => {
-			if ( undefined === persistentData[ locatonId ]?.[ prop ] ) {
+		( locationId, prop ) => {
+			if ( undefined === persistentData[ locationId ]?.[ prop ] ) {
 				console.error(
-					`Trying to access non-existent style property: ${ locatonId }.${ prop }. Possibly wrong style name - review the reducer.`
+					`Trying to access non-existent style property: ${ locationId }.${ prop }. Possibly wrong style name - review the reducer.`
 				);
 			}
-			return persistentData[ locatonId ]?.[ prop ];
+			return persistentData[ locationId ]?.[ prop ];
 		},
 		[ persistentData ]
 	);
