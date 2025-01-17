@@ -156,15 +156,6 @@ export const useTaglineProps = ( location ) => {
 			getLocationProp( location, 'layout' );
 
 	return {
-		choices: [
-			{
-				value: 'tagline',
-				label: __(
-					'Show tagline below buttons',
-					'woocommerce-paypal-payments'
-				),
-			},
-		],
 		isAvailable,
 		tagline: isAvailable ? getLocationProp( location, 'tagline' ) : false,
 		setTagline: ( tagline ) =>
