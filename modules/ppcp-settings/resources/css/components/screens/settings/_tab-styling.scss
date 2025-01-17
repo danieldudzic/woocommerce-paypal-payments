@@ -90,6 +90,10 @@
 			padding: 24px;
 			height: calc(100vh - var(--preview-height-reduction));
 			top: var(--sticky-offset-top);
+
+			// Disable interactions with the preview.
+			pointer-events: none;
+			user-select: none;
 		}
 	}
 }
