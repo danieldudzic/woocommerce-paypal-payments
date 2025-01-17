@@ -7,12 +7,16 @@ export const Title = ( {
 	big = false,
 	className = '',
 } ) => {
-	className = classNames( 'ppcp-r-settings-block__title', className, {
-		'style-alt': altStyle,
-		'style-big': big,
-	} );
+	const elementClasses = classNames(
+		'ppcp-r-settings-block__title',
+		className,
+		{
+			'style-alt': altStyle,
+			'style-big': big,
+		}
+	);
 
-	return <span className={ className }>{ children }</span>;
+	return <span className={ elementClasses }>{ children }</span>;
 };
 
 export const TitleWrapper = ( { children } ) => (
@@ -31,15 +35,18 @@ export const Description = ( { children, asHtml = false, className = '' } ) => {
 		return null;
 	}
 
-	className = classNames( 'ppcp-r-settings-block__description', className );
+	const elementClasses = classNames(
+		'ppcp-r-settings-block__description',
+		className
+	);
 
 	if ( ! asHtml ) {
-		return <span className={ className }>{ children }</span>;
+		return <span className={ elementClasses }>{ children }</span>;
 	}
 
 	return (
 		<span
-			className={ className }
+			className={ elementClasses }
 			dangerouslySetInnerHTML={ { __html: children } }
 		/>
 	);
@@ -56,11 +63,18 @@ export const Header = ( { children, className = '' } ) => (
 );
 
 // Card Elements
-export const Content = ( { children, id = '' } ) => (
-	<div id={ id } className="ppcp-r-settings-card__content">
-		{ children }
-	</div>
-);
+export const Content = ( { children, className = '', id = '' } ) => {
+	const elementClasses = classNames(
+		'ppcp-r-settings-card__content',
+		className
+	);
+
+	return (
+		<div id={ id } className={ elementClasses }>
+			{ children }
+		</div>
+	);
+};
 
 export const ContentWrapper = ( { children } ) => (
 	<div className="ppcp-r-settings-card__content-wrapper">{ children }</div>
