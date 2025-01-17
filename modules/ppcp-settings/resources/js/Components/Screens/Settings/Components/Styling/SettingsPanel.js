@@ -6,7 +6,6 @@ import {
 	ButtonShape,
 	ButtonLabel,
 	ButtonColor,
-	Tagline,
 } from './Content';
 
 const SettingsPanel = () => {
@@ -23,7 +22,6 @@ const SettingsPanel = () => {
 			<ButtonShape location={ location } />
 			<ButtonLabel location={ location } />
 			<ButtonColor location={ location } />
-			<Tagline location={ location } />
 		</div>
 	);
 };

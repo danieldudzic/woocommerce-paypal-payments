@@ -36,6 +36,11 @@
 		&.payment-methods {
 			--block-separator-gap: 28px;
 		}
+
+		// It has no header; adjusts the gap to the control right above the tagline.
+		&.tagline {
+			--block-header-gap: 24px;
+		}
 	}
 
 	/* The settings-panel (left side) */

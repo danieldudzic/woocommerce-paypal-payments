@@ -156,7 +156,10 @@ export const useTaglineProps = ( location ) => {
 		choices: [
 			{
 				value: 'tagline',
-				label: __( 'Enable Tagline', 'woocommerce-paypal-payments' ),
+				label: __(
+					'Show tagline below buttons',
+					'woocommerce-paypal-payments'
+				),
 			},
 		],
 		isAvailable:

@@ -13,8 +13,8 @@ const SectionTagline = ( { location } ) => {
 
 	return (
 		<CheckboxStylingSection
-			title={ __( 'Tagline', 'woocommerce-paypal-payments' ) }
 			className="tagline"
+			separatorAndGap={ false }
 			options={ choices }
 			value={ tagline }
 			onChange={ setTagline }
