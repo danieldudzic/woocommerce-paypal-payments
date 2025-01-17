@@ -83,52 +83,86 @@ export const useLocationProps = ( location ) => {
 	const { getLocationProp, setLocationProp } = useHooks();
 	const details = STYLING_LOCATIONS[ location ] ?? {};
 
+	const sanitize = ( value ) => ( undefined === value ? true : !! value );
+
 	return {
 		choices: Object.values( STYLING_LOCATIONS ),
 		details,
-		isActive: getLocationProp( location, 'enabled' ),
-		setActive: ( state ) => setLocationProp( location, 'enabled', state ),
+		isActive: sanitize( getLocationProp( location, 'enabled' ) ),
+		setActive: ( state ) =>
+			setLocationProp( location, 'enabled', sanitize( state ) ),
 	};
 };
 
 export const usePaymentMethodProps = ( location ) => {
 	const { getLocationProp, setLocationProp } = useHooks();
 
+	const sanitize = ( value ) => {
+		if ( Array.isArray( value ) ) {
+			return value;
+		}
+		return value ? [ value ] : [];
+	};
+
 	return {
 		choices: Object.values( STYLING_PAYMENT_METHODS ),
-		paymentMethods: getLocationProp( location, 'methods' ),
+		paymentMethods: sanitize( getLocationProp( location, 'methods' ) ),
 		setPaymentMethods: ( methods ) =>
-			setLocationProp( location, 'methods', methods ),
+			setLocationProp( location, 'methods', sanitize( methods ) ),
 	};
 };
 
 export const useColorProps = ( location ) => {
 	const { getLocationProp, setLocationProp } = useHooks();
 
+	const sanitize = ( value ) => {
+		const isValidColor = Object.values( STYLING_COLORS ).some(
+			( color ) => color.value === value
+		);
+		return isValidColor ? value : STYLING_COLORS.gold.value;
+	};
+
 	return {
 		choices: Object.values( STYLING_COLORS ),
-		color: getLocationProp( location, 'color' ),
-		setColor: ( color ) => setLocationProp( location, 'color', color ),
+		color: sanitize( getLocationProp( location, 'color' ) ),
+		setColor: ( color ) =>
+			setLocationProp( location, 'color', sanitize( color ) ),
 	};
 };
 
 export const useShapeProps = ( location ) => {
 	const { getLocationProp, setLocationProp } = useHooks();
 
+	const sanitize = ( value ) => {
+		const isValidColor = Object.values( STYLING_SHAPES ).some(
+			( color ) => color.value === value
+		);
+		return isValidColor ? value : STYLING_SHAPES.rect.value;
+	};
+
 	return {
 		choices: Object.values( STYLING_SHAPES ),
-		shape: getLocationProp( location, 'shape' ),
-		setShape: ( shape ) => setLocationProp( location, 'shape', shape ),
+		shape: sanitize( getLocationProp( location, 'shape' ) ),
+		setShape: ( shape ) =>
+			setLocationProp( location, 'shape', sanitize( shape ) ),
 	};
 };
 
 export const useLabelProps = ( location ) => {
 	const { getLocationProp, setLocationProp } = useHooks();
 
+	const sanitize = ( value ) => {
+		const isValidColor = Object.values( STYLING_LABELS ).some(
+			( color ) => color.value === value
+		);
+		return isValidColor ? value : STYLING_LABELS.paypal.value;
+	};
+
 	return {
 		choices: Object.values( STYLING_LABELS ),
-		label: getLocationProp( location, 'label' ),
-		setLabel: ( label ) => setLocationProp( location, 'label', label ),
+		label: sanitize( getLocationProp( location, 'label' ) ),
+		setLabel: ( label ) =>
+			setLocationProp( location, 'label', sanitize( label ) ),
 	};
 };
 
@@ -137,11 +171,19 @@ export const useLayoutProps = ( location ) => {
 	const { details } = useLocationProps( location );
 	const isAvailable = false !== details.props.layout;
 
+	const sanitize = ( value ) => {
+		const isValidColor = Object.values( STYLING_LAYOUTS ).some(
+			( color ) => color.value === value
+		);
+		return isValidColor ? value : STYLING_LAYOUTS.vertical.value;
+	};
+
 	return {
 		choices: Object.values( STYLING_LAYOUTS ),
 		isAvailable,
-		layout: getLocationProp( location, 'layout' ),
-		setLayout: ( layout ) => setLocationProp( location, 'layout', layout ),
+		layout: sanitize( getLocationProp( location, 'layout' ) ),
+		setLayout: ( layout ) =>
+			setLocationProp( location, 'layout', sanitize( layout ) ),
 	};
 };
 
@@ -155,10 +197,14 @@ export const useTaglineProps = ( location ) => {
 		STYLING_LAYOUTS.horizontal.value ===
 			getLocationProp( location, 'layout' );
 
+	const sanitize = ( value ) => !! value;
+
 	return {
 		isAvailable,
-		tagline: isAvailable ? getLocationProp( location, 'tagline' ) : false,
+		tagline: isAvailable
+			? sanitize( getLocationProp( location, 'tagline' ) )
+			: false,
 		setTagline: ( tagline ) =>
-			setLocationProp( location, 'tagline', tagline ),
+			setLocationProp( location, 'tagline', sanitize( tagline ) ),
 	};
 };

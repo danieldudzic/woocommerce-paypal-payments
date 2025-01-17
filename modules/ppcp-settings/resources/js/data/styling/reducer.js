@@ -70,6 +70,19 @@ const defaultPersistent = Object.freeze( {
 	} ),
 } );
 
+const sanitizeLocation = ( oldDetails, newDetails ) => {
+	// Skip if provided details are not a plain object.
+	if (
+		! newDetails ||
+		'object' !== typeof newDetails ||
+		Array.isArray( newDetails )
+	) {
+		return oldDetails;
+	}
+
+	return { ...oldDetails, ...newDetails };
+};
+
 // Reducer logic.
 
 const [ setTransient, setPersistent ] = createSetters(
@@ -96,8 +109,20 @@ const reducer = createReducer( defaultTransient, defaultPersistent, {
 		return cleanState;
 	},
 
-	[ ACTION_TYPES.HYDRATE ]: ( state, payload ) =>
-		setPersistent( state, payload.data ),
+	[ ACTION_TYPES.HYDRATE ]: ( state, payload ) => {
+		const validData = Object.keys( defaultPersistent ).reduce(
+			( data, location ) => {
+				data[ location ] = sanitizeLocation(
+					state.data[ location ],
+					payload.data[ location ]
+				);
+				return data;
+			},
+			{}
+		);
+
+		return setPersistent( state, validData );
+	},
 } );
 
 export default reducer;
