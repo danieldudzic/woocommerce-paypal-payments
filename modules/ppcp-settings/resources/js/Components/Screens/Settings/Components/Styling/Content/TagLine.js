@@ -4,10 +4,10 @@ import { StylingHooks } from '../../../../../../data';
 import { CheckboxStylingSection } from '../Layout';
 
 const SectionTagline = ( { location } ) => {
-	const { supportsTagline, tagline, setTagline, taglineChoices } =
-		StylingHooks.useStylingProps( location );
+	const { isAvailable, tagline, setTagline, choices } =
+		StylingHooks.useTaglineProps( location );
 
-	if ( ! supportsTagline ) {
+	if ( ! isAvailable ) {
 		return null;
 	}
 
@@ -15,7 +15,7 @@ const SectionTagline = ( { location } ) => {
 		<CheckboxStylingSection
 			title={ __( 'Tagline', 'woocommerce-paypal-payments' ) }
 			className="tagline"
-			options={ taglineChoices }
+			options={ choices }
 			value={ tagline }
 			onChange={ setTagline }
 		/>

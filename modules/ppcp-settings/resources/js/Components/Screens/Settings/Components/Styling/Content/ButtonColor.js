@@ -4,14 +4,13 @@ import { StylingHooks } from '../../../../../../data';
 import { SelectStylingSection } from '../Layout';
 
 const SectionButtonColor = ( { location } ) => {
-	const { color, setColor, colorChoices } =
-		StylingHooks.useStylingProps( location );
+	const { color, setColor, choices } = StylingHooks.useColorProps( location );
 
 	return (
 		<SelectStylingSection
 			title={ __( 'Button Color', 'woocommerce-paypal-payments' ) }
 			className="button-color"
-			options={ colorChoices }
+			options={ choices }
 			value={ color }
 			onChange={ setColor }
 		/>

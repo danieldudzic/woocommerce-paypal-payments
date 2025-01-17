@@ -1,14 +1,11 @@
-import { __, sprintf } from '@wordpress/i18n';
+import { __ } from '@wordpress/i18n';
 
 import { StylingHooks } from '../../../../../../data';
 import { Description } from '../../../../../ReusableComponents/SettingsBlocks';
 import { SelectStylingSection, StylingSection } from '../Layout';
 
 const LocationSelector = ( { location, setLocation } ) => {
-	const { locationChoices, locationDetails } =
-		StylingHooks.useStylingProps( location );
-	const { description, link } = locationDetails || {};
-	const locationDescription = sprintf( description, link );
+	const { choices, description } = StylingHooks.useLocationProps( location );
 
 	return (
 		<>
@@ -25,13 +22,11 @@ const LocationSelector = ( { location, setLocation } ) => {
 				className="location-selector"
 				title={ __( 'Location', 'woocommerce-paypal-payments' ) }
 				separatorAndGap={ false }
-				options={ locationChoices }
+				options={ choices }
 				value={ location }
 				onChange={ setLocation }
 			>
-				<Description asHtml={ true }>
-					{ locationDescription }
-				</Description>
+				<Description asHtml={ true }>{ description }</Description>
 			</SelectStylingSection>
 		</>
 	);

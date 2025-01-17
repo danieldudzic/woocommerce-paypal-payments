@@ -4,14 +4,14 @@ import { StylingHooks } from '../../../../../../data';
 import { CheckboxStylingSection } from '../Layout';
 
 const SectionPaymentMethods = ( { location } ) => {
-	const { paymentMethods, setPaymentMethods, paymentMethodChoices } =
-		StylingHooks.useStylingProps( location );
+	const { paymentMethods, setPaymentMethods, choices } =
+		StylingHooks.usePaymentMethodProps( location );
 
 	return (
 		<CheckboxStylingSection
 			title={ __( 'Payment Methods', 'woocommerce-paypal-payments' ) }
 			className="payment-methods"
-			options={ paymentMethodChoices }
+			options={ choices }
 			value={ paymentMethods }
 			onChange={ setPaymentMethods }
 		/>

@@ -4,4 +4,4 @@ export { default as ButtonLabel } from './ButtonLabel';
 export { default as ButtonLayout } from './ButtonLayout';
 export { default as ButtonShape } from './ButtonShape';
 export { default as PaymentMethods } from './PaymentMethods';
-export { default as TagLine } from './TagLine';
+export { default as Tagline } from './Tagline';

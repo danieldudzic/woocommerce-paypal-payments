@@ -7,7 +7,7 @@
  * @file
  */
 
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 import { useCallback } from '@wordpress/element'; // Temporary
 import { useDispatch, useSelect } from '@wordpress/data';
 
@@ -82,49 +82,84 @@ export const useStylingLocation = () => {
 	return { location, setLocation };
 };
 
-export const useStylingProps = ( location ) => {
+export const useLocationProps = ( location ) => {
+	const details = STYLING_LOCATIONS[ location ] ?? {};
+
+	// eslint-disable-next-line @wordpress/valid-sprintf
+	const description = sprintf( details.description ?? '', details.link );
+
+	return {
+		choices: Object.values( STYLING_LOCATIONS ),
+		details,
+		description,
+	};
+};
+
+export const usePaymentMethodProps = ( location ) => {
 	const { getLocationProp, setLocationProp } = useHooks();
 
 	return {
-		// Location (drop down).
-		locationChoices: Object.values( STYLING_LOCATIONS ),
-		locationDetails: STYLING_LOCATIONS[ location ],
+		choices: Object.values( STYLING_PAYMENT_METHODS ),
+		paymentMethods: getLocationProp( location, 'methods' ),
+		setPaymentMethods: ( methods ) =>
+			setLocationProp( location, 'methods', methods ),
+	};
+};
 
-		// Payment methods (checkboxes).
-		paymentMethodChoices: Object.values( STYLING_PAYMENT_METHODS ),
-		paymentMethods: getLocationProp( 'methods' ),
-		setPaymentMethods: ( methods ) => setLocationProp( 'methods', methods ),
+export const useColorProps = ( location ) => {
+	const { getLocationProp, setLocationProp } = useHooks();
 
-		// Color (dropdown).
-		colorChoices: Object.values( STYLING_COLORS ),
-		color: getLocationProp( 'color' ),
-		setColor: ( color ) => setLocationProp( 'color', color ),
+	return {
+		choices: Object.values( STYLING_COLORS ),
+		color: getLocationProp( location, 'color' ),
+		setColor: ( color ) => setLocationProp( location, 'color', color ),
+	};
+};
 
-		// Shape (radio).
-		shapeChoices: Object.values( STYLING_SHAPES ),
-		shape: getLocationProp( 'shape' ),
-		setShape: ( shape ) => setLocationProp( 'shape', shape ),
+export const useShapeProps = ( location ) => {
+	const { getLocationProp, setLocationProp } = useHooks();
 
-		// Label (dropdown).
-		labelChoices: Object.values( STYLING_LABELS ),
-		label: getLocationProp( 'label' ),
-		setLabel: ( label ) => setLocationProp( 'label', label ),
+	return {
+		choices: Object.values( STYLING_SHAPES ),
+		shape: getLocationProp( location, 'shape' ),
+		setShape: ( shape ) => setLocationProp( location, 'shape', shape ),
+	};
+};
 
-		// Layout (radio).
-		layoutChoices: Object.values( STYLING_LAYOUTS ),
-		supportsLayout: true,
-		layout: getLocationProp( 'layout' ),
-		setLayout: ( layout ) => setLocationProp( 'layout', layout ),
+export const useLabelProps = ( location ) => {
+	const { getLocationProp, setLocationProp } = useHooks();
 
-		// Tagline (checkbox).
-		taglineChoices: [
+	return {
+		choices: Object.values( STYLING_LABELS ),
+		label: getLocationProp( location, 'label' ),
+		setLabel: ( label ) => setLocationProp( location, 'label', label ),
+	};
+};
+
+export const useLayoutProps = ( location ) => {
+	const { getLocationProp, setLocationProp } = useHooks();
+
+	return {
+		choices: Object.values( STYLING_LAYOUTS ),
+		isAvailable: true,
+		layout: getLocationProp( location, 'layout' ),
+		setLayout: ( layout ) => setLocationProp( location, 'layout', layout ),
+	};
+};
+
+export const useTaglineProps = ( location ) => {
+	const { getLocationProp, setLocationProp } = useHooks();
+
+	return {
+		choices: [
 			{
 				value: 'tagline',
 				label: __( 'Enable Tagline', 'woocommerce-paypal-payments' ),
 			},
 		],
-		supportsTagline: true,
-		tagline: getLocationProp( 'tagline' ),
-		setTagline: ( tagline ) => setLocationProp( 'tagline', tagline ),
+		isAvailable: true,
+		tagline: getLocationProp( location, 'tagline' ),
+		setTagline: ( tagline ) =>
+			setLocationProp( location, 'tagline', tagline ),
 	};
 };

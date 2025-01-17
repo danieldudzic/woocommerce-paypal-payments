@@ -4,14 +4,13 @@ import { StylingHooks } from '../../../../../../data';
 import { SelectStylingSection } from '../Layout';
 
 const SectionButtonLabel = ( { location } ) => {
-	const { label, setLabel, labelChoices } =
-		StylingHooks.useStylingProps( location );
+	const { label, setLabel, choices } = StylingHooks.useLabelProps( location );
 
 	return (
 		<SelectStylingSection
 			title={ __( 'Button Label', 'woocommerce-paypal-payments' ) }
 			className="button-label"
-			options={ labelChoices }
+			options={ choices }
 			value={ label }
 			onChange={ setLabel }
 		/>
