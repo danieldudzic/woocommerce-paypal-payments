@@ -10,7 +10,8 @@ import {
 } from '../Layout';
 
 const LocationSelector = ( { location, setLocation } ) => {
-	const { choices, details } = StylingHooks.useLocationProps( location );
+	const { choices, details, isActive, setActive } =
+		StylingHooks.useLocationProps( location );
 
 	const activateCheckbox = {
 		value: 'active',
@@ -51,7 +52,8 @@ const LocationSelector = ( { location, setLocation } ) => {
 				className="location-activation"
 				separatorAndGap={ false }
 				options={ [ activateCheckbox ] }
-				value={ 'active' }
+				value={ isActive }
+				onChange={ setActive }
 			/>
 		</>
 	);

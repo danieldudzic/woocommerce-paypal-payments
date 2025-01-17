@@ -83,11 +83,14 @@ export const useStylingLocation = () => {
 };
 
 export const useLocationProps = ( location ) => {
+	const { getLocationProp, setLocationProp } = useHooks();
 	const details = STYLING_LOCATIONS[ location ] ?? {};
 
 	return {
 		choices: Object.values( STYLING_LOCATIONS ),
 		details,
+		isActive: getLocationProp( location, 'enabled' ),
+		setActive: ( state ) => setLocationProp( location, 'enabled', state ),
 	};
 };
 
