@@ -23,8 +23,8 @@ import {
 } from './configuration';
 
 const useHooks = () => {
-	const { useTransient, usePersistent } = createHooksForStore( STORE_NAME );
-	const { persist } = useDispatch( STORE_NAME );
+	const { useTransient } = createHooksForStore( STORE_NAME );
+	const { persist, setPersistent } = useDispatch( STORE_NAME );
 
 	// Read-only flags and derived state.
 
@@ -38,28 +38,28 @@ const useHooks = () => {
 		[]
 	);
 
-	const [ locationStyles, setLocationStyles ] = usePersistent( location );
-
 	const getLocationProp = useCallback(
-		( prop ) => {
-			if ( undefined === persistentData[ location ]?.[ prop ] ) {
+		( locatonId, prop ) => {
+			if ( undefined === persistentData[ locatonId ]?.[ prop ] ) {
 				console.error(
-					`Trying to access non-existent style property: ${ location }.${ prop }. Possibly wrong style name - review the reducer.`
+					`Trying to access non-existent style property: ${ locatonId }.${ prop }. Possibly wrong style name - review the reducer.`
 				);
 			}
-			return persistentData[ location ]?.[ prop ];
+			return persistentData[ locatonId ]?.[ prop ];
 		},
-		[ location, persistentData ]
+		[ persistentData ]
 	);
 
 	const setLocationProp = useCallback(
-		( prop, value ) => {
-			setLocationStyles( {
-				...locationStyles,
+		( locationId, prop, value ) => {
+			const updatedStyles = {
+				...persistentData[ locationId ],
 				[ prop ]: value,
-			} );
+			};
+
+			setPersistent( locationId, updatedStyles );
 		},
-		[ locationStyles, setLocationStyles ]
+		[ persistentData, setPersistent ]
 	);
 
 	return {
