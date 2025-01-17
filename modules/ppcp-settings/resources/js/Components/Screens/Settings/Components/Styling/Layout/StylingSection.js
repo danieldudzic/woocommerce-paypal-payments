@@ -3,6 +3,7 @@ import {
 	Description,
 	Header,
 	Title,
+	Content,
 } from '../../../../../ReusableComponents/SettingsBlocks';
 
 const StylingSection = ( {
@@ -25,7 +26,7 @@ const StylingSection = ( {
 				<Description>{ description }</Description>
 			</Header>
 
-			{ children }
+			<Content className="section-content">{ children }</Content>
 		</SettingsBlock>
 	);
 };
