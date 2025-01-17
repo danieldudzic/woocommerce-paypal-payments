@@ -13,13 +13,16 @@ const PreviewPanel = ( { location } ) => {
 	const { color } = StylingHooks.useColorProps( location );
 	const { tagline } = StylingHooks.useTaglineProps( location );
 
-	const style = {
-		layout,
-		shape,
-		label,
-		color,
-		tagline,
-	};
+	const style = useMemo(
+		() => ( {
+			layout,
+			shape,
+			label,
+			color,
+			tagline,
+		} ),
+		[ color, label, layout, shape, tagline ]
+	);
 
 	const disableFunding = useMemo( () => {
 		const disabled = [ 'card' ];
