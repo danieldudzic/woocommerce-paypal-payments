@@ -3,10 +3,22 @@ import { Button } from '@wordpress/components';
 import { help } from '@wordpress/icons';
 
 import { StylingHooks } from '../../../../../../data';
-import { SelectStylingSection, StylingSection } from '../Layout';
+import {
+	SelectStylingSection,
+	StylingSection,
+	CheckboxStylingSection,
+} from '../Layout';
 
 const LocationSelector = ( { location, setLocation } ) => {
 	const { choices, details } = StylingHooks.useLocationProps( location );
+
+	const activateCheckbox = {
+		value: 'active',
+		label: __(
+			'Enable payment methods in this location',
+			'woocommerce-paypal-payments'
+		),
+	};
 
 	return (
 		<>
@@ -18,7 +30,7 @@ const LocationSelector = ( { location, setLocation } ) => {
 					'Customize the appearance of the PayPal smart buttons on your website and choose which payment buttons to display.',
 					'woocommerce-paypal-payments'
 				) }
-			></StylingSection>
+			/>
 			<SelectStylingSection
 				className="location-selector"
 				title={ __( 'Location', 'woocommerce-paypal-payments' ) }
@@ -35,6 +47,12 @@ const LocationSelector = ( { location, setLocation } ) => {
 					/>
 				) }
 			</SelectStylingSection>
+			<CheckboxStylingSection
+				className="location-activation"
+				separatorAndGap={ false }
+				options={ [ activateCheckbox ] }
+				value={ 'active' }
+			/>
 		</>
 	);
 };
