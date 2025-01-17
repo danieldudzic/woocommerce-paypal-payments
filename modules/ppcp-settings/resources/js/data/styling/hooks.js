@@ -85,13 +85,9 @@ export const useStylingLocation = () => {
 export const useLocationProps = ( location ) => {
 	const details = STYLING_LOCATIONS[ location ] ?? {};
 
-	// eslint-disable-next-line @wordpress/valid-sprintf
-	const description = sprintf( details.description ?? '', details.link );
-
 	return {
 		choices: Object.values( STYLING_LOCATIONS ),
 		details,
-		description,
 	};
 };
 

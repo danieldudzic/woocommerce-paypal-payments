@@ -25,6 +25,14 @@
 			padding-top: 16px;
 			padding-bottom: var(--block-separator-gap);
 			margin-bottom: -29px;
+
+			.section-content {
+				display: flex;
+
+				& > .components-base-control:first-of-type {
+					width: 100%;
+				}
+			}
 		}
 
 		// Select-fields have a smaller gap between the header and input field.

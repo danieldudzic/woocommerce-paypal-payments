@@ -1,11 +1,12 @@
 import { __ } from '@wordpress/i18n';
+import { Button } from '@wordpress/components';
+import { help } from '@wordpress/icons';
 
 import { StylingHooks } from '../../../../../../data';
-import { Description } from '../../../../../ReusableComponents/SettingsBlocks';
 import { SelectStylingSection, StylingSection } from '../Layout';
 
 const LocationSelector = ( { location, setLocation } ) => {
-	const { choices, description } = StylingHooks.useLocationProps( location );
+	const { choices, details } = StylingHooks.useLocationProps( location );
 
 	return (
 		<>
@@ -26,7 +27,13 @@ const LocationSelector = ( { location, setLocation } ) => {
 				value={ location }
 				onChange={ setLocation }
 			>
-				<Description asHtml={ true }>{ description }</Description>
+				{ details.link && (
+					<Button
+						icon={ help }
+						href={ details.link }
+						target="_blank"
+					/>
+				) }
 			</SelectStylingSection>
 		</>
 	);
