@@ -2,14 +2,21 @@ import { useState, useCallback } from '@wordpress/element';
 import SettingsBlock from './SettingsBlock';
 import PaymentMethodItemBlock from './PaymentMethodItemBlock';
 
-const PaymentMethodsBlock = ( { paymentMethods, className = '' } ) => {
-	const [ selectedMethod, setSelectedMethod ] = useState( null );
+const PaymentMethodsBlock = ( {
+	paymentMethods,
+	className = '',
+	onTriggerModal,
+} ) => {
+	const [ selectedMethods, setSelectedMethods ] = useState( {} );
 
 	const handleSelect = useCallback( ( methodId, isSelected ) => {
-		setSelectedMethod( isSelected ? methodId : null );
+		setSelectedMethods( ( prev ) => ( {
+			...prev,
+			[ methodId ]: isSelected,
+		} ) );
 	}, [] );
 
-	if ( paymentMethods.length === 0 ) {
+	if ( ! paymentMethods?.length ) {
 		return null;
 	}
 
@@ -21,9 +28,14 @@ const PaymentMethodsBlock = ( { paymentMethods, className = '' } ) => {
 				<PaymentMethodItemBlock
 					key={ paymentMethod.id }
 					{ ...paymentMethod }
-					isSelected={ selectedMethod === paymentMethod.id }
+					isSelected={ Boolean(
+						selectedMethods[ paymentMethod.id ]
+					) }
 					onSelect={ ( checked ) =>
 						handleSelect( paymentMethod.id, checked )
+					}
+					onTriggerModal={ () =>
+						onTriggerModal?.( paymentMethod.id )
 					}
 				/>
 			) ) }
