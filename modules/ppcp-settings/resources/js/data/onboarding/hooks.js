@@ -9,32 +9,14 @@
 
 import { useSelect, useDispatch } from '@wordpress/data';
 
+import { createHooksForStore } from '../utils';
 import { PRODUCT_TYPES } from './configuration';
 import { STORE_NAME } from './constants';
 
-const useTransient = ( key ) =>
-	useSelect(
-		( select ) => select( STORE_NAME ).transientData()?.[ key ],
-		[ key ]
-	);
-
-const usePersistent = ( key ) =>
-	useSelect(
-		( select ) => select( STORE_NAME ).persistentData()?.[ key ],
-		[ key ]
-	);
-
 const useHooks = () => {
-	const {
-		persist,
-		setStep,
-		setCompleted,
-		setIsCasualSeller,
-		setManualClientId,
-		setManualClientSecret,
-		setAreOptionalPaymentMethodsEnabled,
-		setProducts,
-	} = useDispatch( STORE_NAME );
+	const { useTransient, usePersistent } = createHooksForStore( STORE_NAME );
+
+	const { persist } = useDispatch( STORE_NAME );
 
 	// Read-only flags and derived state.
 	const flags = useSelect( ( select ) => select( STORE_NAME ).flags(), [] );
@@ -44,18 +26,22 @@ const useHooks = () => {
 	);
 
 	// Transient accessors.
-	const isReady = useTransient( 'isReady' );
-	const manualClientId = useTransient( 'manualClientId' );
-	const manualClientSecret = useTransient( 'manualClientSecret' );
+	const [ isReady ] = useTransient( 'isReady' );
+	const [ manualClientId, setManualClientId ] =
+		useTransient( 'manualClientId' );
+	const [ manualClientSecret, setManualClientSecret ] =
+		useTransient( 'manualClientSecret' );
 
 	// Persistent accessors.
-	const step = usePersistent( 'step' );
-	const completed = usePersistent( 'completed' );
-	const isCasualSeller = usePersistent( 'isCasualSeller' );
-	const areOptionalPaymentMethodsEnabled = usePersistent(
-		'areOptionalPaymentMethodsEnabled'
-	);
-	const products = usePersistent( 'products' );
+	const [ step, setStep ] = usePersistent( 'step' );
+	const [ completed, setCompleted ] = usePersistent( 'completed' );
+	const [ isCasualSeller, setIsCasualSeller ] =
+		usePersistent( 'isCasualSeller' );
+	const [
+		areOptionalPaymentMethodsEnabled,
+		setAreOptionalPaymentMethodsEnabled,
+	] = usePersistent( 'areOptionalPaymentMethodsEnabled' );
+	const [ products, setProducts ] = usePersistent( 'products' );
 
 	const savePersistent = async ( setter, value ) => {
 		setter( value );
