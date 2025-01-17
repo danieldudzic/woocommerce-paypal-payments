@@ -14,6 +14,7 @@ use WP_REST_Response;
 use WP_REST_Request;
 use WooCommerce\PayPalCommerce\Settings\Data\StylingSettings;
 use WooCommerce\PayPalCommerce\Settings\DTO\LocationStylingDTO;
+use WooCommerce\PayPalCommerce\Settings\Service\DataSanitizer;
 
 /**
  * REST controller for the "Styling" settings tab.
@@ -35,6 +36,13 @@ class StylingRestEndpoint extends RestEndpoint {
 	 * @var StylingSettings
 	 */
 	protected StylingSettings $settings;
+
+	/**
+	 * Data sanitizer service.
+	 *
+	 * @var DataSanitizer
+	 */
+	protected DataSanitizer $sanitizer;
 
 	/**
 	 * Field mapping for request to profile transformation.
@@ -62,16 +70,33 @@ class StylingRestEndpoint extends RestEndpoint {
 	/**
 	 * Constructor.
 	 *
-	 * @param StylingSettings $settings The settings instance.
+	 * @param StylingSettings $settings  The settings instance.
+	 * @param DataSanitizer   $sanitizer Data sanitizer service.
 	 */
-	public function __construct( StylingSettings $settings ) {
-		$this->settings = $settings;
+	public function __construct( StylingSettings $settings, DataSanitizer $sanitizer ) {
+		$this->settings  = $settings;
+		$this->sanitizer = $sanitizer;
 
-		$this->field_map['cart']['sanitize']             = array( $this, 'to_location' );
-		$this->field_map['classic_checkout']['sanitize'] = array( $this, 'to_location' );
-		$this->field_map['express_checkout']['sanitize'] = array( $this, 'to_location' );
-		$this->field_map['mini_cart']['sanitize']        = array( $this, 'to_location' );
-		$this->field_map['product']['sanitize']          = array( $this, 'to_location' );
+		$this->field_map['cart']['sanitize']             = array(
+			$this->sanitizer,
+			'sanitize_location_style',
+		);
+		$this->field_map['classic_checkout']['sanitize'] = array(
+			$this->sanitizer,
+			'sanitize_location_style',
+		);
+		$this->field_map['express_checkout']['sanitize'] = array(
+			$this->sanitizer,
+			'sanitize_location_style',
+		);
+		$this->field_map['mini_cart']['sanitize']        = array(
+			$this->sanitizer,
+			'sanitize_location_style',
+		);
+		$this->field_map['product']['sanitize']          = array(
+			$this->sanitizer,
+			'sanitize_location_style',
+		);
 	}
 
 	/**
@@ -141,38 +166,5 @@ class StylingRestEndpoint extends RestEndpoint {
 		$this->settings->save();
 
 		return $this->get_details();
-	}
-
-	/**
-	 * Converts the plain location-style input to a structured DTO.
-	 *
-	 * @param array  $data Raw data received from the request.
-	 * @param string $key  The field name.
-	 *
-	 * @return LocationStylingDTO
-	 */
-	protected function to_location( array $data, string $key ) : LocationStylingDTO {
-		$is_enabled = ! isset( $data['enabled'] ) || $data['enabled'];
-		$methods    = array();
-		$shape      = sanitize_text_field( $data['shape'] ?? 'rect' );
-		$label      = sanitize_text_field( $data['label'] ?? 'pay' );
-		$color      = sanitize_text_field( $data['color'] ?? 'gold' );
-		$layout     = sanitize_text_field( $data['layout'] ?? 'vertical' );
-		$tagline    = isset( $data['tagline'] ) && $data['tagline'];
-
-		if ( isset( $data['methods'] ) && is_array( $data['methods'] ) ) {
-			$methods = array_map( 'sanitize_text_field', $data['methods'] );
-		}
-
-		return new LocationStylingDTO(
-			$key,
-			$is_enabled,
-			$methods,
-			$shape,
-			$label,
-			$color,
-			$layout,
-			$tagline,
-		);
 	}
 }

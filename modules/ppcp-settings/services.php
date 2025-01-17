@@ -26,6 +26,7 @@ use WooCommerce\PayPalCommerce\Settings\Service\OnboardingUrlManager;
 use WooCommerce\PayPalCommerce\Vendor\Psr\Container\ContainerInterface;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\StylingRestEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Data\StylingSettings;
+use WooCommerce\PayPalCommerce\Settings\Service\DataSanitizer;
 
 return array(
 	'settings.url'                                => static function ( ContainerInterface $container ) : string {
@@ -76,7 +77,10 @@ return array(
 		return new CommonRestEndpoint( $container->get( 'settings.data.general' ) );
 	},
 	'settings.rest.styling'                       => static function ( ContainerInterface $container ) : StylingRestEndpoint {
-		return new StylingRestEndpoint( $container->get( 'settings.data.styling' ) );
+		return new StylingRestEndpoint(
+			$container->get( 'settings.data.styling' ),
+			$container->get( 'settings.service.sanitizer' )
+		);
 	},
 	'settings.rest.refresh_feature_status'        => static function ( ContainerInterface $container ) : RefreshFeatureStatusEndpoint {
 		return new RefreshFeatureStatusEndpoint(
@@ -194,6 +198,9 @@ return array(
 			$container->get( 'api.repository.partner-referrals-data' ),
 			$container->get( 'woocommerce.logger.woocommerce' ),
 		);
+	},
+	'settings.service.sanitizer'                  => static function ( ContainerInterface $container ) : DataSanitizer {
+		return new DataSanitizer();
 	},
 	'settings.ajax.switch_ui'                     => static function ( ContainerInterface $container ) : SwitchSettingsUiEndpoint {
 		return new SwitchSettingsUiEndpoint(
