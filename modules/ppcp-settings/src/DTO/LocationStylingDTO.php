@@ -16,46 +16,60 @@ namespace WooCommerce\PayPalCommerce\Settings\DTO;
  */
 class LocationStylingDTO {
 	/**
-	 * The location name, e.g., card, block-checkout, ...
+	 * The location name.
 	 *
-	 * @var string
+	 * @var string [cart|classic_checkout|express_checkout|mini_cart|product]
 	 */
-	public string $location = '';
+	public string $location;
 
 	/**
 	 * Whether PayPal payments are enabled on this location.
 	 *
 	 * @var bool
 	 */
-	public bool $enabled = false;
+	public bool $enabled;
 
 	/**
 	 * List of active payment methods, e.g., 'venmo', 'applepay', ...
 	 *
 	 * @var array
 	 */
-	public array $methods = array();
+	public array $methods;
 
 	/**
 	 * Shape of buttons on this location.
 	 *
 	 * @var string [rect|pill]
 	 */
-	public string $shape = 'rect';
+	public string $shape;
 
 	/**
 	 * Label of the button on this location.
 	 *
 	 * @var string
 	 */
-	public string $label = '';
+	public string $label;
 
 	/**
 	 * Color of the button on this location.
 	 *
 	 * @var string [gold|blue|silver|black|white]
 	 */
-	public string $color = 'gold';
+	public string $color;
+
+	/**
+	 * The button layout
+	 *
+	 * @var string [horizontal|vertical]
+	 */
+	public string $layout;
+
+	/**
+	 * Whether to show a tagline below the buttons.
+	 *
+	 * @var bool
+	 */
+	public bool $tagline;
 
 	/**
 	 * Constructor.
@@ -66,14 +80,18 @@ class LocationStylingDTO {
 	 * @param string $shape    Shape of buttons on this location.
 	 * @param string $label    Label of the button on this location.
 	 * @param string $color    Color of the button on this location.
+	 * @param string $layout   Horizontal or vertical button layout.
+	 * @param bool   $tagline  Whether to show a tagline below the buttons.
 	 */
 	public function __construct(
-		string $location,
-		bool $enabled,
-		array $methods,
-		string $shape,
-		string $label,
-		string $color
+		string $location = '',
+		bool $enabled = true,
+		array $methods = array(),
+		string $shape = 'rect',
+		string $label = 'pay',
+		string $color = 'gold',
+		string $layout = 'vertical',
+		bool $tagline = false
 	) {
 		$this->location = $location;
 		$this->enabled  = $enabled;
@@ -81,5 +99,7 @@ class LocationStylingDTO {
 		$this->shape    = $shape;
 		$this->label    = $label;
 		$this->color    = $color;
+		$this->layout   = $layout;
+		$this->tagline  = $tagline;
 	}
 }
