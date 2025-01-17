@@ -19,11 +19,27 @@ class DataSanitizer {
 	/**
 	 * Sanitizes the provided styling data.
 	 *
-	 * @param array   $data     The styling data to sanitize.
+	 * @param mixed   $data     The styling data to sanitize.
 	 * @param ?string $location Name of the location.
 	 * @return LocationStylingDTO Styling data.
 	 */
-	public function sanitize_location_style( array $data, string $location = null ) : LocationStylingDTO {
+	public function sanitize_location_style( $data, string $location = null ) : LocationStylingDTO {
+		if ( $data instanceof LocationStylingDTO ) {
+			if ( $location ) {
+				$data->location = $location;
+			}
+
+			return $data;
+		}
+
+		if ( is_object( $data ) ) {
+			$data = (array) $data;
+		}
+
+		if ( ! is_array( $data ) ) {
+			return new LocationStylingDTO( $location ?? '' );
+		}
+
 		if ( null === $location ) {
 			$location = $data['location'] ?? '';
 		}

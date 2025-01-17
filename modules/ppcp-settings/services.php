@@ -68,7 +68,9 @@ return array(
 		);
 	},
 	'settings.data.styling'                       => static function ( ContainerInterface $container ) : StylingSettings {
-		return new StylingSettings();
+		return new StylingSettings(
+			$container->get( 'settings.service.sanitizer' )
+		);
 	},
 	'settings.rest.onboarding'                    => static function ( ContainerInterface $container ) : OnboardingRestEndpoint {
 		return new OnboardingRestEndpoint( $container->get( 'settings.data.onboarding' ) );
