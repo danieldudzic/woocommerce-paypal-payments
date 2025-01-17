@@ -3,7 +3,7 @@ import { PayPalButtons, PayPalScriptProvider } from '@paypal/react-paypal-js';
 const PREVIEW_CLIENT_ID = 'test';
 const PREVIEW_MERCHANT_ID = 'QTQX5NP6N9WZU';
 
-const PreviewPanel = () => {
+const PreviewPanel = ( { location } ) => {
 	// TODO: Make those props dynamic based on location style settings.
 	const style = {};
 	const components = [ 'buttons', 'googlepay' ];
