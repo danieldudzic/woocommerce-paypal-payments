@@ -1,12 +1,12 @@
 import { Button } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 
-import TopNavigation from '../../../ReusableComponents/TopNavigation';
 import { CommonHooks, StylingHooks } from '../../../../data';
+import TopNavigation from '../../../ReusableComponents/TopNavigation';
 import BusyStateWrapper from '../../../ReusableComponents/BusyStateWrapper';
 
 const SettingsNavigation = () => {
-	const { withActivity, isBusy } = CommonHooks.useBusyState();
+	const { withActivity } = CommonHooks.useBusyState();
 
 	// Todo: Implement other stores here.
 	const { persist: persistStyling } = StylingHooks.useStore();

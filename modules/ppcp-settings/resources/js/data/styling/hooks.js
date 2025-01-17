@@ -41,8 +41,9 @@ const useHooks = () => {
 				console.error(
 					`Trying to access non-existent style property: ${ locationId }.${ prop }. Possibly wrong style name - review the reducer.`
 				);
+				return null;
 			}
-			return persistentData[ locationId ]?.[ prop ];
+			return persistentData[ locationId ][ prop ];
 		},
 		[ persistentData ]
 	);
