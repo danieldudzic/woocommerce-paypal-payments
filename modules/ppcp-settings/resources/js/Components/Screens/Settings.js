@@ -8,10 +8,16 @@ import SpinnerOverlay from '../ReusableComponents/SpinnerOverlay';
 import Onboarding from './Onboarding/Onboarding';
 import SettingsScreen from './SettingsScreen';
 import { useMerchantInfo } from '../../data/common/hooks';
+import { initStore as initSettingsStore } from '../../data/settings-tab';
+import { useSettingsState } from '../../data/settings-tab/hooks';
 import SendOnlyMessage from './SendOnlyMessage';
+
+// Initialize the settings store
+initSettingsStore();
 
 const Settings = () => {
 	const onboardingProgress = OnboardingHooks.useSteps();
+	const { isReady: settingsIsReady } = useSettingsState();
 	const {
 		isReady: merchantIsReady,
 		merchant: { isSendOnlyCountry },
@@ -32,11 +38,15 @@ const Settings = () => {
 	}, [] );
 
 	const wrapperClass = classNames( 'ppcp-r-app', {
-		loading: ! onboardingProgress.isReady,
+		loading: ! onboardingProgress.isReady || ! settingsIsReady,
 	} );
 
 	const Content = useMemo( () => {
-		if ( ! onboardingProgress.isReady || ! merchantIsReady ) {
+		if (
+			! onboardingProgress.isReady ||
+			! merchantIsReady ||
+			! settingsIsReady
+		) {
 			return (
 				<SpinnerOverlay
 					message={ __( 'Loading…', 'woocommerce-paypal-payments' ) }
@@ -58,6 +68,7 @@ const Settings = () => {
 		merchantIsReady,
 		onboardingProgress.completed,
 		onboardingProgress.isReady,
+		settingsIsReady,
 	] );
 
 	return <div className={ wrapperClass }>{ Content }</div>;

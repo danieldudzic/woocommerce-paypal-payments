@@ -205,12 +205,13 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 			'rest_api_init',
 			static function () use ( $container ) : void {
 				$endpoints = array(
-					$container->get( 'settings.rest.onboarding' ),
-					$container->get( 'settings.rest.common' ),
-					$container->get( 'settings.rest.connect_manual' ),
-					$container->get( 'settings.rest.login_link' ),
-					$container->get( 'settings.rest.webhooks' ),
-					$container->get( 'settings.rest.refresh_feature_status' ),
+					'onboarding'             => $container->get( 'settings.rest.onboarding' ),
+					'common'                 => $container->get( 'settings.rest.common' ),
+					'connect_manual'         => $container->get( 'settings.rest.connect_manual' ),
+					'login_link'             => $container->get( 'settings.rest.login_link' ),
+					'webhooks'               => $container->get( 'settings.rest.webhooks' ),
+					'refresh_feature_status' => $container->get( 'settings.rest.refresh_feature_status' ),
+					'settings'               => $container->get( 'settings.rest.settings' ),
 				);
 
 				foreach ( $endpoints as $endpoint ) {

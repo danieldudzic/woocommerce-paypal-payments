@@ -13,12 +13,14 @@ use WooCommerce\PayPalCommerce\ApiClient\Helper\Cache;
 use WooCommerce\PayPalCommerce\Settings\Ajax\SwitchSettingsUiEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Data\GeneralSettings;
 use WooCommerce\PayPalCommerce\Settings\Data\OnboardingProfile;
+use WooCommerce\PayPalCommerce\Settings\Data\SettingsModel;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\AuthenticationRestEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\CommonRestEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\LoginLinkRestEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\OnboardingRestEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\RefreshFeatureStatusEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\WebhookSettingsEndpoint;
+use WooCommerce\PayPalCommerce\Settings\Endpoint\SettingsRestEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Handler\ConnectionListener;
 use WooCommerce\PayPalCommerce\Settings\Service\AuthenticationManager;
 use WooCommerce\PayPalCommerce\Settings\Service\ConnectionUrlGenerator;
@@ -192,5 +194,14 @@ return array(
 			$container->get( 'woocommerce.logger.woocommerce' ),
 			$container->get( 'button.request-data' ),
 		);
+	},
+	'settings.rest.settings'                      => static function( ContainerInterface $container ): SettingsRestEndpoint {
+		return new SettingsRestEndpoint(
+			$container->get( 'settings.data.settings' ),
+			$container->get( 'woocommerce.logger.woocommerce' ),
+		);
+	},
+	'settings.data.settings'                      => static function() : SettingsModel {
+		return new SettingsModel();
 	},
 );
