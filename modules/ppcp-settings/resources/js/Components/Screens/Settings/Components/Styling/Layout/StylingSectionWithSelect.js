@@ -23,6 +23,7 @@ const StylingSectionWithSelect = ( {
 			separatorAndGap={ separatorAndGap }
 		>
 			<SelectControl
+				__nextHasNoMarginBottom
 				options={ options }
 				value={ value }
 				onChange={ onChange }
