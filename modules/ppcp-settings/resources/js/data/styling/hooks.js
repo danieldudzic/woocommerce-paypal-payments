@@ -139,10 +139,11 @@ export const useLabelProps = ( location ) => {
 export const useLayoutProps = ( location ) => {
 	const { getLocationProp, setLocationProp } = useHooks();
 	const { details } = useLocationProps( location );
+	const isAvailable = false !== details.props.layout;
 
 	return {
 		choices: Object.values( STYLING_LAYOUTS ),
-		isAvailable: false !== details.props.layout,
+		isAvailable,
 		layout: getLocationProp( location, 'layout' ),
 		setLayout: ( layout ) => setLocationProp( location, 'layout', layout ),
 	};
@@ -151,6 +152,12 @@ export const useLayoutProps = ( location ) => {
 export const useTaglineProps = ( location ) => {
 	const { getLocationProp, setLocationProp } = useHooks();
 	const { details } = useLocationProps( location );
+
+	// Tagline is only available for horizontal layouts.
+	const isAvailable =
+		false !== details.props.tagline &&
+		STYLING_LAYOUTS.horizontal.value ===
+			getLocationProp( location, 'layout' );
 
 	return {
 		choices: [
@@ -162,11 +169,8 @@ export const useTaglineProps = ( location ) => {
 				),
 			},
 		],
-		isAvailable:
-			false !== details.props.tagline &&
-			STYLING_LAYOUTS.horizontal.value ===
-				getLocationProp( location, 'layout' ),
-		tagline: getLocationProp( location, 'tagline' ),
+		isAvailable,
+		tagline: isAvailable ? getLocationProp( location, 'tagline' ) : false,
 		setTagline: ( tagline ) =>
 			setLocationProp( location, 'tagline', tagline ),
 	};
