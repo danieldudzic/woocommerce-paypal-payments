@@ -77,6 +77,8 @@ const commonReducer = createReducer( defaultTransient, defaultPersistent, {
 
 		// Keep "read-only" details and initialization flags.
 		cleanState.wooSettings = { ...state.wooSettings };
+		cleanState.merchant = { ...state.merchant };
+		cleanState.features = { ...state.features };
 		cleanState.isReady = true;
 
 		return cleanState;

@@ -96,7 +96,10 @@ class OnboardingRestEndpoint extends RestEndpoint {
 	/**
 	 * Configure REST API routes.
 	 */
-	public function register_routes() {
+	public function register_routes() : void {
+		/**
+		 * GET /wp-json/wc/v3/wc_paypal/onboarding
+		 */
 		register_rest_route(
 			$this->namespace,
 			'/' . $this->rest_base,
@@ -107,6 +110,12 @@ class OnboardingRestEndpoint extends RestEndpoint {
 			)
 		);
 
+		/**
+		 * POST /wp-json/wc/v3/wc_paypal/onboarding
+		 * {
+		 *     // Fields mentioned in $field_map[]['js_name']
+		 * }
+		 */
 		register_rest_route(
 			$this->namespace,
 			'/' . $this->rest_base,

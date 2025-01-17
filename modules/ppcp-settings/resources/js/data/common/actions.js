@@ -213,6 +213,15 @@ export const authenticateWithOAuth = function* (
 };
 
 /**
+ * Side effect. Checks webhook simulation.
+ *
+ * @return {Action} The action.
+ */
+export const disconnectMerchant = function* () {
+	return yield { type: ACTION_TYPES.DO_DISCONNECT_MERCHANT };
+};
+
+/**
  * Side effect. Clears and refreshes the merchant data via a REST request.
  *
  * @return {Action} The action.
@@ -288,5 +297,5 @@ export const startWebhookSimulation = function* () {
  * @return {Action} The action.
  */
 export const checkWebhookSimulationState = function* () {
-	return yield { type: ACTION_TYPES.DO_CHECK_WEBHOOK_SIMULATION_STATE };
+	return yield { type: ACTION_TYPES.DO_CHECK_WEBHOOK_SIMULATION };
 };
