@@ -1,22 +1,22 @@
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 import { useState, useMemo } from '@wordpress/element';
 import { Button, Icon } from '@wordpress/components';
 import { useDispatch } from '@wordpress/data';
 import { reusableBlock } from '@wordpress/icons';
 import { store as noticesStore } from '@wordpress/notices';
 
-import SettingsCard from '../../ReusableComponents/SettingsCard';
-import TodoSettingsBlock from '../../ReusableComponents/SettingsBlocks/TodoSettingsBlock';
-import FeatureSettingsBlock from '../../ReusableComponents/SettingsBlocks/FeatureSettingsBlock';
-import { TITLE_BADGE_POSITIVE } from '../../ReusableComponents/TitleBadge';
-import { useMerchantInfo } from '../../../data/common/hooks';
-import { STORE_NAME } from '../../../data/common';
-import Features from './TabSettingsElements/Blocks/Features';
-import { todosData } from '../../../data/settings/tab-overview-todos-data';
+import SettingsCard from '../../../ReusableComponents/SettingsCard';
+import TodoSettingsBlock from '../../../ReusableComponents/SettingsBlocks/TodoSettingsBlock';
+import FeatureSettingsBlock from '../../../ReusableComponents/SettingsBlocks/FeatureSettingsBlock';
+import { TITLE_BADGE_POSITIVE } from '../../../ReusableComponents/TitleBadge';
+import { useMerchantInfo } from '../../../../data/common/hooks';
+import { STORE_NAME } from '../../../../data/common';
+import Features from '../../Overview/TabSettingsElements/Blocks/Features';
+import { todosData } from '../../../../data/settings/tab-overview-todos-data';
 import {
 	NOTIFICATION_ERROR,
 	NOTIFICATION_SUCCESS,
-} from '../../ReusableComponents/Icons';
+} from '../../../ReusableComponents/Icons';
 
 const TabOverview = () => {
 	const [ isRefreshing, setIsRefreshing ] = useState( false );
