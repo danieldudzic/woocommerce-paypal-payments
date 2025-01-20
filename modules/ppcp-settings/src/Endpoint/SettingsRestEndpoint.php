@@ -7,6 +7,7 @@
  *
  * @package WooCommerce\PayPalCommerce\Settings\Endpoint
  */
+
 declare(strict_types=1);
 
 namespace WooCommerce\PayPalCommerce\Settings\Endpoint;
@@ -54,15 +55,15 @@ class SettingsRestEndpoint extends RestEndpoint {
 	/**
 	 * SettingsRestEndpoint constructor.
 	 *
-	 * @param SettingsModel    $settings The settings model instance.
-	 * @param LoggerInterface  $logger   The logger instance.
+	 * @param SettingsModel   $settings The settings model instance.
+	 * @param LoggerInterface $logger   The logger instance.
 	 */
 	public function __construct(
 		SettingsModel $settings,
 		LoggerInterface $logger
 	) {
 		$this->settings = $settings;
-		$this->logger = $logger;
+		$this->logger   = $logger;
 	}
 
 	/**
