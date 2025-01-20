@@ -48,18 +48,6 @@ export const setIsReady = ( isReady ) => ( {
 } );
 
 /**
- * Persistent. Sets a sample value.
- * TODO: Replace with a real action/property.
- *
- * @param {string} value
- * @return {Action} The action.
- */
-export const setSampleValue = ( value ) => ( {
-	type: ACTION_TYPES.SET_PERSISTENT,
-	payload: { sampleValue: value },
-} );
-
-/**
  * Side effect. Triggers the persistence of store data to the server.
  *
  * @return {Action} The action.
@@ -69,3 +57,15 @@ export const persist = function* () {
 
 	yield { type: ACTION_TYPES.DO_PERSIST_DATA, data };
 };
+
+/**
+ * Generic persistent-data updater.
+ *
+ * @param {string} prop  Name of the property to update.
+ * @param {any}    value The new value of the property.
+ * @return {Action} The action.
+ */
+export const setPersistent = ( prop, value ) => ( {
+	type: ACTION_TYPES.SET_PERSISTENT,
+	payload: { [ prop ]: value },
+} );

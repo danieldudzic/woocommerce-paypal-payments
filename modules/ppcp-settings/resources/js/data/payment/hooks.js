@@ -24,21 +24,13 @@ const usePersistent = ( key ) =>
 	);
 
 const useHooks = () => {
-	const {
-		persist,
-
-		// TODO: Replace with real property.
-		setSampleValue,
-	} = useDispatch( STORE_NAME );
+	const { persist, setPersistent } = useDispatch( STORE_NAME );
 
 	// Read-only flags and derived state.
 	// Nothing here yet.
 
 	// Transient accessors.
 	const isReady = useTransient( 'isReady' );
-
-	// Persistent accessors.
-	const sampleValue = usePersistent( 'sampleValue' );
 
 	// PayPal checkout.
 	const paypal = usePersistent( 'ppcp-gateway' );
@@ -67,8 +59,7 @@ const useHooks = () => {
 	return {
 		persist,
 		isReady,
-		sampleValue,
-		setSampleValue,
+		setPersistent,
 		paypal,
 		venmo,
 		payLater,
@@ -95,13 +86,11 @@ export const useState = () => {
 	return { persist, isReady };
 };
 
-// TODO: Replace with real hook.
-export const useSampleValue = () => {
-	const { sampleValue, setSampleValue } = useHooks();
+export const usePaymentMethods = () => {
+	const { setPersistent } = useHooks();
 
 	return {
-		sampleValue,
-		setSampleValue,
+		setPersistent,
 	};
 };
 

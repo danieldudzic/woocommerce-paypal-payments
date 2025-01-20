@@ -52,7 +52,7 @@ class PaymentRestEndpoint extends RestEndpoint {
 		return array(
 			// PayPal checkout.
 			PayPalGateway::ID         => array(
-				'id'   => 'paypal',
+				'id'   => 'ppcp-gateway',
 				'title'       => __( 'PayPal', 'woocommerce-paypal-payments' ),
 				'description' => __(
 					'Our all-in-one checkout solution lets you offer PayPal, Venmo, Pay Later options, and more to help maximize conversion.',
