@@ -7,7 +7,6 @@
  *
  * @package WooCommerce\PayPalCommerce\Settings\Endpoint
  */
-
 declare(strict_types=1);
 
 namespace WooCommerce\PayPalCommerce\Settings\Endpoint;
@@ -23,6 +22,7 @@ use WP_REST_Response;
  * Handles REST API endpoints for managing PayPal settings (Settings Tab).
  */
 class SettingsRestEndpoint extends RestEndpoint {
+
 	/**
 	 * The REST API endpoint base.
 	 *
@@ -54,15 +54,15 @@ class SettingsRestEndpoint extends RestEndpoint {
 	/**
 	 * SettingsRestEndpoint constructor.
 	 *
-	 * @param SettingsModel   $settings The settings model instance.
-	 * @param LoggerInterface $logger   The logger instance.
+	 * @param SettingsModel    $settings The settings model instance.
+	 * @param LoggerInterface  $logger   The logger instance.
 	 */
 	public function __construct(
 		SettingsModel $settings,
 		LoggerInterface $logger
 	) {
 		$this->settings = $settings;
-		$this->logger   = $logger;
+		$this->logger = $logger;
 	}
 
 	/**
@@ -92,26 +92,26 @@ class SettingsRestEndpoint extends RestEndpoint {
 	 *
 	 * @param WP_REST_Request $request The request instance.
 	 * @return WP_REST_Response The response containing settings data or error details.
+	 * @throws \Exception When encoding settings data fails.
 	 */
 	public function get_settings( WP_REST_Request $request ): WP_REST_Response {
 		try {
-			// Get settings data
+			// Get settings data.
 			$data = $this->settings->get();
 
-			// Ensure the data is JSON-encodable
-			$encoded = json_encode( $data );
+			// Ensure the data is JSON-encodable.
+			$encoded = wp_json_encode( $data );
 			if ( $encoded === false ) {
 				throw new \Exception( 'Failed to encode settings data: ' . json_last_error_msg() );
 			}
 
-			// Create response with pre-verified JSON data
+			// Create response with pre-verified JSON data.
 			$response_data = array(
 				'success' => true,
 				'data'    => json_decode( $encoded, true ),
 			);
 
 			return new WP_REST_Response( $response_data, 200 );
-
 		} catch ( \Exception $error ) {
 			return new WP_REST_Response(
 				array(
@@ -128,16 +128,16 @@ class SettingsRestEndpoint extends RestEndpoint {
 	 *
 	 * @param WP_REST_Request $request The request instance containing new settings.
 	 * @return WP_REST_Response The response containing updated settings or error details.
+	 * @throws \Exception When encoding updated settings fails.
 	 */
 	public function update_settings( WP_REST_Request $request ): WP_REST_Response {
 		try {
 			$data = $request->get_json_params();
-
 			$this->settings->update( $data );
 			$updated_data = $this->settings->get();
 
-			// Verify JSON encoding
-			$encoded = json_encode( $updated_data );
+			// Verify JSON encoding.
+			$encoded = wp_json_encode( $updated_data );
 			if ( $encoded === false ) {
 				throw new \Exception( 'Failed to encode updated settings: ' . json_last_error_msg() );
 			}
@@ -149,7 +149,6 @@ class SettingsRestEndpoint extends RestEndpoint {
 				),
 				200
 			);
-
 		} catch ( \Exception $error ) {
 			return new WP_REST_Response(
 				array(
