@@ -74,6 +74,10 @@ class AxoBlockModule implements ServiceModule, ExtendingModule, ExecutableModule
 				add_filter(
 					'woocommerce_paypal_payments_localized_script_data',
 					function( array $localized_script_data ) use ( $c ) {
+						if ( ! $c->has( 'axo.available' ) || ! $c->get( 'axo.available' ) ) {
+							return $localized_script_data;
+						}
+
 						$module = $this;
 						$api    = $c->get( 'api.sdk-client-token' );
 						assert( $api instanceof SdkClientToken );
