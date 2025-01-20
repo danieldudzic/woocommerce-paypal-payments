@@ -11,7 +11,7 @@ import FeatureSettingsBlock from '../../../ReusableComponents/SettingsBlocks/Fea
 import { TITLE_BADGE_POSITIVE } from '../../../ReusableComponents/TitleBadge';
 import { useMerchantInfo } from '../../../../data/common/hooks';
 import { STORE_NAME } from '../../../../data/common';
-import Features from '../../Overview/TabSettingsElements/Blocks/Features';
+import Features from '../Components/Overview/Features';
 import { todosData } from '../../../../data/settings/tab-overview-todos-data';
 import {
 	NOTIFICATION_ERROR,
