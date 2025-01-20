@@ -1,31 +1,16 @@
-import { useState } from '@wordpress/element';
 import ConnectionStatus from './TabSettingsElements/ConnectionStatus';
 import CommonSettings from './TabSettingsElements/CommonSettings';
 import ExpertSettings from './TabSettingsElements/ExpertSettings';
+import { useSettings } from '../../../data/settings-tab/hooks';
 
 const TabSettings = () => {
-	const [ settings, setSettings ] = useState( {
-		invoicePrefix: '',
-		authorizeOnly: false,
-		captureVirtualOnlyOrders: false,
-		savePaypalAndVenmo: false,
-		saveCreditCardAndDebitCard: false,
-		payNowExperience: false,
-		sandboxAccountCredentials: false,
-		sandboxMode: null,
-		sandboxEnabled: false,
-		sandboxClientId: '',
-		sandboxSecretKey: '',
-		sandboxConnected: false,
-		logging: false,
-		subtotalMismatchFallback: null,
-		brandName: '',
-		softDescriptor: '',
-		paypalLandingPage: null,
-		buttonLanguage: '',
-	} );
+	const { settings, setSettings } = useSettings();
+
 	const updateFormValue = ( key, value ) => {
-		setSettings( { ...settings, [ key ]: value } );
+		setSettings( {
+			...settings,
+			[ key ]: value,
+		} );
 	};
 
 	return (
