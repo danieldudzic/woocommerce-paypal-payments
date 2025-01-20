@@ -144,9 +144,7 @@ class VaultingModule implements ServiceModule, ExtendingModule, ExecutableModule
 
 				if ( is_checkout() && ! $is_post && $this->is_paypal_continuation() ) {
 					foreach ( $tokens as $index => $token ) {
-						if ( $token instanceof \WC_Payment_Token_CC && $token->get_gateway_id() === CreditCardGateway::ID ) {
-							unset( $tokens[ $index ] );
-						}
+						unset( $tokens[ $index ] );
 					}
 				}
 
