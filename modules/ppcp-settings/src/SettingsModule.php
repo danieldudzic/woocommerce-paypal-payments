@@ -212,6 +212,7 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 					'webhooks'               => $container->get( 'settings.rest.webhooks' ),
 					'refresh_feature_status' => $container->get( 'settings.rest.refresh_feature_status' ),
 					'settings'               => $container->get( 'settings.rest.settings' ),
+					'styling'                => $container->get( 'settings.rest.styling' ),
 				);
 
 				foreach ( $endpoints as $endpoint ) {

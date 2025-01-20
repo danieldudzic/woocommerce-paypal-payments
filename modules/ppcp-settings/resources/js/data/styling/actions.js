@@ -61,12 +61,12 @@ export const setPersistent = ( prop, value ) => ( {
 } );
 
 /**
- * Transient. Marks the store as "ready", i.e., fully initialized.
+ * Transient. Changes the "ready-state" of the module.
  *
- * @param {boolean} isReady
+ * @param {boolean} state Whether the store is ready to be used.
  * @return {Action} The action.
  */
-export const setIsReady = ( isReady ) => setTransient( 'isReady', isReady );
+export const setIsReady = ( state ) => setTransient( 'isReady', state );
 
 /**
  * Side effect. Triggers the persistence of store data to the server.
