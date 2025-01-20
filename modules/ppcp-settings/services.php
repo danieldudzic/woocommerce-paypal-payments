@@ -24,6 +24,9 @@ use WooCommerce\PayPalCommerce\Settings\Service\AuthenticationManager;
 use WooCommerce\PayPalCommerce\Settings\Service\ConnectionUrlGenerator;
 use WooCommerce\PayPalCommerce\Settings\Service\OnboardingUrlManager;
 use WooCommerce\PayPalCommerce\Vendor\Psr\Container\ContainerInterface;
+use WooCommerce\PayPalCommerce\Settings\Endpoint\StylingRestEndpoint;
+use WooCommerce\PayPalCommerce\Settings\Data\StylingSettings;
+use WooCommerce\PayPalCommerce\Settings\Service\DataSanitizer;
 
 return array(
 	'settings.url'                                => static function ( ContainerInterface $container ) : string {
@@ -64,11 +67,22 @@ return array(
 			$container->get( 'wcgateway.is-send-only-country' )
 		);
 	},
+	'settings.data.styling'                       => static function ( ContainerInterface $container ) : StylingSettings {
+		return new StylingSettings(
+			$container->get( 'settings.service.sanitizer' )
+		);
+	},
 	'settings.rest.onboarding'                    => static function ( ContainerInterface $container ) : OnboardingRestEndpoint {
 		return new OnboardingRestEndpoint( $container->get( 'settings.data.onboarding' ) );
 	},
 	'settings.rest.common'                        => static function ( ContainerInterface $container ) : CommonRestEndpoint {
 		return new CommonRestEndpoint( $container->get( 'settings.data.general' ) );
+	},
+	'settings.rest.styling'                       => static function ( ContainerInterface $container ) : StylingRestEndpoint {
+		return new StylingRestEndpoint(
+			$container->get( 'settings.data.styling' ),
+			$container->get( 'settings.service.sanitizer' )
+		);
 	},
 	'settings.rest.refresh_feature_status'        => static function ( ContainerInterface $container ) : RefreshFeatureStatusEndpoint {
 		return new RefreshFeatureStatusEndpoint(
@@ -186,6 +200,9 @@ return array(
 			$container->get( 'api.repository.partner-referrals-data' ),
 			$container->get( 'woocommerce.logger.woocommerce' ),
 		);
+	},
+	'settings.service.sanitizer'                  => static function ( ContainerInterface $container ) : DataSanitizer {
+		return new DataSanitizer();
 	},
 	'settings.ajax.switch_ui'                     => static function ( ContainerInterface $container ) : SwitchSettingsUiEndpoint {
 		return new SwitchSettingsUiEndpoint(
