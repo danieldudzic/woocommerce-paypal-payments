@@ -291,8 +291,8 @@ class PaymentRestEndpoint extends RestEndpoint {
 
 			$gateway_settings[ $key ] = array(
 				'enabled'      => 'yes' === $gateway->enabled,
-				'title'        => $this->gateways()[ $key ]['title'] ?? $gateway->get_title(),
-				'description'  => $this->gateways()[ $key ]['description'] ?? $gateway->get_description(),
+				'title'        => $gateway->get_title(),
+				'description'  => $gateway->get_description(),
 				'method_title' => $gateway->get_method_title(),
 				'id'           => $this->gateways()[ $key ]['id'] ?? $key,
 				'icon'         => $this->gateways()[ $key ]['icon'] ?? '',
@@ -322,18 +322,26 @@ class PaymentRestEndpoint extends RestEndpoint {
 
 			$gateway  = $all_gateways[ $key ];
 			$new_data = $request_data[ $key ];
+			$gateway->init_form_fields();
+			$settings = $gateway->settings;
 
 			if ( isset( $new_data['enabled'] ) ) {
-				$gateway->update_option( 'enabled', $new_data['enabled'] ? 'yes' : 'no' );
-			}
-			if ( isset( $new_data['title'] ) ) {
-				$gateway->update_option( 'title', sanitize_text_field( $new_data['title'] ) );
-			}
-			if ( isset( $new_data['description'] ) ) {
-				$gateway->update_option( 'description', wp_kses_post( $new_data['description'] ) );
+				$settings['enabled'] = wc_bool_to_string( $new_data['enabled'] );
+				$gateway->enabled    = $settings['enabled'];
 			}
 
-			$gateway->process_admin_options();
+			if ( isset( $new_data['title'] ) ) {
+				$settings['title'] = sanitize_text_field( $new_data['title'] );
+				$gateway->title    = $settings['title'];
+			}
+
+			if ( isset( $new_data['description'] ) ) {
+				$settings['description'] = wp_kses_post( $new_data['description'] );
+				$gateway->description    = $settings['description'];
+			}
+
+			$gateway->settings = $settings;
+			update_option( $gateway->get_option_key(), $settings );
 		}
 
 		return $this->get_details();
