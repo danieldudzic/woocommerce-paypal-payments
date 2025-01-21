@@ -37,11 +37,7 @@ const SettingsApp = () => {
 			! merchantIsReady ||
 			! settingsIsReady
 		) {
-			return (
-				<SpinnerOverlay
-					message={ __( 'Loading…', 'woocommerce-paypal-payments' ) }
-				/>
-			);
+			return <SpinnerOverlay />;
 		}
 		if ( isSendOnlyCountry ) {
 			return <SendOnlyMessage />;
