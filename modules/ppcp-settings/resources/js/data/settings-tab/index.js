@@ -25,28 +25,16 @@ import { controls } from './controls';
  * @return {boolean} True if initialization succeeded, false otherwise.
  */
 export const initStore = () => {
-	try {
-		const store = createReduxStore( STORE_NAME, {
-			reducer,
-			controls: { ...wpControls, ...controls },
-			actions,
-			selectors,
-			resolvers,
-		} );
-		register( store );
+	const store = createReduxStore( STORE_NAME, {
+		reducer,
+		controls: { ...wpControls, ...controls },
+		actions,
+		selectors,
+		resolvers,
+	} );
+	register( store );
 
-		// Verify store registration
-		const isStoreRegistered = Boolean( wp.data.select( STORE_NAME ) );
-		if ( ! isStoreRegistered ) {
-			console.error( 'Store registration verification failed' );
-			return false;
-		}
-
-		return true;
-	} catch ( error ) {
-		console.error( 'Failed to initialize settings store:', error );
-		return false;
-	}
+	return Boolean( wp.data.select( STORE_NAME ) );
 };
 
 export { hooks, selectors, STORE_NAME };

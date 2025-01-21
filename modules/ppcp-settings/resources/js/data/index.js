@@ -5,11 +5,23 @@ import * as Payment from './payment';
 import * as Settings from './settings-tab';
 import * as Styling from './styling';
 
-Onboarding.initStore();
-Common.initStore();
-Payment.initStore();
-Settings.initStore();
-Styling.initStore();
+const stores = [ Onboarding, Common, Payment, Settings, Styling ];
+
+stores.forEach( ( store ) => {
+	try {
+		if ( false === store.initStore() ) {
+			console.error(
+				`Store initialization failed for ${ store.STORE_NAME }`
+			);
+		}
+	} catch ( e ) {
+		console.error(
+			'Error during store initialization:',
+			store.STORE_NAME,
+			e
+		);
+	}
+} );
 
 export const OnboardingHooks = Onboarding.hooks;
 export const CommonHooks = Common.hooks;
@@ -25,10 +37,4 @@ export const StylingStoreName = Styling.STORE_NAME;
 
 export * from './configuration';
 
-addDebugTools( window.ppcpSettings, [
-	Onboarding,
-	Common,
-	Payment,
-	Settings,
-	Styling,
-] );
+addDebugTools( window.ppcpSettings, stores );
