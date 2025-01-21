@@ -2,7 +2,7 @@ import { addDebugTools } from './debug';
 import * as Onboarding from './onboarding';
 import * as Common from './common';
 import * as Payment from './payment';
-import * as Settings from './settings-tab';
+import * as Settings from './settings';
 import * as Styling from './styling';
 
 const stores = [ Onboarding, Common, Payment, Settings, Styling ];
