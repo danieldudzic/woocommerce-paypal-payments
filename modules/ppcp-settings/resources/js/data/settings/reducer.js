@@ -31,18 +31,20 @@ const defaultPersistent = Object.freeze( {
 	savePaypalAndVenmo: false, // Enable PayPal & Venmo vaulting
 	saveCreditCardAndDebitCard: false, // Enable card vaulting
 	payNowExperience: false, // Enable Pay Now experience
-	sandboxAccountCredentials: false, // Use sandbox credentials
-	sandboxMode: null, // Sandbox mode configuration
-	sandboxEnabled: false, // Whether sandbox mode is active
-	sandboxClientId: '', // Sandbox API client ID
-	sandboxSecretKey: '', // Sandbox API secret key
-	sandboxConnected: false, // Sandbox connection status
 	logging: false, // Enable debug logging
 	subtotalMismatchFallback: null, // Handling for subtotal mismatches
 	brandName: '', // Merchant brand name for PayPal
 	softDescriptor: '', // Payment descriptor on statements
 	paypalLandingPage: null, // PayPal checkout landing page
 	buttonLanguage: '', // Language for PayPal buttons
+
+	// TODO: Connection details are provided by the Common store.
+	sandboxAccountCredentials: false, // Use sandbox credentials
+	sandboxMode: null, // Sandbox mode configuration
+	sandboxEnabled: false, // Whether sandbox mode is active
+	sandboxClientId: '', // Sandbox API client ID
+	sandboxSecretKey: '', // Sandbox API secret key
+	sandboxConnected: false, // Sandbox connection status
 } );
 
 // Reducer logic.
