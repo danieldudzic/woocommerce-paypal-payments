@@ -15,7 +15,6 @@ import { STORE_NAME } from './constants';
 
 const useHooks = () => {
 	const { useTransient, usePersistent } = createHooksForStore( STORE_NAME );
-
 	const { persist } = useDispatch( STORE_NAME );
 
 	// Read-only flags and derived state.
