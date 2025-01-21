@@ -41,7 +41,7 @@ const useHooks = () => {
 	};
 };
 
-export const useSettingsState = () => {
+export const useStore = () => {
 	const { persist, isReady } = useHooks();
 	return { persist, isReady };
 };

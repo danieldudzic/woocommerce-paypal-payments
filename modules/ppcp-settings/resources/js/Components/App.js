@@ -7,14 +7,14 @@ import SendOnlyMessage from './Screens/SendOnlyMessage';
 import OnboardingScreen from './Screens/Onboarding';
 import SettingsScreen from './Screens/Settings';
 import { initStore as initSettingsStore } from '../data/settings-tab';
-import { useSettingsState } from '../data/settings-tab/hooks';
+import { useStore } from '../data/settings-tab/hooks';
 
 // Initialize the settings store
 initSettingsStore();
 
 const SettingsApp = () => {
 	const onboardingProgress = OnboardingHooks.useSteps();
-	const { isReady: settingsIsReady } = useSettingsState();
+	const { isReady: settingsIsReady } = useStore();
 	const {
 		isReady: merchantIsReady,
 		merchant: { isSendOnlyCountry },
