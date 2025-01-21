@@ -19,7 +19,7 @@ const createStandardFields = ( methodId, defaultTitle ) => ( {
 
 const paymentMethods = {
 	// PayPal Checkout methods
-	paypal: {
+	'ppcp-gateway': {
 		fields: {
 			...createStandardFields( 'paypal', 'PayPal' ),
 			showLogo: {
@@ -28,12 +28,6 @@ const paymentMethods = {
 				label: __( 'Show logo', 'woocommerce-paypal-payments' ),
 			},
 		},
-	},
-	venmo: {
-		fields: createStandardFields( 'venmo', 'Venmo' ),
-	},
-	paypal_credit: {
-		fields: createStandardFields( 'paypal_credit', 'PayPal Credit' ),
 	},
 	credit_and_debit_card_payments: {
 		fields: createStandardFields(
