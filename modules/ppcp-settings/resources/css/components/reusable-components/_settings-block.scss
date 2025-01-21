@@ -97,15 +97,6 @@
 		margin-left: 5px;
 	}
 
-	.ppcp-r-settings-block__action {
-		display: flex;
-		align-items: center;
-
-		.components-flex {
-			row-gap: 0;
-		}
-	}
-
 	+ .ppcp-r-settings-block:not(.no-gap) {
 		margin-top: var(--block-separator-gap, 32px);
 		padding-top: var(--block-separator-gap, 32px);

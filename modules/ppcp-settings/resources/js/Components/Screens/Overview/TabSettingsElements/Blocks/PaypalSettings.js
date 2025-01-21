@@ -87,6 +87,7 @@ const PaypalSettings = ( { updateFormValue, settings } ) => {
 					'What business name to show to your buyers during checkout and on receipts.',
 					'woocommerce-paypal-payments'
 				) }
+				showDescriptionFirst={ true }
 				actionProps={ {
 					value: settings.brandName,
 					callback: updateFormValue,
@@ -96,7 +97,6 @@ const PaypalSettings = ( { updateFormValue, settings } ) => {
 						'woocommerce-paypal-payments'
 					),
 				} }
-				order={ [ 'title', 'description', 'action' ] }
 			/>
 
 			<InputSettingsBlock
@@ -105,6 +105,7 @@ const PaypalSettings = ( { updateFormValue, settings } ) => {
 					"The dynamic text used to construct the statement descriptor that appears on a payer's card statement. Applies to PayPal and Credit Card transactions. Max value of 22 characters.",
 					'woocommerce-paypal-payments'
 				) }
+				showDescriptionFirst={ true }
 				actionProps={ {
 					value: settings.softDescriptor,
 					callback: updateFormValue,
@@ -114,7 +115,6 @@ const PaypalSettings = ( { updateFormValue, settings } ) => {
 						'woocommerce-paypal-payments'
 					),
 				} }
-				order={ [ 'title', 'description', 'action' ] }
 			/>
 
 			<RadioSettingsBlock
