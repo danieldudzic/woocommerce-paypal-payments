@@ -1,4 +1,8 @@
-import { OnboardingStoreName, CommonStoreName } from './index';
+import {
+	OnboardingStoreName,
+	CommonStoreName,
+	PaymentStoreName,
+} from './index';
 
 export const addDebugTools = ( context, modules ) => {
 	if ( ! context || ! context?.debug ) {
@@ -47,7 +51,8 @@ export const addDebugTools = ( context, modules ) => {
 			// Reset all stores, except for the onboarding store.
 			stores.push( CommonStoreName );
 			// TODO: Add other stores here once they are available.
-		} else {
+            stores.push( PaymentStoreName );
+        } else {
 			// Only reset the common & onboarding stores to restart the onboarding wizard.
 			stores.push( CommonStoreName );
 			stores.push( OnboardingStoreName );
