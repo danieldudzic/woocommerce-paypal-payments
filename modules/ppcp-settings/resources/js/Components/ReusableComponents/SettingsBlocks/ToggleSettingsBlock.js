@@ -1,6 +1,6 @@
 import { ToggleControl } from '@wordpress/components';
-import SettingsBlock from './SettingsBlock';
-import { Header, Title, Action, Description } from './SettingsBlockElements';
+import SettingsBlock from '../SettingsBlock';
+import { Header, Title, Action, Description } from '../Elements';
 
 const ToggleSettingsBlock = ( { title, description, ...props } ) => (
 	<SettingsBlock { ...props } className="ppcp-r-settings-block__toggle">

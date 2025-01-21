@@ -1,5 +1,5 @@
-import SettingsBlock from './SettingsBlock';
-import { Header, Title, Description } from './SettingsBlockElements';
+import SettingsBlock from '../SettingsBlock';
+import { Header, Title, Description } from '../Elements';
 import { PayPalRdbWithContent } from '../Fields';
 
 const RadioSettingsBlock = ( {

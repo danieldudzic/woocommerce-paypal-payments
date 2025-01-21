@@ -1,12 +1,7 @@
 import { TextControl } from '@wordpress/components';
 
-import SettingsBlock from './SettingsBlock';
-import {
-	Title,
-	Action,
-	Description,
-	SupplementaryLabel,
-} from './SettingsBlockElements';
+import SettingsBlock from '../SettingsBlock';
+import { Title, Action, Description, SupplementaryLabel } from '../Elements';
 
 const InputSettingsBlock = ( {
 	title,

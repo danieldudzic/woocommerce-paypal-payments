@@ -1,7 +1,10 @@
 import { ToggleControl } from '@wordpress/components';
-import SettingsBlock from './SettingsBlock';
+
+import SettingsBlock from '../SettingsBlock';
 import PaymentMethodIcon from '../PaymentMethodIcon';
 import data from '../../../utils/data';
+
+// TODO: A reusable component should not depend external data. Change this to a prop.
 import { hasSettings } from '../../Screens/Overview/TabSettingsElements/Blocks/PaymentMethods';
 
 const PaymentMethodItemBlock = ( {

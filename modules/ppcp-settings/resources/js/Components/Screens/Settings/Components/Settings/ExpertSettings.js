@@ -3,7 +3,7 @@ import SettingsCard from '../../../../ReusableComponents/SettingsCard';
 import {
 	Content,
 	ContentWrapper,
-} from '../../../../ReusableComponents/SettingsBlocks';
+} from '../../../../ReusableComponents/Elements';
 import ConnectionDetails from '../../../Overview/TabSettingsElements/Blocks/ConnectionDetails';
 import Troubleshooting from '../../../Overview/TabSettingsElements/Blocks/Troubleshooting/Troubleshooting';
 import PaypalSettings from '../../../Overview/TabSettingsElements/Blocks/PaypalSettings';

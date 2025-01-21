@@ -1,12 +1,6 @@
 import Accordion from '../AccordionSection';
-import SettingsBlock from './SettingsBlock';
-import {
-	Header,
-	Title,
-	Action,
-	Description,
-	TitleWrapper,
-} from './SettingsBlockElements';
+import SettingsBlock from '../SettingsBlock';
+import { Header, Title, Action, Description, TitleWrapper } from '../Elements';
 
 const SettingsAccordion = ( { title, description, children, ...props } ) => (
 	<SettingsBlock { ...props } className="ppcp-r-settings-block__accordion">

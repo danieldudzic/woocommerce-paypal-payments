@@ -1,6 +1,7 @@
 import { Button } from '@wordpress/components';
-import SettingsBlock from './SettingsBlock';
-import { Action, Description, Header, Title } from './SettingsBlockElements';
+
+import SettingsBlock from '../SettingsBlock';
+import { Action, Description, Header, Title } from '../Elements';
 
 const ButtonSettingsBlock = ( { title, description, ...props } ) => (
 	<SettingsBlock { ...props } className="ppcp-r-settings-block__button">

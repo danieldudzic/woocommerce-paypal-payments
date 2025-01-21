@@ -1,12 +1,15 @@
 import { __ } from '@wordpress/i18n';
+
 import {
-	AccordionSettingsBlock,
 	Description,
 	Header,
 	Title,
+} from '../../../../../ReusableComponents/Elements';
+import {
+	AccordionSettingsBlock,
 	ToggleSettingsBlock,
 } from '../../../../../ReusableComponents/SettingsBlocks';
-import SettingsBlock from '../../../../../ReusableComponents/SettingsBlocks/SettingsBlock';
+import SettingsBlock from '../../../../../ReusableComponents/SettingsBlock';
 
 import SimulationBlock from './SimulationBlock';
 import ResubscribeBlock from './ResubscribeBlock';

@@ -1,11 +1,11 @@
 import { __ } from '@wordpress/i18n';
 import {
 	Header,
-	SettingsBlock,
 	Title,
 	Description,
-	ToggleSettingsBlock,
-} from '../../../../../ReusableComponents/SettingsBlocks';
+} from '../../../../../ReusableComponents/Elements';
+import { ToggleSettingsBlock } from '../../../../../ReusableComponents/SettingsBlocks';
+import SettingsBlock from '../../../../../ReusableComponents/SettingsBlock';
 import { SettingsHooks } from '../../../../../../data';
 
 const OrderIntent = () => {

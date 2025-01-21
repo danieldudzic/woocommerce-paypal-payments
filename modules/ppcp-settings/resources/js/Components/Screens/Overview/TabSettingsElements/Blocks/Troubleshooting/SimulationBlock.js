@@ -1,8 +1,9 @@
 import { useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
-import { ButtonSettingsBlock } from '../../../../../ReusableComponents/SettingsBlocks';
 import { useDispatch } from '@wordpress/data';
 import { store as noticesStore } from '@wordpress/notices';
+
+import { ButtonSettingsBlock } from '../../../../../ReusableComponents/SettingsBlocks';
 import { CommonHooks } from '../../../../../../data';
 import {
 	NOTIFICATION_ERROR,

@@ -1,7 +1,8 @@
 import Select, { components } from 'react-select';
+
 import data from '../../../utils/data';
-import SettingsBlock from './SettingsBlock';
-import { Title, Action, Description } from './SettingsBlockElements';
+import SettingsBlock from '../SettingsBlock';
+import { Title, Action, Description } from '../Elements';
 
 const DEFAULT_ELEMENT_ORDER = [ 'title', 'action', 'description' ];
 

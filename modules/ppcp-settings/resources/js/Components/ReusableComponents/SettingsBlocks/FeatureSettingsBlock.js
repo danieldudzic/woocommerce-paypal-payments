@@ -1,6 +1,7 @@
 import { Button } from '@wordpress/components';
-import SettingsBlock from './SettingsBlock';
-import { Header, Title, Action, Description } from './SettingsBlockElements';
+
+import { Header, Title, Action, Description } from '../Elements';
+import SettingsBlock from '../SettingsBlock';
 import TitleBadge from '../TitleBadge';
 
 const FeatureSettingsBlock = ( { title, description, ...props } ) => {
@@ -24,7 +25,7 @@ const FeatureSettingsBlock = ( { title, description, ...props } ) => {
 			<Button
 				className={ button.class ? button.class : '' }
 				key={ button.text }
-                isBusy={ props.actionProps?.isBusy }
+				isBusy={ props.actionProps?.isBusy }
 				variant={ button.type }
 				onClick={ button.onClick }
 			>

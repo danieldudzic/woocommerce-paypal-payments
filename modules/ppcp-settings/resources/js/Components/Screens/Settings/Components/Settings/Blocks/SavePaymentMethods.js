@@ -1,11 +1,11 @@
 import { __, sprintf } from '@wordpress/i18n';
 import {
 	Header,
-	SettingsBlock,
-	ToggleSettingsBlock,
 	Title,
 	Description,
-} from '../../../../../ReusableComponents/SettingsBlocks';
+} from '../../../../../ReusableComponents/Elements';
+import SettingsBlock from '../../../../../ReusableComponents/SettingsBlock';
+import { ToggleSettingsBlock } from '../../../../../ReusableComponents/SettingsBlocks';
 import { SettingsHooks } from '../../../../../../data';
 
 const SavePaymentMethods = () => {
