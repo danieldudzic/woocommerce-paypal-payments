@@ -2,8 +2,10 @@ import ConnectionStatus from './TabSettingsElements/ConnectionStatus';
 import CommonSettings from './TabSettingsElements/CommonSettings';
 import ExpertSettings from './TabSettingsElements/ExpertSettings';
 import { SettingsHooks } from '../../../data';
+import SpinnerOverlay from '../../ReusableComponents/SpinnerOverlay';
 
 const TabSettings = () => {
+	const { isReady } = SettingsHooks.useStore();
 	const { settings, setSettings } = SettingsHooks.useSettings();
 
 	const updateFormValue = ( key, value ) => {
@@ -12,6 +14,10 @@ const TabSettings = () => {
 			[ key ]: value,
 		} );
 	};
+
+	if ( ! isReady ) {
+		return <SpinnerOverlay />;
+	}
 
 	return (
 		<>

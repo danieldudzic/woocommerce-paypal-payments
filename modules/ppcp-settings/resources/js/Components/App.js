@@ -9,7 +9,6 @@ import SettingsScreen from './Screens/Settings';
 
 const SettingsApp = () => {
 	const onboardingProgress = OnboardingHooks.useSteps();
-	const { isReady: settingsIsReady } = SettingsHooks.useStore();
 	const {
 		isReady: merchantIsReady,
 		merchant: { isSendOnlyCountry },
@@ -32,11 +31,7 @@ const SettingsApp = () => {
 	} );
 
 	const Content = useMemo( () => {
-		if (
-			! onboardingProgress.isReady ||
-			! merchantIsReady ||
-			! settingsIsReady
-		) {
+		if ( ! onboardingProgress.isReady || ! merchantIsReady ) {
 			return <SpinnerOverlay />;
 		}
 		if ( isSendOnlyCountry ) {
@@ -51,7 +46,6 @@ const SettingsApp = () => {
 		merchantIsReady,
 		onboardingProgress.completed,
 		onboardingProgress.isReady,
-		settingsIsReady,
 	] );
 
 	return <div className={ wrapperClass }>{ Content }</div>;
