@@ -6,11 +6,7 @@ import SpinnerOverlay from './ReusableComponents/SpinnerOverlay';
 import SendOnlyMessage from './Screens/SendOnlyMessage';
 import OnboardingScreen from './Screens/Onboarding';
 import SettingsScreen from './Screens/Settings';
-import { initStore as initSettingsStore } from '../data/settings-tab';
 import { useStore } from '../data/settings-tab/hooks';
-
-// Initialize the settings store
-initSettingsStore();
 
 const SettingsApp = () => {
 	const onboardingProgress = OnboardingHooks.useSteps();

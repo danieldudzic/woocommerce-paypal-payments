@@ -9,6 +9,7 @@
 
 import { createReduxStore, register } from '@wordpress/data';
 import { controls as wpControls } from '@wordpress/data-controls';
+
 import { STORE_NAME } from './constants';
 import reducer from './reducer';
 import * as selectors from './selectors';
