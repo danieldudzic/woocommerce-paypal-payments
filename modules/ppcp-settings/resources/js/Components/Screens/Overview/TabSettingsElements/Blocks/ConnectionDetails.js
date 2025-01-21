@@ -82,27 +82,23 @@ const generateOptions = ( config, settings, updateFormValue ) => [
 			<>
 				<InputSettingsBlock
 					title={ config.clientIdTitle }
-					actionProps={ {
-						value: settings[ `${ config.mode }ClientId` ],
-						callback: updateFormValue,
-						key: `${ config.mode }ClientId`,
-						placeholder: __(
-							'Enter Client ID',
-							'woocommerce-paypal-payments'
-						),
-					} }
+					// Input field props.
+					value={ settings[ `${ config.mode }ClientId` ] }
+					onChange={ updateFormValue }
+					placeholder={ __(
+						'Enter Client ID',
+						'woocommerce-paypal-payments'
+					) }
 				/>
 				<InputSettingsBlock
 					title={ config.secretKeyTitle }
-					actionProps={ {
-						value: settings[ `${ config.mode }SecretKey` ],
-						callback: updateFormValue,
-						key: `${ config.mode }SecretKey`,
-						placeholder: __(
-							'Enter Secret Key',
-							'woocommerce-paypal-payments'
-						),
-					} }
+					// Input field props.
+					value={ settings[ `${ config.mode }SecretKey` ] }
+					onChange={ updateFormValue }
+					placeholder={ __(
+						'Enter Secret Key',
+						'woocommerce-paypal-payments'
+					) }
 				/>
 				<Button
 					variant="primary"

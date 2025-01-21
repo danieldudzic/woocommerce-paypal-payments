@@ -13,15 +13,10 @@ const InvoicePrefix = () => {
 				'woocommerce-paypal-payments'
 			) }
 			description="Add a unique prefix to invoice numbers for site-specific tracking (recommended)."
-			actionProps={ {
-				key: 'invoicePrefix',
-				callback: setInvoicePrefix,
-				value: invoicePrefix,
-				placeholder: __(
-					'Input prefix',
-					'woocommerce-paypal-payments'
-				),
-			} }
+			// Input field props.
+			placeholder={ __( 'Input prefix', 'woocommerce-paypal-payments' ) }
+			onChange={ setInvoicePrefix }
+			value={ invoicePrefix }
 		/>
 	);
 };

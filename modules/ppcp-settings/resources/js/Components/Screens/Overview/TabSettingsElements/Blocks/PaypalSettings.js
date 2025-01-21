@@ -88,15 +88,13 @@ const PaypalSettings = ( { updateFormValue, settings } ) => {
 					'woocommerce-paypal-payments'
 				) }
 				showDescriptionFirst={ true }
-				actionProps={ {
-					value: settings.brandName,
-					callback: updateFormValue,
-					key: 'brandName',
-					placeholder: __(
-						'Brand name',
-						'woocommerce-paypal-payments'
-					),
-				} }
+				// Input field props.
+				value={ settings.brandName }
+				onChange={ updateFormValue }
+				placeholder={ __(
+					'Brand name',
+					'woocommerce-paypal-payments'
+				) }
 			/>
 
 			<InputSettingsBlock
@@ -106,15 +104,13 @@ const PaypalSettings = ( { updateFormValue, settings } ) => {
 					'woocommerce-paypal-payments'
 				) }
 				showDescriptionFirst={ true }
-				actionProps={ {
-					value: settings.softDescriptor,
-					callback: updateFormValue,
-					key: 'softDescriptor',
-					placeholder: __(
-						'Soft Descriptor',
-						'woocommerce-paypal-payments'
-					),
-				} }
+				// Input field props.
+				value={ settings.softDescriptor }
+				onChange={ updateFormValue }
+				placeholder={ __(
+					'Soft Descriptor',
+					'woocommerce-paypal-payments'
+				) }
 			/>
 
 			<RadioSettingsBlock

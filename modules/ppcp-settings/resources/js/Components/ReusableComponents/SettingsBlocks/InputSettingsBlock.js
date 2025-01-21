@@ -8,13 +8,14 @@ const InputSettingsBlock = ( {
 	description,
 	supplementaryLabel,
 	showDescriptionFirst = false,
-	actionProps = {},
-	...props
+	value,
+	onChange,
+	placeholder = '',
 } ) => {
 	const TheDescription = <Description>{ description }</Description>;
 
 	return (
-		<SettingsBlock { ...props } className="ppcp-r-settings-block__input">
+		<SettingsBlock className="ppcp-r-settings-block__input">
 			<Title>
 				{ title }
 				{ supplementaryLabel && (
@@ -27,11 +28,9 @@ const InputSettingsBlock = ( {
 			<Action>
 				<TextControl
 					className="ppcp-r-vertical-text-control"
-					placeholder={ actionProps.placeholder }
-					value={ actionProps.value }
-					onChange={ ( newValue ) =>
-						actionProps.callback( actionProps.key, newValue )
-					}
+					placeholder={ placeholder }
+					value={ value }
+					onChange={ onChange }
 				/>
 			</Action>
 			{ ! showDescriptionFirst && TheDescription }
