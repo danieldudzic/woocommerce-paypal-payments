@@ -19,13 +19,55 @@ const useHooks = () => {
 	const [ isReady ] = useTransient( 'isReady' );
 
 	// Persistent accessors.
-	const [ settings, setSettings ] = usePersistent( 'settings' );
+	const [ invoicePrefix, setInvoicePrefix ] =
+		usePersistent( 'invoicePrefix' );
+	const [ authorizeOnly, setAuthorizeOnly ] =
+		usePersistent( 'authorizeOnly' );
+	const [ captureVirtualOnlyOrders, setCaptureVirtualOnlyOrders ] =
+		usePersistent( 'captureVirtualOnlyOrders' );
+	const [ savePaypalAndVenmo, setSavePaypalAndVenmo ] =
+		usePersistent( 'savePaypalAndVenmo' );
+	const [ saveCardDetails, setSaveCardDetails ] =
+		usePersistent( 'saveCardDetails' );
+	const [ payNowExperience, setPayNowExperience ] =
+		usePersistent( 'payNowExperience' );
+	const [ logging, setLogging ] = usePersistent( 'logging' );
+	const [ subtotalAdjustment, setSubtotalAdjustment ] =
+		usePersistent( 'subtotalAdjustment' );
+	const [ brandName, setBrandName ] = usePersistent( 'brandName' );
+	const [ softDescriptor, setSoftDescriptor ] =
+		usePersistent( 'softDescriptor' );
+	const [ landingPage, setLandingPage ] = usePersistent( 'landingPage' );
+	const [ buttonLanguage, setButtonLanguage ] =
+		usePersistent( 'buttonLanguage' );
 
 	return {
 		persist,
 		isReady,
-		settings,
-		setSettings,
+		invoicePrefix,
+		setInvoicePrefix,
+		authorizeOnly,
+		setAuthorizeOnly,
+		captureVirtualOnlyOrders,
+		setCaptureVirtualOnlyOrders,
+		savePaypalAndVenmo,
+		setSavePaypalAndVenmo,
+		saveCardDetails,
+		setSaveCardDetails,
+		payNowExperience,
+		setPayNowExperience,
+		logging,
+		setLogging,
+		subtotalAdjustment,
+		setSubtotalAdjustment,
+		brandName,
+		setBrandName,
+		softDescriptor,
+		setSoftDescriptor,
+		landingPage,
+		setLandingPage,
+		buttonLanguage,
+		setButtonLanguage,
 	};
 };
 
@@ -35,9 +77,57 @@ export const useStore = () => {
 };
 
 export const useSettings = () => {
-	const { settings, setSettings } = useHooks();
+	const {
+		invoicePrefix,
+		setInvoicePrefix,
+		authorizeOnly,
+		setAuthorizeOnly,
+		captureVirtualOnlyOrders,
+		setCaptureVirtualOnlyOrders,
+		savePaypalAndVenmo,
+		setSavePaypalAndVenmo,
+		saveCardDetails,
+		setSaveCardDetails,
+		payNowExperience,
+		setPayNowExperience,
+		logging,
+		setLogging,
+		subtotalAdjustment,
+		setSubtotalAdjustment,
+		brandName,
+		setBrandName,
+		softDescriptor,
+		setSoftDescriptor,
+		landingPage,
+		setLandingPage,
+		buttonLanguage,
+		setButtonLanguage,
+	} = useHooks();
+
 	return {
-		settings,
-		setSettings,
+		invoicePrefix,
+		setInvoicePrefix,
+		authorizeOnly,
+		setAuthorizeOnly,
+		captureVirtualOnlyOrders,
+		setCaptureVirtualOnlyOrders,
+		savePaypalAndVenmo,
+		setSavePaypalAndVenmo,
+		saveCardDetails,
+		setSaveCardDetails,
+		payNowExperience,
+		setPayNowExperience,
+		logging,
+		setLogging,
+		subtotalAdjustment,
+		setSubtotalAdjustment,
+		brandName,
+		setBrandName,
+		softDescriptor,
+		setSoftDescriptor,
+		landingPage,
+		setLandingPage,
+		buttonLanguage,
+		setButtonLanguage,
 	};
 };
