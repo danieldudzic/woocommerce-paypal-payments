@@ -27,7 +27,9 @@ const PaymentMethodsBlock = ( {
 			{ paymentMethods.map( ( paymentMethod ) => (
 				<PaymentMethodItemBlock
 					key={ paymentMethod.id }
-					{ ...paymentMethod }
+					title={ paymentMethod.item_title }
+					description={ paymentMethod.item_description }
+					icon={ paymentMethod.icon }
 					isSelected={ paymentMethod.enabled }
 					onSelect={ ( checked ) =>
 						handleSelect( paymentMethod, checked )
