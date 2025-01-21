@@ -1,8 +1,7 @@
 import { useEffect, useMemo } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
 import classNames from 'classnames';
 
-import { OnboardingHooks, CommonHooks, SettingsHooks } from '../data';
+import { OnboardingHooks, CommonHooks } from '../data';
 import SpinnerOverlay from './ReusableComponents/SpinnerOverlay';
 import SendOnlyMessage from './Screens/SendOnlyMessage';
 import OnboardingScreen from './Screens/Onboarding';
