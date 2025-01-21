@@ -5,9 +5,17 @@ import {
 	ToggleSettingsBlock,
 	Title,
 	Description,
-} from '../../../../ReusableComponents/SettingsBlocks';
+} from '../../../../../ReusableComponents/SettingsBlocks';
+import { SettingsHooks } from '../../../../../../data';
 
-const SavePaymentMethods = ( { updateFormValue, settings } ) => {
+const SavePaymentMethods = () => {
+	const {
+		savePaypalAndVenmo,
+		setSavePaypalAndVenmo,
+		saveCardDetails,
+		setSaveCardDetails,
+	} = SettingsHooks.useSettings();
+
 	return (
 		<SettingsBlock className="ppcp-r-settings-block--save-payment-methods">
 			<Header>
@@ -46,8 +54,8 @@ const SavePaymentMethods = ( { updateFormValue, settings } ) => {
 					/>
 				}
 				actionProps={ {
-					value: settings.savePaypalAndVenmo,
-					callback: updateFormValue,
+					value: savePaypalAndVenmo,
+					callback: setSavePaypalAndVenmo,
 					key: 'savePaypalAndVenmo',
 				} }
 			/>
@@ -62,9 +70,9 @@ const SavePaymentMethods = ( { updateFormValue, settings } ) => {
 					'woocommerce-paypal-payments'
 				) }
 				actionProps={ {
-					callback: updateFormValue,
+					callback: setSaveCardDetails,
 					key: 'saveCreditCardAndDebitCard',
-					value: settings.saveCreditCardAndDebitCard,
+					value: saveCardDetails,
 				} }
 			/>
 		</SettingsBlock>

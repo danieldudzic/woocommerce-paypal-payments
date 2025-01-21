@@ -5,9 +5,17 @@ import {
 	Title,
 	Description,
 	ToggleSettingsBlock,
-} from '../../../../ReusableComponents/SettingsBlocks';
+} from '../../../../../ReusableComponents/SettingsBlocks';
+import { SettingsHooks } from '../../../../../../data';
 
-const OrderIntent = ( { updateFormValue, settings } ) => {
+const OrderIntent = () => {
+	const {
+		authorizeOnly,
+		setAuthorizeOnly,
+		captureVirtualOnlyOrders,
+		setCaptureVirtualOnlyOrders,
+	} = SettingsHooks.useSettings();
+
 	return (
 		<SettingsBlock>
 			<Header>
@@ -25,9 +33,9 @@ const OrderIntent = ( { updateFormValue, settings } ) => {
 			<ToggleSettingsBlock
 				title={ __( 'Authorize Only', 'woocommerce-paypal-payments' ) }
 				actionProps={ {
-					callback: updateFormValue,
+					callback: setAuthorizeOnly,
 					key: 'authorizeOnly',
-					value: settings.authorizeOnly,
+					value: authorizeOnly,
 				} }
 			/>
 
@@ -37,9 +45,9 @@ const OrderIntent = ( { updateFormValue, settings } ) => {
 					'woocommerce-paypal-payments'
 				) }
 				actionProps={ {
-					callback: updateFormValue,
+					callback: setCaptureVirtualOnlyOrders,
 					key: 'captureVirtualOnlyOrders',
-					value: settings.captureVirtualOnlyOrders,
+					value: captureVirtualOnlyOrders,
 				} }
 			/>
 		</SettingsBlock>
