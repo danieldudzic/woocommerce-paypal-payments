@@ -1,6 +1,7 @@
 import { useEffect, useMemo } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import classNames from 'classnames';
+
 import { OnboardingHooks, CommonHooks, SettingsHooks } from '../data';
 import SpinnerOverlay from './ReusableComponents/SpinnerOverlay';
 import SendOnlyMessage from './Screens/SendOnlyMessage';
@@ -8,7 +9,8 @@ import OnboardingScreen from './Screens/Onboarding';
 import SettingsScreen from './Screens/Settings';
 
 const SettingsApp = () => {
-	const onboardingProgress = OnboardingHooks.useSteps();
+	const { isReady: onboardingIsReady, completed: onboardingCompleted } =
+		OnboardingHooks.useSteps();
 	const {
 		isReady: merchantIsReady,
 		merchant: { isSendOnlyCountry },
@@ -27,25 +29,28 @@ const SettingsApp = () => {
 	}, [] );
 
 	const wrapperClass = classNames( 'ppcp-r-app', {
-		loading: ! onboardingProgress.isReady || ! settingsIsReady,
+		loading: ! onboardingIsReady,
 	} );
 
 	const Content = useMemo( () => {
-		if ( ! onboardingProgress.isReady || ! merchantIsReady ) {
+		if ( ! onboardingIsReady || ! merchantIsReady ) {
 			return <SpinnerOverlay />;
 		}
+
 		if ( isSendOnlyCountry ) {
 			return <SendOnlyMessage />;
 		}
-		if ( ! onboardingProgress.completed ) {
+
+		if ( ! onboardingCompleted ) {
 			return <OnboardingScreen />;
 		}
+
 		return <SettingsScreen />;
 	}, [
 		isSendOnlyCountry,
 		merchantIsReady,
-		onboardingProgress.completed,
-		onboardingProgress.isReady,
+		onboardingCompleted,
+		onboardingIsReady,
 	] );
 
 	return <div className={ wrapperClass }>{ Content }</div>;
