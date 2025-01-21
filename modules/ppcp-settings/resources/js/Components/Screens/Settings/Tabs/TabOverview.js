@@ -21,7 +21,7 @@ import {
 const TabOverview = () => {
 	const [ isRefreshing, setIsRefreshing ] = useState( false );
 
-	const { merchant, merchantFeatures } = useMerchantInfo();
+	const { merchant, features: merchantFeatures } = useMerchantInfo();
 	const { refreshFeatureStatuses, setActiveModal } =
 		useDispatch( STORE_NAME );
 	const { createSuccessNotice, createErrorNotice } =
