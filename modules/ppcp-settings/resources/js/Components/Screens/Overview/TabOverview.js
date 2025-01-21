@@ -49,35 +49,35 @@ const TabOverview = () => {
 		try {
 			const result = await refreshFeatureStatuses();
 			if ( result && ! result.success ) {
-                const errorMessage = sprintf(
-                    /* translators: %s: error message */
-                    __(
-                        'Operation failed: %s Check WooCommerce logs for more details.',
-                        'woocommerce-paypal-payments'
-                    ),
-                    result.message ||
-                    __( 'Unknown error', 'woocommerce-paypal-payments' )
-                );
+				const errorMessage = sprintf(
+					/* translators: %s: error message */
+					__(
+						'Operation failed: %s Check WooCommerce logs for more details.',
+						'woocommerce-paypal-payments'
+					),
+					result.message ||
+						__( 'Unknown error', 'woocommerce-paypal-payments' )
+				);
 
-                createErrorNotice( errorMessage, {
-                    icon: NOTIFICATION_ERROR,
-                } );
-                console.error(
-                    'Failed to refresh features:',
-                    result.message || 'Unknown error'
-                );
+				createErrorNotice( errorMessage, {
+					icon: NOTIFICATION_ERROR,
+				} );
+				console.error(
+					'Failed to refresh features:',
+					result.message || 'Unknown error'
+				);
 			} else {
-                createSuccessNotice(
-                    __(
-                        'Features refreshed successfully.',
-                        'woocommerce-paypal-payments'
-                    ),
-                    {
-                        icon: NOTIFICATION_SUCCESS,
-                    }
-                );
-                console.log( 'Features refreshed successfully.' );
-            }
+				createSuccessNotice(
+					__(
+						'Features refreshed successfully.',
+						'woocommerce-paypal-payments'
+					),
+					{
+						icon: NOTIFICATION_SUCCESS,
+					}
+				);
+				console.log( 'Features refreshed successfully.' );
+			}
 		} finally {
 			setIsRefreshing( false );
 		}
@@ -161,7 +161,7 @@ const TabOverview = () => {
 												: button.urls.live
 											: button.url,
 									} ) ),
-                                isBusy: isRefreshing,
+								isBusy: isRefreshing,
 								enabled: feature.enabled,
 								notes: feature.notes,
 								badge: feature.enabled

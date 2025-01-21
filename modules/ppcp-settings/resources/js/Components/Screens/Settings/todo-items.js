@@ -1,5 +1,5 @@
 import { __ } from '@wordpress/i18n';
-import { selectTab, TAB_IDS } from '../../utils/tabSelector';
+import { selectTab, TAB_IDS } from '../../../utils/tabSelector';
 
 export const todosData = [
 	{
@@ -12,9 +12,8 @@ export const todosData = [
 		isCompleted: () => {
 			return false;
 		},
-		onClick: () => {
-			selectTab( TAB_IDS.PAYMENT_METHODS, 'ppcp-card-payments-card' );
-		},
+		onClick: () =>
+			selectTab( TAB_IDS.PAYMENT_METHODS, 'ppcp-card-payments-card' ),
 	},
 	{
 		id: 'enable_credit_debit_cards',
@@ -29,9 +28,8 @@ export const todosData = [
 		isCompleted: () => {
 			return false;
 		},
-		onClick: () => {
-			selectTab( TAB_IDS.PAYMENT_METHODS, 'ppcp-card-payments-card' );
-		},
+		onClick: () =>
+			selectTab( TAB_IDS.PAYMENT_METHODS, 'ppcp-card-payments-card' ),
 	},
 	{
 		id: 'enable_pay_later_messaging',
@@ -46,9 +44,7 @@ export const todosData = [
 		isCompleted: () => {
 			return false;
 		},
-		onClick: () => {
-			selectTab( TAB_IDS.OVERVIEW, 'pay_later_messaging' );
-		},
+		onClick: () => selectTab( TAB_IDS.OVERVIEW, 'pay_later_messaging' ),
 	},
 	{
 		id: 'configure_paypal_subscription',
@@ -82,9 +78,7 @@ export const todosData = [
 		isCompleted: () => {
 			return false;
 		},
-		onClick: () => {
-			selectTab( TAB_IDS.OVERVIEW, 'apple_pay' );
-		},
+		onClick: () => selectTab( TAB_IDS.OVERVIEW, 'apple_pay' ),
 	},
 	{
 		id: 'add_digital_wallets_to_account',
@@ -149,9 +143,7 @@ export const todosData = [
 		isCompleted: () => {
 			return false;
 		},
-		onClick: () => {
-			selectTab( TAB_IDS.OVERVIEW, 'apple_pay' );
-		},
+		onClick: () => selectTab( TAB_IDS.OVERVIEW, 'apple_pay' ),
 	},
 	{
 		id: 'enable_google_pay',
@@ -163,8 +155,6 @@ export const todosData = [
 		isCompleted: () => {
 			return false;
 		},
-		onClick: () => {
-			selectTab( TAB_IDS.OVERVIEW, 'google_pay' );
-		},
+		onClick: () => selectTab( TAB_IDS.OVERVIEW, 'google_pay' ),
 	},
 ];
