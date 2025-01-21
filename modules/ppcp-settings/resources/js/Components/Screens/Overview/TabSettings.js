@@ -1,10 +1,10 @@
 import ConnectionStatus from './TabSettingsElements/ConnectionStatus';
 import CommonSettings from './TabSettingsElements/CommonSettings';
 import ExpertSettings from './TabSettingsElements/ExpertSettings';
-import { useSettings } from '../../../data/settings-tab/hooks';
+import { SettingsHooks } from '../../../data';
 
 const TabSettings = () => {
-	const { settings, setSettings } = useSettings();
+	const { settings, setSettings } = SettingsHooks.useSettings();
 
 	const updateFormValue = ( key, value ) => {
 		setSettings( {

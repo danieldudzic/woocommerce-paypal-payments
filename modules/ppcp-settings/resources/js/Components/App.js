@@ -1,16 +1,15 @@
 import { useEffect, useMemo } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import classNames from 'classnames';
-import { OnboardingHooks, CommonHooks } from '../data';
+import { OnboardingHooks, CommonHooks, SettingsHooks } from '../data';
 import SpinnerOverlay from './ReusableComponents/SpinnerOverlay';
 import SendOnlyMessage from './Screens/SendOnlyMessage';
 import OnboardingScreen from './Screens/Onboarding';
 import SettingsScreen from './Screens/Settings';
-import { useStore } from '../data/settings-tab/hooks';
 
 const SettingsApp = () => {
 	const onboardingProgress = OnboardingHooks.useSteps();
-	const { isReady: settingsIsReady } = useStore();
+	const { isReady: settingsIsReady } = SettingsHooks.useStore();
 	const {
 		isReady: merchantIsReady,
 		merchant: { isSendOnlyCountry },
