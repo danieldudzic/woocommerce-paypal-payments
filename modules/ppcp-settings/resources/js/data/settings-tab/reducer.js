@@ -7,7 +7,7 @@
  * @file
  */
 
-import { createReducer, createSetters } from '../utils';
+import { createReducer, createReducerSetters } from '../utils';
 import ACTION_TYPES from './action-types';
 
 // Store structure.
@@ -47,7 +47,7 @@ const defaultPersistent = Object.freeze( {
 
 // Reducer logic.
 
-const [ setTransient, setPersistent ] = createSetters(
+const [ changeTransient, changePersistent ] = createReducerSetters(
 	defaultTransient,
 	defaultPersistent
 );
@@ -64,7 +64,7 @@ const reducer = createReducer( defaultTransient, defaultPersistent, {
 	 * @return {Object} Updated state
 	 */
 	[ ACTION_TYPES.SET_TRANSIENT ]: ( state, payload ) => {
-		return setTransient( state, payload );
+		return changeTransient( state, payload );
 	},
 
 	/**
@@ -75,7 +75,7 @@ const reducer = createReducer( defaultTransient, defaultPersistent, {
 	 * @return {Object} Updated state
 	 */
 	[ ACTION_TYPES.SET_PERSISTENT ]: ( state, payload ) =>
-		setPersistent( state, payload ),
+		changePersistent( state, payload ),
 
 	/**
 	 * Resets state to defaults while maintaining initialization status
@@ -84,8 +84,8 @@ const reducer = createReducer( defaultTransient, defaultPersistent, {
 	 * @return {Object} Reset state
 	 */
 	[ ACTION_TYPES.RESET ]: ( state ) => {
-		const cleanState = setTransient(
-			setPersistent( state, defaultPersistent ),
+		const cleanState = changeTransient(
+			changePersistent( state, defaultPersistent ),
 			defaultTransient
 		);
 		cleanState.isReady = true; // Keep initialization flag
@@ -101,7 +101,7 @@ const reducer = createReducer( defaultTransient, defaultPersistent, {
 	 * @return {Object} Hydrated state
 	 */
 	[ ACTION_TYPES.HYDRATE ]: ( state, payload ) =>
-		setPersistent( state, payload.data ),
+		changePersistent( state, payload.data ),
 } );
 
 export default reducer;
