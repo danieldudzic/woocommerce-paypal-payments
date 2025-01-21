@@ -12,7 +12,7 @@ import { TITLE_BADGE_POSITIVE } from '../../ReusableComponents/TitleBadge';
 import { useMerchantInfo } from '../../../data/common/hooks';
 import { STORE_NAME } from '../../../data/common';
 import Features from './TabSettingsElements/Blocks/Features';
-import { todosData } from '../../../data/settings/tab-overview-todos-data';
+import { todosData } from '../Settings/todo-items';
 import {
 	NOTIFICATION_ERROR,
 	NOTIFICATION_SUCCESS,
