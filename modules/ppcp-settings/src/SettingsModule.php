@@ -211,7 +211,7 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 					'login_link'             => $container->get( 'settings.rest.login_link' ),
 					'webhooks'               => $container->get( 'settings.rest.webhooks' ),
 					'refresh_feature_status' => $container->get( 'settings.rest.refresh_feature_status' ),
-					'payment' => $container->get( 'settings.rest.payment' ),
+					'payment'                => $container->get( 'settings.rest.payment' ),
 					'settings'               => $container->get( 'settings.rest.settings' ),
 					'styling'                => $container->get( 'settings.rest.styling' ),
 				);

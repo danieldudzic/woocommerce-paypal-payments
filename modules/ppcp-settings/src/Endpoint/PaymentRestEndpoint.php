@@ -52,15 +52,15 @@ class PaymentRestEndpoint extends RestEndpoint {
 		return array(
 			// PayPal checkout.
 			PayPalGateway::ID         => array(
-				'id'   => 'ppcp-gateway',
+				'id'          => 'ppcp-gateway',
 				'title'       => __( 'PayPal', 'woocommerce-paypal-payments' ),
 				'description' => __(
 					'Our all-in-one checkout solution lets you offer PayPal, Venmo, Pay Later options, and more to help maximize conversion.',
 					'woocommerce-paypal-payments'
 				),
-				'icon' => 'payment-method-paypal',
+				'icon'        => 'payment-method-paypal',
 			),
-			'venmo' => array(
+			'venmo'                   => array(
 				'id'          => 'venmo',
 				'title'       => __( 'Venmo', 'woocommerce-paypal-payments' ),
 				'description' => __(
@@ -69,7 +69,7 @@ class PaymentRestEndpoint extends RestEndpoint {
 				),
 				'icon'        => 'payment-method-venmo',
 			),
-			'pay-later' => array(
+			'pay-later'               => array(
 				'id'          => 'paypal_credit',
 				'title'       => __( 'Pay Later', 'woocommerce-paypal-payments' ),
 				'description' => __(
@@ -88,7 +88,7 @@ class PaymentRestEndpoint extends RestEndpoint {
 					"Accept all major credit and debit cards - even if your customer doesn't have a PayPal account.",
 					'woocommerce-paypal-payments'
 				),
-				'icon' => 'payment-method-cards',
+				'icon'        => 'payment-method-cards',
 			),
 
 			// Online card Payments.
@@ -102,7 +102,7 @@ class PaymentRestEndpoint extends RestEndpoint {
 					"Present custom credit and debit card fields to your payers so they can pay with credit and debit cards using your site's branding.",
 					'woocommerce-paypal-payments'
 				),
-				'icon' => 'payment-method-advanced-cards',
+				'icon'        => 'payment-method-advanced-cards',
 			),
 			AxoGateway::ID            => array(
 				'id'          => 'fastlane',
@@ -120,7 +120,7 @@ class PaymentRestEndpoint extends RestEndpoint {
 					'Allow customers to pay via their Apple Pay digital wallet.',
 					'woocommerce-paypal-payments'
 				),
-				'icon' => 'payment-method-apple-pay',
+				'icon'        => 'payment-method-apple-pay',
 			),
 			GooglePayGateway::ID      => array(
 				'id'          => 'google_pay',
@@ -129,7 +129,7 @@ class PaymentRestEndpoint extends RestEndpoint {
 					'Allow customers to pay via their Google Pay digital wallet.',
 					'woocommerce-paypal-payments'
 				),
-				'icon' => 'payment-method-google-pay',
+				'icon'        => 'payment-method-google-pay',
 			),
 
 			// Alternative payment methods.
@@ -140,7 +140,7 @@ class PaymentRestEndpoint extends RestEndpoint {
 					'Bancontact is the most widely used, accepted and trusted electronic payment method in Belgium. Bancontact makes it possible to pay directly through the online payment systems of all major Belgian banks.',
 					'woocommerce-paypal-payments'
 				),
-				'icon' => 'payment-method-bancontact',
+				'icon'        => 'payment-method-bancontact',
 			),
 			BlikGateway::ID           => array(
 				'id'          => 'blik',
@@ -149,7 +149,7 @@ class PaymentRestEndpoint extends RestEndpoint {
 					'A widely used mobile payment method in Poland, allowing Polish customers to pay directly via their banking apps. Transactions are processed in PLN.',
 					'woocommerce-paypal-payments'
 				),
-				'icon' => 'payment-method-blik',
+				'icon'        => 'payment-method-blik',
 			),
 			EPSGateway::ID            => array(
 				'id'          => 'eps',
@@ -158,7 +158,7 @@ class PaymentRestEndpoint extends RestEndpoint {
 					'An online payment method in Austria, enabling Austrian buyers to make secure payments directly through their bank accounts. Transactions are processed in EUR.',
 					'woocommerce-paypal-payments'
 				),
-				'icon' => 'payment-method-eps',
+				'icon'        => 'payment-method-eps',
 			),
 			IDealGateway::ID          => array(
 				'id'          => 'ideal',
@@ -167,7 +167,7 @@ class PaymentRestEndpoint extends RestEndpoint {
 					'iDEAL is a payment method in the Netherlands that allows buyers to select their issuing bank from a list of options.',
 					'woocommerce-paypal-payments'
 				),
-				'icon' => 'payment-method-ideal',
+				'icon'        => 'payment-method-ideal',
 			),
 			MyBankGateway::ID         => array(
 				'id'          => 'mybank',
@@ -176,7 +176,7 @@ class PaymentRestEndpoint extends RestEndpoint {
 					'A European online banking payment solution primarily used in Italy, enabling customers to make secure bank transfers during checkout. Transactions are processed in EUR.',
 					'woocommerce-paypal-payments'
 				),
-				'icon' => 'payment-method-mybank',
+				'icon'        => 'payment-method-mybank',
 			),
 			P24Gateway::ID            => array(
 				'id'          => 'przelewy24',
@@ -185,7 +185,7 @@ class PaymentRestEndpoint extends RestEndpoint {
 					'A popular online payment gateway in Poland, offering various payment options for Polish customers. Transactions can be processed in PLN or EUR.',
 					'woocommerce-paypal-payments'
 				),
-				'icon' => 'payment-method-przelewy24',
+				'icon'        => 'payment-method-przelewy24',
 			),
 			TrustlyGateway::ID        => array(
 				'id'          => 'trustly',
@@ -194,7 +194,7 @@ class PaymentRestEndpoint extends RestEndpoint {
 					'A European payment method that allows buyers to make payments directly from their bank accounts, suitable for customers across multiple European countries. Supported currencies include EUR, DKK, SEK, GBP, and NOK.',
 					'woocommerce-paypal-payments'
 				),
-				'icon' => 'payment-method-trustly',
+				'icon'        => 'payment-method-trustly',
 			),
 			MultibancoGateway::ID     => array(
 				'id'          => 'multibanco',
@@ -203,7 +203,7 @@ class PaymentRestEndpoint extends RestEndpoint {
 					'An online payment method in Portugal, enabling Portuguese buyers to make secure payments directly through their bank accounts. Transactions are processed in EUR.',
 					'woocommerce-paypal-payments'
 				),
-				'icon' => 'payment-method-multibanco',
+				'icon'        => 'payment-method-multibanco',
 			),
 			PayUponInvoiceGateway::ID => array(
 				'id'          => 'pui',
@@ -212,7 +212,7 @@ class PaymentRestEndpoint extends RestEndpoint {
 					'Pay upon Invoice is an invoice payment method in Germany. It is a local buy now, pay later payment method that allows the buyer to place an order, receive the goods, try them, verify they are in good order, and then pay the invoice within 30 days.',
 					'woocommerce-paypal-payments'
 				),
-				'icon' => '',
+				'icon'        => '',
 			),
 			OXXO::ID                  => array(
 				'id'          => 'oxxo',
@@ -221,7 +221,7 @@ class PaymentRestEndpoint extends RestEndpoint {
 					'OXXO is a Mexican chain of convenience stores. *Get PayPal account permission to use OXXO payment functionality by contacting us at (+52) 800–925–0304',
 					'woocommerce-paypal-payments'
 				),
-				'icon' => '',
+				'icon'        => '',
 			),
 		);
 	}
@@ -277,11 +277,11 @@ class PaymentRestEndpoint extends RestEndpoint {
 		foreach ( $this->gateways() as $key => $value ) {
 			if ( ! isset( $all_gateways[ $key ] ) ) {
 				$gateway_settings[ $key ] = array(
-					'id'           => $this->gateways()[ $key ]['id'] ?? '',
-					'title'        => $this->gateways()[ $key ]['title'] ?? '',
-					'description'  => $this->gateways()[ $key ]['description'] ?? '',
-					'enabled'      => false,
-					'icon'         => $this->gateways()[ $key ]['icon'] ?? '',
+					'id'          => $this->gateways()[ $key ]['id'] ?? '',
+					'title'       => $this->gateways()[ $key ]['title'] ?? '',
+					'description' => $this->gateways()[ $key ]['description'] ?? '',
+					'enabled'     => false,
+					'icon'        => $this->gateways()[ $key ]['icon'] ?? '',
 				);
 
 				continue;
@@ -314,7 +314,7 @@ class PaymentRestEndpoint extends RestEndpoint {
 
 		$request_data = $request->get_params();
 
-		foreach ( $this->gateways() as $key => $value) {
+		foreach ( $this->gateways() as $key => $value ) {
 			// Check if the REST body contains details for this gateway.
 			if ( ! isset( $request_data[ $key ] ) || ! isset( $all_gateways[ $key ] ) ) {
 				continue;
