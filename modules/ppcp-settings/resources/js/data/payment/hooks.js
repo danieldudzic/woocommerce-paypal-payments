@@ -87,10 +87,52 @@ export const useState = () => {
 };
 
 export const usePaymentMethods = () => {
-	const { setPersistent } = useHooks();
+	const {
+		setPersistent,
+		paypal,
+		venmo,
+		payLater,
+		creditCard,
+		advancedCreditCard,
+		fastlane,
+		applePay,
+		googlePay,
+		bancontact,
+		blik,
+		eps,
+		ideal,
+		mybank,
+		p24,
+		trustly,
+		multibanco,
+		pui,
+		oxxo,
+	} = useHooks();
+
+	const paymentMethods = [
+		paypal,
+		venmo,
+		payLater,
+		creditCard,
+		advancedCreditCard,
+		fastlane,
+		applePay,
+		googlePay,
+		bancontact,
+		blik,
+		eps,
+		ideal,
+		mybank,
+		p24,
+		trustly,
+		multibanco,
+		pui,
+		oxxo,
+	];
 
 	return {
 		setPersistent,
+		paymentMethods,
 	};
 };
 

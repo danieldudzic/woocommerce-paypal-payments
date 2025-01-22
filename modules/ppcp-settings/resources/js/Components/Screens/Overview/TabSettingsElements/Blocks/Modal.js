@@ -7,15 +7,17 @@ import {
 } from '@wordpress/components';
 import { useState } from '@wordpress/element';
 import PaymentMethodModal from '../../../../ReusableComponents/PaymentMethodModal';
-import { getPaymentMethods } from './PaymentMethods';
+import { usePaymentMethods } from '../../../../../data/payment/hooks';
 
 const Modal = ( { method, setModalIsVisible, onSave } ) => {
+	const { paymentMethods } = usePaymentMethods();
+
 	const [ settings, setSettings ] = useState( () => {
 		if ( ! method?.id ) {
 			return {};
 		}
 
-		const methodConfig = getPaymentMethods( method );
+		const methodConfig = paymentMethods.find( ( i ) => i.id === method.id );
 		if ( ! methodConfig?.fields ) {
 			return {};
 		}
@@ -31,7 +33,7 @@ const Modal = ( { method, setModalIsVisible, onSave } ) => {
 		return null;
 	}
 
-	const methodConfig = getPaymentMethods( method );
+	const methodConfig = paymentMethods.find( ( i ) => i.id === method.id );
 	if ( ! methodConfig?.fields ) {
 		return null;
 	}

@@ -59,16 +59,23 @@ class PaymentRestEndpoint extends RestEndpoint {
 					'woocommerce-paypal-payments'
 				),
 				'icon'             => 'payment-method-paypal',
-				'item_title'       => __( 'PayPal', 'woocommerce-paypal-payments' ),
-				'item_description' => __(
+				'itemTitle'       => __( 'PayPal', 'woocommerce-paypal-payments' ),
+				'itemDescription' => __(
 					'Our all-in-one checkout solution lets you offer PayPal, Venmo, Pay Later options, and more to help maximize conversion.',
 					'woocommerce-paypal-payments'
+				),
+				'fields' => array(
+					'checkoutPageTitle' => array(
+						'type'    => 'text',
+						'default' => '',
+						'label'   => __( 'Checkout page title', 'woocommerce-paypal-payments' ),
+					),
 				),
 			),
 			'venmo'                   => array(
 				'id'               => 'venmo',
-				'item_title'       => __( 'Venmo', 'woocommerce-paypal-payments' ),
-				'item_description' => __(
+				'itemTitle'       => __( 'Venmo', 'woocommerce-paypal-payments' ),
+				'itemDescription' => __(
 					'Offer Venmo at checkout to millions of active users.',
 					'woocommerce-paypal-payments'
 				),
@@ -76,8 +83,8 @@ class PaymentRestEndpoint extends RestEndpoint {
 			),
 			'pay-later'               => array(
 				'id'               => 'paypal_credit',
-				'item_title'       => __( 'Pay Later', 'woocommerce-paypal-payments' ),
-				'item_description' => __(
+				'itemTitle'       => __( 'Pay Later', 'woocommerce-paypal-payments' ),
+				'itemDescription' => __(
 					'Get paid in full at checkout while giving your customers the flexibility to pay in installments over time with no late fees.',
 					'woocommerce-paypal-payments'
 				),
@@ -94,11 +101,11 @@ class PaymentRestEndpoint extends RestEndpoint {
 					'woocommerce-paypal-payments'
 				),
 				'icon'             => 'payment-method-cards',
-				'item_title'       => __(
+				'itemTitle'       => __(
 					'Credit and debit card payments',
 					'woocommerce-paypal-payments'
 				),
-				'item_description' => __(
+				'itemDescription' => __(
 					"Accept all major credit and debit cards - even if your customer doesn't have a PayPal account.",
 					'woocommerce-paypal-payments'
 				),
@@ -116,11 +123,11 @@ class PaymentRestEndpoint extends RestEndpoint {
 					'woocommerce-paypal-payments'
 				),
 				'icon'             => 'payment-method-advanced-cards',
-				'item_title'       => __(
+				'itemTitle'       => __(
 					'Advanced Credit and Debit Card Payments',
 					'woocommerce-paypal-payments'
 				),
-				'item_description' => __(
+				'itemDescription' => __(
 					"Present custom credit and debit card fields to your payers so they can pay with credit and debit cards using your site's branding.",
 					'woocommerce-paypal-payments'
 				),
@@ -133,8 +140,8 @@ class PaymentRestEndpoint extends RestEndpoint {
 					'woocommerce-paypal-payments'
 				),
 				'icon'             => 'payment-method-fastlane',
-				'item_title'       => __( 'Fastlane by PayPal', 'woocommerce-paypal-payments' ),
-				'item_description' => __(
+				'itemTitle'       => __( 'Fastlane by PayPal', 'woocommerce-paypal-payments' ),
+				'itemDescription' => __(
 					"Tap into the scale and trust of PayPal's customer network to recognize shoppers and make guest checkout more seamless than ever.",
 					'woocommerce-paypal-payments'
 				),
@@ -147,8 +154,8 @@ class PaymentRestEndpoint extends RestEndpoint {
 					'woocommerce-paypal-payments'
 				),
 				'icon'             => 'payment-method-apple-pay',
-				'item_title'       => __( 'Apple Pay', 'woocommerce-paypal-payments' ),
-				'item_description' => __(
+				'itemTitle'       => __( 'Apple Pay', 'woocommerce-paypal-payments' ),
+				'itemDescription' => __(
 					'Allow customers to pay via their Apple Pay digital wallet.',
 					'woocommerce-paypal-payments'
 				),
@@ -161,8 +168,8 @@ class PaymentRestEndpoint extends RestEndpoint {
 					'woocommerce-paypal-payments'
 				),
 				'icon'             => 'payment-method-google-pay',
-				'item_title'       => __( 'Google Pay', 'woocommerce-paypal-payments' ),
-				'item_description' => __(
+				'itemTitle'       => __( 'Google Pay', 'woocommerce-paypal-payments' ),
+				'itemDescription' => __(
 					'Allow customers to pay via their Google Pay digital wallet.',
 					'woocommerce-paypal-payments'
 				),
@@ -177,8 +184,8 @@ class PaymentRestEndpoint extends RestEndpoint {
 					'woocommerce-paypal-payments'
 				),
 				'icon'             => 'payment-method-bancontact',
-				'item_title'       => __( 'Bancontact', 'woocommerce-paypal-payments' ),
-				'item_description' => __(
+				'itemTitle'       => __( 'Bancontact', 'woocommerce-paypal-payments' ),
+				'itemDescription' => __(
 					'Bancontact is the most widely used, accepted and trusted electronic payment method in Belgium. Bancontact makes it possible to pay directly through the online payment systems of all major Belgian banks.',
 					'woocommerce-paypal-payments'
 				),
@@ -191,8 +198,8 @@ class PaymentRestEndpoint extends RestEndpoint {
 					'woocommerce-paypal-payments'
 				),
 				'icon'             => 'payment-method-blik',
-				'item_title'       => __( 'BLIK', 'woocommerce-paypal-payments' ),
-				'item_description' => __(
+				'itemTitle'       => __( 'BLIK', 'woocommerce-paypal-payments' ),
+				'itemDescription' => __(
 					'A widely used mobile payment method in Poland, allowing Polish customers to pay directly via their banking apps. Transactions are processed in PLN.',
 					'woocommerce-paypal-payments'
 				),
@@ -205,8 +212,8 @@ class PaymentRestEndpoint extends RestEndpoint {
 					'woocommerce-paypal-payments'
 				),
 				'icon'             => 'payment-method-eps',
-				'item_title'       => __( 'eps', 'woocommerce-paypal-payments' ),
-				'item_description' => __(
+				'itemTitle'       => __( 'eps', 'woocommerce-paypal-payments' ),
+				'itemDescription' => __(
 					'An online payment method in Austria, enabling Austrian buyers to make secure payments directly through their bank accounts. Transactions are processed in EUR.',
 					'woocommerce-paypal-payments'
 				),
@@ -219,8 +226,8 @@ class PaymentRestEndpoint extends RestEndpoint {
 					'woocommerce-paypal-payments'
 				),
 				'icon'             => 'payment-method-ideal',
-				'item_title'       => __( 'iDEAL', 'woocommerce-paypal-payments' ),
-				'item_description' => __(
+				'itemTitle'       => __( 'iDEAL', 'woocommerce-paypal-payments' ),
+				'itemDescription' => __(
 					'iDEAL is a payment method in the Netherlands that allows buyers to select their issuing bank from a list of options.',
 					'woocommerce-paypal-payments'
 				),
@@ -233,8 +240,8 @@ class PaymentRestEndpoint extends RestEndpoint {
 					'woocommerce-paypal-payments'
 				),
 				'icon'             => 'payment-method-mybank',
-				'item_title'       => __( 'MyBank', 'woocommerce-paypal-payments' ),
-				'item_description' => __(
+				'itemTitle'       => __( 'MyBank', 'woocommerce-paypal-payments' ),
+				'itemDescription' => __(
 					'A European online banking payment solution primarily used in Italy, enabling customers to make secure bank transfers during checkout. Transactions are processed in EUR.',
 					'woocommerce-paypal-payments'
 				),
@@ -247,8 +254,8 @@ class PaymentRestEndpoint extends RestEndpoint {
 					'woocommerce-paypal-payments'
 				),
 				'icon'             => 'payment-method-przelewy24',
-				'item_title'       => __( 'Przelewy24', 'woocommerce-paypal-payments' ),
-				'item_description' => __(
+				'itemTitle'       => __( 'Przelewy24', 'woocommerce-paypal-payments' ),
+				'itemDescription' => __(
 					'A popular online payment gateway in Poland, offering various payment options for Polish customers. Transactions can be processed in PLN or EUR.',
 					'woocommerce-paypal-payments'
 				),
@@ -260,8 +267,8 @@ class PaymentRestEndpoint extends RestEndpoint {
 					'A European payment method that allows buyers to make payments directly from their bank accounts, suitable for customers across multiple European countries. Supported currencies include EUR, DKK, SEK, GBP, and NOK.',
 					'woocommerce-paypal-payments'
 				),
-				'item_title'       => __( 'Trustly', 'woocommerce-paypal-payments' ),
-				'item_description' => __(
+				'itemTitle'       => __( 'Trustly', 'woocommerce-paypal-payments' ),
+				'itemDescription' => __(
 					'A European payment method that allows buyers to make payments directly from their bank accounts, suitable for customers across multiple European countries. Supported currencies include EUR, DKK, SEK, GBP, and NOK.',
 					'woocommerce-paypal-payments'
 				),
@@ -275,8 +282,8 @@ class PaymentRestEndpoint extends RestEndpoint {
 					'woocommerce-paypal-payments'
 				),
 				'icon'             => 'payment-method-multibanco',
-				'item_title'       => __( 'Multibanco', 'woocommerce-paypal-payments' ),
-				'item_description' => __(
+				'itemTitle'       => __( 'Multibanco', 'woocommerce-paypal-payments' ),
+				'itemDescription' => __(
 					'An online payment method in Portugal, enabling Portuguese buyers to make secure payments directly through their bank accounts. Transactions are processed in EUR.',
 					'woocommerce-paypal-payments'
 				),
@@ -289,8 +296,8 @@ class PaymentRestEndpoint extends RestEndpoint {
 					'woocommerce-paypal-payments'
 				),
 				'icon'             => '',
-				'item_title'       => __( 'Pay upon Invoice', 'woocommerce-paypal-payments' ),
-				'item_description' => __(
+				'itemTitle'       => __( 'Pay upon Invoice', 'woocommerce-paypal-payments' ),
+				'itemDescription' => __(
 					'Pay upon Invoice is an invoice payment method in Germany. It is a local buy now, pay later payment method that allows the buyer to place an order, receive the goods, try them, verify they are in good order, and then pay the invoice within 30 days.',
 					'woocommerce-paypal-payments'
 				),
@@ -303,8 +310,8 @@ class PaymentRestEndpoint extends RestEndpoint {
 					'woocommerce-paypal-payments'
 				),
 				'icon'             => '',
-				'item_title'       => __( 'OXXO', 'woocommerce-paypal-payments' ),
-				'item_description' => __(
+				'itemTitle'       => __( 'OXXO', 'woocommerce-paypal-payments' ),
+				'itemDescription' => __(
 					'OXXO is a Mexican chain of convenience stores. *Get PayPal account permission to use OXXO payment functionality by contacting us at (+52) 800–925–0304',
 					'woocommerce-paypal-payments'
 				),
@@ -368,9 +375,13 @@ class PaymentRestEndpoint extends RestEndpoint {
 					'description' => $this->gateways()[ $key ]['description'] ?? '',
 					'enabled'     => false,
 					'icon'        => $this->gateways()[ $key ]['icon'] ?? '',
-					'item_title'       => $this->gateways()[ $key ]['item_title'] ?? '',
-					'item_description' => $this->gateways()[ $key ]['item_description'] ?? '',
+					'itemTitle'       => $this->gateways()[ $key ]['itemTitle'] ?? '',
+					'itemDescription' => $this->gateways()[ $key ]['itemDescription'] ?? '',
 				);
+
+				if(isset($this->gateways()[ $key ]['fields'])) {
+					$gateway_settings[ $key ]['fields'] = $this->gateways()[ $key ]['fields'];
+				}
 
 				continue;
 			}
@@ -383,9 +394,13 @@ class PaymentRestEndpoint extends RestEndpoint {
 				'description'  => $gateway->get_description(),
 				'id'           => $this->gateways()[ $key ]['id'] ?? $key,
 				'icon'         => $this->gateways()[ $key ]['icon'] ?? '',
-				'item_title'       => $this->gateways()[ $key ]['item_title'] ?? '',
-				'item_description' => $this->gateways()[ $key ]['item_description'] ?? '',
+				'itemTitle'       => $this->gateways()[ $key ]['itemTitle'] ?? '',
+				'itemDescription' => $this->gateways()[ $key ]['itemDescription'] ?? '',
 			);
+
+			if(isset($this->gateways()[ $key ]['fields'])) {
+				$gateway_settings[ $key ]['fields'] = $this->gateways()[ $key ]['fields'];
+			}
 		}
 
 		return $this->return_success( $gateway_settings );
