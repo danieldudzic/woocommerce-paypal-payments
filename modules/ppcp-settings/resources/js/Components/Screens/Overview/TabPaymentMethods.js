@@ -5,6 +5,7 @@ import PaymentMethodsBlock from '../../ReusableComponents/SettingsBlocks/Payment
 import { PaymentHooks } from '../../../data';
 import { useActiveModal } from '../../../data/common/hooks';
 import Modal from './TabSettingsElements/Blocks/Modal';
+import { usePaymentMethods } from '../../../data/payment/hooks';
 
 const TabPaymentMethods = () => {
 	const { paymentMethodsPayPalCheckout } =
@@ -13,6 +14,8 @@ const TabPaymentMethods = () => {
 		PaymentHooks.usePaymentMethodsOnlineCardPayments();
 	const { paymentMethodsAlternative } =
 		PaymentHooks.usePaymentMethodsAlternative();
+
+	const { setPersistent } = usePaymentMethods();
 
 	const { activeModal, setActiveModal } = useActiveModal();
 
@@ -94,6 +97,13 @@ const TabPaymentMethods = () => {
 							methodId,
 							settings
 						);
+
+						setPersistent( methodId, {
+							...getActiveMethod(),
+							title: settings.checkoutPageTitle,
+							description: settings.checkoutPageDescription,
+						} );
+
 						setActiveModal( null );
 					} }
 				/>

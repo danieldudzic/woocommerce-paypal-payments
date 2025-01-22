@@ -24,8 +24,15 @@ const Modal = ( { method, setModalIsVisible, onSave } ) => {
 
 		const initialSettings = {};
 		Object.entries( methodConfig.fields ).forEach( ( [ key, field ] ) => {
-			initialSettings[ key ] = field.default;
+			initialSettings[ key ] =
+				// eslint-disable-next-line no-nested-ternary
+				key === 'checkoutPageTitle'
+					? methodConfig.title
+					: key === 'checkoutPageDescription'
+					? methodConfig.description
+					: field.default;
 		} );
+
 		return initialSettings;
 	} );
 
