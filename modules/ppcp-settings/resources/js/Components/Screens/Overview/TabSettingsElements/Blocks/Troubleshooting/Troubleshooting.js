@@ -7,26 +7,21 @@ import {
 } from '../../../../../ReusableComponents/Elements';
 import { ControlToggleButton } from '../../../../../ReusableComponents/SettingsBlocks';
 import SettingsBlock from '../../../../../ReusableComponents/SettingsBlock';
+import Accordion from '../../../../../ReusableComponents/AccordionSection';
 
 import SimulationBlock from './SimulationBlock';
 import ResubscribeBlock from './ResubscribeBlock';
 import HooksTableBlock from './HooksTableBlock';
-import SettingsBlockAccordion from '../../../../../ReusableComponents/SettingsBlockAccordion';
 
 const Troubleshooting = ( { updateFormValue, settings } ) => {
 	return (
-		<SettingsBlockAccordion
-			className="ppcp-r-settings-block--troubleshooting"
+		<Accordion
+			className="ppcp--troubleshooting"
 			title={ __( 'Troubleshooting', 'woocommerce-paypal-payments' ) }
 			description={ __(
 				'Access tools to help debug and resolve issues.',
 				'woocommerce-paypal-payments'
 			) }
-			actionProps={ {
-				callback: updateFormValue,
-				key: 'payNowExperience',
-				value: settings.payNowExperience,
-			} }
 		>
 			<ControlToggleButton
 				title={ __( 'Logging', 'woocommerce-paypal-payments' ) }
@@ -63,7 +58,7 @@ const Troubleshooting = ( { updateFormValue, settings } ) => {
 				<ResubscribeBlock />
 				<SimulationBlock />
 			</SettingsBlock>
-		</SettingsBlockAccordion>
+		</Accordion>
 	);
 };
 

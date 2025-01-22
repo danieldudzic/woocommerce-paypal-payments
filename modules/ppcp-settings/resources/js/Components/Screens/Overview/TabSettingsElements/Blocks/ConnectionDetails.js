@@ -5,7 +5,7 @@ import {
 	ControlTextInput,
 	RadioSettingsBlock,
 } from '../../../../ReusableComponents/SettingsBlocks';
-import SettingsBlockAccordion from '../../../../ReusableComponents/SettingsBlockAccordion';
+import Accordion from '../../../../ReusableComponents/AccordionSection';
 
 const ConnectionDetails = ( { settings, updateFormValue } ) => {
 	const isSandbox = settings.sandboxConnected;
@@ -17,7 +17,7 @@ const ConnectionDetails = ( { settings, updateFormValue } ) => {
 	const modeKey = isSandbox ? 'productionMode' : 'sandboxMode';
 
 	return (
-		<SettingsBlockAccordion
+		<Accordion
 			title={ modeConfig.title }
 			description={ modeConfig.description }
 		>
@@ -31,7 +31,7 @@ const ConnectionDetails = ( { settings, updateFormValue } ) => {
 					callback: updateFormValue,
 				} }
 			/>
-		</SettingsBlockAccordion>
+		</Accordion>
 	);
 };
 

@@ -6,22 +6,17 @@ import {
 	SelectSettingsBlock,
 } from '../../../../ReusableComponents/SettingsBlocks';
 import SettingsBlock from '../../../../ReusableComponents/SettingsBlock';
-import SettingsBlockAccordion from '../../../../ReusableComponents/SettingsBlockAccordion';
+import Accordion from '../../../../ReusableComponents/AccordionSection';
 
 const PaypalSettings = ( { updateFormValue, settings } ) => {
 	return (
-		<SettingsBlockAccordion
-			className="ppcp-r-settings-block--settings"
+		<Accordion
+			className="ppcp--paypal-settings"
 			title={ __( 'PayPal Settings', 'woocommerce-paypal-payments' ) }
 			description={ __(
 				'Modify the PayPal checkout experience.',
 				'woocommerce-paypal-payments'
 			) }
-			actionProps={ {
-				callback: updateFormValue,
-				key: 'payNowExperience',
-				value: settings.payNowExperience,
-			} }
 		>
 			<RadioSettingsBlock
 				title={ __(
@@ -189,7 +184,7 @@ const PaypalSettings = ( { updateFormValue, settings } ) => {
 				} }
 				order={ [ 'title', 'description', 'action' ] }
 			/>
-		</SettingsBlockAccordion>
+		</Accordion>
 	);
 };
 
