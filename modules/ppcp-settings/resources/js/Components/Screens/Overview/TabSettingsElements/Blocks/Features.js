@@ -272,7 +272,7 @@ const Features = {
 				},
 				{
 					type: 'secondary',
-					text: __( 'Apply', 'woocommerce-paypal-payments' ),
+					text: __( 'Configure', 'woocommerce-paypal-payments' ),
 					urls: {
 						sandbox: '#',
 						live: '#',
