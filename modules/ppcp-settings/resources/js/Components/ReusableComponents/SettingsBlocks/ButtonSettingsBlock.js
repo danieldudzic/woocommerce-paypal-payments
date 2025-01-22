@@ -1,14 +1,16 @@
 import { Button } from '@wordpress/components';
 
 import SettingsBlock from '../SettingsBlock';
-import { Action, Description, Header, Title } from '../Elements';
+import { Action } from '../Elements';
 
 const ButtonSettingsBlock = ( { title, description, ...props } ) => (
-	<SettingsBlock { ...props } className="ppcp-r-settings-block__button">
-		<Header>
-			<Title>{ title }</Title>
-			<Description>{ description }</Description>
-		</Header>
+	<SettingsBlock
+		title={ title }
+		headerDescription={ description }
+		horizontalLayout={ true }
+		className="ppcp-r-settings-block__button"
+		{ ...props }
+	>
 		<Action>
 			<Button
 				isBusy={ props.actionProps?.isBusy }

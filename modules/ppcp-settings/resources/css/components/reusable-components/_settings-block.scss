@@ -160,12 +160,10 @@
 	}
 }
 
-.ppcp-r-settings-block__button {
-	display: flex;
+.ppcp--horizontal {
 	flex-direction: row;
 	align-items: center;
 	justify-content: space-between;
-	gap: 50px;
 }
 
 .ppcp-r-settings-block__accordion {
