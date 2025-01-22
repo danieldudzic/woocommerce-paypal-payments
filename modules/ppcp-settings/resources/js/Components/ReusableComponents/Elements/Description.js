@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 
-const Description = ( { children, asHtml = false, className = '' } ) => {
+const Description = ( { children, className = '' } ) => {
 	// Don't output anything if description is empty.
 	if ( ! children ) {
 		return null;
@@ -11,7 +11,7 @@ const Description = ( { children, asHtml = false, className = '' } ) => {
 		className
 	);
 
-	if ( ! asHtml ) {
+	if ( 'string' !== typeof children ) {
 		return <span className={ elementClasses }>{ children }</span>;
 	}
 
