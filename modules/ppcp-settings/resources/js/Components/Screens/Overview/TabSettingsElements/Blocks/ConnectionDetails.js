@@ -3,7 +3,7 @@ import { Button } from '@wordpress/components';
 
 import {
 	AccordionSettingsBlock,
-	InputSettingsBlock,
+	ControlTextInput,
 	RadioSettingsBlock,
 } from '../../../../ReusableComponents/SettingsBlocks';
 
@@ -80,7 +80,7 @@ const generateOptions = ( config, settings, updateFormValue ) => [
 		),
 		additionalContent: (
 			<>
-				<InputSettingsBlock
+				<ControlTextInput
 					title={ config.clientIdTitle }
 					// Input field props.
 					value={ settings[ `${ config.mode }ClientId` ] }
@@ -90,7 +90,7 @@ const generateOptions = ( config, settings, updateFormValue ) => [
 						'woocommerce-paypal-payments'
 					) }
 				/>
-				<InputSettingsBlock
+				<ControlTextInput
 					title={ config.secretKeyTitle }
 					// Input field props.
 					value={ settings[ `${ config.mode }SecretKey` ] }

@@ -3,9 +3,10 @@ import {
 	AccordionSettingsBlock,
 	RadioSettingsBlock,
 	ToggleSettingsBlock,
-	InputSettingsBlock,
+	ControlTextInput,
 	SelectSettingsBlock,
 } from '../../../../ReusableComponents/SettingsBlocks';
+import SettingsBlock from '../../../../ReusableComponents/SettingsBlock';
 
 const PaypalSettings = ( { updateFormValue, settings } ) => {
 	return (
@@ -81,37 +82,39 @@ const PaypalSettings = ( { updateFormValue, settings } ) => {
 				} }
 			/>
 
-			<InputSettingsBlock
+			<SettingsBlock
 				title={ __( 'Brand name', 'woocommerce-paypal-payments' ) }
-				description={ __(
+				headerDescription={ __(
 					'What business name to show to your buyers during checkout and on receipts.',
 					'woocommerce-paypal-payments'
 				) }
-				showDescriptionFirst={ true }
-				// Input field props.
-				value={ settings.brandName }
-				onChange={ updateFormValue }
-				placeholder={ __(
-					'Brand name',
-					'woocommerce-paypal-payments'
-				) }
-			/>
+			>
+				<ControlTextInput
+					value={ settings.brandName }
+					onChange={ updateFormValue }
+					placeholder={ __(
+						'Brand name',
+						'woocommerce-paypal-payments'
+					) }
+				/>
+			</SettingsBlock>
 
-			<InputSettingsBlock
+			<SettingsBlock
 				title={ __( 'Soft Descriptor', 'woocommerce-paypal-payments' ) }
-				description={ __(
+				headerDescription={ __(
 					"The dynamic text used to construct the statement descriptor that appears on a payer's card statement. Applies to PayPal and Credit Card transactions. Max value of 22 characters.",
 					'woocommerce-paypal-payments'
 				) }
-				showDescriptionFirst={ true }
-				// Input field props.
-				value={ settings.softDescriptor }
-				onChange={ updateFormValue }
-				placeholder={ __(
-					'Soft Descriptor',
-					'woocommerce-paypal-payments'
-				) }
-			/>
+			>
+				<ControlTextInput
+					value={ settings.softDescriptor }
+					onChange={ updateFormValue }
+					placeholder={ __(
+						'Soft Descriptor',
+						'woocommerce-paypal-payments'
+					) }
+				/>
+			</SettingsBlock>
 
 			<RadioSettingsBlock
 				title={ __(
