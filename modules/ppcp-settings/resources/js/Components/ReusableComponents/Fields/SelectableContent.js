@@ -21,7 +21,7 @@ const SelectableContent = ( {
 	}
 
 	const boxClassName = classNames( 'ppcp-r-select-box', {
-		selected: isSelected,
+		'ppcp--selected': isSelected,
 	} );
 
 	const InputField = ( { isRadio } ) => {

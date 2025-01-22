@@ -19,7 +19,7 @@ const Checkbox = ( {
 		}
 	}
 
-	const className = classNames( { 'is-disabled': disabled } );
+	const className = classNames( { 'ppcp--is-disabled': disabled } );
 
 	const onChange = ( newState ) => {
 		let newValue;

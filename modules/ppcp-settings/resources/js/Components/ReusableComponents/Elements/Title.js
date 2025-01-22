@@ -1,17 +1,16 @@
 import classNames from 'classnames';
 
-const Title = ( {
-	children,
-	altStyle = false,
-	big = false,
-	className = '',
-} ) => {
+const Title = ( { children, noCaps = false, big = false, className = '' } ) => {
+	if ( ! children ) {
+		return null;
+	}
+
 	const elementClasses = classNames(
 		'ppcp-r-settings-block__title',
 		className,
 		{
-			'style-alt': altStyle,
-			'style-big': big,
+			'ppcp--no-caps': noCaps,
+			'ppcp--big': big,
 		}
 	);
 

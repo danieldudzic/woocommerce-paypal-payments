@@ -27,12 +27,12 @@
 		display: block;
 		text-transform: uppercase;
 
-		&.style-alt {
+		&.ppcp--no-caps {
 			@include font(14, 16, 600);
 			text-transform: none;
 		}
 
-		&.style-big {
+		&.ppcp--big {
 			@include font(16, 20, 600);
 		}
 
@@ -97,7 +97,7 @@
 		margin-left: 5px;
 	}
 
-	+ .ppcp-r-settings-block:not(.no-gap) {
+	+ .ppcp-r-settings-block:not(.ppcp--no-gap) {
 		margin-top: var(--block-separator-gap, 32px);
 		padding-top: var(--block-separator-gap, 32px);
 		border-top: 1px solid var(--color-gray-200);

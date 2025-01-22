@@ -14,7 +14,7 @@ const StylingSectionWithRadiobuttons = ( {
 	onChange,
 	children,
 } ) => {
-	className = classNames( 'has-radio-buttons', className );
+	className = classNames( 'ppcp--has-radio-buttons', className );
 
 	return (
 		<StylingSection
