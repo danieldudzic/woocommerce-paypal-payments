@@ -2,7 +2,7 @@ import { __ } from '@wordpress/i18n';
 import {
 	AccordionSettingsBlock,
 	RadioSettingsBlock,
-	ToggleSettingsBlock,
+	ControlToggleButton,
 	ControlTextInput,
 	SelectSettingsBlock,
 } from '../../../../ReusableComponents/SettingsBlocks';
@@ -66,7 +66,7 @@ const PaypalSettings = ( { updateFormValue, settings } ) => {
 				} }
 			/>
 
-			<ToggleSettingsBlock
+			<ControlToggleButton
 				title={ __(
 					'Instant payments only',
 					'woocommerce-paypal-payments'

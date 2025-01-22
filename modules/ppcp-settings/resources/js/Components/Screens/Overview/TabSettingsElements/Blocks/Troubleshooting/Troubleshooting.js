@@ -7,7 +7,7 @@ import {
 } from '../../../../../ReusableComponents/Elements';
 import {
 	AccordionSettingsBlock,
-	ToggleSettingsBlock,
+	ControlToggleButton,
 } from '../../../../../ReusableComponents/SettingsBlocks';
 import SettingsBlock from '../../../../../ReusableComponents/SettingsBlock';
 
@@ -30,7 +30,7 @@ const Troubleshooting = ( { updateFormValue, settings } ) => {
 				value: settings.payNowExperience,
 			} }
 		>
-			<ToggleSettingsBlock
+			<ControlToggleButton
 				title={ __( 'Logging', 'woocommerce-paypal-payments' ) }
 				description={ __(
 					'Log additional debugging information in the WooCommerce logs that can assist technical staff to determine issues.',
