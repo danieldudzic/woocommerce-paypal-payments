@@ -76,6 +76,9 @@ return array(
 			$container->get( 'settings.service.sanitizer' )
 		);
 	},
+	'settings.data.payment' => static function ( ContainerInterface $container ) : PaymentSettings {
+		return new PaymentSettings();
+	},
 	'settings.rest.onboarding'                    => static function ( ContainerInterface $container ) : OnboardingRestEndpoint {
 		return new OnboardingRestEndpoint( $container->get( 'settings.data.onboarding' ) );
 	},
@@ -83,7 +86,7 @@ return array(
 		return new CommonRestEndpoint( $container->get( 'settings.data.general' ) );
 	},
 	'settings.rest.payment'                       => static function ( ContainerInterface $container ) : PaymentRestEndpoint {
-		return new PaymentRestEndpoint();
+		return new PaymentRestEndpoint($container->get('settings.data.payment'));
 	},
 	'settings.rest.styling'                       => static function ( ContainerInterface $container ) : StylingRestEndpoint {
 		return new StylingRestEndpoint(

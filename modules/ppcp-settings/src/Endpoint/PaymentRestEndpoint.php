@@ -18,6 +18,7 @@ use WooCommerce\PayPalCommerce\LocalAlternativePaymentMethods\MultibancoGateway;
 use WooCommerce\PayPalCommerce\LocalAlternativePaymentMethods\MyBankGateway;
 use WooCommerce\PayPalCommerce\LocalAlternativePaymentMethods\P24Gateway;
 use WooCommerce\PayPalCommerce\LocalAlternativePaymentMethods\TrustlyGateway;
+use WooCommerce\PayPalCommerce\Settings\Data\PaymentSettings;
 use WooCommerce\PayPalCommerce\WcGateway\Gateway\CardButtonGateway;
 use WooCommerce\PayPalCommerce\WcGateway\Gateway\CreditCardGateway;
 use WooCommerce\PayPalCommerce\WcGateway\Gateway\OXXO\OXXO;
@@ -42,6 +43,46 @@ class PaymentRestEndpoint extends RestEndpoint {
 	 * @var string
 	 */
 	protected $rest_base = 'payment';
+
+	/**
+	 * The settings instance.
+	 *
+	 * @var PaymentSettings
+	 */
+	protected PaymentSettings $settings;
+
+	/**
+	 * Field mapping for request to profile transformation.
+	 *
+	 * @var array
+	 */
+	private array $field_map = array(
+		'paypal_show_logo'           => array(
+			'js_name'  => 'paypalShowLogo',
+			'sanitize' => 'to_boolean',
+		),
+		'three_d_secure' => array(
+			'js_name'  => 'threeDSecure',
+			'sanitize' => 'sanitize_text_field',
+		),
+		'fastlane_cardholder_name'              => array(
+			'js_name' => 'FastlaneCardholderName',
+			'sanitize' => 'to_boolean',
+		),
+		'fastlane_display_watermark' => array(
+			'js_name'  => 'FastlaneDisplayWatermark',
+			'sanitize' => 'to_boolean',
+		),
+	);
+
+	/**
+	 * Constructor.
+	 *
+	 * @param PaymentSettings $settings The settings instance.
+	 */
+	public function __construct(PaymentSettings $settings) {
+		$this->settings = $settings;
+	}
 
 	/**
 	 * Field mapping for request to profile transformation.
@@ -77,7 +118,7 @@ class PaymentRestEndpoint extends RestEndpoint {
 					),
 					'showLogo'                => array(
 						'type'    => 'toggle',
-						'default' => false,
+						'default' => $this->settings->get_paypal_show_logo(),
 						'label'   => __( 'Show logo', 'woocommerce-paypal-payments' ),
 					),
 				),
@@ -166,7 +207,7 @@ class PaymentRestEndpoint extends RestEndpoint {
 					),
 					'threeDSecure'            => array(
 						'type'        => 'radio',
-						'default'     => 'no-3d-secure',
+						'default'     => $this->settings->get_three_d_secure(),
 						'label'       => __( '3D Secure', 'woocommerce-paypal-payments' ),
 						'description' => __(
 							'Authenticate cardholders through their card issuers to reduce fraud and improve transaction security. Successful 3D Secure authentication can shift liability for fraudulent chargebacks to the card issuer.',
@@ -224,7 +265,7 @@ class PaymentRestEndpoint extends RestEndpoint {
 					),
 					'cardholderName'          => array(
 						'type'    => 'toggle',
-						'default' => false,
+						'default' => $this->settings->get_fastlane_cardholder_name(),
 						'label'   => __(
 							'Display cardholder name',
 							'woocommerce-paypal-payments'
@@ -232,7 +273,7 @@ class PaymentRestEndpoint extends RestEndpoint {
 					),
 					'displayWatermark'        => array(
 						'type'    => 'toggle',
-						'default' => false,
+						'default' => $this->settings->get_fastlane_display_watermark(),
 						'label'   => __(
 							'Display Fastlane Watermark',
 							'woocommerce-paypal-payments'
@@ -685,6 +726,14 @@ class PaymentRestEndpoint extends RestEndpoint {
 			$gateway->settings = $settings;
 			update_option( $gateway->get_option_key(), $settings );
 		}
+
+		$wp_data = $this->sanitize_for_wordpress(
+			$request->get_params(),
+			$this->field_map
+		);
+
+		$this->settings->from_array( $wp_data );
+		$this->settings->save();
 
 		return $this->get_details();
 	}
