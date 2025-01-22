@@ -8,7 +8,7 @@ const ButtonSettingsBlock = ( { title, description, ...props } ) => (
 		title={ title }
 		headerDescription={ description }
 		horizontalLayout={ true }
-		className="ppcp-r-settings-block__button"
+		className="ppcp--button-block"
 		{ ...props }
 	>
 		<Action>
