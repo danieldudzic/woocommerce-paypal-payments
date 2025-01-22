@@ -9,7 +9,7 @@ const PayNowExperience = () => {
 		SettingsHooks.useSettings();
 
 	return (
-		<SettingsBlock>
+		<SettingsBlock className="ppcp--pay-now-experience">
 			<ControlToggleButton
 				label={ __(
 					'Pay Now Experience',

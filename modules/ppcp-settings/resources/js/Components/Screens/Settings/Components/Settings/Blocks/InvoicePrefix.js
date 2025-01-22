@@ -10,6 +10,7 @@ const InvoicePrefix = () => {
 		<SettingsBlock
 			title="Invoice Prefix"
 			titleSuffix={ __( '(Recommended)', 'woocommerce-paypal-payments' ) }
+			className="ppcp--invoice-prefix"
 		>
 			<ControlTextInput
 				placeholder={ __(

@@ -19,6 +19,7 @@ const OrderIntent = () => {
 				'Choose between immediate capture or authorization-only, with manual capture in the Order section.',
 				'woocommerce-paypal-payments'
 			) }
+			className="ppcp--order-intent"
 		>
 			<ControlToggleButton
 				label={ __( 'Authorize Only', 'woocommerce-paypal-payments' ) }
