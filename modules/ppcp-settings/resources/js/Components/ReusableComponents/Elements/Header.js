@@ -1,6 +1,10 @@
 import classNames from 'classnames';
 
 const Header = ( { children, className = '' } ) => {
+	if ( ! children ) {
+		return null;
+	}
+
 	const elementClasses = classNames(
 		'ppcp-r-settings-block__header',
 		className
