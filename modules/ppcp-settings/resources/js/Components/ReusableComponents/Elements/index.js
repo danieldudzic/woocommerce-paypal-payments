@@ -1,3 +1,7 @@
+/**
+ * Static elements used to build UI layouts.
+ */
+
 export { default as Action } from './Action';
 export { default as Content } from './Content';
 export { default as ContentWrapper } from './ContentWrapper';
