@@ -2,9 +2,7 @@
 	display: flex;
 	-webkit-box-align: stretch;
 	align-items: stretch;
-	flex-direction: column;
 	-webkit-box-pack: center;
-	justify-content: center;
 
 	.components-h-stack {
 		flex-direction: row;
@@ -12,8 +10,13 @@
 		gap: 32px;
 	}
 
+	.components-v-stack {
+		flex-direction: column;
+		justify-content: center;
+	}
+
 	// Fix layout for checkboxes inside a flex-stack.
-	.components-checkbox-control >.components-base-control__field > .components-flex {
+	.components-checkbox-control > .components-base-control__field > .components-flex {
 		flex-direction: row;
 		gap: 12px;
 	}
