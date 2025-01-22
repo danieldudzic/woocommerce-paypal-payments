@@ -61,4 +61,11 @@ $card-vertical-gap: 48px;
 	--color-text-main: #{$color-text-text};
 	--color-text-teriary: #{$color-text-tertiary};
 	--color-text-description: #{$color-gray-700};
+
+	// Default settings-block theme.
+	--block-item-gap: 16px;
+	--block-header-gap: 6px;
+	--block-separator-gap: 32px;
+	--block-separator-size: 1px;
+	--block-separator-color: var(--color-gray-200);
 }
