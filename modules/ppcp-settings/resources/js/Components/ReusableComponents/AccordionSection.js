@@ -25,16 +25,11 @@ const Accordion = ( {
 	const wrapperClasses = classNames( 'ppcp-r-accordion', className, {
 		'ppcp--is-open': isOpen,
 	} );
+	const contentClass = classNames( 'ppcp--accordion-content', {
+		'ppcp--is-open': isOpen,
+	} );
 
 	const icon = isOpen ? chevronUp : chevronDown;
-
-	const AccordionContent = ( { contentIsOpen, content } ) => {
-		if ( ! contentIsOpen || ! content ) {
-			return null;
-		}
-
-		return <Content asCard={ false }>{ content }</Content>;
-	};
 
 	return (
 		<div className={ wrapperClasses } { ...( id && { id } ) }>
@@ -53,7 +48,9 @@ const Accordion = ( {
 					<Description>{ description }</Description>
 				</Header>
 			</button>
-			<AccordionContent contentIsOpen={ isOpen } content={ children } />
+			<Content asCard={ false } className={ contentClass }>
+				{ children }
+			</Content>
 		</div>
 	);
 };
