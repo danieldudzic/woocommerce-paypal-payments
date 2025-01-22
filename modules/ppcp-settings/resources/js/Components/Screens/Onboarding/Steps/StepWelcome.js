@@ -2,7 +2,7 @@ import { __ } from '@wordpress/i18n';
 import { Button } from '@wordpress/components';
 
 import PaymentMethodIcons from '../../../ReusableComponents/PaymentMethodIcons';
-import Separator from '../../../ReusableComponents/Separator';
+import { Separator } from '../../../ReusableComponents/Elements';
 import AccordionSection from '../../../ReusableComponents/AccordionSection';
 import { CommonHooks } from '../../../../data';
 import BusyStateWrapper from '../../../ReusableComponents/BusyStateWrapper';
