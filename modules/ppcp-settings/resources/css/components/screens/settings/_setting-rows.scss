@@ -1,28 +1,6 @@
-.ppcp-r-setting-value-rows {
-	display: flex;
-	flex-direction: column;
-	align-items: flex-start;
-	gap: 12px;
-	width: 100%;
-}
-
-.ppcp-r-setting-value-row {
-	display: flex;
-	flex-direction: column;
-	width: 100%;
-
-	.ppcp-r-setting-label {
-		@include font(11, 22, 600);
-		color: $color-gray-900;
-		display: block;
-		text-transform: uppercase;
-	}
-
-	.ppcp-r-setting-value {
-		@include font(13, 26, 400);
-		color: $color-text-tertiary;
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
-	}
+.ppcp--value-list {
+	--block-item-gap: 0;
+	--block-separator-gap: 6px;
+	--block-header-gap: 0;
+	--block-separator-size: 0;
 }

@@ -2,23 +2,24 @@ import { __ } from '@wordpress/i18n';
 
 import SettingsCard from '../../../../ReusableComponents/SettingsCard';
 import { CommonHooks } from '../../../../../data';
-import SettingValueRow from './Parts/SettingValueRow';
 import ConnectionStatusBadge from './Parts/ConnectionStatusBadge';
+import SettingsBlock from '../../../../ReusableComponents/SettingsBlock';
+import { ControlStaticValue } from '../../../../ReusableComponents/SettingsBlocks';
 
 const ConnectionStatus = () => {
 	const { merchant } = CommonHooks.useMerchantInfo();
 
 	return (
 		<SettingsCard
-			className="ppcp-r-tab-connection-details"
+			className="ppcp-connection-details ppcp--value-list"
 			title={ __( 'Connection status', 'woocommerce-paypal-payments' ) }
 			description={ __(
 				'Your PayPal account connection details',
 				'woocommerce-paypal-payments'
 			) }
 		>
-			<div className="ppcp-r-setting-value-rows">
-				<SettingValueRow
+			<SettingsBlock>
+				<ControlStaticValue
 					value={
 						<ConnectionStatusBadge
 							isActive={ merchant.isConnected }
@@ -26,22 +27,22 @@ const ConnectionStatus = () => {
 						/>
 					}
 				/>
-				<SettingValueRow
-					label={ __( 'Merchant ID', 'woocommerce-paypal-payments' ) }
-					value={ merchant.id }
-				/>
-				<SettingValueRow
-					label={ __(
-						'Email address',
-						'woocommerce-paypal-payments'
-					) }
-					value={ merchant.email }
-				/>
-				<SettingValueRow
-					label={ __( 'Client ID', 'woocommerce-paypal-payments' ) }
-					value={ merchant.clientId }
-				/>
-			</div>
+			</SettingsBlock>
+			<SettingsBlock
+				title={ __( 'Merchant ID', 'woocommerce-paypal-payments' ) }
+			>
+				<ControlStaticValue value={ merchant.id } />
+			</SettingsBlock>
+			<SettingsBlock
+				title={ __( 'Email address', 'woocommerce-paypal-payments' ) }
+			>
+				<ControlStaticValue value={ merchant.email } />
+			</SettingsBlock>
+			<SettingsBlock
+				title={ __( 'Client ID', 'woocommerce-paypal-payments' ) }
+			>
+				<ControlStaticValue value={ merchant.clientId } />
+			</SettingsBlock>
 		</SettingsCard>
 	);
 };
