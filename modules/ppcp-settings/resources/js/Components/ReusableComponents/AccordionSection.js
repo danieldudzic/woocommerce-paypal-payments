@@ -48,9 +48,9 @@ const Accordion = ( {
 					<Description>{ description }</Description>
 				</Header>
 			</button>
-			<Content asCard={ false } className={ contentClass }>
-				{ children }
-			</Content>
+			<div className={ contentClass }>
+				<Content asCard={ false }>{ children }</Content>
+			</div>
 		</div>
 	);
 };

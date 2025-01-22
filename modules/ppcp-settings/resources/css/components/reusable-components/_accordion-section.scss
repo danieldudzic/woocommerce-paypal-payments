@@ -22,11 +22,26 @@
 	}
 
 	.ppcp--accordion-content {
-		display: none;
-		margin: 24px 0 0;
+		display: grid;
+		grid-template-rows: 0fr;
+		transition: grid-template-rows 0.2s ease-out, opacity 0.2s ease-out, margin 0.2s ease-out;
+		opacity: 0;
+		margin: 0;
+
+		> .ppcp--content {
+			overflow: hidden;
+		}
 
 		&.ppcp--is-open {
-			display: block;
+			grid-template-rows: 1fr;
+			opacity: 1;
+			margin: 24px 0 0;
+			transition: grid-template-rows 0.3s ease-in, opacity 0.3s ease-in, margin 0.3s ease-in;
+
+			> .ppcp--content {
+				// Show the overflow, since the focus-outline can extend outside the content div.
+				overflow: visible;
+			}
 		}
 	}
 }
