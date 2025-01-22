@@ -37,14 +37,12 @@
 	}
 }
 
-.ppcp-r-settings-block__accordion {
-	> .ppcp-r-accordion {
-		width: 100%;
+.ppcp-r-accordion {
+	--accordion-width: 100%;
+	--accordion-toggler-gap: 0;
+	--accordion-text-align: left;
 
-		.ppcp-r-accordion__toggler {
-			width: 100%;
-			margin: 0;
-			text-align: unset;
-		}
+	.ppcp--title-wrapper {
+		justify-content: space-between;
 	}
 }
