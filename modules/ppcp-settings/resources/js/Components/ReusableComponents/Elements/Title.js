@@ -5,14 +5,10 @@ const Title = ( { children, noCaps = false, big = false, className = '' } ) => {
 		return null;
 	}
 
-	const elementClasses = classNames(
-		'ppcp-r-settings-block__title',
-		className,
-		{
-			'ppcp--no-caps': noCaps,
-			'ppcp--big': big,
-		}
-	);
+	const elementClasses = classNames( 'ppcp--title', className, {
+		'ppcp--no-caps': noCaps,
+		'ppcp--big': big,
+	} );
 
 	return <span className={ elementClasses }>{ children }</span>;
 };

@@ -6,10 +6,7 @@ const Description = ( { children, className = '' } ) => {
 		return null;
 	}
 
-	const elementClasses = classNames(
-		'ppcp-r-settings-block__description',
-		className
-	);
+	const elementClasses = classNames( 'ppcp--description', className );
 
 	if ( 'string' !== typeof children ) {
 		return <span className={ elementClasses }>{ children }</span>;

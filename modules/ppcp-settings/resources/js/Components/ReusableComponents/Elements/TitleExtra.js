@@ -3,11 +3,7 @@ const TitleExtra = ( { children } ) => {
 		return null;
 	}
 
-	return (
-		<span className="ppcp-r-settings-block__supplementary-title-label">
-			{ children }
-		</span>
-	);
+	return <span className="ppcp--title-extra">{ children }</span>;
 };
 
 export default TitleExtra;

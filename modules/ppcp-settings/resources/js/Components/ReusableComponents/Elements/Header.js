@@ -5,10 +5,7 @@ const Header = ( { children, className = '' } ) => {
 		return null;
 	}
 
-	const elementClasses = classNames(
-		'ppcp-r-settings-block__header',
-		className
-	);
+	const elementClasses = classNames( 'ppcp--header', className );
 
 	return <div className={ elementClasses }>{ children }</div>;
 };

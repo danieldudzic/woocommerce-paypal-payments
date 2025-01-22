@@ -11,7 +11,7 @@
 		gap: 6px 0;
 	}
 
-	.ppcp-r-settings-block__header {
+	.ppcp--header {
 		display: flex;
 		flex-direction: column;
 		gap: 6px;
@@ -21,7 +21,7 @@
 		}
 	}
 
-	.ppcp-r-settings-block__title {
+	.ppcp--title {
 		@include font(11, 22, 600);
 		color: var(--color-text-title);
 		display: block;
@@ -42,14 +42,14 @@
 		}
 	}
 
-	.ppcp-r-settings-block__title-wrapper {
+	.ppcp--title-wrapper {
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
 	}
 
 	&.ppcp-r-settings-block__feature {
-		.ppcp-r-settings-block__title {
+		.ppcp--title {
 			@include font(13, 20, 600);
 			color: var(--color-text-main);
 			text-transform: none;
@@ -72,7 +72,7 @@
 		}
 	}
 
-	.ppcp-r-settings-block__description {
+	.ppcp--description {
 		@include font(13, 20, 400);
 		margin: 0;
 		color: var(--color-text-description);
@@ -90,7 +90,7 @@
 		}
 	}
 
-	.ppcp-r-settings-block__supplementary-title-label {
+	.ppcp--title-extra {
 		@include font(13, 20, 400);
 		color: var(--color-text-teriary);
 		text-transform: none;
