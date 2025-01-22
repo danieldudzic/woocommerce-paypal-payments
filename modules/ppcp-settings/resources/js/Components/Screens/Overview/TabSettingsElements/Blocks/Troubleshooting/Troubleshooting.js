@@ -1,10 +1,5 @@
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 
-import {
-	Description,
-	Header,
-	Title,
-} from '../../../../../ReusableComponents/Elements';
 import { ControlToggleButton } from '../../../../../ReusableComponents/SettingsBlocks';
 import SettingsBlock from '../../../../../ReusableComponents/SettingsBlock';
 import Accordion from '../../../../../ReusableComponents/AccordionSection';
@@ -12,8 +7,11 @@ import Accordion from '../../../../../ReusableComponents/AccordionSection';
 import SimulationBlock from './SimulationBlock';
 import ResubscribeBlock from './ResubscribeBlock';
 import HooksTableBlock from './HooksTableBlock';
+import { SettingsHooks } from '../../../../../../data';
 
-const Troubleshooting = ( { updateFormValue, settings } ) => {
+const Troubleshooting = () => {
+	const { logging, setLogging } = SettingsHooks.useSettings();
+
 	return (
 		<Accordion
 			className="ppcp--troubleshooting"
@@ -23,37 +21,28 @@ const Troubleshooting = ( { updateFormValue, settings } ) => {
 				'woocommerce-paypal-payments'
 			) }
 		>
-			<ControlToggleButton
-				title={ __( 'Logging', 'woocommerce-paypal-payments' ) }
-				description={ __(
-					'Log additional debugging information in the WooCommerce logs that can assist technical staff to determine issues.',
-					'woocommerce-paypal-payments'
-				) }
-				actionProps={ {
-					callback: updateFormValue,
-					key: 'logging',
-					value: settings.logging,
-				} }
-			/>
 			<SettingsBlock>
-				<Header>
-					<Title>
-						{ __( 'Webhooks', 'woocommerce-paypal-payments' ) }
-					</Title>
-					<Description>
-						{ __(
-							'The following PayPal webhooks are subscribed. More information about the webhooks is available in the',
-							'woocommerce-paypal-payments'
-						) }{ ' ' }
-						<a href="https://woocommerce.com/document/woocommerce-paypal-payments/#webhook-status">
-							{ __(
-								'Webhook Status documentation',
-								'woocommerce-paypal-payments'
-							) }
-						</a>
-						.
-					</Description>
-				</Header>
+				<ControlToggleButton
+					label={ __( 'Logging', 'woocommerce-paypal-payments' ) }
+					description={ __(
+						'Log additional debugging information in the WooCommerce logs that can assist technical staff to determine issues.',
+						'woocommerce-paypal-payments'
+					) }
+					value={ logging }
+					onChange={ setLogging }
+				/>
+			</SettingsBlock>
+
+			<SettingsBlock
+				title={ __( 'Webhooks', 'woocommerce-paypal-payments' ) }
+				description={ sprintf(
+					__(
+						'The following PayPal webhooks are subscribed. More information about the webhooks is available in the <a href="%s">Webhook Status documentation</a>.',
+						'woocommerce-paypal-payments'
+					),
+					'https://woocommerce.com/document/woocommerce-paypal-payments/#webhook-status'
+				) }
+			>
 				<HooksTableBlock />
 				<ResubscribeBlock />
 				<SimulationBlock />

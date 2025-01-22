@@ -7,8 +7,24 @@ import {
 } from '../../../../ReusableComponents/SettingsBlocks';
 import SettingsBlock from '../../../../ReusableComponents/SettingsBlock';
 import Accordion from '../../../../ReusableComponents/AccordionSection';
+import { SettingsHooks } from '../../../../../data';
 
-const PaypalSettings = ( { updateFormValue, settings } ) => {
+const PaypalSettings = () => {
+	const {
+		savePaypalAndVenmo,
+		setSavePaypalAndVenmo,
+		subtotalAdjustment,
+		setSubtotalAdjustment,
+		brandName,
+		setBrandName,
+		softDescriptor,
+		setSoftDescriptor,
+		landingPage,
+		setLandingPage,
+		buttonLanguage,
+		setButtonLanguage,
+	} = SettingsHooks.useSettings();
+
 	return (
 		<Accordion
 			className="ppcp--paypal-settings"
@@ -18,64 +34,62 @@ const PaypalSettings = ( { updateFormValue, settings } ) => {
 				'woocommerce-paypal-payments'
 			) }
 		>
-			<RadioSettingsBlock
-				title={ __(
-					'Subtotal mismatch fallback',
-					'woocommerce-paypal-payments'
-				) }
-				description={ __(
-					'Due to differences in how WooCommerce and PayPal calculates taxes, some transactions may fail due to a rounding error. This settings determines the fallback behavior.',
-					'woocommerce-paypal-payments'
-				) }
-				options={ [
-					{
-						id: 'add_a_correction',
-						value: 'add_a_correction',
-						label: __(
-							'Add a correction',
-							'woocommerce-paypal-payments'
-						),
-						description: __(
-							'Adds an additional line item with the missing amount.',
-							'woocommerce-paypal-payments'
-						),
-					},
-					{
-						id: 'do_not_send_line_items',
-						value: 'do_not_send_line_items',
-						label: __(
-							'Do not send line items',
-							'woocommerce-paypal-payments'
-						),
-						description: __(
-							'Resubmit the transaction without line item details.',
-							'woocommerce-paypal-payments'
-						),
-					},
-				] }
-				actionProps={ {
-					name: 'paypal_settings_mismatch',
-					key: 'subtotalMismatchFallback',
-					currentValue: settings.subtotalMismatchFallback,
-					callback: updateFormValue,
-				} }
-			/>
+			<SettingsBlock>
+				<RadioSettingsBlock
+					title={ __(
+						'Subtotal mismatch fallback',
 
-			<ControlToggleButton
-				title={ __(
-					'Instant payments only',
-					'woocommerce-paypal-payments'
-				) }
-				description={ __(
-					'If enabled, PayPal will not allow buyers to use funding sources that take additional time to complete, such as eChecks.',
-					'woocommerce-paypal-payments'
-				) }
-				actionProps={ {
-					value: settings.savePaypalAndVenmo,
-					callback: updateFormValue,
-					key: 'savePaypalAndVenmo',
-				} }
-			/>
+						'woocommerce-paypal-payments'
+					) }
+					description={ __(
+						'Due to differences in how WooCommerce and PayPal calculates taxes, some transactions may fail due to a rounding error. This settings determines the fallback behavior.',
+						'woocommerce-paypal-payments'
+					) }
+					options={ [
+						{
+							id: 'add_a_correction',
+							value: 'add_a_correction',
+							label: __(
+								'Add a correction',
+								'woocommerce-paypal-payments'
+							),
+							description: __(
+								'Adds an additional line item with the missing amount.',
+								'woocommerce-paypal-payments'
+							),
+						},
+						{
+							id: 'skip_details',
+							value: 'skip_details',
+							label: __(
+								'Do not send line items',
+								'woocommerce-paypal-payments'
+							),
+							description: __(
+								'Resubmit the transaction without line item details.',
+								'woocommerce-paypal-payments'
+							),
+						},
+					] }
+					currentValue={ subtotalAdjustment }
+					onChange={ setSubtotalAdjustment }
+				/>
+			</SettingsBlock>
+
+			<SettingsBlock>
+				<ControlToggleButton
+					label={ __(
+						'Instant payments only',
+						'woocommerce-paypal-payments'
+					) }
+					description={ __(
+						'If enabled, PayPal will not allow buyers to use funding sources that take additional time to complete, such as eChecks.',
+						'woocommerce-paypal-payments'
+					) }
+					value={ savePaypalAndVenmo }
+					onChange={ setSavePaypalAndVenmo }
+				/>
+			</SettingsBlock>
 
 			<SettingsBlock
 				title={ __( 'Brand name', 'woocommerce-paypal-payments' ) }
@@ -85,8 +99,8 @@ const PaypalSettings = ( { updateFormValue, settings } ) => {
 				) }
 			>
 				<ControlTextInput
-					value={ settings.brandName }
-					onChange={ updateFormValue }
+					value={ brandName }
+					onChange={ setBrandName }
 					placeholder={ __(
 						'Brand name',
 						'woocommerce-paypal-payments'
@@ -102,8 +116,8 @@ const PaypalSettings = ( { updateFormValue, settings } ) => {
 				) }
 			>
 				<ControlTextInput
-					value={ settings.softDescriptor }
-					onChange={ updateFormValue }
+					value={ softDescriptor }
+					onChange={ setSoftDescriptor }
 					placeholder={ __(
 						'Soft Descriptor',
 						'woocommerce-paypal-payments'
@@ -122,8 +136,8 @@ const PaypalSettings = ( { updateFormValue, settings } ) => {
 				) }
 				options={ [
 					{
-						id: 'no_preference',
-						value: 'no_reference',
+						id: 'any',
+						value: 'any',
 						label: __(
 							'No preference',
 							'woocommerce-paypal-payments'
@@ -134,8 +148,8 @@ const PaypalSettings = ( { updateFormValue, settings } ) => {
 						),
 					},
 					{
-						id: 'login_page',
-						value: 'login_page',
+						id: 'login',
+						value: 'login',
 						label: __(
 							'Login page',
 							'woocommerce-paypal-payments'
@@ -146,8 +160,8 @@ const PaypalSettings = ( { updateFormValue, settings } ) => {
 						),
 					},
 					{
-						id: 'guest_checkout_page',
-						value: 'guest_checkout_page',
+						id: 'guest_checkout',
+						value: 'guest_checkout',
 						label: __(
 							'Guest checkout page',
 							'woocommerce-paypal-payments'
@@ -160,30 +174,32 @@ const PaypalSettings = ( { updateFormValue, settings } ) => {
 				] }
 				actionProps={ {
 					name: 'paypal_settings_landing',
-					key: 'paypalLandingPage',
-					currentValue: settings.paypalLandingPage,
-					callback: updateFormValue,
+					key: 'landingPage',
+					currentValue: landingPage,
+					callback: setLandingPage,
 				} }
 			/>
 
-			<SelectSettingsBlock
+			<SettingsBlock
 				title={ __( 'Button Language', 'woocommerce-paypal-payments' ) }
 				description={ __(
 					"If left blank, PayPal and other buttons will present in the user's detected language. Enter a language here to force all buttons to display in that language.",
 					'woocommerce-paypal-payments'
 				) }
-				actionProps={ {
-					value: settings.buttonLanguage,
-					callback: updateFormValue,
-					options: languagesExample,
-					key: 'buttonLanguage',
-					placeholder: __(
-						'Browser language',
-						'woocommerce-paypal-payments'
-					),
-				} }
-				order={ [ 'title', 'description', 'action' ] }
-			/>
+			>
+				<SelectSettingsBlock
+					actionProps={ {
+						value: buttonLanguage,
+						callback: setButtonLanguage,
+						options: languagesExample,
+						key: 'buttonLanguage',
+						placeholder: __(
+							'Browser language',
+							'woocommerce-paypal-payments'
+						),
+					} }
+				/>
+			</SettingsBlock>
 		</Accordion>
 	);
 };

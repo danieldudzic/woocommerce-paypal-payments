@@ -29,13 +29,13 @@ const defaultPersistent = Object.freeze( {
 	authorizeOnly: false, // Whether to only authorize payments initially
 	captureVirtualOnlyOrders: false, // Auto-capture virtual-only orders
 	savePaypalAndVenmo: false, // Enable PayPal & Venmo vaulting
-	saveCreditCardAndDebitCard: false, // Enable card vaulting
+	saveCardDetails: false, // Enable card vaulting
 	payNowExperience: false, // Enable Pay Now experience
 	logging: false, // Enable debug logging
-	subtotalMismatchFallback: null, // Handling for subtotal mismatches
+	subtotalAdjustment: 'skip_details', // Handling for subtotal mismatches
 	brandName: '', // Merchant brand name for PayPal
 	softDescriptor: '', // Payment descriptor on statements
-	paypalLandingPage: null, // PayPal checkout landing page
+	landingPage: 'any', // PayPal checkout landing page
 	buttonLanguage: '', // Language for PayPal buttons
 
 	// TODO: Connection details are provided by the Common store.
