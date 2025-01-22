@@ -2,7 +2,7 @@ import { __ } from '@wordpress/i18n';
 
 import { CommonHooks, OnboardingHooks } from '../../../../data';
 import SelectBoxWrapper from '../../../ReusableComponents/SelectBoxWrapper';
-import SelectBox from '../../../ReusableComponents/SelectBox';
+import { SelectBox } from '../../../ReusableComponents/Fields';
 import PricingDescription from '../../../ReusableComponents/PricingDescription';
 import OnboardingHeader from '../Components/OnboardingHeader';
 import OptionalPaymentMethods from '../Components/OptionalPaymentMethods';
