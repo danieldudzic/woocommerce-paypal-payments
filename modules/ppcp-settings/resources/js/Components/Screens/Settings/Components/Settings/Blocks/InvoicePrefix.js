@@ -9,11 +9,7 @@ const InvoicePrefix = () => {
 	return (
 		<SettingsBlock
 			title="Invoice Prefix"
-			supplementaryLabel={ __(
-				'(Recommended)',
-				'woocommerce-paypal-payments'
-			) }
-			description="Add a unique prefix to invoice numbers for site-specific tracking (recommended)."
+			titleSuffix={ __( '(Recommended)', 'woocommerce-paypal-payments' ) }
 		>
 			<ControlTextInput
 				placeholder={ __(
@@ -22,6 +18,7 @@ const InvoicePrefix = () => {
 				) }
 				onChange={ setInvoicePrefix }
 				value={ invoicePrefix }
+				description="Add a unique prefix to invoice numbers for site-specific tracking (recommended)."
 			/>
 		</SettingsBlock>
 	);

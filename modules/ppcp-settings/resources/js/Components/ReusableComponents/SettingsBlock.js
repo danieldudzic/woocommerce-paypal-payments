@@ -6,7 +6,6 @@ const SettingsBlock = ( {
 	children,
 	title,
 	titleSuffix,
-	headerDescription,
 	description,
 	horizontalLayout = false,
 	separatorAndGap = true,
@@ -20,16 +19,13 @@ const SettingsBlock = ( {
 		<div className={ blockClassName }>
 			<Header>
 				<Title>
-					{ title } <TitleExtra>{ titleSuffix }</TitleExtra>
+					{ title }
+					<TitleExtra>{ titleSuffix }</TitleExtra>
 				</Title>
-				<Description>{ headerDescription }</Description>
+				<Description>{ description }</Description>
 			</Header>
 
-			<Content asCard={ false }>
-				{ children }
-
-				<Description>{ description }</Description>
-			</Content>
+			<Content asCard={ false }>{ children }</Content>
 		</div>
 	);
 };

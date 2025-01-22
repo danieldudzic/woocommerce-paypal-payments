@@ -1,8 +1,13 @@
 import { TextControl } from '@wordpress/components';
 
-import { Action } from '../Elements';
+import { Action, Description } from '../Elements';
 
-const ControlTextInput = ( { value, onChange, placeholder = '' } ) => {
+const ControlTextInput = ( {
+	value,
+	description,
+	onChange,
+	placeholder = '',
+} ) => {
 	return (
 		<Action>
 			<TextControl
@@ -11,6 +16,7 @@ const ControlTextInput = ( { value, onChange, placeholder = '' } ) => {
 				value={ value }
 				onChange={ onChange }
 			/>
+			<Description>{ description }</Description>
 		</Action>
 	);
 };
