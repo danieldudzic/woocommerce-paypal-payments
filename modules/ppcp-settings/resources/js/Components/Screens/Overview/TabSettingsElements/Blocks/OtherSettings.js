@@ -1,8 +1,6 @@
 import { __ } from '@wordpress/i18n';
-import {
-	AccordionSettingsBlock,
-	SelectSettingsBlock,
-} from '../../../../ReusableComponents/SettingsBlocks';
+import { SelectSettingsBlock } from '../../../../ReusableComponents/SettingsBlocks';
+import SettingsBlockAccordion from '../../../../ReusableComponents/SettingsBlockAccordion';
 
 const creditCardExamples = [
 	{ value: '', label: __( 'Select', 'woocommerce-paypal-payments' ) },
@@ -24,7 +22,7 @@ const creditCardExamples = [
 
 const OtherSettings = ( { settings, updateFormValue } ) => {
 	return (
-		<AccordionSettingsBlock
+		<SettingsBlockAccordion
 			title={ __(
 				'Other payment method settings',
 				'woocommerce-paypal-payments'
@@ -52,7 +50,7 @@ const OtherSettings = ( { settings, updateFormValue } ) => {
 				} }
 				order={ [ 'title', 'description', 'action' ] }
 			/>
-		</AccordionSettingsBlock>
+		</SettingsBlockAccordion>
 	);
 };
 

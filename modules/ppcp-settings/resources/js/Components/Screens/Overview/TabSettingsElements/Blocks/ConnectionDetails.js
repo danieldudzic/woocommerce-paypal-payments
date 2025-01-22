@@ -2,10 +2,10 @@ import { __, sprintf } from '@wordpress/i18n';
 import { Button } from '@wordpress/components';
 
 import {
-	AccordionSettingsBlock,
 	ControlTextInput,
 	RadioSettingsBlock,
 } from '../../../../ReusableComponents/SettingsBlocks';
+import SettingsBlockAccordion from '../../../../ReusableComponents/SettingsBlockAccordion';
 
 const ConnectionDetails = ( { settings, updateFormValue } ) => {
 	const isSandbox = settings.sandboxConnected;
@@ -17,7 +17,7 @@ const ConnectionDetails = ( { settings, updateFormValue } ) => {
 	const modeKey = isSandbox ? 'productionMode' : 'sandboxMode';
 
 	return (
-		<AccordionSettingsBlock
+		<SettingsBlockAccordion
 			title={ modeConfig.title }
 			description={ modeConfig.description }
 		>
@@ -31,7 +31,7 @@ const ConnectionDetails = ( { settings, updateFormValue } ) => {
 					callback: updateFormValue,
 				} }
 			/>
-		</AccordionSettingsBlock>
+		</SettingsBlockAccordion>
 	);
 };
 

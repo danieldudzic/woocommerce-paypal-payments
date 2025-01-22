@@ -5,19 +5,17 @@ import {
 	Header,
 	Title,
 } from '../../../../../ReusableComponents/Elements';
-import {
-	AccordionSettingsBlock,
-	ControlToggleButton,
-} from '../../../../../ReusableComponents/SettingsBlocks';
+import { ControlToggleButton } from '../../../../../ReusableComponents/SettingsBlocks';
 import SettingsBlock from '../../../../../ReusableComponents/SettingsBlock';
 
 import SimulationBlock from './SimulationBlock';
 import ResubscribeBlock from './ResubscribeBlock';
 import HooksTableBlock from './HooksTableBlock';
+import SettingsBlockAccordion from '../../../../../ReusableComponents/SettingsBlockAccordion';
 
 const Troubleshooting = ( { updateFormValue, settings } ) => {
 	return (
-		<AccordionSettingsBlock
+		<SettingsBlockAccordion
 			className="ppcp-r-settings-block--troubleshooting"
 			title={ __( 'Troubleshooting', 'woocommerce-paypal-payments' ) }
 			description={ __(
@@ -65,7 +63,7 @@ const Troubleshooting = ( { updateFormValue, settings } ) => {
 				<ResubscribeBlock />
 				<SimulationBlock />
 			</SettingsBlock>
-		</AccordionSettingsBlock>
+		</SettingsBlockAccordion>
 	);
 };
 

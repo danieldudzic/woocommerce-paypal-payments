@@ -1,16 +1,16 @@
 import { __ } from '@wordpress/i18n';
 import {
-	AccordionSettingsBlock,
 	RadioSettingsBlock,
 	ControlToggleButton,
 	ControlTextInput,
 	SelectSettingsBlock,
 } from '../../../../ReusableComponents/SettingsBlocks';
 import SettingsBlock from '../../../../ReusableComponents/SettingsBlock';
+import SettingsBlockAccordion from '../../../../ReusableComponents/SettingsBlockAccordion';
 
 const PaypalSettings = ( { updateFormValue, settings } ) => {
 	return (
-		<AccordionSettingsBlock
+		<SettingsBlockAccordion
 			className="ppcp-r-settings-block--settings"
 			title={ __( 'PayPal Settings', 'woocommerce-paypal-payments' ) }
 			description={ __(
@@ -189,7 +189,7 @@ const PaypalSettings = ( { updateFormValue, settings } ) => {
 				} }
 				order={ [ 'title', 'description', 'action' ] }
 			/>
-		</AccordionSettingsBlock>
+		</SettingsBlockAccordion>
 	);
 };
 
