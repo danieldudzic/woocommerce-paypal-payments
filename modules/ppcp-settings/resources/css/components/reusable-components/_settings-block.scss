@@ -86,6 +86,9 @@
 		padding-top: var(--block-separator-gap, 32px);
 		border-top: var(--block-separator-size, 1px) solid var(--block-separator-color);
 	}
+
+	.ppcp--action + .ppcp--action {
+		margin-top: var(--block-action-gap, 16px);
 	}
 }
 
