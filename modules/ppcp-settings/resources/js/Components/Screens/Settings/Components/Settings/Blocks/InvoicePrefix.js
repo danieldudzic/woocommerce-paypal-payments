@@ -1,4 +1,5 @@
 import { __ } from '@wordpress/i18n';
+
 import { ControlTextInput } from '../../../../../ReusableComponents/SettingsBlocks';
 import { SettingsHooks } from '../../../../../../data';
 import SettingsBlock from '../../../../../ReusableComponents/SettingsBlock';
