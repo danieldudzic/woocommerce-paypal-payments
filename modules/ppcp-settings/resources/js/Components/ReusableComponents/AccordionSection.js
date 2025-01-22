@@ -15,6 +15,7 @@ import {
 const Accordion = ( {
 	title,
 	id = '',
+	noCaps = false,
 	initiallyOpen = null,
 	description = '',
 	children = null,
@@ -44,7 +45,7 @@ const Accordion = ( {
 			>
 				<Header>
 					<TitleWrapper>
-						<Title noCaps={ true }>{ title }</Title>
+						<Title noCaps={ noCaps }>{ title }</Title>
 						<Action>
 							<Icon icon={ icon } />
 						</Action>
