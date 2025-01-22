@@ -100,7 +100,7 @@
 	+ .ppcp-r-settings-block:not(.ppcp--no-gap) {
 		margin-top: var(--block-separator-gap, 32px);
 		padding-top: var(--block-separator-gap, 32px);
-		border-top: 1px solid var(--color-gray-200);
+		border-top: var(--block-separator-size, 1px) solid var(--block-separator-color, --color-gray-200);
 	}
 
 	// Types
