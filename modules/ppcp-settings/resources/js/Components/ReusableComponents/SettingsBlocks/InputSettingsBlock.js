@@ -1,7 +1,7 @@
 import { TextControl } from '@wordpress/components';
 
 import SettingsBlock from '../SettingsBlock';
-import { Title, Action, Description, SupplementaryLabel } from '../Elements';
+import { Title, Action, Description, TitleExtra } from '../Elements';
 
 const InputSettingsBlock = ( {
 	title,
@@ -18,11 +18,7 @@ const InputSettingsBlock = ( {
 		<SettingsBlock className="ppcp-r-settings-block__input">
 			<Title>
 				{ title }
-				{ supplementaryLabel && (
-					<SupplementaryLabel>
-						{ supplementaryLabel }
-					</SupplementaryLabel>
-				) }
+				<TitleExtra>{ supplementaryLabel }</TitleExtra>
 			</Title>
 			{ showDescriptionFirst && TheDescription }
 			<Action>
