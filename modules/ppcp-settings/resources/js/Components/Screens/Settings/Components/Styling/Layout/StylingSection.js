@@ -26,7 +26,9 @@ const StylingSection = ( {
 				<Description>{ description }</Description>
 			</Header>
 
-			<Content className="section-content">{ children }</Content>
+			<Content asCard={ false } className="section-content">
+				{ children }
+			</Content>
 		</SettingsBlock>
 	);
 };

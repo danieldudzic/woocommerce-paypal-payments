@@ -1,10 +1,9 @@
 import classNames from 'classnames';
 
-const Content = ( { children, className = '', id = '' } ) => {
-	const elementClasses = classNames(
-		'ppcp-r-settings-card__content',
-		className
-	);
+const Content = ( { children, asCard = true, className = '', id = '' } ) => {
+	const elementClasses = classNames( 'ppcp-r-settings-content', className, {
+		'ppcp--is-card': asCard,
+	} );
 
 	return (
 		<div id={ id } className={ elementClasses }>
