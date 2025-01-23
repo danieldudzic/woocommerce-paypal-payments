@@ -56,6 +56,14 @@ const useHooks = () => {
 	const pui = usePersistent( 'ppcp-pay-upon-invoice-gateway' );
 	const oxxo = usePersistent( 'ppcp-oxxo-gateway' );
 
+	// Custom modal data.
+	const paypalShowLogo = usePersistent( 'paypalShowLogo' );
+	const threeDSecure = usePersistent( 'threeDSecure' );
+	const fastlaneCardholderName = usePersistent( 'fastlaneCardholderName' );
+	const fastlaneDisplayWatermark = usePersistent(
+		'fastlaneDisplayWatermark'
+	);
+
 	return {
 		persist,
 		isReady,
@@ -78,6 +86,10 @@ const useHooks = () => {
 		multibanco,
 		pui,
 		oxxo,
+		paypalShowLogo,
+		threeDSecure,
+		fastlaneCardholderName,
+		fastlaneDisplayWatermark,
 	};
 };
 
@@ -87,10 +99,68 @@ export const useStore = () => {
 };
 
 export const usePaymentMethods = () => {
-	const { setPersistent } = useHooks();
+	const {
+		setPersistent,
+		paypal,
+		venmo,
+		payLater,
+		creditCard,
+		advancedCreditCard,
+		fastlane,
+		applePay,
+		googlePay,
+		bancontact,
+		blik,
+		eps,
+		ideal,
+		mybank,
+		p24,
+		trustly,
+		multibanco,
+		pui,
+		oxxo,
+	} = useHooks();
+
+	const paymentMethods = [
+		paypal,
+		venmo,
+		payLater,
+		creditCard,
+		advancedCreditCard,
+		fastlane,
+		applePay,
+		googlePay,
+		bancontact,
+		blik,
+		eps,
+		ideal,
+		mybank,
+		p24,
+		trustly,
+		multibanco,
+		pui,
+		oxxo,
+	];
 
 	return {
 		setPersistent,
+		paymentMethods,
+	};
+};
+
+export const usePaymentMethodsModal = () => {
+	const {
+		paypalShowLogo,
+		threeDSecure,
+		fastlaneCardholderName,
+		fastlaneDisplayWatermark,
+	} = useHooks();
+
+	return {
+		paypalShowLogo,
+		threeDSecure,
+		fastlaneCardholderName,
+		fastlaneDisplayWatermark,
 	};
 };
 

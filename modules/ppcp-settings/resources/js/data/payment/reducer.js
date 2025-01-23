@@ -37,6 +37,10 @@ const defaultPersistent = Object.freeze( {
 	'ppcp-multibanco': {},
 	'ppcp-pay-upon-invoice-gateway': {},
 	'ppcp-oxxo-gateway': {},
+	paypalShowLogo: false,
+	threeDSecure: 'no-3d-secure',
+	fastlaneCardholderName: false,
+	fastlaneDisplayWatermark: false,
 } );
 
 // Reducer logic.

@@ -5,6 +5,7 @@ import { PaymentMethodsBlock } from '../../ReusableComponents/SettingsBlocks';
 import { PaymentHooks } from '../../../data';
 import { useActiveModal } from '../../../data/common/hooks';
 import Modal from './TabSettingsElements/Blocks/Modal';
+import { usePaymentMethods } from '../../../data/payment/hooks';
 
 const TabPaymentMethods = () => {
 	const { paymentMethodsPayPalCheckout } =
@@ -13,6 +14,8 @@ const TabPaymentMethods = () => {
 		PaymentHooks.usePaymentMethodsOnlineCardPayments();
 	const { paymentMethodsAlternative } =
 		PaymentHooks.usePaymentMethodsAlternative();
+
+	const { setPersistent } = usePaymentMethods();
 
 	const { activeModal, setActiveModal } = useActiveModal();
 
@@ -89,11 +92,37 @@ const TabPaymentMethods = () => {
 					method={ getActiveMethod() }
 					setModalIsVisible={ () => setActiveModal( null ) }
 					onSave={ ( methodId, settings ) => {
-						console.log(
-							'Saving settings for:',
-							methodId,
-							settings
-						);
+						setPersistent( methodId, {
+							...getActiveMethod(),
+							title: settings.checkoutPageTitle,
+							description: settings.checkoutPageDescription,
+						} );
+
+						if ( 'paypalShowLogo' in settings ) {
+							setPersistent(
+								'paypalShowLogo',
+								settings.paypalShowLogo
+							);
+						}
+						if ( 'threeDSecure' in settings ) {
+							setPersistent(
+								'threeDSecure',
+								settings.threeDSecure
+							);
+						}
+						if ( 'fastlaneCardholderName' in settings ) {
+							setPersistent(
+								'fastlaneCardholderName',
+								settings.fastlaneCardholderName
+							);
+						}
+						if ( 'fastlaneDisplayWatermark' in settings ) {
+							setPersistent(
+								'fastlaneDisplayWatermark',
+								settings.fastlaneDisplayWatermark
+							);
+						}
+
 						setActiveModal( null );
 					} }
 				/>

@@ -45,6 +45,12 @@ const defaultTransient = Object.freeze( {
 		google_pay: {
 			enabled: false,
 		},
+		alternative_payment_methods: {
+			enabled: false,
+		},
+		pay_later_messaging: {
+			enabled: false,
+		},
 	} ),
 
 	webhooks: Object.freeze( [] ),

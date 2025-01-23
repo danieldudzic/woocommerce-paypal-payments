@@ -39,7 +39,7 @@ class SavePaymentMethodsApplies {
 		string $country
 	) {
 		$this->allowed_countries = $allowed_countries;
-		$this->country            = $country;
+		$this->country           = $country;
 	}
 
 	/**
