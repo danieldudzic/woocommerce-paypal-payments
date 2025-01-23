@@ -119,10 +119,6 @@ export const usePaymentMethods = () => {
 		multibanco,
 		pui,
 		oxxo,
-		paypalShowLogo,
-		threeDSecure,
-		fastlaneCardholderName,
-		fastlaneDisplayWatermark,
 	} = useHooks();
 
 	const paymentMethods = [
@@ -144,15 +140,27 @@ export const usePaymentMethods = () => {
 		multibanco,
 		pui,
 		oxxo,
-		paypalShowLogo,
-		threeDSecure,
-		fastlaneCardholderName,
-		fastlaneDisplayWatermark,
 	];
 
 	return {
 		setPersistent,
 		paymentMethods,
+	};
+};
+
+export const usePaymentMethodsModal = () => {
+	const {
+		paypalShowLogo,
+		threeDSecure,
+		fastlaneCardholderName,
+		fastlaneDisplayWatermark,
+	} = useHooks();
+
+	return {
+		paypalShowLogo,
+		threeDSecure,
+		fastlaneCardholderName,
+		fastlaneDisplayWatermark,
 	};
 };
 

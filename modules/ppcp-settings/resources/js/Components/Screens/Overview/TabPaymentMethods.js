@@ -92,17 +92,36 @@ const TabPaymentMethods = () => {
 					method={ getActiveMethod() }
 					setModalIsVisible={ () => setActiveModal( null ) }
 					onSave={ ( methodId, settings ) => {
-						console.log(
-							'Saving settings for:',
-							methodId,
-							settings
-						);
-
 						setPersistent( methodId, {
 							...getActiveMethod(),
 							title: settings.checkoutPageTitle,
 							description: settings.checkoutPageDescription,
 						} );
+
+						if ( 'paypalShowLogo' in settings ) {
+							setPersistent(
+								'paypalShowLogo',
+								settings.paypalShowLogo
+							);
+						}
+						if ( 'threeDSecure' in settings ) {
+							setPersistent(
+								'threeDSecure',
+								settings.threeDSecure
+							);
+						}
+						if ( 'fastlaneCardholderName' in settings ) {
+							setPersistent(
+								'fastlaneCardholderName',
+								settings.fastlaneCardholderName
+							);
+						}
+						if ( 'fastlaneDisplayWatermark' in settings ) {
+							setPersistent(
+								'fastlaneDisplayWatermark',
+								settings.fastlaneDisplayWatermark
+							);
+						}
 
 						setActiveModal( null );
 					} }

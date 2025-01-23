@@ -7,10 +7,19 @@ import {
 } from '@wordpress/components';
 import { useState } from '@wordpress/element';
 import PaymentMethodModal from '../../../../ReusableComponents/PaymentMethodModal';
-import { usePaymentMethods } from '../../../../../data/payment/hooks';
+import {
+	usePaymentMethods,
+	usePaymentMethodsModal,
+} from '../../../../../data/payment/hooks';
 
 const Modal = ( { method, setModalIsVisible, onSave } ) => {
 	const { paymentMethods } = usePaymentMethods();
+	const {
+		paypalShowLogo,
+		threeDSecure,
+		fastlaneCardholderName,
+		fastlaneDisplayWatermark,
+	} = usePaymentMethodsModal();
 
 	const [ settings, setSettings ] = useState( () => {
 		if ( ! method?.id ) {
@@ -24,14 +33,22 @@ const Modal = ( { method, setModalIsVisible, onSave } ) => {
 
 		const initialSettings = {};
 		Object.entries( methodConfig.fields ).forEach( ( [ key, field ] ) => {
-			initialSettings[ key ] =
-				// eslint-disable-next-line no-nested-ternary
-				key === 'checkoutPageTitle'
-					? methodConfig.title
-					: key === 'checkoutPageDescription'
-					? methodConfig.description
-					: field.default;
+			switch ( key ) {
+				case 'checkoutPageTitle':
+					initialSettings[ key ] = methodConfig.title;
+					break;
+				case 'checkoutPageDescription':
+					initialSettings[ key ] = methodConfig.description;
+					break;
+				default:
+					initialSettings[ key ] = field.default;
+			}
 		} );
+
+		initialSettings.paypalShowLogo = paypalShowLogo;
+		initialSettings.threeDSecure = threeDSecure;
+		initialSettings.fastlaneCardholderName = fastlaneCardholderName;
+		initialSettings.fastlaneDisplayWatermark = fastlaneDisplayWatermark;
 
 		return initialSettings;
 	} );

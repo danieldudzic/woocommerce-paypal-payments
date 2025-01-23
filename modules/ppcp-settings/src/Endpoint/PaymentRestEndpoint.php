@@ -116,7 +116,7 @@ class PaymentRestEndpoint extends RestEndpoint {
 						'default' => $this->getPaymentDescription(PayPalGateway::ID) ?? '',
 						'label'   => __( 'Checkout page description', 'woocommerce-paypal-payments' ),
 					),
-					'showLogo'                => array(
+					'paypalShowLogo'                => array(
 						'type'    => 'toggle',
 						'default' => $this->settings->get_paypal_show_logo(),
 						'label'   => __( 'Show logo', 'woocommerce-paypal-payments' ),
@@ -263,7 +263,7 @@ class PaymentRestEndpoint extends RestEndpoint {
 						'default' => $this->getPaymentDescription(AxoGateway::ID) ?? '',
 						'label'   => __( 'Checkout page description', 'woocommerce-paypal-payments' ),
 					),
-					'cardholderName'          => array(
+					'fastlaneCardholderName'          => array(
 						'type'    => 'toggle',
 						'default' => $this->settings->get_fastlane_cardholder_name(),
 						'label'   => __(
@@ -271,7 +271,7 @@ class PaymentRestEndpoint extends RestEndpoint {
 							'woocommerce-paypal-payments'
 						),
 					),
-					'displayWatermark'        => array(
+					'fastlaneDisplayWatermark'        => array(
 						'type'    => 'toggle',
 						'default' => $this->settings->get_fastlane_display_watermark(),
 						'label'   => __(
