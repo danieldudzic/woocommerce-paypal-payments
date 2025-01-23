@@ -1,7 +1,7 @@
 import { __, sprintf } from '@wordpress/i18n';
 
 import SettingsBlock from '../../../../../ReusableComponents/SettingsBlock';
-import { ControlToggleButton } from '../../../../../ReusableComponents/SettingsBlocks';
+import { ControlToggleButton } from '../../../../../ReusableComponents/Controls';
 import { SettingsHooks } from '../../../../../../data';
 
 const SavePaymentMethods = () => {

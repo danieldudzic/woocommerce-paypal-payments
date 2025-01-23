@@ -4,7 +4,7 @@ import SettingsCard from '../../../../ReusableComponents/SettingsCard';
 import { CommonHooks } from '../../../../../data';
 import ConnectionStatusBadge from './Parts/ConnectionStatusBadge';
 import SettingsBlock from '../../../../ReusableComponents/SettingsBlock';
-import { ControlStaticValue } from '../../../../ReusableComponents/SettingsBlocks';
+import { ControlStaticValue } from '../../../../ReusableComponents/Controls';
 
 const ConnectionStatus = () => {
 	const { merchant } = CommonHooks.useMerchantInfo();

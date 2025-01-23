@@ -1,10 +1,10 @@
 import { __ } from '@wordpress/i18n';
+import { SelectSettingsBlock } from '../../../../ReusableComponents/SettingsBlocks';
 import {
 	ControlRadioGroup,
 	ControlToggleButton,
 	ControlTextInput,
-	SelectSettingsBlock,
-} from '../../../../ReusableComponents/SettingsBlocks';
+} from '../../../../ReusableComponents/Controls';
 import SettingsBlock from '../../../../ReusableComponents/SettingsBlock';
 import Accordion from '../../../../ReusableComponents/AccordionSection';
 import { SettingsHooks } from '../../../../../data';

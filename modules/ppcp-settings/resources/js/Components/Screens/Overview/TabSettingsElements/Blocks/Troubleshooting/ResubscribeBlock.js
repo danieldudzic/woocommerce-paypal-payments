@@ -4,7 +4,7 @@ import { useState } from '@wordpress/element';
 import { store as noticesStore } from '@wordpress/notices';
 
 import { STORE_NAME } from '../../../../../../data/common';
-import { ControlButton } from '../../../../../ReusableComponents/SettingsBlocks';
+import { ControlButton } from '../../../../../ReusableComponents/Controls';
 import {
 	NOTIFICATION_ERROR,
 	NOTIFICATION_SUCCESS,

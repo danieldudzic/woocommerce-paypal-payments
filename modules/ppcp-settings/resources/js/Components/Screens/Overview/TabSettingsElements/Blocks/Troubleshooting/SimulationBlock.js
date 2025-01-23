@@ -3,7 +3,7 @@ import { __ } from '@wordpress/i18n';
 import { useDispatch } from '@wordpress/data';
 import { store as noticesStore } from '@wordpress/notices';
 
-import { ControlButton } from '../../../../../ReusableComponents/SettingsBlocks';
+import { ControlButton } from '../../../../../ReusableComponents/Controls';
 import { CommonHooks } from '../../../../../../data';
 import {
 	NOTIFICATION_ERROR,

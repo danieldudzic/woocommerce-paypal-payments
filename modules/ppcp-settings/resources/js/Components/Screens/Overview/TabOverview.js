@@ -6,8 +6,10 @@ import { reusableBlock } from '@wordpress/icons';
 import { store as noticesStore } from '@wordpress/notices';
 
 import SettingsCard from '../../ReusableComponents/SettingsCard';
-import TodoSettingsBlock from '../../ReusableComponents/SettingsBlocks/TodoSettingsBlock';
-import FeatureSettingsBlock from '../../ReusableComponents/SettingsBlocks/FeatureSettingsBlock';
+import {
+	TodoSettingsBlock,
+	FeatureSettingsBlock,
+} from '../../ReusableComponents/SettingsBlocks';
 import { TITLE_BADGE_POSITIVE } from '../../ReusableComponents/TitleBadge';
 import { useMerchantInfo } from '../../../data/common/hooks';
 import { STORE_NAME } from '../../../data/common';

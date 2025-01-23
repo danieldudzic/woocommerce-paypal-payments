@@ -1,6 +1,6 @@
 import { __, sprintf } from '@wordpress/i18n';
 
-import { ControlToggleButton } from '../../../../../ReusableComponents/SettingsBlocks';
+import { ControlToggleButton } from '../../../../../ReusableComponents/Controls';
 import SettingsBlock from '../../../../../ReusableComponents/SettingsBlock';
 import Accordion from '../../../../../ReusableComponents/AccordionSection';
 

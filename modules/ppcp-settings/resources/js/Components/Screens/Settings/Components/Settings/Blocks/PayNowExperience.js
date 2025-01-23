@@ -1,6 +1,6 @@
 import { __ } from '@wordpress/i18n';
 
-import { ControlToggleButton } from '../../../../../ReusableComponents/SettingsBlocks';
+import { ControlToggleButton } from '../../../../../ReusableComponents/Controls';
 import { SettingsHooks } from '../../../../../../data';
 import SettingsBlock from '../../../../../ReusableComponents/SettingsBlock';
 
