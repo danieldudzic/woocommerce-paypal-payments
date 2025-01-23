@@ -1,6 +1,6 @@
 import { __ } from '@wordpress/i18n';
 import {
-	RadioSettingsBlock,
+	ControlRadioGroup,
 	ControlToggleButton,
 	ControlTextInput,
 	SelectSettingsBlock,
@@ -34,44 +34,19 @@ const PaypalSettings = () => {
 				'woocommerce-paypal-payments'
 			) }
 		>
-			<SettingsBlock>
-				<RadioSettingsBlock
-					title={ __(
-						'Subtotal mismatch fallback',
-
-						'woocommerce-paypal-payments'
-					) }
-					description={ __(
-						'Due to differences in how WooCommerce and PayPal calculates taxes, some transactions may fail due to a rounding error. This settings determines the fallback behavior.',
-						'woocommerce-paypal-payments'
-					) }
-					options={ [
-						{
-							id: 'add_a_correction',
-							value: 'add_a_correction',
-							label: __(
-								'Add a correction',
-								'woocommerce-paypal-payments'
-							),
-							description: __(
-								'Adds an additional line item with the missing amount.',
-								'woocommerce-paypal-payments'
-							),
-						},
-						{
-							id: 'skip_details',
-							value: 'skip_details',
-							label: __(
-								'Do not send line items',
-								'woocommerce-paypal-payments'
-							),
-							description: __(
-								'Resubmit the transaction without line item details.',
-								'woocommerce-paypal-payments'
-							),
-						},
-					] }
-					currentValue={ subtotalAdjustment }
+			<SettingsBlock
+				title={ __(
+					'Subtotal mismatch fallback',
+					'woocommerce-paypal-payments'
+				) }
+				description={ __(
+					'Due to differences in how WooCommerce and PayPal calculates taxes, some transactions may fail due to a rounding error. This settings determines the fallback behavior.',
+					'woocommerce-paypal-payments'
+				) }
+			>
+				<ControlRadioGroup
+					options={ subtotalAdjustmentChoices }
+					value={ subtotalAdjustment }
 					onChange={ setSubtotalAdjustment }
 				/>
 			</SettingsBlock>
@@ -125,7 +100,7 @@ const PaypalSettings = () => {
 				/>
 			</SettingsBlock>
 
-			<RadioSettingsBlock
+			<SettingsBlock
 				title={ __(
 					'PayPal landing page',
 					'woocommerce-paypal-payments'
@@ -134,51 +109,13 @@ const PaypalSettings = () => {
 					'Determine which experience a buyer sees when they click the PayPal button.',
 					'woocommerce-paypal-payments'
 				) }
-				options={ [
-					{
-						id: 'any',
-						value: 'any',
-						label: __(
-							'No preference',
-							'woocommerce-paypal-payments'
-						),
-						description: __(
-							'Shows the buyer the PayPal login for a recognized PayPal buyer.',
-							'woocommerce-paypal-payments'
-						),
-					},
-					{
-						id: 'login',
-						value: 'login',
-						label: __(
-							'Login page',
-							'woocommerce-paypal-payments'
-						),
-						description: __(
-							'Always show the buyer the PayPal login screen.',
-							'woocommerce-paypal-payments'
-						),
-					},
-					{
-						id: 'guest_checkout',
-						value: 'guest_checkout',
-						label: __(
-							'Guest checkout page',
-							'woocommerce-paypal-payments'
-						),
-						description: __(
-							'Always show the buyer the guest checkout fields first.',
-							'woocommerce-paypal-payments'
-						),
-					},
-				] }
-				actionProps={ {
-					name: 'paypal_settings_landing',
-					key: 'landingPage',
-					currentValue: landingPage,
-					callback: setLandingPage,
-				} }
-			/>
+			>
+				<ControlRadioGroup
+					options={ landingPageChoices }
+					value={ landingPage }
+					onChange={ setLandingPage }
+				/>
+			</SettingsBlock>
 
 			<SettingsBlock
 				title={ __( 'Button Language', 'woocommerce-paypal-payments' ) }
@@ -209,6 +146,52 @@ const languagesExample = [
 	{ value: 'de', label: 'German' },
 	{ value: 'es', label: 'Spanish' },
 	{ value: 'it', label: 'Italian' },
+];
+
+const subtotalAdjustmentChoices = [
+	{
+		value: 'correction',
+		label: __( 'Add a correction', 'woocommerce-paypal-payments' ),
+		description: __(
+			'Adds an additional line item with the missing amount.',
+			'woocommerce-paypal-payments'
+		),
+	},
+	{
+		value: 'no_details',
+		label: __( 'Do not send line items', 'woocommerce-paypal-payments' ),
+		description: __(
+			'Resubmit the transaction without line item details.',
+			'woocommerce-paypal-payments'
+		),
+	},
+];
+
+const landingPageChoices = [
+	{
+		value: 'any',
+		label: __( 'No preference', 'woocommerce-paypal-payments' ),
+		description: __(
+			'Shows the buyer the PayPal login for a recognized PayPal buyer.',
+			'woocommerce-paypal-payments'
+		),
+	},
+	{
+		value: 'login',
+		label: __( 'Login page', 'woocommerce-paypal-payments' ),
+		description: __(
+			'Always show the buyer the PayPal login screen.',
+			'woocommerce-paypal-payments'
+		),
+	},
+	{
+		value: 'guest_checkout',
+		label: __( 'Guest checkout page', 'woocommerce-paypal-payments' ),
+		description: __(
+			'Always show the buyer the guest checkout fields first.',
+			'woocommerce-paypal-payments'
+		),
+	},
 ];
 
 export default PaypalSettings;

@@ -3,9 +3,10 @@ import { Button } from '@wordpress/components';
 
 import {
 	ControlTextInput,
-	RadioSettingsBlock,
+	ControlRadioGroup,
 } from '../../../../ReusableComponents/SettingsBlocks';
 import Accordion from '../../../../ReusableComponents/AccordionSection';
+import SettingsBlock from '../../../../ReusableComponents/SettingsBlock';
 
 const ConnectionDetails = ( { settings, updateFormValue } ) => {
 	const isSandbox = settings.sandboxConnected;
@@ -21,16 +22,16 @@ const ConnectionDetails = ( { settings, updateFormValue } ) => {
 			title={ modeConfig.title }
 			description={ modeConfig.description }
 		>
-			<RadioSettingsBlock
+			<SettingsBlock
 				title={ modeConfig.connectTitle }
 				description={ modeConfig.connectDescription }
-				options={ modeConfig.options }
-				actionProps={ {
-					key: modeKey,
-					currentValue: settings[ modeKey ],
-					callback: updateFormValue,
-				} }
-			/>
+			>
+				<ControlRadioGroup
+					options={ modeConfig.options }
+					value={ settings[ modeKey ] }
+					onChange={ updateFormValue }
+				/>
+			</SettingsBlock>
 		</Accordion>
 	);
 };
