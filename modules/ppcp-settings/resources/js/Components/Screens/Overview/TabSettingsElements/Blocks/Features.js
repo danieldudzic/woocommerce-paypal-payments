@@ -1,8 +1,11 @@
 import { __ } from '@wordpress/i18n';
 import { TAB_IDS, selectTab } from '../../../../../utils/tabSelector';
+import { CommonHooks } from '../../../../../data';
+import { payLaterMessagingComponentData } from '../../../../../data/settings/pay-later-messaging-component-data';
 
 const Features = {
 	getFeatures: ( setActiveModal ) => {
+		const { storeCountry } = CommonHooks.useWooSettings();
 		const features = [
 			{
 				id: 'save_paypal_and_venmo',
@@ -254,17 +257,21 @@ const Features = {
 			},
 		];
 
-		if ( !! window.ppcpSettings?.isPayLaterConfiguratorAvailable ) {
+		const countryData =
+			payLaterMessagingComponentData[ storeCountry ] || {};
+
+		if (
+			!! window.ppcpSettings?.isPayLaterConfiguratorAvailable &&
+			countryData
+		) {
 			features.push( {
 				id: 'pay_later_messaging',
 				title: __(
 					'Pay Later Messaging',
 					'woocommerce-paypal-payments'
 				),
-				description: __(
-					'Let customers know they can buy now and pay later with PayPal. Adding this messaging can boost conversion rates and increase cart sizes by 39%¹, with no extra cost to you—plus, you get paid up front.',
-					'woocommerce-paypal-payments'
-				),
+				description: countryData?.description,
+				notes: countryData?.notes,
 				buttons: [
 					{
 						type: 'secondary',

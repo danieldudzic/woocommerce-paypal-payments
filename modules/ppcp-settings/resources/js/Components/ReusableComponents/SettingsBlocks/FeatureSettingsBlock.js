@@ -19,12 +19,21 @@ const FeatureSettingsBlock = ( { title, description, ...props } ) => {
 		);
 	};
 
+	const renderDescription = () => {
+		return (
+			<span
+				className="ppcp-r-feature-item__description ppcp-r-settings-block__feature__description"
+				dangerouslySetInnerHTML={ { __html: description } }
+			/>
+		);
+	};
+
 	const renderButton = ( button ) => {
 		const buttonElement = (
 			<Button
 				className={ button.class ? button.class : '' }
 				key={ button.text }
-                isBusy={ props.actionProps?.isBusy }
+				isBusy={ props.actionProps?.isBusy }
 				variant={ button.type }
 				onClick={ button.onClick }
 			>
@@ -51,7 +60,7 @@ const FeatureSettingsBlock = ( { title, description, ...props } ) => {
 					) }
 				</Title>
 				<Description className="ppcp-r-settings-block__feature__description">
-					{ description }
+					{ renderDescription() }
 					{ printNotes() }
 				</Description>
 			</Header>
