@@ -56,6 +56,14 @@ const useHooks = () => {
 	const pui = usePersistent( 'ppcp-pay-upon-invoice-gateway' );
 	const oxxo = usePersistent( 'ppcp-oxxo-gateway' );
 
+	// Custom modal data.
+	const paypalShowLogo = usePersistent( 'paypalShowLogo' );
+	const threeDSecure = usePersistent( 'threeDSecure' );
+	const fastlaneCardholderName = usePersistent( 'fastlaneCardholderName' );
+	const fastlaneDisplayWatermark = usePersistent(
+		'fastlaneDisplayWatermark'
+	);
+
 	return {
 		persist,
 		isReady,
@@ -78,6 +86,10 @@ const useHooks = () => {
 		multibanco,
 		pui,
 		oxxo,
+		paypalShowLogo,
+		threeDSecure,
+		fastlaneCardholderName,
+		fastlaneDisplayWatermark,
 	};
 };
 
@@ -107,6 +119,10 @@ export const usePaymentMethods = () => {
 		multibanco,
 		pui,
 		oxxo,
+		paypalShowLogo,
+		threeDSecure,
+		fastlaneCardholderName,
+		fastlaneDisplayWatermark,
 	} = useHooks();
 
 	const paymentMethods = [
@@ -128,6 +144,10 @@ export const usePaymentMethods = () => {
 		multibanco,
 		pui,
 		oxxo,
+		paypalShowLogo,
+		threeDSecure,
+		fastlaneCardholderName,
+		fastlaneDisplayWatermark,
 	];
 
 	return {

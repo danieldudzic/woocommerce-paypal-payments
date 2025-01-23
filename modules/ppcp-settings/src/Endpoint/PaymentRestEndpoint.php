@@ -66,11 +66,11 @@ class PaymentRestEndpoint extends RestEndpoint {
 			'sanitize' => 'sanitize_text_field',
 		),
 		'fastlane_cardholder_name'              => array(
-			'js_name' => 'FastlaneCardholderName',
+			'js_name' => 'fastlaneCardholderName',
 			'sanitize' => 'to_boolean',
 		),
 		'fastlane_display_watermark' => array(
-			'js_name'  => 'FastlaneDisplayWatermark',
+			'js_name'  => 'fastlaneDisplayWatermark',
 			'sanitize' => 'to_boolean',
 		),
 	);
@@ -681,6 +681,11 @@ class PaymentRestEndpoint extends RestEndpoint {
 				$gateway_settings[ $key ]['fields'] = $this->gateways()[ $key ]['fields'];
 			}
 		}
+
+		$gateway_settings['paypalShowLogo'] = $this->settings->get_paypal_show_logo();
+		$gateway_settings['threeDSecure'] = $this->settings->get_three_d_secure();
+		$gateway_settings['fastlaneCardholderName'] = $this->settings->get_fastlane_cardholder_name();
+		$gateway_settings['fastlaneDisplayWatermark'] = $this->settings->get_fastlane_display_watermark();
 
 		return $this->return_success( $gateway_settings );
 	}
