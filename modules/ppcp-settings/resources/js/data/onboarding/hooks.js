@@ -36,10 +36,9 @@ const useHooks = () => {
 	const [ completed, setCompleted ] = usePersistent( 'completed' );
 	const [ isCasualSeller, setIsCasualSeller ] =
 		usePersistent( 'isCasualSeller' );
-	const [
-		areOptionalPaymentMethodsEnabled,
-		setAreOptionalPaymentMethodsEnabled,
-	] = usePersistent( 'areOptionalPaymentMethodsEnabled' );
+	const [ optionalMethods, setOptionalMethods ] = usePersistent(
+		'areOptionalPaymentMethodsEnabled'
+	);
 	const [ products, setProducts ] = usePersistent( 'products' );
 
 	const savePersistent = async ( setter, value ) => {
@@ -70,9 +69,9 @@ const useHooks = () => {
 		setManualClientSecret: ( value ) => {
 			return savePersistent( setManualClientSecret, value );
 		},
-		areOptionalPaymentMethodsEnabled,
-		setAreOptionalPaymentMethodsEnabled: ( value ) => {
-			return savePersistent( setAreOptionalPaymentMethodsEnabled, value );
+		optionalMethods,
+		setOptionalMethods: ( value ) => {
+			return savePersistent( setOptionalMethods, value );
 		},
 		products,
 		setProducts: ( activeProducts ) => {
@@ -114,14 +113,11 @@ export const useProducts = () => {
 };
 
 export const useOptionalPaymentMethods = () => {
-	const {
-		areOptionalPaymentMethodsEnabled,
-		setAreOptionalPaymentMethodsEnabled,
-	} = useHooks();
+	const { optionalMethods, setOptionalMethods } = useHooks();
 
 	return {
-		areOptionalPaymentMethodsEnabled,
-		setAreOptionalPaymentMethodsEnabled,
+		optionalMethods,
+		setOptionalMethods,
 	};
 };
 

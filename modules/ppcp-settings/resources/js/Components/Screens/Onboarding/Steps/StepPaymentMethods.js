@@ -7,10 +7,8 @@ import OnboardingHeader from '../Components/OnboardingHeader';
 import OptionalPaymentMethods from '../Components/OptionalPaymentMethods';
 
 const StepPaymentMethods = ( {} ) => {
-	const {
-		areOptionalPaymentMethodsEnabled,
-		setAreOptionalPaymentMethodsEnabled,
-	} = OnboardingHooks.useOptionalPaymentMethods();
+	const { optionalMethods, setOptionalMethods } =
+		OnboardingHooks.useOptionalPaymentMethods();
 
 	return (
 		<div className="ppcp-r-page-optional-payment-methods">
@@ -19,8 +17,8 @@ const StepPaymentMethods = ( {} ) => {
 				<OptionSelector
 					multiSelect={ false }
 					options={ methodChoices }
-					onChange={ setAreOptionalPaymentMethodsEnabled }
-					value={ areOptionalPaymentMethodsEnabled }
+					onChange={ setOptionalMethods }
+					value={ optionalMethods }
 				/>
 
 				<PricingDescription />
