@@ -45,6 +45,7 @@ const defaultPersistent = Object.freeze( {
 	sandboxClientId: '', // Sandbox API client ID
 	sandboxSecretKey: '', // Sandbox API secret key
 	sandboxConnected: false, // Sandbox connection status
+	disabledCards: [], // Disabled credit card types
 } );
 
 // Reducer logic.

@@ -40,6 +40,8 @@ const useHooks = () => {
 	const [ landingPage, setLandingPage ] = usePersistent( 'landingPage' );
 	const [ buttonLanguage, setButtonLanguage ] =
 		usePersistent( 'buttonLanguage' );
+	const [ disabledCards, setDisabledCards ] =
+		usePersistent( 'disabledCards' );
 
 	return {
 		persist,
@@ -68,6 +70,8 @@ const useHooks = () => {
 		setLandingPage,
 		buttonLanguage,
 		setButtonLanguage,
+		disabledCards,
+		setDisabledCards,
 	};
 };
 
@@ -102,6 +106,8 @@ export const useSettings = () => {
 		setLandingPage,
 		buttonLanguage,
 		setButtonLanguage,
+		disabledCards,
+		setDisabledCards,
 	} = useHooks();
 
 	return {
@@ -129,5 +135,7 @@ export const useSettings = () => {
 		setLandingPage,
 		buttonLanguage,
 		setButtonLanguage,
+		disabledCards,
+		setDisabledCards,
 	};
 };
