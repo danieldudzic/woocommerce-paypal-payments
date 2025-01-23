@@ -47,20 +47,20 @@ const StepBusiness = ( {} ) => {
 
 const businessChoices = [
 	{
+		value: BUSINESS_TYPES.BUSINESS,
 		title: __( 'Business', 'woocommerce-paypal-payments' ),
 		description: __(
 			'Recommended for individuals and organizations that primarily use PayPal to sell goods or services or receive donations, even if your business is not incorporated.',
 			'woocommerce-paypal-payments'
 		),
-		value: BUSINESS_TYPES.BUSINESS,
 	},
 	{
+		value: BUSINESS_TYPES.CASUAL_SELLER,
 		title: __( 'Personal Account', 'woocommerce-paypal-payments' ),
 		description: __(
 			'Ideal for those who primarily make purchases or send personal transactions to family and friends.',
 			'woocommerce-paypal-payments'
 		),
-		value: BUSINESS_TYPES.CASUAL_SELLER,
 	},
 ];
 

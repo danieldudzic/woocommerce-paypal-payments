@@ -5,9 +5,9 @@ const RadioButton = ( {
 	name,
 	value,
 	currentValue,
-	checked = null,
+	checked = null, // alternative to currentValue.
 	onChange,
-	handleRdbState,
+	handleRdbState, // deprecated
 } ) => {
 	const handleChange = useCallback( () => {
 		if ( onChange ) {
@@ -23,11 +23,11 @@ const RadioButton = ( {
 	const radioProps = {
 		className: 'ppcp-r__radio-value',
 		type: 'radio',
+		onChange: handleChange,
+		checked: null === checked ? value === currentValue : checked,
 		id,
 		name,
 		value,
-		onChange: handleChange,
-		checked: null === checked ? value === currentValue : checked,
 	};
 
 	return (
