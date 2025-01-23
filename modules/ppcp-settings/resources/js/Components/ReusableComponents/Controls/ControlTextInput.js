@@ -7,18 +7,16 @@ const ControlTextInput = ( {
 	description,
 	onChange,
 	placeholder = '',
-} ) => {
-	return (
-		<Action>
-			<TextControl
-				className="ppcp-r-vertical-text-control"
-				placeholder={ placeholder }
-				value={ value }
-				onChange={ onChange }
-			/>
-			<Description>{ description }</Description>
-		</Action>
-	);
-};
+} ) => (
+	<Action>
+		<TextControl
+			className="ppcp-r-vertical-text-control"
+			placeholder={ placeholder }
+			value={ value }
+			onChange={ onChange }
+		/>
+		<Description>{ description }</Description>
+	</Action>
+);
 
 export default ControlTextInput;
