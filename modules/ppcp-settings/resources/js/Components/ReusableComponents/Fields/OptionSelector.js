@@ -84,7 +84,7 @@ const InputField = ( { value, onChange, isRadio, isSelected } ) => {
 		return (
 			<PayPalRdb
 				value={ value }
-				handleRdbState={ onChange }
+				onChange={ onChange }
 				checked={ isSelected }
 			/>
 		);
@@ -93,7 +93,7 @@ const InputField = ( { value, onChange, isRadio, isSelected } ) => {
 	return (
 		<PayPalCheckbox
 			value={ value }
-			changeCallback={ onChange }
+			onChange={ onChange }
 			checked={ isSelected }
 		/>
 	);
