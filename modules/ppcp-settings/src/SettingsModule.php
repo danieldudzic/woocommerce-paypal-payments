@@ -9,13 +9,15 @@ declare( strict_types = 1 );
 
 namespace WooCommerce\PayPalCommerce\Settings;
 
+use WooCommerce\PayPalCommerce\Settings\Ajax\SwitchSettingsUiEndpoint;
+use WooCommerce\PayPalCommerce\Settings\Data\OnboardingProfile;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\RestEndpoint;
-use WooCommerce\PayPalCommerce\Settings\Endpoint\SwitchSettingsUiEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Handler\ConnectionListener;
 use WooCommerce\PayPalCommerce\Vendor\Inpsyde\Modularity\Module\ExecutableModule;
 use WooCommerce\PayPalCommerce\Vendor\Inpsyde\Modularity\Module\ModuleClassNameIdTrait;
 use WooCommerce\PayPalCommerce\Vendor\Inpsyde\Modularity\Module\ServiceModule;
 use WooCommerce\PayPalCommerce\Vendor\Psr\Container\ContainerInterface;
+use WooCommerce\PayPalCommerce\WcGateway\Settings\Settings;
 
 /**
  * Class SettingsModule
@@ -86,7 +88,7 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 				}
 			);
 
-			$endpoint = $container->get( 'settings.switch-ui.endpoint' ) ? $container->get( 'settings.switch-ui.endpoint' ) : null;
+			$endpoint = $container->get( 'settings.ajax.switch_ui' ) ? $container->get( 'settings.ajax.switch_ui' ) : null;
 			assert( $endpoint instanceof SwitchSettingsUiEndpoint );
 
 			add_action(
@@ -151,19 +153,45 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 					$style_asset_file['version']
 				);
 
+				$settings = $container->get( 'wcgateway.settings' );
+				assert( $settings instanceof Settings );
+
 				wp_enqueue_style( 'ppcp-admin-settings' );
 
 				wp_enqueue_style( 'ppcp-admin-settings-font', 'https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap', array(), $style_asset_file['version'] );
+
+				$is_pay_later_configurator_available = $container->get( 'paylater-configurator.is-available' );
+
+				$script_data = array(
+					'assets'                          => array(
+						'imagesUrl' => $module_url . '/images/',
+					),
+					'wcPaymentsTabUrl'                => admin_url( 'admin.php?page=wc-settings&tab=checkout' ),
+					'debug'                           => defined( 'WP_DEBUG' ) && WP_DEBUG,
+					'isPayLaterConfiguratorAvailable' => $is_pay_later_configurator_available,
+				);
+
+				if ( $is_pay_later_configurator_available ) {
+					wp_enqueue_script(
+						'ppcp-paylater-configurator-lib',
+						'https://www.paypalobjects.com/merchant-library/merchant-configurator.js',
+						array(),
+						$script_asset_file['version'],
+						true
+					);
+
+					$script_data['PcpPayLaterConfigurator'] = array(
+						'config'           => array(),
+						'merchantClientId' => $settings->get( 'client_id' ),
+						'partnerClientId'  => $container->get( 'api.partner_merchant_id' ),
+						'bnCode'           => PPCP_PAYPAL_BN_CODE,
+					);
+				}
+
 				wp_localize_script(
 					'ppcp-admin-settings',
 					'ppcpSettings',
-					array(
-						'assets'           => array(
-							'imagesUrl' => $module_url . '/images/',
-						),
-						'wcPaymentsTabUrl' => admin_url( 'admin.php?page=wc-settings&tab=checkout' ),
-						'debug'            => defined( 'WP_DEBUG' ) && WP_DEBUG,
-					)
+					$script_data
 				);
 			}
 		);
@@ -183,11 +211,15 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 			'rest_api_init',
 			static function () use ( $container ) : void {
 				$endpoints = array(
-					$container->get( 'settings.rest.onboarding' ),
-					$container->get( 'settings.rest.common' ),
-					$container->get( 'settings.rest.connect_manual' ),
-					$container->get( 'settings.rest.login_link' ),
-					$container->get( 'settings.rest.refresh_feature_status' ),
+					'onboarding'             => $container->get( 'settings.rest.onboarding' ),
+					'common'                 => $container->get( 'settings.rest.common' ),
+					'connect_manual'         => $container->get( 'settings.rest.connect_manual' ),
+					'login_link'             => $container->get( 'settings.rest.login_link' ),
+					'webhooks'               => $container->get( 'settings.rest.webhooks' ),
+					'refresh_feature_status' => $container->get( 'settings.rest.refresh_feature_status' ),
+					'payment'                => $container->get( 'settings.rest.payment' ),
+					'settings'               => $container->get( 'settings.rest.settings' ),
+					'styling'                => $container->get( 'settings.rest.styling' ),
 				);
 
 				foreach ( $endpoints as $endpoint ) {
@@ -205,6 +237,29 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 
 				// @phpcs:ignore WordPress.Security.NonceVerification.Recommended -- no nonce; sanitation done by the handler
 				$connection_handler->process( get_current_user_id(), $_GET );
+			}
+		);
+
+		add_action(
+			'woocommerce_paypal_payments_merchant_disconnected',
+			static function () use ( $container ) : void {
+				$onboarding_profile = $container->get( 'settings.data.onboarding' );
+				assert( $onboarding_profile instanceof OnboardingProfile );
+
+				$onboarding_profile->set_completed( false );
+				$onboarding_profile->set_step( 0 );
+				$onboarding_profile->save();
+			}
+		);
+
+		add_action(
+			'woocommerce_paypal_payments_authenticated_merchant',
+			static function () use ( $container ) : void {
+				$onboarding_profile = $container->get( 'settings.data.onboarding' );
+				assert( $onboarding_profile instanceof OnboardingProfile );
+
+				$onboarding_profile->set_completed( true );
+				$onboarding_profile->save();
 			}
 		);
 

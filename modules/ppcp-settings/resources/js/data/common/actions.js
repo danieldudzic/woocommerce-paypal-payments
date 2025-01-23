@@ -7,7 +7,7 @@
  * @file
  */
 
-import { dispatch, select } from '@wordpress/data';
+import { select } from '@wordpress/data';
 
 import ACTION_TYPES from './action-types';
 import { STORE_NAME } from './constants';
@@ -37,26 +37,45 @@ export const hydrate = ( payload ) => ( {
 } );
 
 /**
+ * Generic transient-data updater.
+ *
+ * @param {string} prop  Name of the property to update.
+ * @param {any}    value The new value of the property.
+ * @return {Action} The action.
+ */
+export const setTransient = ( prop, value ) => ( {
+	type: ACTION_TYPES.SET_TRANSIENT,
+	payload: { [ prop ]: value },
+} );
+
+/**
+ * Generic persistent-data updater.
+ *
+ * @param {string} prop  Name of the property to update.
+ * @param {any}    value The new value of the property.
+ * @return {Action} The action.
+ */
+export const setPersistent = ( prop, value ) => ( {
+	type: ACTION_TYPES.SET_PERSISTENT,
+	payload: { [ prop ]: value },
+} );
+
+/**
  * Transient. Marks the onboarding details as "ready", i.e., fully initialized.
  *
  * @param {boolean} isReady
  * @return {Action} The action.
  */
-export const setIsReady = ( isReady ) => ( {
-	type: ACTION_TYPES.SET_TRANSIENT,
-	payload: { isReady },
-} );
+export const setIsReady = ( isReady ) => setTransient( 'isReady', isReady );
 
 /**
- * Transient. Changes the "saving" flag.
+ * Transient. Sets the active settings tab.
  *
- * @param {boolean} isSaving
+ * @param {string} activeModal
  * @return {Action} The action.
  */
-export const setIsSaving = ( isSaving ) => ( {
-	type: ACTION_TYPES.SET_TRANSIENT,
-	payload: { isSaving },
-} );
+export const setActiveModal = ( activeModal ) =>
+	setTransient( 'activeModal', activeModal );
 
 /**
  * Transient (Activity): Marks the start of an async activity
@@ -96,10 +115,8 @@ export const stopActivity = ( id ) => ( {
  * @param {boolean} useSandbox
  * @return {Action} The action.
  */
-export const setSandboxMode = ( useSandbox ) => ( {
-	type: ACTION_TYPES.SET_PERSISTENT,
-	payload: { useSandbox },
-} );
+export const setSandboxMode = ( useSandbox ) =>
+	setPersistent( 'useSandbox', useSandbox );
 
 /**
  * Persistent. Toggles the "Manual Connection" mode on or off.
@@ -107,32 +124,8 @@ export const setSandboxMode = ( useSandbox ) => ( {
  * @param {boolean} useManualConnection
  * @return {Action} The action.
  */
-export const setManualConnectionMode = ( useManualConnection ) => ( {
-	type: ACTION_TYPES.SET_PERSISTENT,
-	payload: { useManualConnection },
-} );
-
-/**
- * Persistent. Changes the "client ID" value.
- *
- * @param {string} clientId
- * @return {Action} The action.
- */
-export const setClientId = ( clientId ) => ( {
-	type: ACTION_TYPES.SET_PERSISTENT,
-	payload: { clientId },
-} );
-
-/**
- * Persistent. Changes the "client secret" value.
- *
- * @param {string} clientSecret
- * @return {Action} The action.
- */
-export const setClientSecret = ( clientSecret ) => ( {
-	type: ACTION_TYPES.SET_PERSISTENT,
-	payload: { clientSecret },
-} );
+export const setManualConnectionMode = ( useManualConnection ) =>
+	setPersistent( 'useManualConnection', useManualConnection );
 
 /**
  * Side effect. Saves the persistent details to the WP database.
@@ -150,8 +143,12 @@ export const persist = function* () {
  *
  * @return {Action} The action.
  */
-export const connectToSandbox = function* () {
-	return yield { type: ACTION_TYPES.DO_SANDBOX_LOGIN };
+export const sandboxOnboardingUrl = function* () {
+	return yield {
+		type: ACTION_TYPES.DO_GENERATE_ONBOARDING_URL,
+		useSandbox: true,
+		products: [ 'EXPRESS_CHECKOUT' ],
+	};
 };
 
 /**
@@ -160,25 +157,72 @@ export const connectToSandbox = function* () {
  * @param {string[]} products Which products/features to display in the ISU popup.
  * @return {Action} The action.
  */
-export const connectToProduction = function* ( products = [] ) {
-	return yield { type: ACTION_TYPES.DO_PRODUCTION_LOGIN, products };
+export const productionOnboardingUrl = function* ( products = [] ) {
+	return yield {
+		type: ACTION_TYPES.DO_GENERATE_ONBOARDING_URL,
+		useSandbox: false,
+		products,
+	};
 };
 
 /**
- * Side effect. Initiates a manual connection attempt using the provided client ID and secret.
+ * Side effect. Initiates a direct connection attempt using the provided client ID and secret.
  *
+ * This action accepts parameters instead of fetching data from the Redux state because the
+ * values (ID and secret) are not managed by a central redux store, but might come from private
+ * component state.
+ *
+ * @param {string}  clientId     - AP client ID (always 80-characters, starting with "A").
+ * @param {string}  clientSecret - API client secret.
+ * @param {boolean} useSandbox   - Whether the credentials are for a sandbox account.
  * @return {Action} The action.
  */
-export const connectViaIdAndSecret = function* () {
-	const { clientId, clientSecret, useSandbox } =
-		yield select( STORE_NAME ).persistentData();
-
+export const authenticateWithCredentials = function* (
+	clientId,
+	clientSecret,
+	useSandbox
+) {
 	return yield {
-		type: ACTION_TYPES.DO_MANUAL_CONNECTION,
+		type: ACTION_TYPES.DO_DIRECT_API_AUTHENTICATION,
 		clientId,
 		clientSecret,
 		useSandbox,
 	};
+};
+
+/**
+ * Side effect. Completes the ISU login by authenticating the user via the one time sharedId and
+ * authCode provided by PayPal.
+ *
+ * This action accepts parameters instead of fetching data from the Redux state because all
+ * parameters are dynamically generated during the authentication process, and not managed by our
+ * Redux store.
+ *
+ * @param {string}  sharedId   - OAuth client ID; called "sharedId" to prevent confusion with the API client ID.
+ * @param {string}  authCode   - OAuth authorization code provided during onboarding.
+ * @param {boolean} useSandbox - Whether the credentials are for a sandbox account.
+ * @return {Action} The action.
+ */
+export const authenticateWithOAuth = function* (
+	sharedId,
+	authCode,
+	useSandbox
+) {
+	return yield {
+		type: ACTION_TYPES.DO_OAUTH_AUTHENTICATION,
+		sharedId,
+		authCode,
+		useSandbox,
+	};
+};
+
+/**
+ * Side effect. Checks webhook simulation.
+ *
+ * @return {Action} The action.
+ */
+export const disconnectMerchant = function* () {
+	return yield { type: ACTION_TYPES.DO_DISCONNECT_MERCHANT };
 };
 
 /**
@@ -213,4 +257,49 @@ export const refreshFeatureStatuses = function* () {
 	}
 
 	return result;
+};
+
+/**
+ * Persistent. Changes the "webhooks" value.
+ *
+ * @param {string} webhooks
+ * @return {Action} The action.
+ */
+export const setWebhooks = ( webhooks ) => ( {
+	type: ACTION_TYPES.SET_PERSISTENT,
+	payload: { webhooks },
+} );
+
+/**
+ * Side effect
+ * Refreshes subscribed webhooks via a REST request
+ *
+ * @return {Action} The action.
+ */
+export const resubscribeWebhooks = function* () {
+	const result = yield { type: ACTION_TYPES.DO_RESUBSCRIBE_WEBHOOKS };
+
+	if ( result && result.success ) {
+		yield hydrate( result );
+	}
+
+	return result;
+};
+
+/**
+ * Side effect. Starts webhook simulation.
+ *
+ * @return {Action} The action.
+ */
+export const startWebhookSimulation = function* () {
+	return yield { type: ACTION_TYPES.DO_START_WEBHOOK_SIMULATION };
+};
+
+/**
+ * Side effect. Checks webhook simulation.
+ *
+ * @return {Action} The action.
+ */
+export const checkWebhookSimulationState = function* () {
+	return yield { type: ACTION_TYPES.DO_CHECK_WEBHOOK_SIMULATION };
 };

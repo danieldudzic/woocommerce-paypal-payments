@@ -90,34 +90,39 @@ class OnboardingRestEndpoint extends RestEndpoint {
 	public function __construct( OnboardingProfile $profile ) {
 		$this->profile = $profile;
 
-		$this->field_map['products']['sanitize'] = fn( $list ) => array_map( 'sanitize_text_field', $list );
+		$this->field_map['products']['sanitize'] = static fn( $list ) => array_map( 'sanitize_text_field', $list );
 	}
 
 	/**
 	 * Configure REST API routes.
 	 */
-	public function register_routes() {
+	public function register_routes() : void {
+		/**
+		 * GET /wp-json/wc/v3/wc_paypal/onboarding
+		 */
 		register_rest_route(
 			$this->namespace,
 			'/' . $this->rest_base,
 			array(
-				array(
-					'methods'             => WP_REST_Server::READABLE,
-					'callback'            => array( $this, 'get_details' ),
-					'permission_callback' => array( $this, 'check_permission' ),
-				),
+				'methods'             => WP_REST_Server::READABLE,
+				'callback'            => array( $this, 'get_details' ),
+				'permission_callback' => array( $this, 'check_permission' ),
 			)
 		);
 
+		/**
+		 * POST /wp-json/wc/v3/wc_paypal/onboarding
+		 * {
+		 *     // Fields mentioned in $field_map[]['js_name']
+		 * }
+		 */
 		register_rest_route(
 			$this->namespace,
 			'/' . $this->rest_base,
 			array(
-				array(
-					'methods'             => WP_REST_Server::EDITABLE,
-					'callback'            => array( $this, 'update_details' ),
-					'permission_callback' => array( $this, 'check_permission' ),
-				),
+				'methods'             => WP_REST_Server::EDITABLE,
+				'callback'            => array( $this, 'update_details' ),
+				'permission_callback' => array( $this, 'check_permission' ),
 			)
 		);
 	}

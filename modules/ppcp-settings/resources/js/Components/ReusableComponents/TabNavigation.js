@@ -1,4 +1,6 @@
 import { useCallback, useEffect, useState } from '@wordpress/element';
+
+// TODO: Migrate to Tabs (TabPanel v2) once its API is publicly available, as it provides programmatic tab switching support: https://github.com/WordPress/gutenberg/issues/52997
 import { TabPanel } from '@wordpress/components';
 
 import { getQuery, updateQueryString } from '../../utils/navigation';
@@ -41,9 +43,7 @@ const TabNavigation = ( { tabs } ) => {
 			onSelect={ updateActivePanel }
 			tabs={ tabs }
 		>
-			{ ( tab ) => {
-				return tab.component || <>{ tab.title ?? tab.name }</>;
-			} }
+			{ ( { Component } ) => Component }
 		</TabPanel>
 	);
 };

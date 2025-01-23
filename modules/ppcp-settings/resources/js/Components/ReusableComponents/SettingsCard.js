@@ -1,6 +1,9 @@
+import classNames from 'classnames';
+
 import { Content, ContentWrapper } from './SettingsBlocks';
 
 const SettingsCard = ( {
+	id,
 	className: extraClassName,
 	title,
 	description,
@@ -8,17 +11,17 @@ const SettingsCard = ( {
 	contentItems,
 	contentContainer = true,
 } ) => {
-	const className = [ 'ppcp-r-settings-card', extraClassName ]
-		.filter( Boolean )
-		.join( ' ' );
+	const className = classNames( 'ppcp-r-settings-card', extraClassName );
 
 	const renderContent = () => {
 		// If contentItems array is provided, wrap each item in Content component
 		if ( contentItems ) {
 			return (
 				<ContentWrapper>
-					{ contentItems.map( ( item, index ) => (
-						<Content key={ index }>{ item }</Content>
+					{ contentItems.map( ( item ) => (
+						<Content key={ item.key } id={ item.key }>
+							{ item }
+						</Content>
 					) ) }
 				</ContentWrapper>
 			);
@@ -33,7 +36,7 @@ const SettingsCard = ( {
 	};
 
 	return (
-		<div className={ className }>
+		<div id={ id } className={ className }>
 			<div className="ppcp-r-settings-card__header">
 				<div className="ppcp-r-settings-card__content-inner">
 					<span className="ppcp-r-settings-card__title">

@@ -10,10 +10,13 @@ declare( strict_types = 1 );
 
 namespace WooCommerce\PayPalCommerce\Settings\Handler;
 
-use WooCommerce\PayPalCommerce\Settings\Data\CommonSettings;
+use Psr\Log\LoggerInterface;
+use RuntimeException;
+use WooCommerce\PayPalCommerce\Settings\Service\AuthenticationManager;
 use WooCommerce\PayPalCommerce\Settings\Service\OnboardingUrlManager;
 use WooCommerce\WooCommerce\Logging\Logger\NullLogger;
-use Psr\Log\LoggerInterface;
+use WooCommerce\PayPalCommerce\WcGateway\Settings\Settings;
+use WooCommerce\PayPalCommerce\Http\RedirectorInterface;
 
 /**
  * Provides a listener that handles merchant-connection requests.
@@ -32,18 +35,26 @@ class ConnectionListener {
 	private string $settings_page_id;
 
 	/**
-	 * Access to connection settings.
-	 *
-	 * @var CommonSettings
-	 */
-	private CommonSettings $settings;
-
-	/**
 	 * Access to the onboarding URL manager.
 	 *
 	 * @var OnboardingUrlManager
 	 */
 	private OnboardingUrlManager $url_manager;
+
+	/**
+	 * Authentication manager service, responsible to update connection details.
+	 *
+	 * @var AuthenticationManager
+	 */
+	private AuthenticationManager $authentication_manager;
+
+	/**
+	 * A redirector-instance to redirect the merchant after authentication.
+	 * ™
+	 *
+	 * @var RedirectorInterface
+	 */
+	private RedirectorInterface $redirector;
 
 	/**
 	 * Logger instance, mainly used for debugging purposes.
@@ -62,16 +73,24 @@ class ConnectionListener {
 	/**
 	 * Prepare the instance.
 	 *
-	 * @param string               $settings_page_id Current plugin settings page ID.
-	 * @param CommonSettings       $settings         Access to saved connection details.
-	 * @param OnboardingUrlManager $url_manager      Get OnboardingURL instances.
-	 * @param ?LoggerInterface     $logger           The logger, for debugging purposes.
+	 * @param string                $settings_page_id       Current plugin settings page ID.
+	 * @param OnboardingUrlManager  $url_manager            Get OnboardingURL instances.
+	 * @param AuthenticationManager $authentication_manager Authentication manager service.
+	 * @param RedirectorInterface   $redirector             Redirect-handler.
+	 * @param ?LoggerInterface      $logger                 The logger, for debugging purposes.
 	 */
-	public function __construct( string $settings_page_id, CommonSettings $settings, OnboardingUrlManager $url_manager, LoggerInterface $logger = null ) {
-		$this->settings_page_id = $settings_page_id;
-		$this->settings         = $settings;
-		$this->url_manager      = $url_manager;
-		$this->logger           = $logger ?: new NullLogger();
+	public function __construct(
+		string $settings_page_id,
+		OnboardingUrlManager $url_manager,
+		AuthenticationManager $authentication_manager,
+		RedirectorInterface $redirector,
+		LoggerInterface $logger = null
+	) {
+		$this->settings_page_id       = $settings_page_id;
+		$this->url_manager            = $url_manager;
+		$this->authentication_manager = $authentication_manager;
+		$this->redirector             = $redirector;
+		$this->logger                 = $logger ?: new NullLogger();
 
 		// Initialize as "guest", the real ID is provided via process().
 		$this->user_id = 0;
@@ -82,6 +101,8 @@ class ConnectionListener {
 	 *
 	 * @param int   $user_id The current user ID.
 	 * @param array $request Request details to process.
+	 *
+	 * @throws RuntimeException If the merchant ID does not match the ID previously set via OAuth.
 	 */
 	public function process( int $user_id, array $request ) : void {
 		$this->user_id = $user_id;
@@ -100,13 +121,15 @@ class ConnectionListener {
 			return;
 		}
 
-		$this->logger->info( 'Found merchant data in request', $data );
+		$this->logger->info( 'Found OAuth merchant data in request', $data );
 
-		$this->store_data(
-			$data['is_sandbox'],
-			$data['merchant_id'],
-			$data['merchant_email']
-		);
+		try {
+			$this->authentication_manager->finish_oauth_authentication( $data );
+		} catch ( \Exception $e ) {
+			$this->logger->error( 'Failed to complete authentication: ' . $e->getMessage() );
+		}
+
+		$this->redirect_after_authentication();
 	}
 
 	/**
@@ -117,7 +140,7 @@ class ConnectionListener {
 	 *
 	 * @return bool True, if the request contains valid connection details.
 	 */
-	protected function is_valid_request( array $request ) : bool {
+	private function is_valid_request( array $request ) : bool {
 		if ( $this->user_id < 1 || ! $this->settings_page_id ) {
 			return false;
 		}
@@ -149,7 +172,7 @@ class ConnectionListener {
 	 * @return array Structured array with 'is_sandbox', 'merchant_id', and 'merchant_email' keys,
 	 *               or an empty array on failure.
 	 */
-	protected function extract_data( array $request ) : array {
+	private function extract_data( array $request ) : array {
 		$this->logger->info( 'Extracting connection data from request...' );
 
 		$merchant_id    = $this->get_merchant_id_from_request( $request );
@@ -160,24 +183,20 @@ class ConnectionListener {
 		}
 
 		return array(
-			'is_sandbox'     => $this->settings->get_sandbox(),
 			'merchant_id'    => $merchant_id,
 			'merchant_email' => $merchant_email,
 		);
 	}
 
 	/**
-	 * Persist the merchant details to the database.
+	 * Redirects the browser page at the end of the authentication flow.
 	 *
-	 * @param bool   $is_sandbox     Whether the details are for a sandbox account.
-	 * @param string $merchant_id    The anonymized merchant ID.
-	 * @param string $merchant_email The merchant's email.
+	 * @return void
 	 */
-	protected function store_data( bool $is_sandbox, string $merchant_id, string $merchant_email ) : void {
-		$this->logger->info( "Save merchant details to the DB: $merchant_email ($merchant_id)" );
+	private function redirect_after_authentication() : void {
+		$redirect_url = $this->get_onboarding_redirect_url();
 
-		$this->settings->set_merchant_data( $is_sandbox, $merchant_id, $merchant_email );
-		$this->settings->save();
+		$this->redirector->redirect( $redirect_url );
 	}
 
 	/**
@@ -187,7 +206,7 @@ class ConnectionListener {
 	 *
 	 * @return string The sanitized token, or an empty string.
 	 */
-	protected function get_token_from_request( array $request ) : string {
+	private function get_token_from_request( array $request ) : string {
 		return $this->sanitize_string( $request['ppcpToken'] ?? '' );
 	}
 
@@ -198,7 +217,7 @@ class ConnectionListener {
 	 *
 	 * @return string The sanitized merchant ID, or an empty string.
 	 */
-	protected function get_merchant_id_from_request( array $request ) : string {
+	private function get_merchant_id_from_request( array $request ) : string {
 		return $this->sanitize_string( $request['merchantIdInPayPal'] ?? '' );
 	}
 
@@ -213,7 +232,7 @@ class ConnectionListener {
 	 *
 	 * @return string The sanitized merchant email, or an empty string.
 	 */
-	protected function get_merchant_email_from_request( array $request ) : string {
+	private function get_merchant_email_from_request( array $request ) : string {
 		return $this->sanitize_merchant_email( $request['merchantId'] ?? '' );
 	}
 
@@ -224,7 +243,7 @@ class ConnectionListener {
 	 *
 	 * @return string Sanitized value.
 	 */
-	protected function sanitize_string( string $value ) : string {
+	private function sanitize_string( string $value ) : string {
 		return trim( sanitize_text_field( wp_unslash( $value ) ) );
 	}
 
@@ -235,7 +254,22 @@ class ConnectionListener {
 	 *
 	 * @return string Sanitized email address.
 	 */
-	protected function sanitize_merchant_email( string $email ) : string {
+	private function sanitize_merchant_email( string $email ) : string {
 		return sanitize_text_field( str_replace( ' ', '+', $email ) );
+	}
+
+	/**
+	 * Returns the URL opened at the end of onboarding.
+	 *
+	 * @return string
+	 */
+	private function get_onboarding_redirect_url() : string {
+		/**
+		 * The URL opened at the end of onboarding after saving the merchant ID/email.
+		 */
+		return apply_filters(
+			'woocommerce_paypal_payments_onboarding_redirect_url',
+			admin_url( 'admin.php?page=wc-settings&tab=checkout&section=ppcp-gateway&ppcp-tab=' . Settings::CONNECTION_TAB_ID )
+		);
 	}
 }

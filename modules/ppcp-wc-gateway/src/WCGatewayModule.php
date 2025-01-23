@@ -550,28 +550,24 @@ class WCGatewayModule implements ServiceModule, ExtendingModule, ExecutableModul
 
 		add_filter(
 			'woocommerce_paypal_payments_rest_common_merchant_data',
-			function( array $merchant_data ) use ( $c ): array {
-				if ( ! isset( $merchant_data['features'] ) ) {
-					$merchant_data['features'] = array();
-				}
-
+			function( array $features ) use ( $c ): array {
 				$billing_agreements_endpoint = $c->get( 'api.endpoint.billing-agreements' );
 				assert( $billing_agreements_endpoint instanceof BillingAgreementsEndpoint );
 
-				$reference_transactions_enabled                     = $billing_agreements_endpoint->reference_transaction_enabled();
-				$merchant_data['features']['save_paypal_and_venmo'] = array(
+				$reference_transactions_enabled    = $billing_agreements_endpoint->reference_transaction_enabled();
+				$features['save_paypal_and_venmo'] = array(
 					'enabled' => $reference_transactions_enabled,
 				);
 
 				$dcc_product_status = $c->get( 'wcgateway.helper.dcc-product-status' );
 				assert( $dcc_product_status instanceof DCCProductStatus );
 
-				$dcc_enabled = $dcc_product_status->dcc_is_active();
-				$merchant_data['features']['advanced_credit_and_debit_cards'] = array(
+				$dcc_enabled                                 = $dcc_product_status->dcc_is_active();
+				$features['advanced_credit_and_debit_cards'] = array(
 					'enabled' => $dcc_enabled,
 				);
 
-				return $merchant_data;
+				return $features;
 			}
 		);
 

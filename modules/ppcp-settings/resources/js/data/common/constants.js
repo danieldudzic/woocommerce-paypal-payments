@@ -35,14 +35,37 @@ export const REST_HYDRATE_MERCHANT_PATH = '/wc/v3/wc_paypal/common/merchant';
 export const REST_PERSIST_PATH = '/wc/v3/wc_paypal/common';
 
 /**
- * REST path to perform the manual connection check, using client ID and secret,
+ * REST path to perform the manual connection authentication, using client ID and secret.
  *
  * Used by: Controls
- * See: ConnectManualRestEndpoint.php
+ * See: AuthenticateRestEndpoint.php
  *
  * @type {string}
  */
-export const REST_MANUAL_CONNECTION_PATH = '/wc/v3/wc_paypal/connect_manual';
+export const REST_DIRECT_AUTHENTICATION_PATH =
+	'/wc/v3/wc_paypal/authenticate/direct';
+
+/**
+ * REST path to perform the OAuth authentication check, using shared ID and authCode.
+ *
+ * Used by: Controls
+ * See: AuthenticateRestEndpoint.php
+ *
+ * @type {string}
+ */
+export const REST_OAUTH_AUTHENTICATION_PATH =
+	'/wc/v3/wc_paypal/authenticate/oauth';
+
+/**
+ * REST path to disconnect the current merchant from PayPal.
+ *
+ * Used by: Controls
+ * See: AuthenticateRestEndpoint.php
+ *
+ * @type {string}
+ */
+export const REST_DISCONNECT_MERCHANT_PATH =
+	'/wc/v3/wc_paypal/authenticate/disconnect';
 
 /**
  * REST path to generate an ISU URL for the PayPal-login.
@@ -55,6 +78,26 @@ export const REST_MANUAL_CONNECTION_PATH = '/wc/v3/wc_paypal/connect_manual';
 export const REST_CONNECTION_URL_PATH = '/wc/v3/wc_paypal/login_link';
 
 /**
+ * REST path to fetch webhooks data or resubscribe webhooks.
+ *
+ * Used by: Controls
+ * See: WebhookSettingsEndpoint.php
+ *
+ * @type {string}
+ */
+export const REST_WEBHOOKS = '/wc/v3/wc_paypal/webhooks';
+
+/**
+ * REST path to start webhook simulation and observe the state.
+ *
+ * Used by: Controls
+ * See: WebhookSettingsEndpoint.php
+ *
+ * @type {string}
+ */
+export const REST_WEBHOOKS_SIMULATE = '/wc/v3/wc_paypal/webhooks/simulate';
+
+/**
  * REST path to refresh the feature status.
  *
  * Used by: Controls
@@ -62,5 +105,4 @@ export const REST_CONNECTION_URL_PATH = '/wc/v3/wc_paypal/login_link';
  *
  * @type {string}
  */
-export const REST_REFRESH_FEATURES_PATH =
-	'/wc/v3/wc_paypal/refresh-feature-status';
+export const REST_REFRESH_FEATURES_PATH = '/wc/v3/wc_paypal/refresh-features';

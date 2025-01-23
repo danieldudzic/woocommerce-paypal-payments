@@ -11,10 +11,14 @@ import apiFetch from '@wordpress/api-fetch';
 
 import {
 	REST_PERSIST_PATH,
-	REST_MANUAL_CONNECTION_PATH,
 	REST_CONNECTION_URL_PATH,
 	REST_HYDRATE_MERCHANT_PATH,
 	REST_REFRESH_FEATURES_PATH,
+	REST_DIRECT_AUTHENTICATION_PATH,
+	REST_OAUTH_AUTHENTICATION_PATH,
+	REST_DISCONNECT_MERCHANT_PATH,
+	REST_WEBHOOKS,
+	REST_WEBHOOKS_SIMULATE,
 } from './constants';
 import ACTION_TYPES from './action-types';
 
@@ -31,15 +35,15 @@ export const controls = {
 		}
 	},
 
-	async [ ACTION_TYPES.DO_SANDBOX_LOGIN ]() {
+	async [ ACTION_TYPES.DO_GENERATE_ONBOARDING_URL ]( {
+		products,
+		useSandbox,
+	} ) {
 		try {
 			return apiFetch( {
 				path: REST_CONNECTION_URL_PATH,
 				method: 'POST',
-				data: {
-					environment: 'sandbox',
-					products: [ 'EXPRESS_CHECKOUT' ], // Sandbox always uses EXPRESS_CHECKOUT.
-				},
+				data: { useSandbox, products },
 			} );
 		} catch ( e ) {
 			return {
@@ -49,32 +53,14 @@ export const controls = {
 		}
 	},
 
-	async [ ACTION_TYPES.DO_PRODUCTION_LOGIN ]( { products } ) {
-		try {
-			return apiFetch( {
-				path: REST_CONNECTION_URL_PATH,
-				method: 'POST',
-				data: {
-					environment: 'production',
-					products,
-				},
-			} );
-		} catch ( e ) {
-			return {
-				success: false,
-				error: e,
-			};
-		}
-	},
-
-	async [ ACTION_TYPES.DO_MANUAL_CONNECTION ]( {
+	async [ ACTION_TYPES.DO_DIRECT_API_AUTHENTICATION ]( {
 		clientId,
 		clientSecret,
 		useSandbox,
 	} ) {
 		try {
 			return await apiFetch( {
-				path: REST_MANUAL_CONNECTION_PATH,
+				path: REST_DIRECT_AUTHENTICATION_PATH,
 				method: 'POST',
 				data: {
 					clientId,
@@ -88,6 +74,36 @@ export const controls = {
 				error: e,
 			};
 		}
+	},
+
+	async [ ACTION_TYPES.DO_OAUTH_AUTHENTICATION ]( {
+		sharedId,
+		authCode,
+		useSandbox,
+	} ) {
+		try {
+			return await apiFetch( {
+				path: REST_OAUTH_AUTHENTICATION_PATH,
+				method: 'POST',
+				data: {
+					sharedId,
+					authCode,
+					useSandbox,
+				},
+			} );
+		} catch ( e ) {
+			return {
+				success: false,
+				error: e,
+			};
+		}
+	},
+
+	async [ ACTION_TYPES.DO_DISCONNECT_MERCHANT ]() {
+		return await apiFetch( {
+			path: REST_DISCONNECT_MERCHANT_PATH,
+			method: 'POST',
+		} );
 	},
 
 	async [ ACTION_TYPES.DO_REFRESH_MERCHANT ]() {
@@ -114,5 +130,25 @@ export const controls = {
 				message: e.message,
 			};
 		}
+	},
+
+	async [ ACTION_TYPES.DO_RESUBSCRIBE_WEBHOOKS ]() {
+		return await apiFetch( {
+			method: 'POST',
+			path: REST_WEBHOOKS,
+		} );
+	},
+
+	async [ ACTION_TYPES.DO_START_WEBHOOK_SIMULATION ]() {
+		return await apiFetch( {
+			method: 'POST',
+			path: REST_WEBHOOKS_SIMULATE,
+		} );
+	},
+
+	async [ ACTION_TYPES.DO_CHECK_WEBHOOK_SIMULATION ]() {
+		return await apiFetch( {
+			path: REST_WEBHOOKS_SIMULATE,
+		} );
 	},
 };

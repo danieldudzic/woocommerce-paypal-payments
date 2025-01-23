@@ -9,30 +9,14 @@
 
 import { useSelect, useDispatch } from '@wordpress/data';
 
-import { PRODUCT_TYPES } from '../constants';
+import { createHooksForStore } from '../utils';
+import { PRODUCT_TYPES } from './configuration';
 import { STORE_NAME } from './constants';
 
-const useTransient = ( key ) =>
-	useSelect(
-		( select ) => select( STORE_NAME ).transientData()?.[ key ],
-		[ key ]
-	);
-
-const usePersistent = ( key ) =>
-	useSelect(
-		( select ) => select( STORE_NAME ).persistentData()?.[ key ],
-		[ key ]
-	);
-
 const useHooks = () => {
-	const {
-		persist,
-		setStep,
-		setCompleted,
-		setIsCasualSeller,
-		setAreOptionalPaymentMethodsEnabled,
-		setProducts,
-	} = useDispatch( STORE_NAME );
+	const { useTransient, usePersistent } = createHooksForStore( STORE_NAME );
+
+	const { persist } = useDispatch( STORE_NAME );
 
 	// Read-only flags and derived state.
 	const flags = useSelect( ( select ) => select( STORE_NAME ).flags(), [] );
@@ -42,16 +26,22 @@ const useHooks = () => {
 	);
 
 	// Transient accessors.
-	const isReady = useTransient( 'isReady' );
+	const [ isReady ] = useTransient( 'isReady' );
+	const [ manualClientId, setManualClientId ] =
+		useTransient( 'manualClientId' );
+	const [ manualClientSecret, setManualClientSecret ] =
+		useTransient( 'manualClientSecret' );
 
 	// Persistent accessors.
-	const step = usePersistent( 'step' );
-	const completed = usePersistent( 'completed' );
-	const isCasualSeller = usePersistent( 'isCasualSeller' );
-	const areOptionalPaymentMethodsEnabled = usePersistent(
-		'areOptionalPaymentMethodsEnabled'
-	);
-	const products = usePersistent( 'products' );
+	const [ step, setStep ] = usePersistent( 'step' );
+	const [ completed, setCompleted ] = usePersistent( 'completed' );
+	const [ isCasualSeller, setIsCasualSeller ] =
+		usePersistent( 'isCasualSeller' );
+	const [
+		areOptionalPaymentMethodsEnabled,
+		setAreOptionalPaymentMethodsEnabled,
+	] = usePersistent( 'areOptionalPaymentMethodsEnabled' );
+	const [ products, setProducts ] = usePersistent( 'products' );
 
 	const savePersistent = async ( setter, value ) => {
 		setter( value );
@@ -73,6 +63,14 @@ const useHooks = () => {
 		setIsCasualSeller: ( value ) => {
 			return savePersistent( setIsCasualSeller, value );
 		},
+		manualClientId,
+		setManualClientId: ( value ) => {
+			return savePersistent( setManualClientId, value );
+		},
+		manualClientSecret,
+		setManualClientSecret: ( value ) => {
+			return savePersistent( setManualClientSecret, value );
+		},
 		areOptionalPaymentMethodsEnabled,
 		setAreOptionalPaymentMethodsEnabled: ( value ) => {
 			return savePersistent( setAreOptionalPaymentMethodsEnabled, value );
@@ -85,6 +83,22 @@ const useHooks = () => {
 			return savePersistent( setProducts, validProducts );
 		},
 		determineProducts,
+	};
+};
+
+export const useManualConnectionForm = () => {
+	const {
+		manualClientId,
+		setManualClientId,
+		manualClientSecret,
+		setManualClientSecret,
+	} = useHooks();
+
+	return {
+		manualClientId,
+		setManualClientId,
+		manualClientSecret,
+		setManualClientSecret,
 	};
 };
 

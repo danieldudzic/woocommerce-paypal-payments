@@ -37,15 +37,54 @@ export const hydrate = ( payload ) => ( {
 } );
 
 /**
+ * Generic transient-data updater.
+ *
+ * @param {string} prop  Name of the property to update.
+ * @param {any}    value The new value of the property.
+ * @return {Action} The action.
+ */
+export const setTransient = ( prop, value ) => ( {
+	type: ACTION_TYPES.SET_TRANSIENT,
+	payload: { [ prop ]: value },
+} );
+
+/**
+ * Generic persistent-data updater.
+ *
+ * @param {string} prop  Name of the property to update.
+ * @param {any}    value The new value of the property.
+ * @return {Action} The action.
+ */
+export const setPersistent = ( prop, value ) => ( {
+	type: ACTION_TYPES.SET_PERSISTENT,
+	payload: { [ prop ]: value },
+} );
+
+/**
  * Transient. Marks the onboarding details as "ready", i.e., fully initialized.
  *
  * @param {boolean} isReady
  * @return {Action} The action.
  */
-export const setIsReady = ( isReady ) => ( {
-	type: ACTION_TYPES.SET_TRANSIENT,
-	payload: { isReady },
-} );
+export const setIsReady = ( isReady ) => setTransient( 'isReady', isReady );
+
+/**
+ * Transient. Sets the "manualClientId" value.
+ *
+ * @param {string} manualClientId
+ * @return {Action} The action.
+ */
+export const setManualClientId = ( manualClientId ) =>
+	setTransient( 'manualClientId', manualClientId );
+
+/**
+ * Transient. Sets the "manualClientSecret" value.
+ *
+ * @param {string} manualClientSecret
+ * @return {Action} The action.
+ */
+export const setManualClientSecret = ( manualClientSecret ) =>
+	setTransient( 'manualClientSecret', manualClientSecret );
 
 /**
  * Persistent.Set the "onboarding completed" flag which shows or hides the wizard.
@@ -53,10 +92,8 @@ export const setIsReady = ( isReady ) => ( {
  * @param {boolean} completed
  * @return {Action} The action.
  */
-export const setCompleted = ( completed ) => ( {
-	type: ACTION_TYPES.SET_PERSISTENT,
-	payload: { completed },
-} );
+export const setCompleted = ( completed ) =>
+	setPersistent( 'completed', completed );
 
 /**
  * Persistent. Sets the onboarding wizard to a new step.
@@ -64,10 +101,7 @@ export const setCompleted = ( completed ) => ( {
  * @param {number} step
  * @return {Action} The action.
  */
-export const setStep = ( step ) => ( {
-	type: ACTION_TYPES.SET_PERSISTENT,
-	payload: { step },
-} );
+export const setStep = ( step ) => setPersistent( 'step', step );
 
 /**
  * Persistent. Sets the "isCasualSeller" value.
@@ -75,10 +109,8 @@ export const setStep = ( step ) => ( {
  * @param {boolean} isCasualSeller
  * @return {Action} The action.
  */
-export const setIsCasualSeller = ( isCasualSeller ) => ( {
-	type: ACTION_TYPES.SET_PERSISTENT,
-	payload: { isCasualSeller },
-} );
+export const setIsCasualSeller = ( isCasualSeller ) =>
+	setPersistent( 'isCasualSeller', isCasualSeller );
 
 /**
  * Persistent. Sets the "areOptionalPaymentMethodsEnabled" value.
@@ -88,10 +120,11 @@ export const setIsCasualSeller = ( isCasualSeller ) => ( {
  */
 export const setAreOptionalPaymentMethodsEnabled = (
 	areOptionalPaymentMethodsEnabled
-) => ( {
-	type: ACTION_TYPES.SET_PERSISTENT,
-	payload: { areOptionalPaymentMethodsEnabled },
-} );
+) =>
+	setPersistent(
+		'areOptionalPaymentMethodsEnabled',
+		areOptionalPaymentMethodsEnabled
+	);
 
 /**
  * Persistent. Sets the "products" array.
@@ -99,10 +132,8 @@ export const setAreOptionalPaymentMethodsEnabled = (
  * @param {string[]} products
  * @return {Action} The action.
  */
-export const setProducts = ( products ) => ( {
-	type: ACTION_TYPES.SET_PERSISTENT,
-	payload: { products },
-} );
+export const setProducts = ( products ) =>
+	setPersistent( 'products', products );
 
 /**
  * Side effect. Triggers the persistence of onboarding data to the server.

@@ -1,17 +1,24 @@
-import { useState, useCallback } from '@wordpress/element';
 import SettingsBlock from './SettingsBlock';
 import PaymentMethodItemBlock from './PaymentMethodItemBlock';
+import { usePaymentMethods } from '../../../data/payment/hooks';
 
-const PaymentMethodsBlock = ( { paymentMethods, className = '' } ) => {
-	const [ selectedMethod, setSelectedMethod ] = useState( null );
+const PaymentMethodsBlock = ( {
+	paymentMethods,
+	className = '',
+	onTriggerModal,
+} ) => {
+	const { setPersistent } = usePaymentMethods();
 
-	const handleSelect = useCallback( ( methodId, isSelected ) => {
-		setSelectedMethod( isSelected ? methodId : null );
-	}, [] );
-
-	if ( paymentMethods.length === 0 ) {
+	if ( ! paymentMethods?.length ) {
 		return null;
 	}
+
+	const handleSelect = ( paymentMethod, isSelected ) => {
+		setPersistent( paymentMethod.id, {
+			...paymentMethod,
+			enabled: isSelected,
+		} );
+	};
 
 	return (
 		<SettingsBlock
@@ -21,9 +28,12 @@ const PaymentMethodsBlock = ( { paymentMethods, className = '' } ) => {
 				<PaymentMethodItemBlock
 					key={ paymentMethod.id }
 					{ ...paymentMethod }
-					isSelected={ selectedMethod === paymentMethod.id }
+					isSelected={ paymentMethod.enabled }
 					onSelect={ ( checked ) =>
-						handleSelect( paymentMethod.id, checked )
+						handleSelect( paymentMethod, checked )
+					}
+					onTriggerModal={ () =>
+						onTriggerModal?.( paymentMethod.id )
 					}
 				/>
 			) ) }

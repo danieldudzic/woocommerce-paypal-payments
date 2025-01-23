@@ -1,57 +1,27 @@
-import { Button, Icon } from '@wordpress/components';
-import { chevronLeft } from '@wordpress/icons';
+import { Button } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 
-import classNames from 'classnames';
-
 import { OnboardingHooks } from '../../../../data';
-import useIsScrolled from '../../../../hooks/useIsScrolled';
-import BusyStateWrapper from '../../../ReusableComponents/BusyStateWrapper';
+import { useNavigation } from '../../../../hooks/useNavigation';
+import TopNavigation from '../../../ReusableComponents/TopNavigation';
 
-const Navigation = ( { stepDetails, onNext, onPrev, onExit } ) => {
+const OnboardingNavigation = ( { stepDetails, onNext, onPrev } ) => {
+	const { goToWooCommercePaymentsTab } = useNavigation();
 	const { title, isFirst, percentage, showNext, canProceed } = stepDetails;
-	const { isScrolled } = useIsScrolled();
 
 	const state = OnboardingHooks.useNavigationState();
 	const isDisabled = ! canProceed( state );
-	const className = classNames( 'ppcp-r-navigation-container', {
-		'is-scrolled': isScrolled,
-	} );
 
 	return (
-		<div className={ className }>
-			<div className="ppcp-r-navigation">
-				<BusyStateWrapper
-					className="ppcp-r-navigation--left"
-					busySpinner={ false }
-					enabled={ ! isFirst }
-				>
-					<Button
-						variant="link"
-						onClick={ isFirst ? onExit : onPrev }
-						className="is-title"
-					>
-						<Icon icon={ chevronLeft } />
-						<span className={ 'title ' + ( isFirst ? 'big' : '' ) }>
-							{ title }
-						</span>
-					</Button>
-				</BusyStateWrapper>
-				{ ! isFirst &&
-					NextButton( { showNext, isDisabled, onNext, onExit } ) }
-				<ProgressBar percent={ percentage } />
-			</div>
-		</div>
-	);
-};
-
-const NextButton = ( { showNext, isDisabled, onNext, onExit } ) => {
-	return (
-		<BusyStateWrapper
-			className="ppcp-r-navigation--right"
-			busySpinner={ false }
+		<TopNavigation
+			title={ title }
+			isMainTitle={ isFirst }
+			exitOnTitleClick={ isFirst }
+			onTitleClick={ onPrev }
+			showProgressBar={ true }
+			progressBarPercent={ percentage * 0.9 }
 		>
-			<Button variant="link" onClick={ onExit }>
+			<Button variant="link" onClick={ goToWooCommercePaymentsTab }>
 				{ __( 'Save and exit', 'woocommerce-paypal-payments' ) }
 			</Button>
 			{ showNext && (
@@ -63,19 +33,8 @@ const NextButton = ( { showNext, isDisabled, onNext, onExit } ) => {
 					{ __( 'Continue', 'woocommerce-paypal-payments' ) }
 				</Button>
 			) }
-		</BusyStateWrapper>
+		</TopNavigation>
 	);
 };
 
-const ProgressBar = ( { percent } ) => {
-	percent = Math.min( Math.max( percent, 0 ), 100 );
-
-	return (
-		<div
-			className="ppcp-r-navigation--progress-bar"
-			style={ { width: `${ percent * 0.9 }%` } }
-		/>
-	);
-};
-
-export default Navigation;
+export default OnboardingNavigation;

@@ -69,7 +69,11 @@ class PayLaterConfiguratorModule implements ServiceModule, ExtendingModule, Exec
 				$is_wc_settings_page = $c->get( 'wcgateway.is-wc-settings-page' );
 				$messaging_locations = $c->get( 'paylater-configurator.messaging-locations' );
 
-				self::add_paylater_update_notice( $messaging_locations, $is_wc_settings_page, $current_page_id );
+				self::add_paylater_update_notice(
+					$messaging_locations,
+					$is_wc_settings_page,
+					$current_page_id
+				);
 
 				$settings = $c->get( 'wcgateway.settings' );
 				assert( $settings instanceof Settings );
@@ -159,9 +163,9 @@ class PayLaterConfiguratorModule implements ServiceModule, ExtendingModule, Exec
 	 * The notice appears on any PayPal-Settings page, except for the Pay-Later settings page,
 	 * when no Pay-Later messaging is used yet.
 	 *
-	 * @param array  $message_locations PayLater messaging locations.
-	 * @param bool   $is_settings_page  Whether the current page is a WC settings page.
-	 * @param string $current_page_id   ID of current settings page tab.
+	 * @param array  $message_locations   PayLater messaging locations.
+	 * @param bool   $is_settings_page    Whether the current page is a WC settings page.
+	 * @param string $current_page_id     ID of current settings page tab.
 	 *
 	 * @return void
 	 */
