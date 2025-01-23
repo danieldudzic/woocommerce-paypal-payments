@@ -1,18 +1,13 @@
-import { PayPalRdbWithContent } from '../Fields';
 import { Action } from '../Elements';
+import { RadioGroup } from '../Fields';
 
 const ControlRadioGroup = ( { options, value, onChange } ) => (
 	<Action>
-		{ options.map( ( { value: optionValue, label, description } ) => (
-			<PayPalRdbWithContent
-				key={ optionValue }
-				value={ optionValue }
-				currentValue={ value }
-				handleRdbState={ onChange }
-				label={ label }
-				description={ description }
-			/>
-		) ) }
+		<RadioGroup
+			options={ options }
+			selected={ value }
+			onChange={ onChange }
+		/>
 	</Action>
 );
 
