@@ -1,9 +1,9 @@
 import { __ } from '@wordpress/i18n';
-import { SelectSettingsBlock } from '../../../../ReusableComponents/SettingsBlocks';
 import {
 	ControlRadioGroup,
 	ControlToggleButton,
 	ControlTextInput,
+	ControlSelect,
 } from '../../../../ReusableComponents/Controls';
 import SettingsBlock from '../../../../ReusableComponents/SettingsBlock';
 import Accordion from '../../../../ReusableComponents/AccordionSection';
@@ -124,17 +124,14 @@ const PaypalSettings = () => {
 					'woocommerce-paypal-payments'
 				) }
 			>
-				<SelectSettingsBlock
-					actionProps={ {
-						value: buttonLanguage,
-						callback: setButtonLanguage,
-						options: languagesExample,
-						key: 'buttonLanguage',
-						placeholder: __(
-							'Browser language',
-							'woocommerce-paypal-payments'
-						),
-					} }
+				<ControlSelect
+					options={ languagesExample }
+					value={ buttonLanguage }
+					onChange={ setButtonLanguage }
+					placeholder={ __(
+						'Browser language',
+						'woocommerce-paypal-payments'
+					) }
 				/>
 			</SettingsBlock>
 		</Accordion>

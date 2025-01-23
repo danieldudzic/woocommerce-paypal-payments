@@ -1,7 +1,6 @@
 import Select, { components } from 'react-select';
 
 import data from '../../../utils/data';
-import SettingsBlock from '../SettingsBlock';
 import { Title, Action, Description } from '../Elements';
 
 const DEFAULT_ELEMENT_ORDER = [ 'title', 'action', 'description' ];
@@ -30,13 +29,13 @@ const ELEMENT_RENDERERS = {
 	),
 };
 
-const SelectSettingsBlock = ( {
+const ControlSelect = ( {
 	title,
 	description,
 	order = DEFAULT_ELEMENT_ORDER,
 	...props
 } ) => (
-	<SettingsBlock { ...props } className="ppcp-r-settings-block__select">
+	<Action>
 		{ order.map( ( elementKey ) => {
 			const RenderElement = ELEMENT_RENDERERS[ elementKey ];
 			return RenderElement ? (
@@ -48,7 +47,7 @@ const SelectSettingsBlock = ( {
 				/>
 			) : null;
 		} ) }
-	</SettingsBlock>
+	</Action>
 );
 
-export default SelectSettingsBlock;
+export default ControlSelect;
