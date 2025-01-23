@@ -274,6 +274,10 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 					unset( $payment_methods['ppcp-card-button-gateway'] );
 				}
 
+				if ( $container->get( 'api.shop.country' ) !== 'US' ) {
+					unset( $payment_methods['venmo'] );
+				}
+
 				return $payment_methods;
 			}
 		);
