@@ -115,6 +115,7 @@ const SimulationBlock = () => {
 				'Send a test-webhook from PayPal to confirm that webhooks are being received and processed correctly.',
 				'woocommerce-paypal-payments'
 			) }
+			horizontalLayout={ true }
 		>
 			<ControlButton
 				type={ 'secondary' }
