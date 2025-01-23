@@ -1,52 +1,21 @@
-import Select, { components } from 'react-select';
-
-import data from '../../../utils/data';
-import { Title, Action, Description } from '../Elements';
-
-const DEFAULT_ELEMENT_ORDER = [ 'title', 'action', 'description' ];
-
-const DropdownIndicator = ( props ) => (
-	<components.DropdownIndicator { ...props }>
-		{ data().getImage( 'icon-arrow-down.svg' ) }
-	</components.DropdownIndicator>
-);
-
-const ELEMENT_RENDERERS = {
-	title: ( { title } ) => <Title>{ title }</Title>,
-	action: ( { actionProps } ) => (
-		<Action>
-			<Select
-				className="ppcp-r-multiselect"
-				classNamePrefix="ppcp-r"
-				isMulti={ actionProps?.isMulti }
-				options={ actionProps?.options }
-				components={ { DropdownIndicator } }
-			/>
-		</Action>
-	),
-	description: ( { description } ) => (
-		<Description>{ description }</Description>
-	),
-};
+import { Select } from '../Fields';
+import { Action } from '../Elements';
 
 const ControlSelect = ( {
-	title,
-	description,
-	order = DEFAULT_ELEMENT_ORDER,
-	...props
+	options,
+	value,
+	onChange,
+	placeholder,
+	isMulti = false,
 } ) => (
 	<Action>
-		{ order.map( ( elementKey ) => {
-			const RenderElement = ELEMENT_RENDERERS[ elementKey ];
-			return RenderElement ? (
-				<RenderElement
-					key={ elementKey }
-					title={ title }
-					description={ description }
-					actionProps={ props.actionProps }
-				/>
-			) : null;
-		} ) }
+		<Select
+			isMulti={ isMulti }
+			options={ options }
+			value={ value }
+			placeholder={ placeholder }
+			onChange={ onChange }
+		/>
 	</Action>
 );
 
