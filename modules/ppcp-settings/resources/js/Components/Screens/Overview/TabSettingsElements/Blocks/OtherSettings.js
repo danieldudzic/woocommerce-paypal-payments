@@ -1,8 +1,8 @@
 import { __ } from '@wordpress/i18n';
 
-import { ControlSelect } from '@wordpress/components';
 import Accordion from '../../../../ReusableComponents/AccordionSection';
 import SettingsBlock from '../../../../ReusableComponents/SettingsBlock';
+import { ControlSelect } from '../../../../ReusableComponents/Controls';
 import { SettingsHooks } from '../../../../../data';
 
 const OtherSettings = () => {
