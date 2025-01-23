@@ -46,8 +46,31 @@ const SelectableContent = ( {
 		);
 	};
 
+	const handleClick = () => {
+		if ( type === 'checkbox' ) {
+			let newValue;
+
+			if ( Array.isArray( currentValue ) ) {
+				if ( currentValue.includes( value ) ) {
+					newValue = currentValue.filter(
+						( optionValue ) => optionValue !== value
+					);
+				} else {
+					newValue = [ ...currentValue, value ];
+				}
+			} else {
+				newValue = ! currentValue;
+			}
+
+			changeCallback( newValue );
+		}
+	};
+
 	return (
-		<div className={ boxClassName }>
+		<div
+			className={ boxClassName }
+			onClick={ type === 'checkbox' ? handleClick : undefined }
+		>
 			<InputField isRadio={ type === 'radio' } />
 
 			<div className="ppcp-r-select-box__content">

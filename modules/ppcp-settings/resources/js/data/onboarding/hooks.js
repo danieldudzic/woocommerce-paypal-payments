@@ -135,10 +135,12 @@ export const useSteps = () => {
 export const useNavigationState = () => {
 	const products = useProducts();
 	const business = useBusiness();
+	const methods = useOptionalPaymentMethods();
 
 	return {
 		products,
 		business,
+		methods,
 	};
 };
 
