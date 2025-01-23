@@ -9,6 +9,9 @@ declare( strict_types = 1 );
 
 namespace WooCommerce\PayPalCommerce\Settings\Data;
 
+/**
+ * Class PaymentSettings
+ */
 class PaymentSettings extends AbstractDataModel {
 
 	/**
@@ -25,9 +28,9 @@ class PaymentSettings extends AbstractDataModel {
 	 */
 	protected function get_defaults(): array {
 		return array(
-			'paypal_show_logo' => false,
-			'three_d_secure' => 'no-3d-secure',
-			'fastlane_cardholder_name' => false,
+			'paypal_show_logo'           => false,
+			'three_d_secure'             => 'no-3d-secure',
+			'fastlane_cardholder_name'   => false,
 			'fastlane_display_watermark' => false,
 		);
 	}
