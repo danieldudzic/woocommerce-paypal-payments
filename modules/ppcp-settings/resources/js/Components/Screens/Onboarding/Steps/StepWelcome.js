@@ -61,7 +61,7 @@ const StepWelcome = ( { setStep, currentStep } ) => {
 					'woocommerce-paypal-payments'
 				) }
 				className="onboarding-advanced-options"
-				noCape={ true }
+				noCaps={ true }
 				id="advanced-options"
 			>
 				<AdvancedOptionsForm />
