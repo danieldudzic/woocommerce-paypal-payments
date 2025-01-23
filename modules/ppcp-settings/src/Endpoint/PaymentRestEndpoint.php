@@ -299,7 +299,7 @@ class PaymentRestEndpoint extends RestEndpoint {
 			);
 		}
 
-		return $this->return_success( $gateway_settings );
+		return $this->return_success( apply_filters( 'woocommerce_paypal_payments_payment_methods', $gateway_settings ) );
 	}
 
 	/**

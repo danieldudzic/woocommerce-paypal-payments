@@ -17,6 +17,7 @@ use WooCommerce\PayPalCommerce\Vendor\Inpsyde\Modularity\Module\ExecutableModule
 use WooCommerce\PayPalCommerce\Vendor\Inpsyde\Modularity\Module\ModuleClassNameIdTrait;
 use WooCommerce\PayPalCommerce\Vendor\Inpsyde\Modularity\Module\ServiceModule;
 use WooCommerce\PayPalCommerce\Vendor\Psr\Container\ContainerInterface;
+use WooCommerce\PayPalCommerce\WcGateway\Helper\DCCProductStatus;
 use WooCommerce\PayPalCommerce\WcGateway\Settings\Settings;
 
 /**
@@ -260,6 +261,20 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 
 				$onboarding_profile->set_completed( true );
 				$onboarding_profile->save();
+			}
+		);
+
+		add_filter(
+			'woocommerce_paypal_payments_payment_methods',
+			function( array $payment_methods ) use ( $container ) : array {
+				$dcc_product_status = $container->get( 'wcgateway.helper.dcc-product-status' );
+				assert( $dcc_product_status instanceof DCCProductStatus );
+
+				if ( $dcc_product_status->dcc_is_active() ) {
+					unset( $payment_methods['ppcp-card-button-gateway'] );
+				}
+
+				return $payment_methods;
 			}
 		);
 
