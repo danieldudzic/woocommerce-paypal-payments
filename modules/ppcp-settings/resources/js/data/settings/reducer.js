@@ -37,14 +37,6 @@ const defaultPersistent = Object.freeze( {
 	softDescriptor: '', // Payment descriptor on statements
 	landingPage: 'any', // PayPal checkout landing page
 	buttonLanguage: '', // Language for PayPal buttons
-
-	// TODO: Connection details are provided by the Common store.
-	sandboxAccountCredentials: false, // Use sandbox credentials
-	sandboxMode: null, // Sandbox mode configuration
-	sandboxEnabled: false, // Whether sandbox mode is active
-	sandboxClientId: '', // Sandbox API client ID
-	sandboxSecretKey: '', // Sandbox API secret key
-	sandboxConnected: false, // Sandbox connection status
 	disabledCards: [], // Disabled credit card types
 } );
 
