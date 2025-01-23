@@ -22,7 +22,7 @@ const TopNavigation = ( {
 	const className = classNames( 'ppcp-r-navigation-container', {
 		'ppcp--is-scrolled': isScrolled,
 	} );
-	const titleClassName = classNames( 'ppcp--title', {
+	const titleClassName = classNames( 'ppcp--nav-title', {
 		'ppcp--big': isMainTitle,
 	} );
 
