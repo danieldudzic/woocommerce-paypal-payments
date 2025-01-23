@@ -31,7 +31,7 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 	public static function should_use_the_old_ui() : bool {
 		return apply_filters(
 			'woocommerce_paypal_payments_should_use_the_old_ui',
-			(bool) get_option( SwitchSettingsUiEndpoint::OPTION_NAME_SHOULD_USE_OLD_UI ) === true
+			get_option( SwitchSettingsUiEndpoint::OPTION_NAME_SHOULD_USE_OLD_UI ) === 'yes'
 		);
 	}
 
@@ -101,6 +101,12 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 
 			return true;
 		}
+
+		add_action(
+			'woocommerce_paypal_payments_gateway_migrate_on_update',
+			static fn () => ! get_option( SwitchSettingsUiEndpoint::OPTION_NAME_SHOULD_USE_OLD_UI )
+				&& update_option( SwitchSettingsUiEndpoint::OPTION_NAME_SHOULD_USE_OLD_UI, 'yes' )
+		);
 
 		add_action(
 			'admin_enqueue_scripts',

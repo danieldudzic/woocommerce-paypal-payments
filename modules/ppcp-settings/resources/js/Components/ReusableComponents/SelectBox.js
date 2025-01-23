@@ -12,8 +12,31 @@ const SelectBox = ( props ) => {
 		boxClassName += ' selected';
 	}
 
+	const handleClick = () => {
+		if ( props.type === 'checkbox' ) {
+			let newValue;
+
+			if ( Array.isArray( props.currentValue ) ) {
+				if ( props.currentValue.includes( props.value ) ) {
+					newValue = props.currentValue.filter(
+						( optionValue ) => optionValue !== props.value
+					);
+				} else {
+					newValue = [ ...props.currentValue, props.value ];
+				}
+			} else {
+				newValue = ! props.currentValue;
+			}
+
+			props.changeCallback( newValue );
+		}
+	};
+
 	return (
-		<div className={ boxClassName }>
+		<div
+			className={ boxClassName }
+			onClick={ props.type === 'checkbox' ? handleClick : undefined }
+		>
 			{ props.type === 'radio' && (
 				<PayPalRdb
 					{ ...{
@@ -22,11 +45,7 @@ const SelectBox = ( props ) => {
 					} }
 				/>
 			) }
-			{ props.type === 'checkbox' && (
-				<PayPalCheckbox
-					{ ...props }
-				/>
-			) }
+			{ props.type === 'checkbox' && <PayPalCheckbox { ...props } /> }
 			<div className="ppcp-r-select-box__content">
 				<div className="ppcp-r-select-box__content-inner">
 					<span className="ppcp-r-select-box__title">
