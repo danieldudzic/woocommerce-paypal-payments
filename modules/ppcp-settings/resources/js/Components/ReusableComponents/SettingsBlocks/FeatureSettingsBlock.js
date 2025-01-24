@@ -12,7 +12,7 @@ const FeatureSettingsBlock = ( { title, description, ...props } ) => {
 		}
 
 		return (
-			<span className="ppcp-r-feature-item__notes">
+			<span className="ppcp--item-notes">
 				{ notes.map( ( note, index ) => (
 					<span key={ index }>{ note }</span>
 				) ) }
@@ -61,7 +61,7 @@ const FeatureSettingsBlock = ( { title, description, ...props } ) => {
 				</Description>
 			</Header>
 			<Action>
-				<div className="ppcp-r-feature-item__buttons">
+				<div className="ppcp--action-buttons">
 					{ props.actionProps?.buttons.map(
 						( {
 							class: className,
