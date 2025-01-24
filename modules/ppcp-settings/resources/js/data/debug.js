@@ -2,7 +2,10 @@ import {
 	OnboardingStoreName,
 	CommonStoreName,
 	PaymentStoreName,
+	SettingsStoreName,
+	StylingStoreName,
 } from './index';
+import { setCompleted } from './onboarding/actions';
 
 export const addDebugTools = ( context, modules ) => {
 	if ( ! context || ! context?.debug ) {
@@ -50,9 +53,10 @@ export const addDebugTools = ( context, modules ) => {
 
 			// Reset all stores, except for the onboarding store.
 			stores.push( CommonStoreName );
-			// TODO: Add other stores here once they are available.
-            stores.push( PaymentStoreName );
-        } else {
+			stores.push( PaymentStoreName );
+			stores.push( SettingsStoreName );
+			stores.push( StylingStoreName );
+		} else {
 			// Only reset the common & onboarding stores to restart the onboarding wizard.
 			stores.push( CommonStoreName );
 			stores.push( OnboardingStoreName );
@@ -79,5 +83,13 @@ export const addDebugTools = ( context, modules ) => {
 		console.log( 'Disconnected from PayPal. Reloading the page...' );
 
 		window.location.reload();
+	};
+
+	// Enters or completes the onboarding wizard without changing anything else.
+	context.onboardingMode = ( state ) => {
+		const onboarding = wp.data.dispatch( OnboardingStoreName );
+
+		onboarding.setCompleted( ! state );
+		onboarding.persist();
 	};
 };

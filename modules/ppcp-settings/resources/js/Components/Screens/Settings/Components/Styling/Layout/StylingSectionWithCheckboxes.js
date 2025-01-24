@@ -14,7 +14,7 @@ const StylingSectionWithCheckboxes = ( {
 	onChange,
 	children,
 } ) => {
-	className = classNames( 'has-checkboxes', className );
+	className = classNames( 'ppcp--has-checkboxes', className );
 
 	return (
 		<StylingSection

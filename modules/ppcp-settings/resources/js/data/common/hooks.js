@@ -133,6 +133,7 @@ export const useWebhooks = () => {
 		checkWebhookSimulationState,
 	};
 };
+
 export const useMerchantInfo = () => {
 	const { isReady, merchant, features } = useHooks();
 	const { refreshMerchantData } = useDispatch( STORE_NAME );

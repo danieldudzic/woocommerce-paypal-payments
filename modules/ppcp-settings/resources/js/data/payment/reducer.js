@@ -7,7 +7,7 @@
  * @file
  */
 
-import { createReducer, createSetters } from '../utils';
+import { createReducer, createReducerSetters } from '../utils';
 import ACTION_TYPES from './action-types';
 
 // Store structure.
@@ -37,25 +37,29 @@ const defaultPersistent = Object.freeze( {
 	'ppcp-multibanco': {},
 	'ppcp-pay-upon-invoice-gateway': {},
 	'ppcp-oxxo-gateway': {},
+	paypalShowLogo: false,
+	threeDSecure: 'no-3d-secure',
+	fastlaneCardholderName: false,
+	fastlaneDisplayWatermark: false,
 } );
 
 // Reducer logic.
 
-const [ setTransient, setPersistent ] = createSetters(
+const [ changeTransient, changePersistent ] = createReducerSetters(
 	defaultTransient,
 	defaultPersistent
 );
 
 const reducer = createReducer( defaultTransient, defaultPersistent, {
 	[ ACTION_TYPES.SET_TRANSIENT ]: ( state, payload ) =>
-		setTransient( state, payload ),
+		changeTransient( state, payload ),
 
 	[ ACTION_TYPES.SET_PERSISTENT ]: ( state, payload ) =>
-		setPersistent( state, payload ),
+		changePersistent( state, payload ),
 
 	[ ACTION_TYPES.RESET ]: ( state ) => {
-		const cleanState = setTransient(
-			setPersistent( state, defaultPersistent ),
+		const cleanState = changeTransient(
+			changePersistent( state, defaultPersistent ),
 			defaultTransient
 		);
 
@@ -66,7 +70,7 @@ const reducer = createReducer( defaultTransient, defaultPersistent, {
 	},
 
 	[ ACTION_TYPES.HYDRATE ]: ( state, payload ) =>
-		setPersistent( state, payload.data ),
+		changePersistent( state, payload.data ),
 } );
 
 export default reducer;

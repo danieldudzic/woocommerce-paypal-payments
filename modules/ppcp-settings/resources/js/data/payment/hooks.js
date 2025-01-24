@@ -56,6 +56,14 @@ const useHooks = () => {
 	const pui = usePersistent( 'ppcp-pay-upon-invoice-gateway' );
 	const oxxo = usePersistent( 'ppcp-oxxo-gateway' );
 
+	// Custom modal data.
+	const paypalShowLogo = usePersistent( 'paypalShowLogo' );
+	const threeDSecure = usePersistent( 'threeDSecure' );
+	const fastlaneCardholderName = usePersistent( 'fastlaneCardholderName' );
+	const fastlaneDisplayWatermark = usePersistent(
+		'fastlaneDisplayWatermark'
+	);
+
 	return {
 		persist,
 		isReady,
@@ -78,30 +86,93 @@ const useHooks = () => {
 		multibanco,
 		pui,
 		oxxo,
+		paypalShowLogo,
+		threeDSecure,
+		fastlaneCardholderName,
+		fastlaneDisplayWatermark,
 	};
 };
 
-export const useState = () => {
+export const useStore = () => {
 	const { persist, isReady } = useHooks();
 	return { persist, isReady };
 };
 
 export const usePaymentMethods = () => {
-	const { setPersistent } = useHooks();
+	const {
+		setPersistent,
+		paypal,
+		venmo,
+		payLater,
+		creditCard,
+		advancedCreditCard,
+		fastlane,
+		applePay,
+		googlePay,
+		bancontact,
+		blik,
+		eps,
+		ideal,
+		mybank,
+		p24,
+		trustly,
+		multibanco,
+		pui,
+		oxxo,
+	} = useHooks();
+
+	const paymentMethods = [
+		paypal,
+		venmo,
+		payLater,
+		creditCard,
+		advancedCreditCard,
+		fastlane,
+		applePay,
+		googlePay,
+		bancontact,
+		blik,
+		eps,
+		ideal,
+		mybank,
+		p24,
+		trustly,
+		multibanco,
+		pui,
+		oxxo,
+	];
 
 	return {
 		setPersistent,
+		paymentMethods,
+	};
+};
+
+export const usePaymentMethodsModal = () => {
+	const {
+		paypalShowLogo,
+		threeDSecure,
+		fastlaneCardholderName,
+		fastlaneDisplayWatermark,
+	} = useHooks();
+
+	return {
+		paypalShowLogo,
+		threeDSecure,
+		fastlaneCardholderName,
+		fastlaneDisplayWatermark,
 	};
 };
 
 export const usePaymentMethodsPayPalCheckout = () => {
 	const { paypal, venmo, payLater, creditCard } = useHooks();
+
 	const paymentMethodsPayPalCheckout = [
 		paypal,
 		venmo,
 		payLater,
 		creditCard,
-	];
+	].filter( ( item ) => Object.keys( item ).length !== 0 );
 
 	return {
 		paymentMethodsPayPalCheckout,
@@ -115,7 +186,7 @@ export const usePaymentMethodsOnlineCardPayments = () => {
 		fastlane,
 		applePay,
 		googlePay,
-	];
+	].filter( ( item ) => Object.keys( item ).length !== 0 );
 
 	return {
 		paymentMethodsOnlineCardPayments,
@@ -147,7 +218,7 @@ export const usePaymentMethodsAlternative = () => {
 		multibanco,
 		pui,
 		oxxo,
-	];
+	].filter( ( item ) => Object.keys( item ).length !== 0 );
 
 	return {
 		paymentMethodsAlternative,
