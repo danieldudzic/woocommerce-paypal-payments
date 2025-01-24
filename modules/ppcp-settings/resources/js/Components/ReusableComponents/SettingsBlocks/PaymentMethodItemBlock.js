@@ -1,4 +1,4 @@
-import { ToggleControl, Icon } from '@wordpress/components';
+import { ToggleControl, Icon, Button } from '@wordpress/components';
 import { cog } from '@wordpress/icons';
 
 import SettingsBlock from '../SettingsBlock';
@@ -32,12 +32,12 @@ const PaymentMethodItemBlock = ( {
 						onChange={ onSelect }
 					/>
 					{ paymentMethod?.fields && onTriggerModal && (
-						<div
+						<Button
 							className="ppcp--method-settings"
 							onClick={ onTriggerModal }
 						>
 							<Icon icon={ cog } />
-						</div>
+						</Button>
 					) }
 				</div>
 			</div>
