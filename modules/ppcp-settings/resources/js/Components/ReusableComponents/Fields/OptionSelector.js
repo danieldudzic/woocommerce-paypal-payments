@@ -62,18 +62,12 @@ const OptionItem = ( {
 				isSelected={ isSelected }
 			/>
 
-			<div className="ppcp-r-select-box__content">
-				<div className="ppcp-r-select-box__content-inner">
-					<span className="ppcp-r-select-box__title">
-						{ itemTitle }
-					</span>
-					<p className="ppcp-r-select-box__description">
-						{ itemDescription }
-					</p>
+			<div className="ppcp--box-content">
+				<div className="ppcp--box-content-inner">
+					<span className="ppcp--box-title">{ itemTitle }</span>
+					<p className="ppcp--box-description">{ itemDescription }</p>
 					{ children && (
-						<div className="ppcp-r-select-box__additional-content">
-							{ children }
-						</div>
+						<div className="ppcp--box-details">{ children }</div>
 					) }
 				</div>
 			</div>
