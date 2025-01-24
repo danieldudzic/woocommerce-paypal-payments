@@ -13,7 +13,7 @@ import SettingsCard from '../../../ReusableComponents/SettingsCard';
 import { TITLE_BADGE_POSITIVE } from '../../../ReusableComponents/TitleBadge';
 import { useMerchantInfo } from '../../../../data/common/hooks';
 import { STORE_NAME } from '../../../../data/common';
-import Features from '../Components/Overview/Features';
+import { getFeatures } from '../Components/Overview/Features';
 import { todosData } from '../todo-items';
 
 import {
@@ -58,7 +58,7 @@ const OverviewFeatures = () => {
 
 	// Get the features data with access to setActiveModal
 	const featuresData = useMemo(
-		() => Features.getFeatures( setActiveModal ),
+		() => getFeatures( setActiveModal ),
 		[ setActiveModal ]
 	);
 
