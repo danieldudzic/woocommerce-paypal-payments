@@ -9,6 +9,7 @@ import {
 	TodoSettingsBlock,
 	FeatureSettingsBlock,
 } from '../../../ReusableComponents/SettingsBlocks';
+import { Content, ContentWrapper } from '../../../ReusableComponents/Elements';
 import SettingsCard from '../../../ReusableComponents/SettingsCard';
 import { TITLE_BADGE_POSITIVE } from '../../../ReusableComponents/TitleBadge';
 import { useMerchantInfo } from '../../../../data/common/hooks';
@@ -106,7 +107,6 @@ const OverviewFeatures = () => {
 						icon: NOTIFICATION_SUCCESS,
 					}
 				);
-				console.log( 'Features refreshed successfully.' );
 			}
 		} finally {
 			setIsRefreshing( false );
@@ -118,72 +118,111 @@ const OverviewFeatures = () => {
 			className="ppcp-r-tab-overview-features"
 			title={ __( 'Features', 'woocommerce-paypal-payments' ) }
 			description={
-				<>
-					<p>
-						{ __(
-							'Enable additional features and capabilities on your WooCommerce store.',
-							'woocommerce-paypal-payments'
-						) }
-					</p>
-					<p>
-						{ __(
-							'Click Refresh to update your current features after making changes.',
-							'woocommerce-paypal-payments'
-						) }
-					</p>
-					<Button
-						variant="tertiary"
-						onClick={ refreshHandler }
-						disabled={ isRefreshing }
-					>
-						<Icon icon={ reusableBlock } size={ 18 } />
-						{ isRefreshing
-							? __( 'Refreshing…', 'woocommerce-paypal-payments' )
-							: __( 'Refresh', 'woocommerce-paypal-payments' ) }
-					</Button>
-				</>
+				<OverviewFeatureDescription
+					refreshHandler={ refreshHandler }
+					isRefreshing={ isRefreshing }
+				/>
 			}
-			contentItems={ features.map( ( feature ) => {
-				return (
-					<FeatureSettingsBlock
-						key={ feature.id }
+			contentContainer={ false }
+		>
+			<ContentWrapper>
+				{ features.map( ( { id, ...feature } ) => (
+					<OverviewFeatureItem
+						key={ id }
+						isBusy={ isRefreshing }
+						isSandbox={ merchant.isSandbox }
 						title={ feature.title }
 						description={ feature.description }
-						actionProps={ {
-							buttons: feature.buttons
-								.filter(
-									( button ) =>
-										! button.showWhen || // Learn more buttons
-										( feature.enabled &&
-											button.showWhen === 'enabled' ) ||
-										( ! feature.enabled &&
-											button.showWhen === 'disabled' )
-								)
-								.map( ( button ) => ( {
-									...button,
-									url: button.urls
-										? merchant?.isSandbox
-											? button.urls.sandbox
-											: button.urls.live
-										: button.url,
-								} ) ),
-							isBusy: isRefreshing,
-							enabled: feature.enabled,
-							notes: feature.notes,
-							badge: feature.enabled
-								? {
-										text: __(
-											'Active',
-											'woocommerce-paypal-payments'
-										),
-										type: TITLE_BADGE_POSITIVE,
-								  }
-								: undefined,
-						} }
+						buttons={ feature.buttons }
+						enabled={ feature.enabled }
+						notes={ feature.notes }
 					/>
-				);
-			} ) }
-		/>
+				) ) }
+			</ContentWrapper>
+		</SettingsCard>
+	);
+};
+
+const OverviewFeatureItem = ( {
+	isBusy,
+	isSandbox,
+	title,
+	description,
+	buttons,
+	enabled,
+	notes,
+} ) => {
+	const getButtonUrl = ( button ) => {
+		if ( button.urls ) {
+			return isSandbox ? button.urls.sandbox : button.urls.live;
+		}
+
+		return button.url;
+	};
+
+	const visibleButtons = buttons.filter(
+		( button ) =>
+			! button.showWhen || // Learn more buttons
+			( enabled && button.showWhen === 'enabled' ) ||
+			( ! enabled && button.showWhen === 'disabled' )
+	);
+
+	const actionProps = {
+		isBusy,
+		enabled,
+		notes,
+		buttons: visibleButtons.map( ( button ) => ( {
+			...button,
+			url: getButtonUrl( button ),
+		} ) ),
+	};
+
+	if ( enabled ) {
+		actionProps.badge = {
+			text: __( 'Active', 'woocommerce-paypal-payments' ),
+			type: TITLE_BADGE_POSITIVE,
+		};
+	}
+
+	return (
+		<Content>
+			<FeatureSettingsBlock
+				title={ title }
+				description={ description }
+				actionProps={ actionProps }
+			/>
+		</Content>
+	);
+};
+
+const OverviewFeatureDescription = ( { refreshHandler, isRefreshing } ) => {
+	const buttonLabel = isRefreshing
+		? __( 'Refreshing…', 'woocommerce-paypal-payments' )
+		: __( 'Refresh', 'woocommerce-paypal-payments' );
+
+	return (
+		<>
+			<p>
+				{ __(
+					'Enable additional features and capabilities on your WooCommerce store.',
+					'woocommerce-paypal-payments'
+				) }
+			</p>
+			<p>
+				{ __(
+					'Click Refresh to update your current features after making changes.',
+					'woocommerce-paypal-payments'
+				) }
+			</p>
+			<Button
+				variant="tertiary"
+				onClick={ refreshHandler }
+				disabled={ isRefreshing }
+			>
+				<Icon icon={ reusableBlock } size={ 18 } />
+				{ buttonLabel }
+			</Button>
+		</>
 	);
 };
 
@@ -196,51 +235,47 @@ const OverviewHelp = () => {
 				'Access detailed guides and responsive support to streamline setup and enhance your experience.',
 				'woocommerce-paypal-payments'
 			) }
-			contentItems={ [
-				<FeatureSettingsBlock
-					key="documentation"
-					title={ __(
-						'Documentation',
-						'woocommerce-paypal-payments'
-					) }
-					description={ __(
-						'Find detailed guides and resources to help you set up, manage, and optimize your PayPal integration.',
-						'woocommerce-paypal-payments'
-					) }
-					actionProps={ {
-						buttons: [
-							{
-								type: 'tertiary',
-								text: __(
-									'View full documentation',
-									'woocommerce-paypal-payments'
-								),
-								url: 'https://woocommerce.com/document/woocommerce-paypal-payments/ ',
-							},
-						],
-					} }
-				/>,
-				<FeatureSettingsBlock
-					key="support"
-					title={ __( 'Support', 'woocommerce-paypal-payments' ) }
-					description={ __(
-						'Need help? Access troubleshooting tips or contact our support team for personalized assistance.',
-						'woocommerce-paypal-payments'
-					) }
-					actionProps={ {
-						buttons: [
-							{
-								type: 'tertiary',
-								text: __(
-									'View support options',
-									'woocommerce-paypal-payments'
-								),
-								url: 'https://woocommerce.com/document/woocommerce-paypal-payments/#get-help ',
-							},
-						],
-					} }
-				/>,
-			] }
-		/>
+		>
+			<FeatureSettingsBlock
+				key="documentation"
+				title={ __( 'Documentation', 'woocommerce-paypal-payments' ) }
+				description={ __(
+					'Find detailed guides and resources to help you set up, manage, and optimize your PayPal integration.',
+					'woocommerce-paypal-payments'
+				) }
+				actionProps={ {
+					buttons: [
+						{
+							type: 'tertiary',
+							text: __(
+								'View full documentation',
+								'woocommerce-paypal-payments'
+							),
+							url: 'https://woocommerce.com/document/woocommerce-paypal-payments/ ',
+						},
+					],
+				} }
+			/>
+			<FeatureSettingsBlock
+				key="support"
+				title={ __( 'Support', 'woocommerce-paypal-payments' ) }
+				description={ __(
+					'Need help? Access troubleshooting tips or contact our support team for personalized assistance.',
+					'woocommerce-paypal-payments'
+				) }
+				actionProps={ {
+					buttons: [
+						{
+							type: 'tertiary',
+							text: __(
+								'View support options',
+								'woocommerce-paypal-payments'
+							),
+							url: 'https://woocommerce.com/document/woocommerce-paypal-payments/#get-help ',
+						},
+					],
+				} }
+			/>
+		</SettingsCard>
 	);
 };
