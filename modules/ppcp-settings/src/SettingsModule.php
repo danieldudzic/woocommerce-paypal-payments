@@ -278,20 +278,29 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 				$applepay_product_status = $container->get( 'applepay.apple-product-status' );
 				assert( $applepay_product_status instanceof AppleProductStatus );
 
+				// Unset BCDC if merchant is eligible for ACDC.
 				if ( $dcc_product_status->dcc_is_active() ) {
 					unset( $payment_methods['ppcp-card-button-gateway'] );
 				}
 
+				// Unset Venmo when store location is not United States.
 				if ( $container->get( 'api.shop.country' ) !== 'US' ) {
 					unset( $payment_methods['venmo'] );
 				}
 
+				// Unset if not eligible for Google Pay.
 				if ( ! $googlepay_product_status->is_active() ) {
 					unset( $payment_methods['ppcp-googlepay'] );
 				}
 
+				// Unset if not eligible for Apple Pay.
 				if ( ! $applepay_product_status->is_active() ) {
 					unset( $payment_methods['ppcp-applepay'] );
+				}
+
+				// Unset Fastlane if store location is not United States or merchant is not eligible for ACDC.
+				if ( $container->get( 'api.shop.country' ) !== 'US' || ! $dcc_product_status->dcc_is_active() ) {
+					unset( $payment_methods['ppcp-axo-gateway'] );
 				}
 
 				return $payment_methods;
