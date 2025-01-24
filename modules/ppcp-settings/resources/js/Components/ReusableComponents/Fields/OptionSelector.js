@@ -49,10 +49,12 @@ const OptionItem = ( {
 } ) => {
 	const boxClassName = classNames( 'ppcp-r-select-box', {
 		'ppcp--selected': isSelected,
+		'ppcp--multiselect': isMulti,
 	} );
 
 	return (
-		<div className={ boxClassName }>
+		// eslint-disable-next-line jsx-a11y/label-has-associated-control -- label has a nested input control.
+		<label className={ boxClassName }>
 			<InputField
 				value={ itemValue }
 				isRadio={ ! isMulti }
@@ -75,7 +77,7 @@ const OptionItem = ( {
 					) }
 				</div>
 			</div>
-		</div>
+		</label>
 	);
 };
 
