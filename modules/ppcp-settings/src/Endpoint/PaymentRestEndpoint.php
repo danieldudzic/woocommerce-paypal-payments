@@ -687,7 +687,7 @@ class PaymentRestEndpoint extends RestEndpoint {
 		$gateway_settings['fastlaneCardholderName']   = $this->settings->get_fastlane_cardholder_name();
 		$gateway_settings['fastlaneDisplayWatermark'] = $this->settings->get_fastlane_display_watermark();
 
-		return $this->return_success( $gateway_settings );
+		return $this->return_success( apply_filters( 'woocommerce_paypal_payments_payment_methods', $gateway_settings ) );
 	}
 
 	/**

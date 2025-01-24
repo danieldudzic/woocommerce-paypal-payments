@@ -1659,9 +1659,12 @@ return array(
 		$settings = $container->get( 'wcgateway.settings' );
 		assert( $settings instanceof ContainerInterface );
 
-		return $settings->has( 'allow_card_button_gateway' ) ?
+		return apply_filters(
+			'woocommerce_paypal_payments_enable_standard_card_button_gateway_settings',
+			$settings->has( 'allow_card_button_gateway' ) ?
 			(bool) $settings->get( 'allow_card_button_gateway' ) :
-			$container->get( 'wcgateway.settings.allow_card_button_gateway.default' );
+			$container->get( 'wcgateway.settings.allow_card_button_gateway.default' )
+		);
 	},
 	'wcgateway.settings.has_enabled_separate_button_gateways' => static function ( ContainerInterface $container ): bool {
 		return (bool) $container->get( 'wcgateway.settings.allow_card_button_gateway' );
