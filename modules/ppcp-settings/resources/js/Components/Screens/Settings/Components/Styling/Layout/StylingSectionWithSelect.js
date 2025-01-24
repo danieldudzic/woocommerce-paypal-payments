@@ -13,7 +13,7 @@ const StylingSectionWithSelect = ( {
 	onChange,
 	children,
 } ) => {
-	className = classNames( 'has-select', className );
+	className = classNames( 'ppcp--has-select', className );
 
 	return (
 		<StylingSection

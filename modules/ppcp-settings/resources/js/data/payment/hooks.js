@@ -93,7 +93,7 @@ const useHooks = () => {
 	};
 };
 
-export const useState = () => {
+export const useStore = () => {
 	const { persist, isReady } = useHooks();
 	return { persist, isReady };
 };

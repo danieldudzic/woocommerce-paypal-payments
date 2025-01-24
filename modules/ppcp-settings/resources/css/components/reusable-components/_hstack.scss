@@ -1,20 +1,31 @@
-.components-flex {
-	display: flex;
-	-webkit-box-align: stretch;
-	align-items: stretch;
-	flex-direction: column;
-	-webkit-box-pack: center;
-	justify-content: center;
+.ppcp-r-app {
+	.components-flex {
+		display: flex;
+		-webkit-box-align: stretch;
+		align-items: stretch;
+		-webkit-box-pack: center;
 
-	.components-h-stack {
-		flex-direction: row;
-		justify-content: flex-start;
-		gap: 32px;
+		.components-h-stack {
+			flex-direction: row;
+			justify-content: flex-start;
+			gap: 32px;
+		}
+
+		.components-v-stack {
+			flex-direction: column;
+			justify-content: center;
+		}
+
+		// Fix layout for checkboxes inside a flex-stack.
+		.components-checkbox-control > .components-base-control__field > .components-flex {
+			flex-direction: row;
+			gap: 12px;
+		}
 	}
 
-	// Fix layout for checkboxes inside a flex-stack.
-	.components-checkbox-control >.components-base-control__field > .components-flex {
+	.ppcp--horizontal {
 		flex-direction: row;
-		gap: 12px;
+		align-items: center;
+		justify-content: space-between;
 	}
 }

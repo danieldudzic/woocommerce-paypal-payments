@@ -36,16 +36,16 @@ const updateObject = ( oldObject, newValues, allowedKeys = {} ) => ( {
  * @param {Object} defaultPersistent Object defining initial persistent values.
  * @return {[Function, Function]} An array containing setTransient and setPersistent functions.
  */
-export const createSetters = ( defaultTransient, defaultPersistent ) => {
-	const setTransient = ( oldState, newValues = {} ) =>
+export const createReducerSetters = ( defaultTransient, defaultPersistent ) => {
+	const changeTransient = ( oldState, newValues = {} ) =>
 		updateObject( oldState, newValues, defaultTransient );
 
-	const setPersistent = ( oldState, newValues = {} ) => ( {
+	const changePersistent = ( oldState, newValues = {} ) => ( {
 		...oldState,
 		data: updateObject( oldState.data, newValues, defaultPersistent ),
 	} );
 
-	return [ setTransient, setPersistent ];
+	return [ changeTransient, changePersistent ];
 };
 
 /**

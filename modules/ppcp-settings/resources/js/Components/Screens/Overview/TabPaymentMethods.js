@@ -1,7 +1,7 @@
 import { __ } from '@wordpress/i18n';
 
 import SettingsCard from '../../ReusableComponents/SettingsCard';
-import PaymentMethodsBlock from '../../ReusableComponents/SettingsBlocks/PaymentMethodsBlock';
+import { PaymentMethodsBlock } from '../../ReusableComponents/SettingsBlocks';
 import { PaymentHooks } from '../../../data';
 import { useActiveModal } from '../../../data/common/hooks';
 import Modal from './TabSettingsElements/Blocks/Modal';

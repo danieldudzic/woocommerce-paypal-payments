@@ -1,4 +1,4 @@
-import SettingsBlock from './SettingsBlock';
+import SettingsBlock from '../SettingsBlock';
 import PaymentMethodItemBlock from './PaymentMethodItemBlock';
 import { usePaymentMethods } from '../../../data/payment/hooks';
 

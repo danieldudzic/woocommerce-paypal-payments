@@ -1,5 +1,6 @@
 import { ToggleControl } from '@wordpress/components';
-import SettingsBlock from './SettingsBlock';
+
+import SettingsBlock from '../SettingsBlock';
 import PaymentMethodIcon from '../PaymentMethodIcon';
 import data from '../../../utils/data';
 
