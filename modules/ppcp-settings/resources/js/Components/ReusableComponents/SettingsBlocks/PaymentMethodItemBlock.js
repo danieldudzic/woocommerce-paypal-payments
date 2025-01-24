@@ -14,10 +14,12 @@ const PaymentMethodItemBlock = ( {
 		<SettingsBlock className="ppcp-r-settings-block__payment-methods__item">
 			<div className="ppcp-r-settings-block__payment-methods__item__inner">
 				<div className="ppcp-r-settings-block__payment-methods__item__title-wrapper">
-					<PaymentMethodIcon
-						icons={ [ paymentMethod.icon ] }
-						type={ paymentMethod.icon }
-					/>
+					{ paymentMethod?.icon && (
+						<PaymentMethodIcon
+							icons={ [ paymentMethod.icon ] }
+							type={ paymentMethod.icon }
+						/>
+					) }
 					<span className="ppcp-r-settings-block__payment-methods__item__title">
 						{ paymentMethod.itemTitle }
 					</span>

@@ -576,7 +576,7 @@ class PaymentRestEndpoint extends RestEndpoint {
 					'OXXO is a Mexican chain of convenience stores. *Get PayPal account permission to use OXXO payment functionality by contacting us at (+52) 800–925–0304',
 					'woocommerce-paypal-payments'
 				),
-				'icon'            => '',
+				'icon'            => 'payment-method-oxxo',
 				'itemTitle'       => __( 'OXXO', 'woocommerce-paypal-payments' ),
 				'itemDescription' => __(
 					'OXXO is a Mexican chain of convenience stores. *Get PayPal account permission to use OXXO payment functionality by contacting us at (+52) 800–925–0304',
