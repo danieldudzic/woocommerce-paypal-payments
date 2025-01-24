@@ -669,7 +669,7 @@ class PaymentRestEndpoint extends RestEndpoint {
 
 			$gateway_settings[ $key ] = array(
 				'enabled'         => 'yes' === $gateway->enabled,
-				'title'           => $gateway->get_title(),
+				'title'           => str_replace( '&amp;', '&', $gateway->get_title() ),
 				'description'     => $gateway->get_description(),
 				'id'              => $this->gateways()[ $key ]['id'] ?? $key,
 				'icon'            => $this->gateways()[ $key ]['icon'] ?? '',
