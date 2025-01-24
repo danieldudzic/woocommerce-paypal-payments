@@ -45,7 +45,7 @@
 }
 
 @mixin disabled-state($control-type) {
-	.components-#{$control-type}-control.is-disabled {
+	.components-#{$control-type}-control.ppcp--is-disabled {
 		.components-#{$control-type}-control__input,
 		.components-#{$control-type}-control__label,
 		.components-base-control__help {

@@ -33,7 +33,7 @@
 		}
 
 		// Select-fields have a smaller gap between the header and input field.
-		&.has-select {
+		&.ppcp--has-select {
 			--block-header-gap: 8px;
 		}
 
@@ -58,7 +58,7 @@
 			margin-bottom: 28px;
 			border-bottom: 1px solid var(--color-separators);
 
-			&.no-gap,
+			&.ppcp--no-gap,
 			&:last-child {
 				padding-bottom: 0;
 				margin-bottom: 0;

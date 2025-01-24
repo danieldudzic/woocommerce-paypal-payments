@@ -5,14 +5,17 @@ import { useDispatch } from '@wordpress/data';
 import { reusableBlock } from '@wordpress/icons';
 import { store as noticesStore } from '@wordpress/notices';
 
+import {
+	TodoSettingsBlock,
+	FeatureSettingsBlock,
+} from '../../../ReusableComponents/SettingsBlocks';
 import SettingsCard from '../../../ReusableComponents/SettingsCard';
-import TodoSettingsBlock from '../../../ReusableComponents/SettingsBlocks/TodoSettingsBlock';
-import FeatureSettingsBlock from '../../../ReusableComponents/SettingsBlocks/FeatureSettingsBlock';
 import { TITLE_BADGE_POSITIVE } from '../../../ReusableComponents/TitleBadge';
 import { useMerchantInfo } from '../../../../data/common/hooks';
 import { STORE_NAME } from '../../../../data/common';
 import Features from '../Components/Overview/Features';
-import { todosData } from '../../../../data/settings/tab-overview-todos-data';
+import { todosData } from '../todo-items';
+
 import {
 	NOTIFICATION_ERROR,
 	NOTIFICATION_SUCCESS,
