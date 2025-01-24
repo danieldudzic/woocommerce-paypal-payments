@@ -95,10 +95,7 @@ const Features = {
 					{
 						type: 'tertiary',
 						text: __( 'Learn more', 'woocommerce-paypal-payments' ),
-						urls: {
-							sandbox: '#',
-							live: '#',
-						},
+						url: 'https://developer.paypal.com/studio/checkout/advanced',
 						class: 'small-button',
 					},
 				],
@@ -129,20 +126,14 @@ const Features = {
 					{
 						type: 'secondary',
 						text: __( 'Apply', 'woocommerce-paypal-payments' ),
-						urls: {
-							sandbox: '#',
-							live: '#',
-						},
+						url: 'https://developer.paypal.com/docs/checkout/apm/',
 						showWhen: 'disabled',
 						class: 'small-button',
 					},
 					{
 						type: 'tertiary',
 						text: __( 'Learn more', 'woocommerce-paypal-payments' ),
-						urls: {
-							sandbox: '#',
-							live: '#',
-						},
+						url: 'https://developer.paypal.com/docs/checkout/apm/',
 						class: 'small-button',
 					},
 				],
@@ -183,10 +174,7 @@ const Features = {
 					{
 						type: 'tertiary',
 						text: __( 'Learn more', 'woocommerce-paypal-payments' ),
-						urls: {
-							sandbox: '#',
-							live: '#',
-						},
+						url: 'https://developer.paypal.com/docs/checkout/apm/google-pay/',
 						class: 'small-button',
 					},
 				],
@@ -247,10 +235,7 @@ const Features = {
 					{
 						type: 'tertiary',
 						text: __( 'Learn more', 'woocommerce-paypal-payments' ),
-						urls: {
-							sandbox: '#',
-							live: '#',
-						},
+						url: 'https://developer.paypal.com/docs/checkout/apm/apple-pay/',
 						class: 'small-button',
 					},
 				],
@@ -290,10 +275,7 @@ const Features = {
 					{
 						type: 'tertiary',
 						text: __( 'Learn more', 'woocommerce-paypal-payments' ),
-						urls: {
-							sandbox: '#',
-							live: '#',
-						},
+						url: 'https://developer.paypal.com/studio/checkout/pay-later/us',
 						class: 'small-button',
 					},
 				],
