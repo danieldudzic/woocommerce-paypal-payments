@@ -297,7 +297,7 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 				assert( $dcc_applies instanceof DCCApplies );
 
 				// Unset BCDC if merchant is eligible for ACDC.
-				if ( $dcc_product_status->dcc_is_active() ) {
+				if ( $dcc_product_status->dcc_is_active() && ! $container->get( 'wcgateway.settings.allow_card_button_gateway' ) ) {
 					unset( $payment_methods[ CardButtonGateway::ID ] );
 				}
 
