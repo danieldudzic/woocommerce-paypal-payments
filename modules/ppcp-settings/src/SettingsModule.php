@@ -9,6 +9,8 @@ declare( strict_types = 1 );
 
 namespace WooCommerce\PayPalCommerce\Settings;
 
+use WooCommerce\PayPalCommerce\Applepay\Assets\AppleProductStatus;
+use WooCommerce\PayPalCommerce\Googlepay\Helper\ApmProductStatus;
 use WooCommerce\PayPalCommerce\Settings\Ajax\SwitchSettingsUiEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Data\OnboardingProfile;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\RestEndpoint;
@@ -270,12 +272,26 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 				$dcc_product_status = $container->get( 'wcgateway.helper.dcc-product-status' );
 				assert( $dcc_product_status instanceof DCCProductStatus );
 
+				$googlepay_product_status = $container->get( 'googlepay.helpers.apm-product-status' );
+				assert( $googlepay_product_status instanceof ApmProductStatus );
+
+				$applepay_product_status = $container->get( 'applepay.apple-product-status' );
+				assert( $applepay_product_status instanceof AppleProductStatus );
+
 				if ( $dcc_product_status->dcc_is_active() ) {
 					unset( $payment_methods['ppcp-card-button-gateway'] );
 				}
 
 				if ( $container->get( 'api.shop.country' ) !== 'US' ) {
 					unset( $payment_methods['venmo'] );
+				}
+
+				if ( ! $googlepay_product_status->is_active() ) {
+					unset( $payment_methods['ppcp-googlepay'] );
+				}
+
+				if ( ! $applepay_product_status->is_active() ) {
+					unset( $payment_methods['ppcp-applepay'] );
 				}
 
 				return $payment_methods;
