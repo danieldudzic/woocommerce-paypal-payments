@@ -13,7 +13,7 @@ import SettingsCard from '../../../ReusableComponents/SettingsCard';
 import { TITLE_BADGE_POSITIVE } from '../../../ReusableComponents/TitleBadge';
 import { useMerchantInfo } from '../../../../data/common/hooks';
 import { STORE_NAME } from '../../../../data/common';
-import { getFeatures } from '../Components/Overview/Features';
+import { getFeatures } from '../Components/Overview/features-config';
 import { todosData } from '../todo-items';
 
 import {
