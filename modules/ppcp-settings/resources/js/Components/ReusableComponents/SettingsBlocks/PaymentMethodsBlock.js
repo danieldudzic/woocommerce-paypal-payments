@@ -2,11 +2,7 @@ import SettingsBlock from '../SettingsBlock';
 import PaymentMethodItemBlock from './PaymentMethodItemBlock';
 import { usePaymentMethods } from '../../../data/payment/hooks';
 
-const PaymentMethodsBlock = ( {
-	paymentMethods,
-	className = '',
-	onTriggerModal,
-} ) => {
+const PaymentMethodsBlock = ( { paymentMethods, onTriggerModal } ) => {
 	const { setPersistent } = usePaymentMethods();
 
 	if ( ! paymentMethods?.length ) {
@@ -21,9 +17,7 @@ const PaymentMethodsBlock = ( {
 	};
 
 	return (
-		<SettingsBlock
-			className={ `ppcp-r-settings-block__payment-methods ${ className }` }
-		>
+		<SettingsBlock className="ppcp--grid ppcp-r-settings-block__payment-methods">
 			{ paymentMethods.map( ( paymentMethod ) => (
 				<PaymentMethodItemBlock
 					key={ paymentMethod.id }
