@@ -66,6 +66,7 @@ const Modal = ( { method, setModalIsVisible, onSave } ) => {
 				return (
 					<div className="ppcp-r-modal__field-row">
 						<TextControl
+							__nextHasNoMarginBottom={ true }
 							className="ppcp-r-vertical-text-control"
 							label={ field.label }
 							value={ settings[ key ] }
