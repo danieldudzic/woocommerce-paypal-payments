@@ -7,19 +7,16 @@ import {
 } from '@wordpress/components';
 import { useState } from '@wordpress/element';
 import PaymentMethodModal from '../../../../ReusableComponents/PaymentMethodModal';
-import {
-	usePaymentMethods,
-	usePaymentMethodsModal,
-} from '../../../../../data/payment/hooks';
+import { PaymentHooks } from '../../../../../data';
 
 const Modal = ( { method, setModalIsVisible, onSave } ) => {
-	const { paymentMethods } = usePaymentMethods();
+	const { paymentMethods } = PaymentHooks.usePaymentMethods();
 	const {
 		paypalShowLogo,
 		threeDSecure,
 		fastlaneCardholderName,
 		fastlaneDisplayWatermark,
-	} = usePaymentMethodsModal();
+	} = PaymentHooks.usePaymentMethodsModal();
 
 	const [ settings, setSettings ] = useState( () => {
 		if ( ! method?.id ) {
