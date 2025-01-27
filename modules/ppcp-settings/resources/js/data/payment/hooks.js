@@ -157,12 +157,13 @@ export const usePaymentMethodsModal = () => {
 
 export const usePaymentMethodsPayPalCheckout = () => {
 	const { paypal, venmo, payLater, creditCard } = useHooks();
+
 	const paymentMethodsPayPalCheckout = [
 		paypal,
 		venmo,
 		payLater,
 		creditCard,
-	];
+	].filter( ( item ) => Object.keys( item ).length !== 0 );
 
 	return { paymentMethodsPayPalCheckout };
 };
@@ -174,7 +175,7 @@ export const usePaymentMethodsOnlineCardPayments = () => {
 		fastlane,
 		applePay,
 		googlePay,
-	];
+	].filter( ( item ) => Object.keys( item ).length !== 0 );
 
 	return { paymentMethodsOnlineCardPayments };
 };
@@ -204,7 +205,7 @@ export const usePaymentMethodsAlternative = () => {
 		multibanco,
 		pui,
 		oxxo,
-	];
+	].filter( ( item ) => Object.keys( item ).length !== 0 );
 
 	return { paymentMethodsAlternative };
 };
