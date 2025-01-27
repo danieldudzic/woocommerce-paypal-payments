@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 
 import { CheckboxGroup } from '../../../../../ReusableComponents/Fields';
-import { HStack } from '../../../../../ReusableComponents/Stack';
+import { VStack } from '../../../../../ReusableComponents/Stack';
 import StylingSection from './StylingSection';
 
 const StylingSectionWithCheckboxes = ( {
@@ -23,13 +23,13 @@ const StylingSectionWithCheckboxes = ( {
 			description={ description }
 			separatorAndGap={ separatorAndGap }
 		>
-			<HStack spacing={ 6 }>
+			<VStack spacing={ 6 }>
 				<CheckboxGroup
 					options={ options }
 					value={ value }
 					onChange={ onChange }
 				/>
-			</HStack>
+			</VStack>
 
 			{ children }
 		</StylingSection>
