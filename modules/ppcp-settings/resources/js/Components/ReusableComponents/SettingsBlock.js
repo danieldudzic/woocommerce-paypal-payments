@@ -15,22 +15,6 @@ const SettingsBlock = ( {
 		'ppcp--horizontal': horizontalLayout,
 	} );
 
-	const BlockTitle = ( { blockTitle, blockSuffix, blockDescription } ) => {
-		if ( ! blockTitle && ! blockDescription ) {
-			return null;
-		}
-
-		return (
-			<Header>
-				<Title>
-					{ blockTitle }
-					<TitleExtra>{ blockSuffix }</TitleExtra>
-				</Title>
-				<Description>{ blockDescription }</Description>
-			</Header>
-		);
-	};
-
 	return (
 		<div className={ blockClassName }>
 			<BlockTitle
@@ -45,3 +29,19 @@ const SettingsBlock = ( {
 };
 
 export default SettingsBlock;
+
+const BlockTitle = ( { blockTitle, blockSuffix, blockDescription } ) => {
+	if ( ! blockTitle && ! blockDescription ) {
+		return null;
+	}
+
+	return (
+		<Header>
+			<Title>
+				{ blockTitle }
+				<TitleExtra>{ blockSuffix }</TitleExtra>
+			</Title>
+			<Description>{ blockDescription }</Description>
+		</Header>
+	);
+};

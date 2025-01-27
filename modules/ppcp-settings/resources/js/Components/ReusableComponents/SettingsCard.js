@@ -16,14 +16,6 @@ const SettingsCard = ( {
 		id,
 	};
 
-	const InnerContent = ( { showCards, children: containerItems } ) => {
-		if ( showCards ) {
-			return <Content>{ containerItems }</Content>;
-		}
-
-		return containerItems;
-	};
-
 	return (
 		<div { ...cardProps }>
 			<div className="ppcp-r-settings-card__header">
@@ -45,3 +37,11 @@ const SettingsCard = ( {
 };
 
 export default SettingsCard;
+
+const InnerContent = ( { showCards, children } ) => {
+	if ( showCards ) {
+		return <Content>{ children }</Content>;
+	}
+
+	return children;
+};
