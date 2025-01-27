@@ -95,7 +95,6 @@ export const useStore = () => {
 
 export const usePaymentMethods = () => {
 	const {
-		setPersistent,
 		paypal,
 		venmo,
 		payLater,
@@ -137,10 +136,7 @@ export const usePaymentMethods = () => {
 		oxxo,
 	];
 
-	return {
-		setPersistent,
-		paymentMethods,
-	};
+	return { paymentMethods };
 };
 
 export const usePaymentMethodsModal = () => {
@@ -168,9 +164,7 @@ export const usePaymentMethodsPayPalCheckout = () => {
 		creditCard,
 	];
 
-	return {
-		paymentMethodsPayPalCheckout,
-	};
+	return { paymentMethodsPayPalCheckout };
 };
 
 export const usePaymentMethodsOnlineCardPayments = () => {
@@ -182,9 +176,7 @@ export const usePaymentMethodsOnlineCardPayments = () => {
 		googlePay,
 	];
 
-	return {
-		paymentMethodsOnlineCardPayments,
-	};
+	return { paymentMethodsOnlineCardPayments };
 };
 
 export const usePaymentMethodsAlternative = () => {
@@ -214,7 +206,5 @@ export const usePaymentMethodsAlternative = () => {
 		oxxo,
 	];
 
-	return {
-		paymentMethodsAlternative,
-	};
+	return { paymentMethodsAlternative };
 };
