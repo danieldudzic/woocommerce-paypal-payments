@@ -7,60 +7,52 @@
  * @file
  */
 
-import { useSelect, useDispatch } from '@wordpress/data';
+import { useDispatch } from '@wordpress/data';
 
 import { STORE_NAME } from './constants';
-
-const useTransient = ( key ) =>
-	useSelect(
-		( select ) => select( STORE_NAME ).transientData()?.[ key ],
-		[ key ]
-	);
-
-const usePersistent = ( key ) =>
-	useSelect(
-		( select ) => select( STORE_NAME ).persistentData()?.[ key ],
-		[ key ]
-	);
+import { createHooksForStore } from '../utils';
 
 const useHooks = () => {
+	const { useTransient, usePersistent } = createHooksForStore( STORE_NAME );
 	const { persist, setPersistent } = useDispatch( STORE_NAME );
 
 	// Read-only flags and derived state.
 	// Nothing here yet.
 
 	// Transient accessors.
-	const isReady = useTransient( 'isReady' );
+	const [ isReady ] = useTransient( 'isReady' );
 
 	// PayPal checkout.
-	const paypal = usePersistent( 'ppcp-gateway' );
-	const venmo = usePersistent( 'venmo' );
-	const payLater = usePersistent( 'pay-later' );
-	const creditCard = usePersistent( 'ppcp-card-button-gateway' );
+	const [ paypal ] = usePersistent( 'ppcp-gateway' );
+	const [ venmo ] = usePersistent( 'venmo' );
+	const [ payLater ] = usePersistent( 'pay-later' );
+	const [ creditCard ] = usePersistent( 'ppcp-card-button-gateway' );
 
 	// Online card Payments.
-	const advancedCreditCard = usePersistent( 'ppcp-credit-card-gateway' );
-	const fastlane = usePersistent( 'ppcp-axo-gateway' );
-	const applePay = usePersistent( 'ppcp-applepay' );
-	const googlePay = usePersistent( 'ppcp-googlepay' );
+	const [ advancedCreditCard ] = usePersistent( 'ppcp-credit-card-gateway' );
+	const [ fastlane ] = usePersistent( 'ppcp-axo-gateway' );
+	const [ applePay ] = usePersistent( 'ppcp-applepay' );
+	const [ googlePay ] = usePersistent( 'ppcp-googlepay' );
 
 	// Alternative payment methods.
-	const bancontact = usePersistent( 'ppcp-bancontact' );
-	const blik = usePersistent( 'ppcp-blik' );
-	const eps = usePersistent( 'ppcp-eps' );
-	const ideal = usePersistent( 'ppcp-ideal' );
-	const mybank = usePersistent( 'ppcp-mybank' );
-	const p24 = usePersistent( 'ppcp-p24' );
-	const trustly = usePersistent( 'ppcp-trustly' );
-	const multibanco = usePersistent( 'ppcp-multibanco' );
-	const pui = usePersistent( 'ppcp-pay-upon-invoice-gateway' );
-	const oxxo = usePersistent( 'ppcp-oxxo-gateway' );
+	const [ bancontact ] = usePersistent( 'ppcp-bancontact' );
+	const [ blik ] = usePersistent( 'ppcp-blik' );
+	const [ eps ] = usePersistent( 'ppcp-eps' );
+	const [ ideal ] = usePersistent( 'ppcp-ideal' );
+	const [ mybank ] = usePersistent( 'ppcp-mybank' );
+	const [ p24 ] = usePersistent( 'ppcp-p24' );
+	const [ trustly ] = usePersistent( 'ppcp-trustly' );
+	const [ multibanco ] = usePersistent( 'ppcp-multibanco' );
+	const [ pui ] = usePersistent( 'ppcp-pay-upon-invoice-gateway' );
+	const [ oxxo ] = usePersistent( 'ppcp-oxxo-gateway' );
 
 	// Custom modal data.
-	const paypalShowLogo = usePersistent( 'paypalShowLogo' );
-	const threeDSecure = usePersistent( 'threeDSecure' );
-	const fastlaneCardholderName = usePersistent( 'fastlaneCardholderName' );
-	const fastlaneDisplayWatermark = usePersistent(
+	const [ paypalShowLogo ] = usePersistent( 'paypalShowLogo' );
+	const [ threeDSecure ] = usePersistent( 'threeDSecure' );
+	const [ fastlaneCardholderName ] = usePersistent(
+		'fastlaneCardholderName'
+	);
+	const [ fastlaneDisplayWatermark ] = usePersistent(
 		'fastlaneDisplayWatermark'
 	);
 
