@@ -31,9 +31,9 @@ const SettingsCard = ( {
 					<span className="ppcp-r-settings-card__title">
 						{ title }
 					</span>
-					<p className="ppcp-r-settings-card__description">
+					<div className="ppcp-r-settings-card__description">
 						{ description }
-					</p>
+					</div>
 				</div>
 			</div>
 
