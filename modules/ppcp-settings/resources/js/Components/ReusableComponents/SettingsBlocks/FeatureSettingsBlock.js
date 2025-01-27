@@ -46,6 +46,15 @@ const FeatureSettingsBlock = ( { title, description, ...props } ) => {
 		return <Button { ...buttonProps }>{ text }</Button>;
 	};
 
+	const renderDescription = () => {
+		return (
+			<span
+				className="ppcp-r-feature-item__description ppcp-r-settings-block__feature__description"
+				dangerouslySetInnerHTML={ { __html: description } }
+			/>
+		);
+	};
+
 	return (
 		<SettingsBlock { ...props } className="ppcp-r-settings-block__feature">
 			<Header>
@@ -56,7 +65,7 @@ const FeatureSettingsBlock = ( { title, description, ...props } ) => {
 					) }
 				</Title>
 				<Description className="ppcp-r-settings-block__feature__description">
-					{ description }
+					{ renderDescription() }
 					{ printNotes() }
 				</Description>
 			</Header>
