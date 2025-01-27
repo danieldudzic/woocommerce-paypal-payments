@@ -1,4 +1,5 @@
 import { __ } from '@wordpress/i18n';
+import { useCallback } from '@wordpress/element';
 
 import SettingsCard from '../../../ReusableComponents/SettingsCard';
 import { PaymentMethodsBlock } from '../../../ReusableComponents/SettingsBlocks';
@@ -9,20 +10,44 @@ import Modal from '../Components/Payment/Modal';
 const TabPaymentMethods = () => {
 	const methods = PaymentHooks.usePaymentMethods();
 	const { setPersistent, changePaymentSettings } = PaymentHooks.useStore();
-
 	const { activeModal, setActiveModal } = useActiveModal();
 
 	const getActiveMethod = () => {
 		if ( ! activeModal ) {
 			return null;
 		}
-
 		return methods.all.find( ( method ) => method.id === activeModal );
 	};
 
+	const handleSave = useCallback(
+		( methodId, settings ) => {
+			changePaymentSettings( methodId, {
+				title: settings.checkoutPageTitle,
+				description: settings.checkoutPageDescription,
+			} );
+
+			const persistentSettings = [
+				'paypalShowLogo',
+				'threeDSecure',
+				'fastlaneCardholderName',
+				'fastlaneDisplayWatermark',
+			];
+
+			persistentSettings.forEach( ( setting ) => {
+				if ( setting in settings ) {
+					// TODO: Create a dedicated setter for those values.
+					setPersistent( setting, settings[ setting ] );
+				}
+			} );
+
+			setActiveModal( null );
+		},
+		[ changePaymentSettings, setActiveModal, setPersistent ]
+	);
+
 	return (
 		<div className="ppcp-r-payment-methods">
-			<SettingsCard
+			<PaymentMethodCard
 				id="ppcp-paypal-checkout-card"
 				title={ __( 'PayPal Checkout', 'woocommerce-paypal-payments' ) }
 				description={ __(
@@ -30,14 +55,10 @@ const TabPaymentMethods = () => {
 					'woocommerce-paypal-payments'
 				) }
 				icon="icon-checkout-standard.svg"
-				contentContainer={ false }
-			>
-				<PaymentMethodsBlock
-					paymentMethods={ methods.paypal }
-					onTriggerModal={ setActiveModal }
-				/>
-			</SettingsCard>
-			<SettingsCard
+				methods={ methods.paypal }
+				onTriggerModal={ setActiveModal }
+			/>
+			<PaymentMethodCard
 				id="ppcp-card-payments-card"
 				title={ __(
 					'Online Card Payments',
@@ -48,14 +69,10 @@ const TabPaymentMethods = () => {
 					'woocommerce-paypal-payments'
 				) }
 				icon="icon-checkout-online-methods.svg"
-				contentContainer={ false }
-			>
-				<PaymentMethodsBlock
-					paymentMethods={ methods.cardPayment }
-					onTriggerModal={ setActiveModal }
-				/>
-			</SettingsCard>
-			<SettingsCard
+				methods={ methods.cardPayment }
+				onTriggerModal={ setActiveModal }
+			/>
+			<PaymentMethodCard
 				id="ppcp-alternative-payments-card"
 				title={ __(
 					'Alternative Payment Methods',
@@ -66,55 +83,15 @@ const TabPaymentMethods = () => {
 					'woocommerce-paypal-payments'
 				) }
 				icon="icon-checkout-alternative-methods.svg"
-				contentContainer={ false }
-			>
-				<PaymentMethodsBlock
-					paymentMethods={ methods.apm }
-					onTriggerModal={ setActiveModal }
-				/>
-			</SettingsCard>
+				methods={ methods.apm }
+				onTriggerModal={ setActiveModal }
+			/>
 
 			{ activeModal && (
 				<Modal
 					method={ getActiveMethod() }
 					setModalIsVisible={ () => setActiveModal( null ) }
-					onSave={ ( methodId, settings ) => {
-						changePaymentSettings( methodId, {
-							title: settings.checkoutPageTitle,
-							description: settings.checkoutPageDescription,
-						} );
-
-						if ( 'paypalShowLogo' in settings ) {
-							// TODO: Create a dedicated setter for this value.
-							setPersistent(
-								'paypalShowLogo',
-								settings.paypalShowLogo
-							);
-						}
-						if ( 'threeDSecure' in settings ) {
-							// TODO: Create a dedicated setter for this value.
-							setPersistent(
-								'threeDSecure',
-								settings.threeDSecure
-							);
-						}
-						if ( 'fastlaneCardholderName' in settings ) {
-							// TODO: Create a dedicated setter for this value.
-							setPersistent(
-								'fastlaneCardholderName',
-								settings.fastlaneCardholderName
-							);
-						}
-						if ( 'fastlaneDisplayWatermark' in settings ) {
-							// TODO: Create a dedicated setter for this value.
-							setPersistent(
-								'fastlaneDisplayWatermark',
-								settings.fastlaneDisplayWatermark
-							);
-						}
-
-						setActiveModal( null );
-					} }
+					onSave={ handleSave }
 				/>
 			) }
 		</div>
@@ -122,3 +99,25 @@ const TabPaymentMethods = () => {
 };
 
 export default TabPaymentMethods;
+
+const PaymentMethodCard = ( {
+	id,
+	title,
+	description,
+	icon,
+	methods,
+	onTriggerModal,
+} ) => (
+	<SettingsCard
+		id={ id }
+		title={ title }
+		description={ description }
+		icon={ icon }
+		contentContainer={ false }
+	>
+		<PaymentMethodsBlock
+			paymentMethods={ methods }
+			onTriggerModal={ onTriggerModal }
+		/>
+	</SettingsCard>
+);
