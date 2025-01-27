@@ -92,6 +92,7 @@ const TabPaymentMethods = () => {
 					method={ getActiveMethod() }
 					setModalIsVisible={ () => setActiveModal( null ) }
 					onSave={ ( methodId, settings ) => {
+						// TODO: Use the changePaymentSettings action.
 						setPersistent( methodId, {
 							...getActiveMethod(),
 							title: settings.checkoutPageTitle,
@@ -99,24 +100,28 @@ const TabPaymentMethods = () => {
 						} );
 
 						if ( 'paypalShowLogo' in settings ) {
+							// TODO: Create a dedicated setter for this value.
 							setPersistent(
 								'paypalShowLogo',
 								settings.paypalShowLogo
 							);
 						}
 						if ( 'threeDSecure' in settings ) {
+							// TODO: Create a dedicated setter for this value.
 							setPersistent(
 								'threeDSecure',
 								settings.threeDSecure
 							);
 						}
 						if ( 'fastlaneCardholderName' in settings ) {
+							// TODO: Create a dedicated setter for this value.
 							setPersistent(
 								'fastlaneCardholderName',
 								settings.fastlaneCardholderName
 							);
 						}
 						if ( 'fastlaneDisplayWatermark' in settings ) {
+							// TODO: Create a dedicated setter for this value.
 							setPersistent(
 								'fastlaneDisplayWatermark',
 								settings.fastlaneDisplayWatermark
