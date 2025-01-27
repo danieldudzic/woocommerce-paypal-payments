@@ -6,6 +6,7 @@ import StylingSection from './StylingSection';
 
 const StylingSectionWithCheckboxes = ( {
 	title,
+	name,
 	className = '',
 	description = '',
 	separatorAndGap = true,
@@ -14,7 +15,14 @@ const StylingSectionWithCheckboxes = ( {
 	onChange,
 	children,
 } ) => {
-	className = classNames( 'ppcp--has-checkboxes', className );
+	className = classNames( 'ppcp--has-checkboxes', name, className );
+
+	if ( ! name ) {
+		console.error(
+			'Checkbox sections need a unique name! No name given to:',
+			title
+		);
+	}
 
 	return (
 		<StylingSection
@@ -25,6 +33,7 @@ const StylingSectionWithCheckboxes = ( {
 		>
 			<VStack spacing={ 6 }>
 				<CheckboxGroup
+					name={ name }
 					options={ options }
 					value={ value }
 					onChange={ onChange }
