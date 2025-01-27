@@ -5,3 +5,9 @@
 	overflow: hidden;
 	text-overflow: ellipsis;
 }
+
+// Fix layout for checkboxes inside a flex-stack.
+.components-checkbox-control > .components-base-control__field > .components-flex {
+	flex-direction: row;
+	gap: 12px;
+}
