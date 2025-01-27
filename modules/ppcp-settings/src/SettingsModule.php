@@ -185,6 +185,7 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 					'wcPaymentsTabUrl'                => admin_url( 'admin.php?page=wc-settings&tab=checkout' ),
 					'debug'                           => defined( 'WP_DEBUG' ) && WP_DEBUG,
 					'isPayLaterConfiguratorAvailable' => $is_pay_later_configurator_available,
+					'storeCountry' => $container->get( 'wcgateway.store-country' ),
 				);
 
 				if ( $is_pay_later_configurator_available ) {
