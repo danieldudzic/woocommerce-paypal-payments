@@ -4,18 +4,16 @@ import { PaymentHooks } from '../../../data';
 
 // TODO: This is not a reusable component, as it's connected to the Redux store.
 const PaymentMethodsBlock = ( { paymentMethods = [], onTriggerModal } ) => {
-	const { setPersistent } = PaymentHooks.useStore();
+	const { changePaymentSettings } = PaymentHooks.useStore();
+
+	const handleSelect = ( methodId, isSelected ) =>
+		changePaymentSettings( methodId, {
+			enabled: isSelected,
+		} );
 
 	if ( ! paymentMethods.length ) {
 		return null;
 	}
-
-	const handleSelect = ( paymentMethod, isSelected ) => {
-		setPersistent( paymentMethod.id, {
-			...paymentMethod,
-			enabled: isSelected,
-		} );
-	};
 
 	return (
 		<SettingsBlock className="ppcp--grid ppcp-r-settings-block__payment-methods">
@@ -25,7 +23,7 @@ const PaymentMethodsBlock = ( { paymentMethods = [], onTriggerModal } ) => {
 					paymentMethod={ paymentMethod }
 					isSelected={ paymentMethod.enabled }
 					onSelect={ ( checked ) =>
-						handleSelect( paymentMethod, checked )
+						handleSelect( paymentMethod.id, checked )
 					}
 					onTriggerModal={ () =>
 						onTriggerModal?.( paymentMethod.id )
