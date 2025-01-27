@@ -1,11 +1,11 @@
 import { __ } from '@wordpress/i18n';
 
-import SettingsCard from '../../ReusableComponents/SettingsCard';
-import { PaymentMethodsBlock } from '../../ReusableComponents/SettingsBlocks';
-import { PaymentHooks } from '../../../data';
-import { useActiveModal } from '../../../data/common/hooks';
-import Modal from './TabSettingsElements/Blocks/Modal';
-import { usePaymentMethods } from '../../../data/payment/hooks';
+import SettingsCard from '../../../ReusableComponents/SettingsCard';
+import { PaymentMethodsBlock } from '../../../ReusableComponents/SettingsBlocks';
+import { PaymentHooks } from '../../../../data';
+import { useActiveModal } from '../../../../data/common/hooks';
+import { usePaymentMethods } from '../../../../data/payment/hooks';
+import Modal from '../Components/Payment/Modal';
 
 const TabPaymentMethods = () => {
 	const { paymentMethodsPayPalCheckout } =

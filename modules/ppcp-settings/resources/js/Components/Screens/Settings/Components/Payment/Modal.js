@@ -6,11 +6,12 @@ import {
 	RadioControl,
 } from '@wordpress/components';
 import { useState } from '@wordpress/element';
+
 import PaymentMethodModal from '../../../../ReusableComponents/PaymentMethodModal';
 import { PaymentHooks } from '../../../../../data';
 
 const Modal = ( { method, setModalIsVisible, onSave } ) => {
-	const { paymentMethods } = PaymentHooks.usePaymentMethods();
+	const paymentMethods = PaymentHooks.usePaymentMethods();
 	const {
 		paypalShowLogo,
 		threeDSecure,
