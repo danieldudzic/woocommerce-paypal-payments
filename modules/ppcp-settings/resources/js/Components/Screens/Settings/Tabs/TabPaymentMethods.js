@@ -7,13 +7,7 @@ import { useActiveModal } from '../../../../data/common/hooks';
 import Modal from '../Components/Payment/Modal';
 
 const TabPaymentMethods = () => {
-	const { paymentMethodsPayPalCheckout } =
-		PaymentHooks.usePaymentMethodsPayPalCheckout();
-	const { paymentMethodsOnlineCardPayments } =
-		PaymentHooks.usePaymentMethodsOnlineCardPayments();
-	const { paymentMethodsAlternative } =
-		PaymentHooks.usePaymentMethodsAlternative();
-
+	const methods = PaymentHooks.usePaymentMethods();
 	const { setPersistent, changePaymentSettings } = PaymentHooks.useStore();
 
 	const { activeModal, setActiveModal } = useActiveModal();
@@ -23,13 +17,7 @@ const TabPaymentMethods = () => {
 			return null;
 		}
 
-		const allMethods = [
-			...paymentMethodsPayPalCheckout,
-			...paymentMethodsOnlineCardPayments,
-			...paymentMethodsAlternative,
-		];
-
-		return allMethods.find( ( method ) => method.id === activeModal );
+		return methods.all.find( ( method ) => method.id === activeModal );
 	};
 
 	return (
@@ -45,7 +33,7 @@ const TabPaymentMethods = () => {
 				contentContainer={ false }
 			>
 				<PaymentMethodsBlock
-					paymentMethods={ paymentMethodsPayPalCheckout }
+					paymentMethods={ methods.paypal }
 					onTriggerModal={ setActiveModal }
 				/>
 			</SettingsCard>
@@ -63,7 +51,7 @@ const TabPaymentMethods = () => {
 				contentContainer={ false }
 			>
 				<PaymentMethodsBlock
-					paymentMethods={ paymentMethodsOnlineCardPayments }
+					paymentMethods={ methods.cardPayment }
 					onTriggerModal={ setActiveModal }
 				/>
 			</SettingsCard>
@@ -81,7 +69,7 @@ const TabPaymentMethods = () => {
 				contentContainer={ false }
 			>
 				<PaymentMethodsBlock
-					paymentMethods={ paymentMethodsAlternative }
+					paymentMethods={ methods.apm }
 					onTriggerModal={ setActiveModal }
 				/>
 			</SettingsCard>

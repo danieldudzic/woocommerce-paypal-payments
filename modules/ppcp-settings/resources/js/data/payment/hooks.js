@@ -95,14 +95,19 @@ export const useStore = () => {
 
 export const usePaymentMethods = () => {
 	const {
+		// PayPal Checkout.
 		paypal,
 		venmo,
 		payLater,
 		creditCard,
+
+		// Online card payments.
 		advancedCreditCard,
 		fastlane,
 		applePay,
 		googlePay,
+
+		// Local APMs.
 		bancontact,
 		blik,
 		eps,
@@ -115,6 +120,25 @@ export const usePaymentMethods = () => {
 		oxxo,
 	} = useHooks();
 
+	const payPalCheckout = [ paypal, venmo, payLater, creditCard ];
+	const onlineCardPayments = [
+		advancedCreditCard,
+		fastlane,
+		applePay,
+		googlePay,
+	];
+	const alternative = [
+		bancontact,
+		blik,
+		eps,
+		ideal,
+		mybank,
+		p24,
+		trustly,
+		multibanco,
+		pui,
+		oxxo,
+	];
 	const paymentMethods = [
 		paypal,
 		venmo,
@@ -136,7 +160,12 @@ export const usePaymentMethods = () => {
 		oxxo,
 	];
 
-	return { paymentMethods };
+	return {
+		all: paymentMethods,
+		paypal: payPalCheckout,
+		cardPayment: onlineCardPayments,
+		apm: alternative,
+	};
 };
 
 export const usePaymentMethodsModal = () => {
@@ -153,59 +182,4 @@ export const usePaymentMethodsModal = () => {
 		fastlaneCardholderName,
 		fastlaneDisplayWatermark,
 	};
-};
-
-export const usePaymentMethodsPayPalCheckout = () => {
-	const { paypal, venmo, payLater, creditCard } = useHooks();
-
-	const paymentMethodsPayPalCheckout = [
-		paypal,
-		venmo,
-		payLater,
-		creditCard,
-	].filter( ( item ) => Object.keys( item ).length !== 0 );
-
-	return { paymentMethodsPayPalCheckout };
-};
-
-export const usePaymentMethodsOnlineCardPayments = () => {
-	const { advancedCreditCard, fastlane, applePay, googlePay } = useHooks();
-	const paymentMethodsOnlineCardPayments = [
-		advancedCreditCard,
-		fastlane,
-		applePay,
-		googlePay,
-	].filter( ( item ) => Object.keys( item ).length !== 0 );
-
-	return { paymentMethodsOnlineCardPayments };
-};
-
-export const usePaymentMethodsAlternative = () => {
-	const {
-		bancontact,
-		blik,
-		eps,
-		ideal,
-		mybank,
-		p24,
-		trustly,
-		multibanco,
-		pui,
-		oxxo,
-	} = useHooks();
-
-	const paymentMethodsAlternative = [
-		bancontact,
-		blik,
-		eps,
-		ideal,
-		mybank,
-		p24,
-		trustly,
-		multibanco,
-		pui,
-		oxxo,
-	].filter( ( item ) => Object.keys( item ).length !== 0 );
-
-	return { paymentMethodsAlternative };
 };
