@@ -6,8 +6,19 @@
 	text-overflow: ellipsis;
 }
 
-// Fix layout for checkboxes inside a flex-stack.
+// Fix the checkbox layout (add gap between checkbox and label).
 .components-checkbox-control > .components-base-control__field > .components-flex {
 	flex-direction: row;
 	gap: 12px;
+}
+
+// Fix layout for radio groups inside a horizontal flex-stack.
+.components-flex.components-h-stack > .components-radio-control {
+	width: 100%;
+
+	.components-radio-control__group-wrapper {
+		justify-content: flex-start;
+		flex-direction: row;
+		gap: 12px;
+	}
 }
