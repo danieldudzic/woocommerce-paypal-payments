@@ -1,6 +1,6 @@
 import { __ } from '@wordpress/i18n';
 import { TAB_IDS, selectTab } from '../../../../../utils/tabSelector';
-import { payLaterMessagingComponentData } from '../../../../../data/settings/pay-later-messaging-component-data';
+import { payLaterMessaging } from './pay-later-messaging';
 
 export const getFeatures = ( setActiveModal ) => {
 	const storeCountry = ppcpSettings?.storeCountry;
@@ -237,7 +237,7 @@ export const getFeatures = ( setActiveModal ) => {
 		},
 	];
 
-	const countryData = payLaterMessagingComponentData[ storeCountry ] || {};
+	const countryData = payLaterMessaging[ storeCountry ] || {};
 
 	// Add "Pay Later Messaging" to the feature list, if it's available.
 	if (
