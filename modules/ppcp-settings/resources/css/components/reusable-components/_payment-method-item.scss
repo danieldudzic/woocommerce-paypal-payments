@@ -65,6 +65,11 @@
 			}
 		}
 
+		.ppcp--method-icon {
+			width: 30px;
+			height: 30px;
+		}
+
 		button.is-secondary {
 			@include small-button;
 		}
