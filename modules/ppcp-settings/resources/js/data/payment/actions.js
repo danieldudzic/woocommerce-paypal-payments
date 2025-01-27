@@ -69,6 +69,18 @@ export const setPersistent = ( prop, value ) => ( {
 export const setIsReady = ( isReady ) => setTransient( 'isReady', isReady );
 
 /**
+ * Modify properties of a specific payment method.
+ *
+ * @param {string} id    The payment method ID.
+ * @param {Object} props New props.
+ * @return {Action} The action.
+ */
+export const changePaymentSettings = ( id, props ) => ( {
+	type: ACTION_TYPES.CHANGE_PAYMENT_SETTING,
+	payload: { id, props },
+} );
+
+/**
  * Side effect. Triggers the persistence of store data to the server.
  *
  * @return {Action} The action.

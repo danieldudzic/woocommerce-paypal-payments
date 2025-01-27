@@ -14,7 +14,8 @@ import { createHooksForStore } from '../utils';
 
 const useHooks = () => {
 	const { useTransient, usePersistent } = createHooksForStore( STORE_NAME );
-	const { persist, setPersistent } = useDispatch( STORE_NAME );
+	const { persist, setPersistent, changePaymentSettings } =
+		useDispatch( STORE_NAME );
 
 	// Read-only flags and derived state.
 	// Nothing here yet.
@@ -60,6 +61,7 @@ const useHooks = () => {
 		persist,
 		isReady,
 		setPersistent,
+		changePaymentSettings,
 		paypal,
 		venmo,
 		payLater,
@@ -86,8 +88,9 @@ const useHooks = () => {
 };
 
 export const useStore = () => {
-	const { persist, isReady } = useHooks();
-	return { persist, isReady };
+	const { persist, isReady, setPersistent, changePaymentSettings } =
+		useHooks();
+	return { persist, isReady, setPersistent, changePaymentSettings };
 };
 
 export const usePaymentMethods = () => {
