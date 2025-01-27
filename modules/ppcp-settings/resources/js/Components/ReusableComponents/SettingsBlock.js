@@ -32,7 +32,7 @@ const SettingsBlock = ( {
 	};
 
 	return (
-		<div className={ blockClassName }>
+		<div className={ blockClassName } id={ className }>
 			<BlockTitle
 				blockTitle={ title }
 				blockSuffix={ titleSuffix }

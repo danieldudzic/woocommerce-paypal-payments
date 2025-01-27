@@ -22,11 +22,9 @@ const Features = {
 						text: __( 'Configure', 'woocommerce-paypal-payments' ),
 						onClick: () => {
 							selectTab(
-								TAB_IDS.PAYMENT_METHODS,
-								'ppcp-paypal-checkout-card'
-							).then( () => {
-								setActiveModal( 'paypal' );
-							} );
+								TAB_IDS.SETTINGS,
+								'ppcp--save-payment-methods'
+							);
 						},
 						showWhen: 'enabled',
 						class: 'small-button',
