@@ -17,19 +17,22 @@ const PaymentMethodsBlock = ( { paymentMethods = [], onTriggerModal } ) => {
 
 	return (
 		<SettingsBlock className="ppcp--grid ppcp-r-settings-block__payment-methods">
-			{ paymentMethods.map( ( paymentMethod ) => (
-				<PaymentMethodItemBlock
-					key={ paymentMethod.id }
-					paymentMethod={ paymentMethod }
-					isSelected={ paymentMethod.enabled }
-					onSelect={ ( checked ) =>
-						handleSelect( paymentMethod.id, checked )
-					}
-					onTriggerModal={ () =>
-						onTriggerModal?.( paymentMethod.id )
-					}
-				/>
-			) ) }
+			{ paymentMethods
+				// Remove empty/invalid payment method entries.
+				.filter( ( m ) => m.id )
+				.map( ( paymentMethod ) => (
+					<PaymentMethodItemBlock
+						key={ paymentMethod.id }
+						paymentMethod={ paymentMethod }
+						isSelected={ paymentMethod.enabled }
+						onSelect={ ( checked ) =>
+							handleSelect( paymentMethod.id, checked )
+						}
+						onTriggerModal={ () =>
+							onTriggerModal?.( paymentMethod.id )
+						}
+					/>
+				) ) }
 		</SettingsBlock>
 	);
 };
