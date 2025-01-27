@@ -1,12 +1,12 @@
 /**
- * Temporary component, until the experimental HStack block editor component is stable.
+ * Temporary component, until the experimental VStack/HStack block editor component is stable.
  *
  * @see https://wordpress.github.io/gutenberg/?path=/docs/components-experimental-hstack--docs
  * @file
  */
 import classNames from 'classnames';
 
-const HStack = ( { className, spacing = 3, children } ) => {
+export const HStack = ( { className, spacing = 3, children } ) => {
 	const wrapperClass = classNames(
 		'components-flex components-h-stack',
 		className
@@ -22,5 +22,3 @@ const HStack = ( { className, spacing = 3, children } ) => {
 		</div>
 	);
 };
-
-export default HStack;
