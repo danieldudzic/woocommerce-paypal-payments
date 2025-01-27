@@ -1,11 +1,12 @@
 import SettingsBlock from '../SettingsBlock';
 import PaymentMethodItemBlock from './PaymentMethodItemBlock';
-import { usePaymentMethods } from '../../../data/payment/hooks';
+import { PaymentHooks } from '../../../data';
 
-const PaymentMethodsBlock = ( { paymentMethods, onTriggerModal } ) => {
-	const { setPersistent } = usePaymentMethods();
+// TODO: This is not a reusable component, as it's connected to the Redux store.
+const PaymentMethodsBlock = ( { paymentMethods = [], onTriggerModal } ) => {
+	const { setPersistent } = PaymentHooks.useStore();
 
-	if ( ! paymentMethods?.length ) {
+	if ( ! paymentMethods.length ) {
 		return null;
 	}
 
