@@ -4,7 +4,6 @@ import SettingsCard from '../../../ReusableComponents/SettingsCard';
 import { PaymentMethodsBlock } from '../../../ReusableComponents/SettingsBlocks';
 import { PaymentHooks } from '../../../../data';
 import { useActiveModal } from '../../../../data/common/hooks';
-import { usePaymentMethods } from '../../../../data/payment/hooks';
 import Modal from '../Components/Payment/Modal';
 
 const TabPaymentMethods = () => {
@@ -15,7 +14,7 @@ const TabPaymentMethods = () => {
 	const { paymentMethodsAlternative } =
 		PaymentHooks.usePaymentMethodsAlternative();
 
-	const { setPersistent } = usePaymentMethods();
+	const { setPersistent, changePaymentSettings } = PaymentHooks.useStore();
 
 	const { activeModal, setActiveModal } = useActiveModal();
 
@@ -92,9 +91,7 @@ const TabPaymentMethods = () => {
 					method={ getActiveMethod() }
 					setModalIsVisible={ () => setActiveModal( null ) }
 					onSave={ ( methodId, settings ) => {
-						// TODO: Use the changePaymentSettings action.
-						setPersistent( methodId, {
-							...getActiveMethod(),
+						changePaymentSettings( methodId, {
 							title: settings.checkoutPageTitle,
 							description: settings.checkoutPageDescription,
 						} );
