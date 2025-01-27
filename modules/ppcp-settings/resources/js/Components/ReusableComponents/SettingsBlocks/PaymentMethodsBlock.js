@@ -1,4 +1,4 @@
-import SettingsBlock from './SettingsBlock';
+import SettingsBlock from '../SettingsBlock';
 import PaymentMethodItemBlock from './PaymentMethodItemBlock';
 import { usePaymentMethods } from '../../../data/payment/hooks';
 
@@ -27,7 +27,7 @@ const PaymentMethodsBlock = ( {
 			{ paymentMethods.map( ( paymentMethod ) => (
 				<PaymentMethodItemBlock
 					key={ paymentMethod.id }
-					{ ...paymentMethod }
+					paymentMethod={ paymentMethod }
 					isSelected={ paymentMethod.enabled }
 					onSelect={ ( checked ) =>
 						handleSelect( paymentMethod, checked )

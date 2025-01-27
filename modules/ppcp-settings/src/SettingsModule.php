@@ -9,6 +9,17 @@ declare( strict_types = 1 );
 
 namespace WooCommerce\PayPalCommerce\Settings;
 
+use WooCommerce\PayPalCommerce\ApiClient\Helper\DccApplies;
+use WooCommerce\PayPalCommerce\Applepay\Assets\AppleProductStatus;
+use WooCommerce\PayPalCommerce\Googlepay\Helper\ApmProductStatus;
+use WooCommerce\PayPalCommerce\LocalAlternativePaymentMethods\BancontactGateway;
+use WooCommerce\PayPalCommerce\LocalAlternativePaymentMethods\BlikGateway;
+use WooCommerce\PayPalCommerce\LocalAlternativePaymentMethods\EPSGateway;
+use WooCommerce\PayPalCommerce\LocalAlternativePaymentMethods\IDealGateway;
+use WooCommerce\PayPalCommerce\LocalAlternativePaymentMethods\MultibancoGateway;
+use WooCommerce\PayPalCommerce\LocalAlternativePaymentMethods\MyBankGateway;
+use WooCommerce\PayPalCommerce\LocalAlternativePaymentMethods\P24Gateway;
+use WooCommerce\PayPalCommerce\LocalAlternativePaymentMethods\TrustlyGateway;
 use WooCommerce\PayPalCommerce\Settings\Ajax\SwitchSettingsUiEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Data\OnboardingProfile;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\RestEndpoint;
@@ -17,6 +28,11 @@ use WooCommerce\PayPalCommerce\Vendor\Inpsyde\Modularity\Module\ExecutableModule
 use WooCommerce\PayPalCommerce\Vendor\Inpsyde\Modularity\Module\ModuleClassNameIdTrait;
 use WooCommerce\PayPalCommerce\Vendor\Inpsyde\Modularity\Module\ServiceModule;
 use WooCommerce\PayPalCommerce\Vendor\Psr\Container\ContainerInterface;
+use WooCommerce\PayPalCommerce\WcGateway\Gateway\CardButtonGateway;
+use WooCommerce\PayPalCommerce\WcGateway\Gateway\CreditCardGateway;
+use WooCommerce\PayPalCommerce\WcGateway\Gateway\OXXO\OXXO;
+use WooCommerce\PayPalCommerce\WcGateway\Gateway\PayUponInvoice\PayUponInvoiceGateway;
+use WooCommerce\PayPalCommerce\WcGateway\Helper\DCCProductStatus;
 use WooCommerce\PayPalCommerce\WcGateway\Settings\Settings;
 
 /**
@@ -31,7 +47,7 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 	public static function should_use_the_old_ui() : bool {
 		return apply_filters(
 			'woocommerce_paypal_payments_should_use_the_old_ui',
-			(bool) get_option( SwitchSettingsUiEndpoint::OPTION_NAME_SHOULD_USE_OLD_UI ) === true
+			get_option( SwitchSettingsUiEndpoint::OPTION_NAME_SHOULD_USE_OLD_UI ) === 'yes'
 		);
 	}
 
@@ -101,6 +117,12 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 
 			return true;
 		}
+
+		add_action(
+			'woocommerce_paypal_payments_gateway_migrate_on_update',
+			static fn () => ! get_option( SwitchSettingsUiEndpoint::OPTION_NAME_SHOULD_USE_OLD_UI )
+				&& update_option( SwitchSettingsUiEndpoint::OPTION_NAME_SHOULD_USE_OLD_UI, 'yes' )
+		);
 
 		add_action(
 			'admin_enqueue_scripts',
@@ -254,6 +276,69 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 
 				$onboarding_profile->set_completed( true );
 				$onboarding_profile->save();
+			}
+		);
+
+		add_filter(
+			'woocommerce_paypal_payments_payment_methods',
+			function( array $payment_methods ) use ( $container ) : array {
+				$all_payment_methods = $payment_methods;
+
+				$dcc_product_status = $container->get( 'wcgateway.helper.dcc-product-status' );
+				assert( $dcc_product_status instanceof DCCProductStatus );
+
+				$googlepay_product_status = $container->get( 'googlepay.helpers.apm-product-status' );
+				assert( $googlepay_product_status instanceof ApmProductStatus );
+
+				$applepay_product_status = $container->get( 'applepay.apple-product-status' );
+				assert( $applepay_product_status instanceof AppleProductStatus );
+
+				$dcc_applies = $container->get( 'api.helpers.dccapplies' );
+				assert( $dcc_applies instanceof DCCApplies );
+
+				// Unset BCDC if merchant is eligible for ACDC.
+				if ( $dcc_product_status->dcc_is_active() && ! $container->get( 'wcgateway.settings.allow_card_button_gateway' ) ) {
+					unset( $payment_methods[ CardButtonGateway::ID ] );
+				}
+
+				// Unset Venmo when store location is not United States.
+				if ( $container->get( 'api.shop.country' ) !== 'US' ) {
+					unset( $payment_methods['venmo'] );
+				}
+
+				// Unset if not eligible for Google Pay.
+				if ( ! $googlepay_product_status->is_active() ) {
+					unset( $payment_methods['ppcp-googlepay'] );
+				}
+
+				// Unset if not eligible for Apple Pay.
+				if ( ! $applepay_product_status->is_active() ) {
+					unset( $payment_methods['ppcp-applepay'] );
+				}
+
+				// Unset Fastlane if store location is not United States or merchant is not eligible for ACDC.
+				if ( $container->get( 'api.shop.country' ) !== 'US' || ! $dcc_product_status->dcc_is_active() ) {
+					unset( $payment_methods['ppcp-axo-gateway'] );
+				}
+
+				// For non-ACDC regions unset ACDC, local APMs and set BCDC.
+				if ( ! $dcc_applies ) {
+					unset( $payment_methods[ CreditCardGateway::ID ] );
+					unset( $payment_methods[ BancontactGateway::ID ] );
+					unset( $payment_methods[ BlikGateway::ID ] );
+					unset( $payment_methods[ EPSGateway::ID ] );
+					unset( $payment_methods[ IDealGateway::ID ] );
+					unset( $payment_methods[ MyBankGateway::ID ] );
+					unset( $payment_methods[ P24Gateway::ID ] );
+					unset( $payment_methods[ TrustlyGateway::ID ] );
+					unset( $payment_methods[ MultibancoGateway::ID ] );
+					unset( $payment_methods[ PayUponInvoiceGateway::ID ] );
+					unset( $payment_methods[ OXXO::ID ] );
+
+					$payment_methods[ CardButtonGateway::ID ] = $all_payment_methods[ CardButtonGateway::ID ];
+				}
+
+				return $payment_methods;
 			}
 		);
 
