@@ -5,7 +5,7 @@
  * @package WooCommerce\PayPalCommerce\Settings\Data
  */
 
-declare(strict_types=1);
+declare( strict_types = 1 );
 
 namespace WooCommerce\PayPalCommerce\Settings\Data;
 
@@ -14,7 +14,7 @@ use WooCommerce\PayPalCommerce\ApiClient\Exception\RuntimeException;
 /**
  * Class TodosModel
  *
- * Handles the storage and retrieval of todo completion states in WordPress options table.
+ * Handles the storage and retrieval of task completion states in WordPress options table.
  * Provides methods to get and update completion states with proper type casting.
  */
 class TodosModel {
@@ -23,7 +23,7 @@ class TodosModel {
 	 *
 	 * @var string
 	 */
-	const OPTION_NAME = 'ppcp_todos';
+	protected const OPTION_NAME = 'ppcp_todos';
 
 	/**
 	 * Retrieves the formatted completion states from WordPress options.
@@ -33,12 +33,16 @@ class TodosModel {
 	 *
 	 * @return array The formatted completion states array.
 	 */
-	public function get(): array {
+	public function get() : array {
 		$completion_states = get_option( self::OPTION_NAME, array() );
+
 		return array_map(
-			static function ( $state ) {
-				return (bool) $state;
-			},
+		/**
+		 * Ensures the task completion states are boolean values.
+		 *
+		 * @param mixed $state value to sanitize, as stored in the DB.
+		 */
+			static fn( $state ) => (bool) $state,
 			$completion_states
 		);
 	}
@@ -49,11 +53,11 @@ class TodosModel {
 	 * Converts the provided data array and saves it to wp_options table.
 	 * Throws an exception if update fails.
 	 *
-	 * @param array $states Array of todo IDs and their completion states.
+	 * @param array $states Array of task IDs and their completion states.
 	 * @return void
 	 * @throws RuntimeException When the completion states update fails.
 	 */
-	public function update( array $states ): void {
+	public function update( array $states ) : void {
 		$completion_states = array_map(
 			static function ( $state ) {
 				return (bool) $state;
