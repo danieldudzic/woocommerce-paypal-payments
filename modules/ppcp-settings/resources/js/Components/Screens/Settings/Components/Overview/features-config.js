@@ -18,11 +18,9 @@ export const getFeatures = ( setActiveModal ) => {
 					text: __( 'Configure', 'woocommerce-paypal-payments' ),
 					onClick: () => {
 						selectTab(
-							TAB_IDS.PAYMENT_METHODS,
-							'ppcp-paypal-checkout-card'
-						).then( () => {
-							setActiveModal( 'paypal' );
-						} );
+							TAB_IDS.SETTINGS,
+							'ppcp--save-payment-methods'
+						);
 					},
 					showWhen: 'enabled',
 					class: 'small-button',
@@ -68,9 +66,7 @@ export const getFeatures = ( setActiveModal ) => {
 							TAB_IDS.PAYMENT_METHODS,
 							'ppcp-card-payments-card'
 						).then( () => {
-							setActiveModal(
-								'advanced_credit_and_debit_card_payments'
-							);
+							setActiveModal( 'ppcp-credit-card-gateway' );
 						} );
 					},
 					showWhen: 'enabled',
@@ -149,7 +145,7 @@ export const getFeatures = ( setActiveModal ) => {
 							TAB_IDS.PAYMENT_METHODS,
 							'ppcp-card-payments-card'
 						).then( () => {
-							setActiveModal( 'google_pay' );
+							setActiveModal( 'ppcp-googlepay' );
 						} );
 					},
 					showWhen: 'enabled',
@@ -196,7 +192,7 @@ export const getFeatures = ( setActiveModal ) => {
 							TAB_IDS.PAYMENT_METHODS,
 							'ppcp-card-payments-card'
 						).then( () => {
-							setActiveModal( 'apple_pay' );
+							setActiveModal( 'ppcp-applepay' );
 						} );
 					},
 					showWhen: 'enabled',
@@ -239,7 +235,6 @@ export const getFeatures = ( setActiveModal ) => {
 
 	const countryData = payLaterMessaging[ storeCountry ] || {};
 
-	// Add "Pay Later Messaging" to the feature list, if it's available.
 	if (
 		!! window.ppcpSettings?.isPayLaterConfiguratorAvailable &&
 		countryData
@@ -256,12 +251,7 @@ export const getFeatures = ( setActiveModal ) => {
 					type: 'secondary',
 					text: __( 'Configure', 'woocommerce-paypal-payments' ),
 					onClick: () => {
-						selectTab(
-							TAB_IDS.PAYMENT_METHODS,
-							'ppcp-paypal-checkout-card'
-						).then( () => {
-							setActiveModal( 'paypal' );
-						} );
+						selectTab( TAB_IDS.PAY_LATER_MESSAGING );
 					},
 					showWhen: 'enabled',
 					class: 'small-button',
