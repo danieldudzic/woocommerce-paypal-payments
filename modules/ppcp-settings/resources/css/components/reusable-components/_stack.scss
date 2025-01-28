@@ -11,7 +11,7 @@
 		flex-direction: row;
 		align-items: center;
 	}
-	
+
 	.ppcp--horizontal {
 		justify-content: space-between;
 	}
@@ -19,5 +19,6 @@
 	.components-flex.components-v-stack {
 		flex-direction: column;
 		justify-content: center;
+		align-items: flex-start;
 	}
 }
