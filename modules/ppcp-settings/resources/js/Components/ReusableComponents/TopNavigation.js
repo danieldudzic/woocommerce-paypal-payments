@@ -16,9 +16,9 @@ const TopNavigation = ( {
 	onTitleClick = null,
 	showProgressBar = false,
 	progressBarPercent = 0,
-	tabs,
-	activePanel,
-	setActivePanel,
+	tabs = [],
+	activePanel = '',
+	setActivePanel = () => {},
 } ) => {
 	const { goToWooCommercePaymentsTab } = useNavigation();
 	const { isScrolled } = useIsScrolled();
@@ -69,11 +69,13 @@ const TopNavigation = ( {
 						{ children }
 					</BusyStateWrapper>
 				</div>
-				<TabNavigation
-					tabs={ tabs }
-					activePanel={ activePanel }
-					setActivePanel={ setActivePanel }
-				></TabNavigation>
+				{ tabs.length > 0 && (
+					<TabNavigation
+						tabs={ tabs }
+						activePanel={ activePanel }
+						setActivePanel={ setActivePanel }
+					/>
+				) }
 
 				{ showProgressBar && (
 					<ProgressBar percent={ progressBarPercent } />
