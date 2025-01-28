@@ -1,10 +1,12 @@
+$margin_bottom: 48px;
+
 .ppcp-r-navigation-container {
 	position: sticky;
 	top: var(--wp-admin--admin-bar--height);
 	z-index: 10;
 
 	padding: 10px 48px;
-	margin: 0 -20px 48px -20px;
+	margin: 0 -20px #{$margin_bottom} -20px;
 
 	box-shadow: 0 -1px 0 0 $color-gray-300 inset;
 	background: var(--ppcp-color-app-bg);
@@ -81,6 +83,12 @@
 
 	&.ppcp--is-scrolled {
 		box-shadow: 0 -1px 0 0 $color-gray-300 inset, 0 8px 8px 0 rgba(85, 93, 102, .3);
+	}
+
+	+ .ppcp--top-sub-navigation {
+		position: relative;
+		margin: -#{$margin_bottom } -20px #{$margin_bottom};
+		padding: 24px 20px 0;
 	}
 
 	@media screen and (max-width: 782px) {
