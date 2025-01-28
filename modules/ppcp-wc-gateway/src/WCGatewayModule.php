@@ -15,6 +15,7 @@ use Throwable;
 use WooCommerce\PayPalCommerce\AdminNotices\Entity\Message;
 use WooCommerce\PayPalCommerce\ApiClient\Endpoint\BillingAgreementsEndpoint;
 use WooCommerce\PayPalCommerce\ApiClient\Endpoint\Orders;
+use WooCommerce\PayPalCommerce\ApiClient\Endpoint\PartnersEndpoint;
 use WooCommerce\PayPalCommerce\ApiClient\Entity\Authorization;
 use WooCommerce\PayPalCommerce\ApiClient\Exception\RuntimeException;
 use WooCommerce\PayPalCommerce\ApiClient\Helper\Cache;
@@ -565,6 +566,22 @@ class WCGatewayModule implements ServiceModule, ExtendingModule, ExecutableModul
 				$dcc_enabled                                 = $dcc_product_status->dcc_is_active();
 				$features['advanced_credit_and_debit_cards'] = array(
 					'enabled' => $dcc_enabled,
+				);
+
+				$partners_endpoint = $c->get( 'api.endpoint.partners' );
+				assert($partners_endpoint instanceof PartnersEndpoint );
+				$seller_status = $partners_endpoint->seller_status();
+
+				$apms_enabled = false;
+				foreach ( $seller_status->products() as $product ) {
+					if ( $product->name() === 'PAYMENT_METHODS' ) {
+						$apms_enabled = true;
+						break;
+					}
+				}
+
+				$features['alternative_payment_methods'] = array(
+					'enabled' => $apms_enabled,
 				);
 
 				return $features;
