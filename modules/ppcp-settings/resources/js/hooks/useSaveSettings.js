@@ -1,3 +1,5 @@
+import { useCallback } from '@wordpress/element';
+
 import {
 	CommonHooks,
 	PaymentHooks,
@@ -12,7 +14,7 @@ export const useSaveSettings = () => {
 	const { persist: persistSettings } = SettingsHooks.useStore();
 	const { persist: persistStyling } = StylingHooks.useStore();
 
-	const persistAll = () => {
+	const persistAll = useCallback( () => {
 		withActivity(
 			'persist-methods',
 			'Save payment methods',
@@ -28,7 +30,7 @@ export const useSaveSettings = () => {
 			'Save styling details',
 			persistStyling
 		);
-	};
+	}, [ persistPayment, persistSettings, persistStyling, withActivity ] );
 
 	return { persistAll };
 };
