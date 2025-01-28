@@ -29,7 +29,7 @@ const PaymentMethodItemBlock = ( {
 				</p>
 				<div className="ppcp--method-footer">
 					<ToggleControl
-						__nextHasNoMarginBottom={ true }
+						__nextHasNoMarginBottom
 						checked={ isSelected }
 						onChange={ onSelect }
 					/>
