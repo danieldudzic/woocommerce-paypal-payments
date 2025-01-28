@@ -64,7 +64,7 @@ const Modal = ( { method, setModalIsVisible, onSave } ) => {
 		switch ( field.type ) {
 			case 'text':
 				return (
-					<div className="ppcp-r-modal__field-row">
+					<div key={ key } className="ppcp-r-modal__field-row">
 						<TextControl
 							__nextHasNoMarginBottom
 							className="ppcp-r-vertical-text-control"
@@ -82,7 +82,7 @@ const Modal = ( { method, setModalIsVisible, onSave } ) => {
 
 			case 'toggle':
 				return (
-					<div className="ppcp-r-modal__field-row">
+					<div key={ key } className="ppcp-r-modal__field-row">
 						<ToggleControl
 							__nextHasNoMarginBottom
 							label={ field.label }
