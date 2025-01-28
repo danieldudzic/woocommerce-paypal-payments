@@ -4,16 +4,18 @@ import { __ } from '@wordpress/i18n';
 import TopNavigation from '../../../ReusableComponents/TopNavigation';
 import { useSaveSettings } from '../../../../hooks/useSaveSettings';
 
-const SettingsNavigation = () => {
+const SettingsNavigation = ( { canSave = true } ) => {
 	const { persistAll } = useSaveSettings();
 
 	const title = __( 'PayPal Payments', 'woocommerce-paypal-payments' );
 
 	return (
 		<TopNavigation title={ title } exitOnTitleClick={ true }>
-			<Button variant="primary" onClick={ persistAll }>
-				{ __( 'Save', 'woocommerce-paypal-payments' ) }
-			</Button>
+			{ canSave && (
+				<Button variant="primary" onClick={ persistAll }>
+					{ __( 'Save', 'woocommerce-paypal-payments' ) }
+				</Button>
+			) }
 		</TopNavigation>
 	);
 };
