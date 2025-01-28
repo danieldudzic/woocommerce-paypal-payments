@@ -70,9 +70,7 @@ const Features = {
 								TAB_IDS.PAYMENT_METHODS,
 								'ppcp-card-payments-card'
 							).then( () => {
-								setActiveModal(
-									'advanced_credit_and_debit_card_payments'
-								);
+								setActiveModal( 'ppcp-credit-card-gateway' );
 							} );
 						},
 						showWhen: 'enabled',
