@@ -9,21 +9,48 @@ import {
 	TodoSettingsBlock,
 	FeatureSettingsBlock,
 } from '../../../ReusableComponents/SettingsBlocks';
+import { Content, ContentWrapper } from '../../../ReusableComponents/Elements';
 import SettingsCard from '../../../ReusableComponents/SettingsCard';
 import { TITLE_BADGE_POSITIVE } from '../../../ReusableComponents/TitleBadge';
 import { useMerchantInfo } from '../../../../data/common/hooks';
-import { useTodos } from '../../../../data/todos/hooks';
 import { STORE_NAME } from '../../../../data/common';
-import Features from '../Components/Overview/Features';
+import { getFeatures } from '../Components/Overview/features-config';
+import { todosData } from '../todo-items';
+
 import {
 	NOTIFICATION_ERROR,
 	NOTIFICATION_SUCCESS,
 } from '../../../ReusableComponents/Icons';
 
 const TabOverview = () => {
-	const [ isRefreshing, setIsRefreshing ] = useState( false );
+	return (
+		<div className="ppcp-r-tab-overview">
+			{ todosData.length > 0 && (
+				<SettingsCard
+					className="ppcp-r-tab-overview-todo"
+					title={ __(
+						'Things to do next',
+						'woocommerce-paypal-payments'
+					) }
+					description={ __(
+						'Complete these tasks to keep your store updated with the latest products and services.',
+						'woocommerce-paypal-payments'
+					) }
+				>
+					<TodoSettingsBlock todosData={ todosData } />
+				</SettingsCard>
+			) }
 
-	const { todos, isReady: areTodosReady } = useTodos();
+			<OverviewFeatures />
+			<OverviewHelp />
+		</div>
+	);
+};
+
+export default TabOverview;
+
+const OverviewFeatures = () => {
+	const [ isRefreshing, setIsRefreshing ] = useState( false );
 	const { merchant, features: merchantFeatures } = useMerchantInfo();
 	const { refreshFeatureStatuses, setActiveModal } =
 		useDispatch( STORE_NAME );
@@ -32,7 +59,7 @@ const TabOverview = () => {
 
 	// Get the features data with access to setActiveModal
 	const featuresData = useMemo(
-		() => Features.getFeatures( setActiveModal ),
+		() => getFeatures( setActiveModal ),
 		[ setActiveModal ]
 	);
 
@@ -49,6 +76,7 @@ const TabOverview = () => {
 
 	const refreshHandler = async () => {
 		setIsRefreshing( true );
+
 		try {
 			const result = await refreshFeatureStatuses();
 			if ( result && ! result.success ) {
@@ -79,122 +107,139 @@ const TabOverview = () => {
 						icon: NOTIFICATION_SUCCESS,
 					}
 				);
-				console.log( 'Features refreshed successfully.' );
 			}
 		} finally {
 			setIsRefreshing( false );
 		}
 	};
 
-	// Don't render todos section until data is ready
-	const showTodos = areTodosReady && todos.length > 0;
+	return (
+		<SettingsCard
+			className="ppcp-r-tab-overview-features"
+			title={ __( 'Features', 'woocommerce-paypal-payments' ) }
+			description={
+				<OverviewFeatureDescription
+					refreshHandler={ refreshHandler }
+					isRefreshing={ isRefreshing }
+				/>
+			}
+			contentContainer={ false }
+		>
+			<ContentWrapper>
+				{ features.map( ( { id, ...feature } ) => (
+					<OverviewFeatureItem
+						key={ id }
+						isBusy={ isRefreshing }
+						isSandbox={ merchant.isSandbox }
+						title={ feature.title }
+						description={ feature.description }
+						buttons={ feature.buttons }
+						enabled={ feature.enabled }
+						notes={ feature.notes }
+					/>
+				) ) }
+			</ContentWrapper>
+		</SettingsCard>
+	);
+};
+
+const OverviewFeatureItem = ( {
+	isBusy,
+	isSandbox,
+	title,
+	description,
+	buttons,
+	enabled,
+	notes,
+} ) => {
+	const getButtonUrl = ( button ) => {
+		if ( button.urls ) {
+			return isSandbox ? button.urls.sandbox : button.urls.live;
+		}
+
+		return button.url;
+	};
+
+	const visibleButtons = buttons.filter(
+		( button ) =>
+			! button.showWhen || // Learn more buttons
+			( enabled && button.showWhen === 'enabled' ) ||
+			( ! enabled && button.showWhen === 'disabled' )
+	);
+
+	const actionProps = {
+		isBusy,
+		enabled,
+		notes,
+		buttons: visibleButtons.map( ( button ) => ( {
+			...button,
+			url: getButtonUrl( button ),
+		} ) ),
+	};
+
+	if ( enabled ) {
+		actionProps.badge = {
+			text: __( 'Active', 'woocommerce-paypal-payments' ),
+			type: TITLE_BADGE_POSITIVE,
+		};
+	}
 
 	return (
-		<div className="ppcp-r-tab-overview">
-			{ showTodos && (
-				<SettingsCard
-					className="ppcp-r-tab-overview-todo"
-					title={ __(
-						'Things to do next',
-						'woocommerce-paypal-payments'
-					) }
-					description={ __(
-						'Complete these tasks to keep your store updated with the latest products and services.',
-						'woocommerce-paypal-payments'
-					) }
-				>
-					<TodoSettingsBlock todosData={ todos } />
-				</SettingsCard>
-			) }
-
-			<SettingsCard
-				className="ppcp-r-tab-overview-features"
-				title={ __( 'Features', 'woocommerce-paypal-payments' ) }
-				description={
-					<>
-						<p>
-							{ __(
-								'Enable additional features and capabilities on your WooCommerce store.',
-								'woocommerce-paypal-payments'
-							) }
-						</p>
-						<p>
-							{ __(
-								'Click Refresh to update your current features after making changes.',
-								'woocommerce-paypal-payments'
-							) }
-						</p>
-						<Button
-							variant="tertiary"
-							onClick={ refreshHandler }
-							disabled={ isRefreshing }
-						>
-							<Icon icon={ reusableBlock } size={ 18 } />
-							{ isRefreshing
-								? __(
-										'Refreshing…',
-										'woocommerce-paypal-payments'
-								  )
-								: __(
-										'Refresh',
-										'woocommerce-paypal-payments'
-								  ) }
-						</Button>
-					</>
-				}
-				contentItems={ features.map( ( feature ) => {
-					return (
-						<FeatureSettingsBlock
-							key={ feature.id }
-							title={ feature.title }
-							description={ feature.description }
-							actionProps={ {
-								buttons: feature.buttons
-									.filter(
-										( button ) =>
-											! button.showWhen || // Learn more buttons
-											( feature.enabled &&
-												button.showWhen ===
-													'enabled' ) ||
-											( ! feature.enabled &&
-												button.showWhen === 'disabled' )
-									)
-									.map( ( button ) => ( {
-										...button,
-										url: button.urls
-											? merchant?.isSandbox
-												? button.urls.sandbox
-												: button.urls.live
-											: button.url,
-									} ) ),
-								isBusy: isRefreshing,
-								enabled: feature.enabled,
-								notes: feature.notes,
-								badge: feature.enabled
-									? {
-											text: __(
-												'Active',
-												'woocommerce-paypal-payments'
-											),
-											type: TITLE_BADGE_POSITIVE,
-									  }
-									: undefined,
-							} }
-						/>
-					);
-				} ) }
+		<Content>
+			<FeatureSettingsBlock
+				title={ title }
+				description={ description }
+				actionProps={ actionProps }
 			/>
+		</Content>
+	);
+};
 
-			<SettingsCard
-				className="ppcp-r-tab-overview-help"
-				title={ __( 'Help Center', 'woocommerce-paypal-payments' ) }
-				description={ __(
-					'Access detailed guides and responsive support to streamline setup and enhance your experience.',
+const OverviewFeatureDescription = ( { refreshHandler, isRefreshing } ) => {
+	const buttonLabel = isRefreshing
+		? __( 'Refreshing…', 'woocommerce-paypal-payments' )
+		: __( 'Refresh', 'woocommerce-paypal-payments' );
+
+	return (
+		<>
+			<p>
+				{ __(
+					'Enable additional features and capabilities on your WooCommerce store.',
 					'woocommerce-paypal-payments'
 				) }
-				contentItems={ [
+			</p>
+			<p>
+				{ __(
+					'Click Refresh to update your current features after making changes.',
+					'woocommerce-paypal-payments'
+				) }
+			</p>
+			<Button
+				variant="tertiary"
+				onClick={ refreshHandler }
+				disabled={ isRefreshing }
+			>
+				<Icon icon={ reusableBlock } size={ 18 } />
+				{ buttonLabel }
+			</Button>
+		</>
+	);
+};
+
+const OverviewHelp = () => {
+	return (
+		<SettingsCard
+			className="ppcp-r-tab-overview-help"
+			title={ __( 'Help Center', 'woocommerce-paypal-payments' ) }
+			description={ __(
+				'Access detailed guides and responsive support to streamline setup and enhance your experience.',
+				'woocommerce-paypal-payments'
+			) }
+			contentContainer={ false }
+		>
+			<ContentWrapper>
+				<Content>
 					<FeatureSettingsBlock
-						key="documentation"
 						title={ __(
 							'Documentation',
 							'woocommerce-paypal-payments'
@@ -211,13 +256,15 @@ const TabOverview = () => {
 										'View full documentation',
 										'woocommerce-paypal-payments'
 									),
-									url: 'https://woocommerce.com/document/woocommerce-paypal-payments/',
+									url: 'https://woocommerce.com/document/woocommerce-paypal-payments/ ',
 								},
 							],
 						} }
-					/>,
+					/>
+				</Content>
+
+				<Content>
 					<FeatureSettingsBlock
-						key="support"
 						title={ __( 'Support', 'woocommerce-paypal-payments' ) }
 						description={ __(
 							'Need help? Access troubleshooting tips or contact our support team for personalized assistance.',
@@ -231,15 +278,13 @@ const TabOverview = () => {
 										'View support options',
 										'woocommerce-paypal-payments'
 									),
-									url: 'https://woocommerce.com/document/woocommerce-paypal-payments/#get-help',
+									url: 'https://woocommerce.com/document/woocommerce-paypal-payments/#get-help ',
 								},
 							],
 						} }
-					/>,
-				] }
-			/>
-		</div>
+					/>
+				</Content>
+			</ContentWrapper>
+		</SettingsCard>
 	);
 };
-
-export default TabOverview;
