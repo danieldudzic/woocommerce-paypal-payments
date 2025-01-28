@@ -6,7 +6,6 @@ import classNames from 'classnames';
 import useIsScrolled from '../../hooks/useIsScrolled';
 import { useNavigation } from '../../hooks/useNavigation';
 import BusyStateWrapper from './BusyStateWrapper';
-import { getSettingsTabs } from '../Screens/Settings/Tabs';
 import TabNavigation from './TabNavigation';
 
 const TopNavigation = ( {
@@ -47,27 +46,29 @@ const TopNavigation = ( {
 	return (
 		<div className={ className }>
 			<div className="ppcp-r-navigation">
-				<BusyStateWrapper
-					className="ppcp-r-navigation--left"
-					busySpinner={ false }
-					enabled={ ! exitOnTitleClick }
-				>
-					<Button
-						variant="link"
-						onClick={ handleTitleClick }
-						className="is-title"
+				<div className="ppcp-r-navigation--row">
+					<BusyStateWrapper
+						className="ppcp-r-navigation--left"
+						busySpinner={ false }
+						enabled={ ! exitOnTitleClick }
 					>
-						<Icon icon={ chevronLeft } />
-						<span className={ titleClassName }>{ title }</span>
-					</Button>
-				</BusyStateWrapper>
+						<Button
+							variant="link"
+							onClick={ handleTitleClick }
+							className="is-title"
+						>
+							<Icon icon={ chevronLeft } />
+							<span className={ titleClassName }>{ title }</span>
+						</Button>
+					</BusyStateWrapper>
 
-				<BusyStateWrapper
-					className="ppcp-r-navigation--right"
-					busySpinner={ false }
-				>
-					{ children }
-				</BusyStateWrapper>
+					<BusyStateWrapper
+						className="ppcp-r-navigation--right"
+						busySpinner={ false }
+					>
+						{ children }
+					</BusyStateWrapper>
+				</div>
 				<TabNavigation
 					tabs={ tabs }
 					activePanel={ activePanel }
