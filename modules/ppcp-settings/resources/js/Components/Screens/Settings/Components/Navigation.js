@@ -5,13 +5,19 @@ import TopNavigation from '../../../ReusableComponents/TopNavigation';
 import BusyStateWrapper from '../../../ReusableComponents/BusyStateWrapper';
 import { useSaveSettings } from '../../../../hooks/useSaveSettings';
 
-const SettingsNavigation = () => {
+const SettingsNavigation = ( { tabs, activePanel, setActivePanel } ) => {
 	const { persistAll } = useSaveSettings();
 
 	const title = __( 'PayPal Payments', 'woocommerce-paypal-payments' );
 
 	return (
-		<TopNavigation title={ title } exitOnTitleClick={ true }>
+		<TopNavigation
+			title={ title }
+			exitOnTitleClick={ true }
+			tabs={ tabs }
+			activePanel={ activePanel }
+			setActivePanel={ setActivePanel }
+		>
 			<BusyStateWrapper>
 				<Button variant="primary" onClick={ persistAll }>
 					{ __( 'Save', 'woocommerce-paypal-payments' ) }

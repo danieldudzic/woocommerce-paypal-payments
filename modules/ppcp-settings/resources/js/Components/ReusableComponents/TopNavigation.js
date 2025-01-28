@@ -6,6 +6,8 @@ import classNames from 'classnames';
 import useIsScrolled from '../../hooks/useIsScrolled';
 import { useNavigation } from '../../hooks/useNavigation';
 import BusyStateWrapper from './BusyStateWrapper';
+import { getSettingsTabs } from '../Screens/Settings/Tabs';
+import TabNavigation from './TabNavigation';
 
 const TopNavigation = ( {
 	title,
@@ -15,6 +17,9 @@ const TopNavigation = ( {
 	onTitleClick = null,
 	showProgressBar = false,
 	progressBarPercent = 0,
+	tabs,
+	activePanel,
+	setActivePanel,
 } ) => {
 	const { goToWooCommercePaymentsTab } = useNavigation();
 	const { isScrolled } = useIsScrolled();
@@ -63,6 +68,11 @@ const TopNavigation = ( {
 				>
 					{ children }
 				</BusyStateWrapper>
+				<TabNavigation
+					tabs={ tabs }
+					activePanel={ activePanel }
+					setActivePanel={ setActivePanel }
+				></TabNavigation>
 
 				{ showProgressBar && (
 					<ProgressBar percent={ progressBarPercent } />
