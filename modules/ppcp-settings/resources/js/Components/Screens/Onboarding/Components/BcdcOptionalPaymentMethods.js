@@ -27,7 +27,7 @@ const BcdcOptionalPaymentMethods = ( { isPayLater, storeCountry } ) => {
 							'Process major credit and debit cards through PayPal’s card fields. <a target="_blank" href="%s">Learn more</a>',
 							'woocommerce-paypal-payments'
 						),
-						'https://woocommerce.com/document/woocommerce-paypal-payments/#manual-credential-input '
+						'https://woocommerce.com/document/woocommerce-paypal-payments/#manual-credential-input'
 					) }
 				/>
 			</div>
@@ -54,7 +54,7 @@ const BcdcOptionalPaymentMethods = ( { isPayLater, storeCountry } ) => {
 						'Process major credit and debit cards through PayPal’s card fields. <a target="_blank" href="%s">Learn more</a>',
 						'woocommerce-paypal-payments'
 					),
-					'https://woocommerce.com/document/woocommerce-paypal-payments/#manual-credential-input '
+					'https://woocommerce.com/document/woocommerce-paypal-payments/#manual-credential-input'
 				) }
 			/>
 		</div>

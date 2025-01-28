@@ -43,7 +43,7 @@ const BcdcFlow = ( { isPayLater, storeCountry } ) => {
 								'Our brand recognition helps give customers the confidence to buy. <a target="_blank" href="%s">Learn more</a>',
 								'woocommerce-paypal-payments'
 							),
-							'https://woocommerce.com/document/woocommerce-paypal-payments/#manual-credential-input '
+							'https://woocommerce.com/document/woocommerce-paypal-payments/#manual-credential-input'
 						) }
 					/>
 					<Separator className="ppcp-r-page-welcome-mode-separator" />
@@ -61,7 +61,7 @@ const BcdcFlow = ( { isPayLater, storeCountry } ) => {
 								'Offer installment payment options and get paid upfront. <a target="_blank" href="%s">Learn more</a>',
 								'woocommerce-paypal-payments'
 							),
-							'https://woocommerce.com/document/woocommerce-paypal-payments/#manual-credential-input '
+							'https://woocommerce.com/document/woocommerce-paypal-payments/#manual-credential-input'
 						) }
 					/>
 					<Separator className="ppcp-r-page-welcome-mode-separator" />
@@ -74,7 +74,7 @@ const BcdcFlow = ( { isPayLater, storeCountry } ) => {
 								'Automatically offer Venmo checkout to millions of active users. <a target="_blank" href="%s">Learn more</a>',
 								'woocommerce-paypal-payments'
 							),
-							'https://woocommerce.com/document/woocommerce-paypal-payments/#manual-credential-input '
+							'https://woocommerce.com/document/woocommerce-paypal-payments/#manual-credential-input'
 						) }
 					/>
 					<Separator className="ppcp-r-page-welcome-mode-separator" />
@@ -87,7 +87,7 @@ const BcdcFlow = ( { isPayLater, storeCountry } ) => {
 								'Let customers checkout with Crypto while you get paid in cash. <a target="_blank" href="%s">Learn more</a>',
 								'woocommerce-paypal-payments'
 							),
-							'https://woocommerce.com/document/woocommerce-paypal-payments/#manual-credential-input '
+							'https://woocommerce.com/document/woocommerce-paypal-payments/#manual-credential-input'
 						) }
 					/>
 				</div>
@@ -141,7 +141,7 @@ const BcdcFlow = ( { isPayLater, storeCountry } ) => {
 						'Our brand recognition helps give customers the confidence to buy. <a target="_blank" href="%s">Learn more</a>',
 						'woocommerce-paypal-payments'
 					),
-					'https://woocommerce.com/document/woocommerce-paypal-payments/#manual-credential-input '
+					'https://woocommerce.com/document/woocommerce-paypal-payments/#manual-credential-input'
 				) }
 			/>
 			<Separator className="ppcp-r-page-welcome-mode-separator" />
@@ -154,7 +154,7 @@ const BcdcFlow = ( { isPayLater, storeCountry } ) => {
 						'Offer installment payment options and get paid upfront. <a target="_blank" href="%s">Learn more</a>',
 						'woocommerce-paypal-payments'
 					),
-					'https://woocommerce.com/document/woocommerce-paypal-payments/#manual-credential-input '
+					'https://woocommerce.com/document/woocommerce-paypal-payments/#manual-credential-input'
 				) }
 			/>
 			<Separator className="ppcp-r-page-welcome-mode-separator" />

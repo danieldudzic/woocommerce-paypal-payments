@@ -150,7 +150,7 @@ const AcdcFlow = ( { isFastlane, isPayLater, storeCountry } ) => {
 								'Our brand recognition helps give customers the confidence to buy. <a target="_blank" href="%s">Learn more</a>',
 								'woocommerce-paypal-payments'
 							),
-							'https://woocommerce.com/document/woocommerce-paypal-payments/#manual-credential-input '
+							'https://woocommerce.com/document/woocommerce-paypal-payments/#manual-credential-input'
 						) }
 					/>
 					<Separator className="ppcp-r-page-welcome-mode-separator" />
@@ -168,7 +168,7 @@ const AcdcFlow = ( { isFastlane, isPayLater, storeCountry } ) => {
 								'Offer installment payment options and get paid upfront - at no extra cost to you. <a target="_blank" href="%s">Learn more</a>',
 								'woocommerce-paypal-payments'
 							),
-							'https://woocommerce.com/document/woocommerce-paypal-payments/#manual-credential-input '
+							'https://woocommerce.com/document/woocommerce-paypal-payments/#manual-credential-input'
 						) }
 					/>
 				</div>
@@ -229,7 +229,7 @@ const AcdcFlow = ( { isFastlane, isPayLater, storeCountry } ) => {
 							'Our brand recognition helps give customers the confidence to buy. <a target="_blank" href="%s">Learn more</a>',
 							'woocommerce-paypal-payments'
 						),
-						'https://woocommerce.com/document/woocommerce-paypal-payments/#manual-credential-input '
+						'https://woocommerce.com/document/woocommerce-paypal-payments/#manual-credential-input'
 					) }
 				/>
 				<Separator className="ppcp-r-page-welcome-mode-separator" />
@@ -242,7 +242,7 @@ const AcdcFlow = ( { isFastlane, isPayLater, storeCountry } ) => {
 							'Offer installment payment options and get paid upfront. <a target="_blank" href="%s">Learn more</a>',
 							'woocommerce-paypal-payments'
 						),
-						'https://woocommerce.com/document/woocommerce-paypal-payments/#manual-credential-input '
+						'https://woocommerce.com/document/woocommerce-paypal-payments/#manual-credential-input'
 					) }
 				/>
 			</div>
