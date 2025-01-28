@@ -11,7 +11,7 @@ import PaymentMethodModal from '../../../../ReusableComponents/PaymentMethodModa
 import { PaymentHooks } from '../../../../../data';
 
 const Modal = ( { method, setModalIsVisible, onSave } ) => {
-	const { paymentMethods } = PaymentHooks.usePaymentMethods();
+	const { all: paymentMethods } = PaymentHooks.usePaymentMethods();
 	const {
 		paypalShowLogo,
 		threeDSecure,
