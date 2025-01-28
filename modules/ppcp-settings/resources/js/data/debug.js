@@ -13,13 +13,15 @@ export const addDebugTools = ( context, modules ) => {
 	}
 
 	/*
-    // TODO - enable this condition for version 3.0.1
-    // In version 3.0.0 we want to have the debug tools available on every installation
-    if ( ! context.debug ) { return }
-    */
+     // TODO - enable this condition for version 3.0.1
+     // In version 3.0.0 we want to have the debug tools available on every installation
+     if ( ! context.debug ) { return }
+     */
+
+	const debugApi = ( window.ppcpDebugger = window.ppcpDebugger || {} );
 
 	// Dump the current state of all our Redux stores.
-	context.dumpStore = async () => {
+	debugApi.dumpStore = async () => {
 		/* eslint-disable no-console */
 		if ( ! console?.groupCollapsed ) {
 			console.error( 'console.groupCollapsed is not supported.' );
@@ -47,7 +49,7 @@ export const addDebugTools = ( context, modules ) => {
 	};
 
 	// Reset all Redux stores to their initial state.
-	context.resetStore = () => {
+	debugApi.resetStore = () => {
 		const stores = [];
 		const { isConnected } = wp.data.select( CommonStoreName ).merchant();
 
@@ -85,7 +87,7 @@ export const addDebugTools = ( context, modules ) => {
 	};
 
 	// Disconnect the merchant and display the onboarding wizard.
-	context.disconnect = () => {
+	debugApi.disconnect = () => {
 		const common = wp.data.dispatch( CommonStoreName );
 
 		common.disconnectMerchant();
@@ -97,10 +99,13 @@ export const addDebugTools = ( context, modules ) => {
 	};
 
 	// Enters or completes the onboarding wizard without changing anything else.
-	context.onboardingMode = ( state ) => {
+	debugApi.onboardingMode = ( state ) => {
 		const onboarding = wp.data.dispatch( OnboardingStoreName );
 
 		onboarding.setCompleted( ! state );
 		onboarding.persist();
 	};
+
+	// Expose original debug API.
+	Object.assign( context, debugApi );
 };
