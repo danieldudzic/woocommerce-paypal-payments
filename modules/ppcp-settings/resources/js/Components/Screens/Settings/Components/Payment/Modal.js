@@ -6,20 +6,18 @@ import {
 	RadioControl,
 } from '@wordpress/components';
 import { useState } from '@wordpress/element';
+
 import PaymentMethodModal from '../../../../ReusableComponents/PaymentMethodModal';
-import {
-	usePaymentMethods,
-	usePaymentMethodsModal,
-} from '../../../../../data/payment/hooks';
+import { PaymentHooks } from '../../../../../data';
 
 const Modal = ( { method, setModalIsVisible, onSave } ) => {
-	const { paymentMethods } = usePaymentMethods();
+	const { paymentMethods } = PaymentHooks.usePaymentMethods();
 	const {
 		paypalShowLogo,
 		threeDSecure,
 		fastlaneCardholderName,
 		fastlaneDisplayWatermark,
-	} = usePaymentMethodsModal();
+	} = PaymentHooks.usePaymentMethodsModal();
 
 	const [ settings, setSettings ] = useState( () => {
 		if ( ! method?.id ) {
@@ -68,6 +66,7 @@ const Modal = ( { method, setModalIsVisible, onSave } ) => {
 				return (
 					<div className="ppcp-r-modal__field-row">
 						<TextControl
+							__nextHasNoMarginBottom={ true }
 							className="ppcp-r-vertical-text-control"
 							label={ field.label }
 							value={ settings[ key ] }

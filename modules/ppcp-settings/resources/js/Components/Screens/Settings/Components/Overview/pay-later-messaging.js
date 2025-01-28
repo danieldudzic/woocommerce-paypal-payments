@@ -1,6 +1,6 @@
 import { __, sprintf } from '@wordpress/i18n';
 
-export const payLaterMessagingComponentData = {
+export const payLaterMessaging = {
 	US: {
 		description: sprintf(
 			__(
