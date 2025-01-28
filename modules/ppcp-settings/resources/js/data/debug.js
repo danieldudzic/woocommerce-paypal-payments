@@ -4,6 +4,7 @@ import {
 	PaymentStoreName,
 	SettingsStoreName,
 	StylingStoreName,
+	TodosStoreName,
 } from './index';
 import { setCompleted } from './onboarding/actions';
 
@@ -56,6 +57,7 @@ export const addDebugTools = ( context, modules ) => {
 			stores.push( PaymentStoreName );
 			stores.push( SettingsStoreName );
 			stores.push( StylingStoreName );
+			stores.push( TodosStoreName );
 		} else {
 			// Only reset the common & onboarding stores to restart the onboarding wizard.
 			stores.push( CommonStoreName );
