@@ -6,12 +6,17 @@ import {
 	StylingStoreName,
 	TodosStoreName,
 } from './index';
-import { setCompleted } from './onboarding/actions';
 
 export const addDebugTools = ( context, modules ) => {
-	if ( ! context || ! context?.debug ) {
+	if ( ! context ) {
 		return;
 	}
+
+	/*
+    // TODO - enable this condition for version 3.0.1
+    // In version 3.0.0 we want to have the debug tools available on every installation
+    if ( ! context.debug ) { return }
+    */
 
 	// Dump the current state of all our Redux stores.
 	context.dumpStore = async () => {
@@ -70,8 +75,12 @@ export const addDebugTools = ( context, modules ) => {
 			// eslint-disable-next-line no-console
 			console.log( `Reset store: ${ storeName }...` );
 
-			store.reset();
-			store.persist();
+			try {
+				store.reset();
+				store.persist();
+			} catch ( error ) {
+				console.error( ' ... Reset failed, skipping this store' );
+			}
 		} );
 	};
 
