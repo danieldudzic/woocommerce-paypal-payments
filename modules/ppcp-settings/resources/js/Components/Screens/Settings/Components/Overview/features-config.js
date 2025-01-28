@@ -1,8 +1,10 @@
 import { __ } from '@wordpress/i18n';
 import { TAB_IDS, selectTab } from '../../../../../utils/tabSelector';
+import { payLaterMessaging } from './pay-later-messaging';
 
-const Features = {
-	getFeatures: ( setActiveModal ) => [
+export const getFeatures = ( setActiveModal ) => {
+	const storeCountry = ppcpSettings?.storeCountry;
+	const features = [
 		{
 			id: 'save_paypal_and_venmo',
 			title: __( 'Save PayPal and Venmo', 'woocommerce-paypal-payments' ),
@@ -39,7 +41,10 @@ const Features = {
 				{
 					type: 'tertiary',
 					text: __( 'Learn more', 'woocommerce-paypal-payments' ),
-					url: 'https://developer.paypal.com/studio/checkout/standard',
+					urls: {
+						sandbox: '#',
+						live: '#',
+					},
 					class: 'small-button',
 				},
 			],
@@ -230,7 +235,16 @@ const Features = {
 				},
 			],
 		},
-		{
+	];
+
+	const countryData = payLaterMessaging[ storeCountry ] || {};
+
+	// Add "Pay Later Messaging" to the feature list, if it's available.
+	if (
+		!! window.ppcpSettings?.isPayLaterConfiguratorAvailable &&
+		countryData
+	) {
+		features.push( {
 			id: 'pay_later_messaging',
 			title: __( 'Pay Later Messaging', 'woocommerce-paypal-payments' ),
 			description: __(
@@ -269,8 +283,8 @@ const Features = {
 					class: 'small-button',
 				},
 			],
-		},
-	],
-};
+		} );
+	}
 
-export default Features;
+	return features;
+};
