@@ -233,12 +233,12 @@ return array(
 	'settings.data.settings'                      => static function() : SettingsModel {
 		return new SettingsModel();
 	},
-	'settings.rest.todos' => static function ( ContainerInterface $container ) : TodosRestEndpoint {
+	'settings.rest.todos'                         => static function ( ContainerInterface $container ) : TodosRestEndpoint {
 		return new TodosRestEndpoint(
 			$container->get( 'settings.data.todos' ),
 		);
 	},
-	'settings.data.todos' => static function ( ContainerInterface $container ) : TodosModel {
+	'settings.data.todos'                         => static function ( ContainerInterface $container ) : TodosModel {
 		return new TodosModel();
 	},
 );

@@ -34,9 +34,9 @@ class TodosModel {
 	 * @return array The formatted completion states array.
 	 */
 	public function get(): array {
-		$completion_states = get_option(self::OPTION_NAME, array());
+		$completion_states = get_option( self::OPTION_NAME, array() );
 		return array_map(
-			static function ($state) {
+			static function ( $state ) {
 				return (bool) $state;
 			},
 			$completion_states
@@ -53,18 +53,18 @@ class TodosModel {
 	 * @return void
 	 * @throws RuntimeException When the completion states update fails.
 	 */
-	public function update(array $states): void {
+	public function update( array $states ): void {
 		$completion_states = array_map(
-			static function ($state) {
+			static function ( $state ) {
 				return (bool) $state;
 			},
 			$states
 		);
 
-		$result = update_option(self::OPTION_NAME, $completion_states);
+		$result = update_option( self::OPTION_NAME, $completion_states );
 
-		if (!$result) {
-			throw new RuntimeException('Failed to update todo completion states');
+		if ( ! $result ) {
+			throw new RuntimeException( 'Failed to update todo completion states' );
 		}
 	}
 }
