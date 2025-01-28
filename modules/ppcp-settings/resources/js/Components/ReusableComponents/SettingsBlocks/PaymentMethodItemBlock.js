@@ -1,5 +1,4 @@
-import { ToggleControl, Icon, Button } from '@wordpress/components';
-import { cog } from '@wordpress/icons';
+import { ToggleControl } from '@wordpress/components';
 
 import SettingsBlock from '../SettingsBlock';
 import PaymentMethodIcon from '../PaymentMethodIcon';
@@ -14,10 +13,12 @@ const PaymentMethodItemBlock = ( {
 		<SettingsBlock className="ppcp--method-item" separatorAndGap={ false }>
 			<div className="ppcp--method-inner">
 				<div className="ppcp--method-title-wrapper">
-					<PaymentMethodIcon
-						icons={ [ paymentMethod.icon ] }
-						type={ paymentMethod.icon }
-					/>
+                    { paymentMethod?.icon && (
+                        <PaymentMethodIcon
+                            icons={ [ paymentMethod.icon ] }
+                            type={ paymentMethod.icon }
+                        />
+                    ) }
 					<span className="ppcp--method-title">
 						{ paymentMethod.itemTitle }
 					</span>
