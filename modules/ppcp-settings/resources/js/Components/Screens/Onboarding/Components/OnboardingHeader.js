@@ -7,7 +7,7 @@ const OnboardingHeader = ( props ) => {
 		<section className="ppcp-r-onboarding-header">
 			<div className="ppcp-r-onboarding-header__logo">
 				<div className="ppcp-r-onboarding-header__logo-wrapper">
-					<Icon icon={ LogoPayPal } width="auto" height={ 38 } />
+					<Icon icon={ LogoPayPal } width={ 110 } height={ 38 } />
 				</div>
 			</div>
 			<div className="ppcp-r-onboarding-header__content">
