@@ -1,3 +1,4 @@
+export { default as PPIcon } from './GenericIcon';
 export { default as OpenSignup } from './OpenSignup';
 export { default as LogoPayPal } from './LogoPayPal';
 
