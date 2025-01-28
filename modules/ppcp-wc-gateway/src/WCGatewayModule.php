@@ -569,7 +569,7 @@ class WCGatewayModule implements ServiceModule, ExtendingModule, ExecutableModul
 				);
 
 				$partners_endpoint = $c->get( 'api.endpoint.partners' );
-				assert($partners_endpoint instanceof PartnersEndpoint );
+				assert( $partners_endpoint instanceof PartnersEndpoint );
 				$seller_status = $partners_endpoint->seller_status();
 
 				$apms_enabled = false;
