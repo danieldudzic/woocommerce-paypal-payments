@@ -41,6 +41,27 @@
 		padding-top: 16px;
 	}
 
+	&.is-completed {
+		.ppcp-r-todo-item__icon {
+			border-style: solid;
+			background-color: $color-blueberry;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+
+			.dashicons {
+				color: #fff;
+				font-size: 18px;
+				width: 18px;
+				height: 18px;
+			}
+		}
+
+		.ppcp-r-todo-item__content {
+			text-decoration: line-through;
+		}
+	}
+
 	p {
 		@include font(14, 20, 400);
 	}

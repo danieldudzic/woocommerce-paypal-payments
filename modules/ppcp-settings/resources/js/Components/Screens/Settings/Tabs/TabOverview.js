@@ -12,10 +12,9 @@ import {
 import SettingsCard from '../../../ReusableComponents/SettingsCard';
 import { TITLE_BADGE_POSITIVE } from '../../../ReusableComponents/TitleBadge';
 import { useMerchantInfo } from '../../../../data/common/hooks';
+import { useTodos } from '../../../../data/todos/hooks';
 import { STORE_NAME } from '../../../../data/common';
 import Features from '../Components/Overview/Features';
-import { todosData } from '../todo-items';
-
 import {
 	NOTIFICATION_ERROR,
 	NOTIFICATION_SUCCESS,
@@ -24,6 +23,7 @@ import {
 const TabOverview = () => {
 	const [ isRefreshing, setIsRefreshing ] = useState( false );
 
+	const { todos, isReady: areTodosReady } = useTodos();
 	const { merchant, features: merchantFeatures } = useMerchantInfo();
 	const { refreshFeatureStatuses, setActiveModal } =
 		useDispatch( STORE_NAME );
@@ -86,9 +86,12 @@ const TabOverview = () => {
 		}
 	};
 
+	// Don't render todos section until data is ready
+	const showTodos = areTodosReady && todos.length > 0;
+
 	return (
 		<div className="ppcp-r-tab-overview">
-			{ todosData.length > 0 && (
+			{ showTodos && (
 				<SettingsCard
 					className="ppcp-r-tab-overview-todo"
 					title={ __(
@@ -100,7 +103,7 @@ const TabOverview = () => {
 						'woocommerce-paypal-payments'
 					) }
 				>
-					<TodoSettingsBlock todosData={ todosData } />
+					<TodoSettingsBlock todosData={ todos } />
 				</SettingsCard>
 			) }
 
@@ -208,7 +211,7 @@ const TabOverview = () => {
 										'View full documentation',
 										'woocommerce-paypal-payments'
 									),
-									url: 'https://woocommerce.com/document/woocommerce-paypal-payments/ ',
+									url: 'https://woocommerce.com/document/woocommerce-paypal-payments/',
 								},
 							],
 						} }
@@ -228,7 +231,7 @@ const TabOverview = () => {
 										'View support options',
 										'woocommerce-paypal-payments'
 									),
-									url: 'https://woocommerce.com/document/woocommerce-paypal-payments/#get-help ',
+									url: 'https://woocommerce.com/document/woocommerce-paypal-payments/#get-help',
 								},
 							],
 						} }

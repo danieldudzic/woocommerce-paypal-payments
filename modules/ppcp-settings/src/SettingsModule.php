@@ -220,6 +220,7 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 					'payment'                => $container->get( 'settings.rest.payment' ),
 					'settings'               => $container->get( 'settings.rest.settings' ),
 					'styling'                => $container->get( 'settings.rest.styling' ),
+					'todos'                => $container->get( 'settings.rest.todos' ),
 				);
 
 				foreach ( $endpoints as $endpoint ) {
