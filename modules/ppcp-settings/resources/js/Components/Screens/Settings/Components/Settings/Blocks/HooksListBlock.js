@@ -13,7 +13,7 @@ const HooksListBlock = () => {
 	}
 
 	return (
-		<SettingsBlock separatorAndGap={ false }>
+		<SettingsBlock separatorAndGap={ false } className="ppcp--webhooks">
 			<WebhookUrl url={ url } />
 			<WebhookEvents events={ events } />
 		</SettingsBlock>
@@ -37,7 +37,7 @@ const WebhookEvents = ( { events } ) => {
 			<Title>
 				{ __( 'Subscribed Events', 'woocommerce-paypal-payments' ) }
 			</Title>
-			<ul>
+			<ul className="ppcp--webhook-list">
 				{ events.map( ( event, index ) => (
 					<li key={ index }>{ event }</li>
 				) ) }
