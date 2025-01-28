@@ -584,6 +584,10 @@ class WCGatewayModule implements ServiceModule, ExtendingModule, ExecutableModul
 					'enabled' => $apms_enabled,
 				);
 
+				$features['pay_later_messaging'] = array(
+					'enabled' => true,
+				);
+
 				return $features;
 			}
 		);

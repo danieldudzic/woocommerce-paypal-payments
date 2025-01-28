@@ -145,7 +145,7 @@ export const getFeatures = ( setActiveModal ) => {
 							TAB_IDS.PAYMENT_METHODS,
 							'ppcp-card-payments-card'
 						).then( () => {
-							setActiveModal( 'google_pay' );
+							setActiveModal( 'ppcp-googlepay' );
 						} );
 					},
 					showWhen: 'enabled',
@@ -192,7 +192,7 @@ export const getFeatures = ( setActiveModal ) => {
 							TAB_IDS.PAYMENT_METHODS,
 							'ppcp-card-payments-card'
 						).then( () => {
-							setActiveModal( 'apple_pay' );
+							setActiveModal( 'ppcp-applepay' );
 						} );
 					},
 					showWhen: 'enabled',
@@ -251,12 +251,7 @@ export const getFeatures = ( setActiveModal ) => {
 					type: 'secondary',
 					text: __( 'Configure', 'woocommerce-paypal-payments' ),
 					onClick: () => {
-						selectTab(
-							TAB_IDS.PAYMENT_METHODS,
-							'ppcp-paypal-checkout-card'
-						).then( () => {
-							setActiveModal( 'paypal' );
-						} );
+						selectTab( TAB_IDS.PAY_LATER_MESSAGING );
 					},
 					showWhen: 'enabled',
 					class: 'small-button',
