@@ -3,7 +3,7 @@ import { __ } from '@wordpress/i18n';
 
 import TopNavigation from '../../../ReusableComponents/TopNavigation';
 import { useSaveSettings } from '../../../../hooks/useSaveSettings';
-import TabNavigation from '../../../ReusableComponents/TabNavigation';
+import TabBar from '../../../ReusableComponents/TabBar';
 
 const SettingsNavigation = ( {
 	canSave = true,
@@ -20,7 +20,7 @@ const SettingsNavigation = ( {
 			title={ title }
 			exitOnTitleClick={ true }
 			subNavigation={
-				<TabNavigation
+				<TabBar
 					tabs={ tabs }
 					activePanel={ activePanel }
 					setActivePanel={ setActivePanel }
