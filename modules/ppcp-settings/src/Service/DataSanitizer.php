@@ -119,6 +119,19 @@ class DataSanitizer {
 	}
 
 	/**
+	 * Helper. Ensures the value is an integer.
+	 *
+	 * Attention: When passing a non-integer value (like 12.5 or "12a") the
+	 * function will return 0.
+	 *
+	 * @param mixed $value Value to sanitize.
+	 * @return int Sanitized integer.
+	 */
+	public function sanitize_int( $value ) : int {
+		return (int) filter_var( $value, FILTER_VALIDATE_INT );
+	}
+
+	/**
 	 * Helper. Ensures the value is an array and all items are sanitized.
 	 *
 	 * @param null|array $array             Value to sanitize.
