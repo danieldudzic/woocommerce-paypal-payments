@@ -1,12 +1,15 @@
+import { __ } from '@wordpress/i18n';
+import { Button } from '@wordpress/components';
+
 const LearnMore = ( { url } ) => {
 	if ( ! url || '#' === url ) {
-		console.warn( 'Missing Learn More URL: ', url );
+		return null;
 	}
 
 	return (
-		<a href={ url } target="_blank" rel="noreferrer">
-			Learn more
-		</a>
+		<Button href={ url } variant="tertiary" target="_blank">
+			{ __( 'Learn more', 'woocommerce-paypal-payments' ) }
+		</Button>
 	);
 };
 
