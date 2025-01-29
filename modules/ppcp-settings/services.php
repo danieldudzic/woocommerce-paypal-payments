@@ -125,6 +125,11 @@ return array(
 			$container->get( 'webhook.status.simulation' )
 		);
 	},
+	'settings.rest.settings'                      => static function ( ContainerInterface $container ) : SettingsRestEndpoint {
+		return new SettingsRestEndpoint(
+			$container->get( 'settings.data.settings' )
+		);
+	},
 	'settings.casual-selling.supported-countries' => static function ( ContainerInterface $container ) : array {
 		return array(
 			'AR',
@@ -227,12 +232,6 @@ return array(
 			$container->get( 'button.request-data' ),
 			$container->get( 'settings.data.onboarding' ),
 			$container->get( 'api.merchant_id' ) !== ''
-		);
-	},
-	'settings.rest.settings'                      => static function( ContainerInterface $container ): SettingsRestEndpoint {
-		return new SettingsRestEndpoint(
-			$container->get( 'settings.data.settings' ),
-			$container->get( 'woocommerce.logger.woocommerce' ),
 		);
 	},
 	'settings.rest.todos'                         => static function ( ContainerInterface $container ) : TodosRestEndpoint {
