@@ -20,7 +20,8 @@ $margin_bottom: 48px;
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		height: 40px;
+		flex-direction: column;
+		gap: 10px;
 
 		.components-button {
 			@include font(13, 20, 400);
@@ -59,6 +60,14 @@ $margin_bottom: 48px;
 				}
 			}
 		}
+		&--row {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			width: 100%;
+			padding-bottom: 10px;
+		}
+
 
 		&--left {
 			align-items: center;
