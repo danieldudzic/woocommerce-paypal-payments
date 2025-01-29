@@ -65,7 +65,9 @@ const OptionItem = ( {
 			<div className="ppcp--box-content">
 				<div className="ppcp--box-content-inner">
 					<span className="ppcp--box-title">{ itemTitle }</span>
-					<p className="ppcp--box-description">{ itemDescription }</p>
+					<div className="ppcp--box-description">
+						{ itemDescription }
+					</div>
 					{ children && (
 						<div className="ppcp--box-details">{ children }</div>
 					) }

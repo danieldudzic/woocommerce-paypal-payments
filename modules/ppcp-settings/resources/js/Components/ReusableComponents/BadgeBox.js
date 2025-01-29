@@ -1,5 +1,5 @@
-import data from '../../utils/data';
 import { LearnMore } from './Elements';
+import { PPIcon } from './Icons';
 
 const ImageBadge = ( { images } ) => {
 	if ( ! images || ! images.length ) {
@@ -9,7 +9,13 @@ const ImageBadge = ( { images } ) => {
 	return (
 		<BadgeContent>
 			<span className="ppcp-r-badge-box__title-image-badge">
-				{ images.map( ( badge ) => data().getImage( badge ) ) }
+				{ images.map( ( badge, index ) => (
+					<PPIcon
+						key={ `badge-${ index }` }
+						imageName={ badge }
+						className="ppcp-r-badge-box__image"
+					/>
+				) ) }
 			</span>
 		</BadgeContent>
 	);
