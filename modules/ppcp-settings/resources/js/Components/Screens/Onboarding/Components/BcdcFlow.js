@@ -1,8 +1,6 @@
 import { __, sprintf } from '@wordpress/i18n';
 
-import BadgeBox, {
-	BADGE_BOX_TITLE_BIG,
-} from '../../../ReusableComponents/BadgeBox';
+import BadgeBox from '../../../ReusableComponents/BadgeBox';
 import { Separator } from '../../../ReusableComponents/Elements';
 import PricingTitleBadge from '../../../ReusableComponents/PricingTitleBadge';
 import OptionalPaymentMethods from './OptionalPaymentMethods';
@@ -17,7 +15,6 @@ const BcdcFlow = ( { isPayLater, storeCountry } ) => {
 							'PayPal Checkout',
 							'woocommerce-paypal-payments'
 						) }
-						titleType={ BADGE_BOX_TITLE_BIG }
 						textBadge={ <PricingTitleBadge item="checkout" /> }
 						description={ __(
 							'Our all-in-one checkout solution lets you offer PayPal, Venmo, Pay Later options, and more to help maximise conversion',
@@ -29,7 +26,6 @@ const BcdcFlow = ( { isPayLater, storeCountry } ) => {
 							'Included in PayPal Checkout',
 							'woocommerce-paypal-payments'
 						) }
-						titleType={ BADGE_BOX_TITLE_BIG }
 					/>
 					<BadgeBox
 						title={ __(
@@ -97,7 +93,6 @@ const BcdcFlow = ( { isPayLater, storeCountry } ) => {
 							'Expanded Checkout',
 							'woocommerce-paypal-payments'
 						) }
-						titleType={ BADGE_BOX_TITLE_BIG }
 						description={ __(
 							'Accept debit/credit cards, PayPal, Apple Pay, Google Pay, and more. Note: Additional application required for more methods',
 							'woocommerce-paypal-payments'
@@ -118,7 +113,6 @@ const BcdcFlow = ( { isPayLater, storeCountry } ) => {
 		<div className="ppcp-r-welcome-docs__wrapper ppcp-r-welcome-docs__wrapper--one-col">
 			<BadgeBox
 				title={ __( 'PayPal Checkout', 'woocommerce-paypal-payments' ) }
-				titleType={ BADGE_BOX_TITLE_BIG }
 				textBadge={ <PricingTitleBadge item="checkout" /> }
 				description={ __(
 					'Our all-in-one checkout solution lets you offer PayPal, Venmo, Pay Later options, and more to help maximise conversion',
@@ -130,7 +124,6 @@ const BcdcFlow = ( { isPayLater, storeCountry } ) => {
 					'Included in PayPal Checkout',
 					'woocommerce-paypal-payments'
 				) }
-				titleType={ BADGE_BOX_TITLE_BIG }
 			/>
 			<BadgeBox
 				title={ __( 'Pay with PayPal', 'woocommerce-paypal-payments' ) }
@@ -163,7 +156,6 @@ const BcdcFlow = ( { isPayLater, storeCountry } ) => {
 					'Optional payment methods',
 					'woocommerce-paypal-payments'
 				) }
-				titleType={ BADGE_BOX_TITLE_BIG }
 				description={ __(
 					'with additional application',
 					'woocommerce-paypal-payments'

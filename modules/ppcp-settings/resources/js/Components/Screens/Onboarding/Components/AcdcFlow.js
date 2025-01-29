@@ -1,8 +1,6 @@
 import { __, sprintf } from '@wordpress/i18n';
 
-import BadgeBox, {
-	BADGE_BOX_TITLE_BIG,
-} from '../../../ReusableComponents/BadgeBox';
+import BadgeBox from '../../../ReusableComponents/BadgeBox';
 import { Separator } from '../../../ReusableComponents/Elements';
 import PricingTitleBadge from '../../../ReusableComponents/PricingTitleBadge';
 import OptionalPaymentMethods from './OptionalPaymentMethods';
@@ -17,7 +15,6 @@ const AcdcFlow = ( { isFastlane, isPayLater, storeCountry } ) => {
 							'PayPal Checkout',
 							'woocommerce-paypal-payments'
 						) }
-						titleType={ BADGE_BOX_TITLE_BIG }
 						textBadge={ <PricingTitleBadge item="checkout" /> }
 						description={ __(
 							'Our all-in-one checkout solution lets you offer PayPal, Venmo, Pay Later options, and more to help maximise conversion',
@@ -29,7 +26,6 @@ const AcdcFlow = ( { isFastlane, isPayLater, storeCountry } ) => {
 							'Included in PayPal Checkout',
 							'woocommerce-paypal-payments'
 						) }
-						titleType={ BADGE_BOX_TITLE_BIG }
 					/>
 					<BadgeBox
 						title={ __(
@@ -41,7 +37,7 @@ const AcdcFlow = ( { isFastlane, isPayLater, storeCountry } ) => {
 							// translators: %s: Link to PayPal business fees guide
 							__(
 								'Our brand recognition helps give customers the confidence to buy. <a target="_blank" href="%s">Learn more</a>',
-								'woocommerce-paypal-payments'
+							'woocommerce-paypal-payments'
 							),
 							'https://www.paypal.com/us/business/paypal-business-fees'
 						) }
@@ -98,7 +94,6 @@ const AcdcFlow = ( { isFastlane, isPayLater, storeCountry } ) => {
 							'Expanded Checkout',
 							'woocommerce-paypal-payments'
 						) }
-						titleType={ BADGE_BOX_TITLE_BIG }
 						description={ __(
 							'Accept debit/credit cards, PayPal, Apple Pay, Google Pay, and more. Note: Additional application required for more methods',
 							'woocommerce-paypal-payments'
@@ -124,7 +119,6 @@ const AcdcFlow = ( { isFastlane, isPayLater, storeCountry } ) => {
 							'PayPal Checkout',
 							'woocommerce-paypal-payments'
 						) }
-						titleType={ BADGE_BOX_TITLE_BIG }
 						textBadge={ <PricingTitleBadge item="checkout" /> }
 						description={ __(
 							'Our all-in-one checkout solution lets you offer PayPal, Venmo, Pay Later options, and more to help maximise conversion',
@@ -136,7 +130,6 @@ const AcdcFlow = ( { isFastlane, isPayLater, storeCountry } ) => {
 							'Included in PayPal Checkout',
 							'woocommerce-paypal-payments'
 						) }
-						titleType={ BADGE_BOX_TITLE_BIG }
 					/>
 					<BadgeBox
 						title={ __(
@@ -178,7 +171,6 @@ const AcdcFlow = ( { isFastlane, isPayLater, storeCountry } ) => {
 							'Optional payment methods',
 							'woocommerce-paypal-payments'
 						) }
-						titleType={ BADGE_BOX_TITLE_BIG }
 						description={ __(
 							'with additional application',
 							'woocommerce-paypal-payments'
@@ -203,7 +195,6 @@ const AcdcFlow = ( { isFastlane, isPayLater, storeCountry } ) => {
 						'PayPal Checkout',
 						'woocommerce-paypal-payments'
 					) }
-					titleType={ BADGE_BOX_TITLE_BIG }
 					textBadge={ <PricingTitleBadge item="checkout" /> }
 					description={ __(
 						'Our all-in-one checkout solution lets you offer PayPal, Venmo, Pay Later options, and more to help maximise conversion',
@@ -215,7 +206,6 @@ const AcdcFlow = ( { isFastlane, isPayLater, storeCountry } ) => {
 						'Included in PayPal Checkout',
 						'woocommerce-paypal-payments'
 					) }
-					titleType={ BADGE_BOX_TITLE_BIG }
 				/>
 				<BadgeBox
 					title={ __(
@@ -252,7 +242,6 @@ const AcdcFlow = ( { isFastlane, isPayLater, storeCountry } ) => {
 						'Optional payment methods',
 						'woocommerce-paypal-payments'
 					) }
-					titleType={ BADGE_BOX_TITLE_BIG }
 					description={ __(
 						'with additional application',
 						'woocommerce-paypal-payments'
