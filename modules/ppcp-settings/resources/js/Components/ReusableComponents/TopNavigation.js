@@ -66,14 +66,15 @@ const TopNavigation = ( {
 						{ children }
 					</BusyStateWrapper>
 				</div>
-				{ showProgressBar && (
-					<ProgressBar percent={ progressBarPercent } />
-				) }
 
 				{ subNavigation && (
 					<section className="ppcp--top-sub-navigation">
 						{ subNavigation }
 					</section>
+				) }
+
+				{ showProgressBar && (
+					<ProgressBar percent={ progressBarPercent } />
 				) }
 			</nav>
 		</>
