@@ -3,6 +3,7 @@ import { __ } from '@wordpress/i18n';
 
 import TopNavigation from '../../../ReusableComponents/TopNavigation';
 import { useSaveSettings } from '../../../../hooks/useSaveSettings';
+import TabBar from '../../../ReusableComponents/TabBar';
 
 const SettingsNavigation = ( {
 	canSave = true,
@@ -18,9 +19,13 @@ const SettingsNavigation = ( {
 		<TopNavigation
 			title={ title }
 			exitOnTitleClick={ true }
-			tabs={ tabs }
-			activePanel={ activePanel }
-			setActivePanel={ setActivePanel }
+			subNavigation={
+				<TabBar
+					tabs={ tabs }
+					activePanel={ activePanel }
+					setActivePanel={ setActivePanel }
+				/>
+			}
 		>
 			{ canSave && (
 				<Button variant="primary" onClick={ persistAll }>

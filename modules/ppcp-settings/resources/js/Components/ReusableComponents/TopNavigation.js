@@ -6,7 +6,6 @@ import classNames from 'classnames';
 import useIsScrolled from '../../hooks/useIsScrolled';
 import { useNavigation } from '../../hooks/useNavigation';
 import BusyStateWrapper from './BusyStateWrapper';
-import TabNavigation from './TabNavigation';
 
 const TopNavigation = ( {
 	title,
@@ -16,9 +15,7 @@ const TopNavigation = ( {
 	onTitleClick = null,
 	showProgressBar = false,
 	progressBarPercent = 0,
-	tabs = [],
-	activePanel = '',
-	setActivePanel = () => {},
+	subNavigation = null,
 } ) => {
 	const { goToWooCommercePaymentsTab } = useNavigation();
 	const { isScrolled } = useIsScrolled();
@@ -44,9 +41,9 @@ const TopNavigation = ( {
 	}, [] );
 
 	return (
-		<div className={ className }>
-			<div className="ppcp-r-navigation">
-				<div className="ppcp-r-navigation--row">
+		<>
+			<nav className={ className }>
+				<div className="ppcp-r-navigation">
 					<BusyStateWrapper
 						className="ppcp-r-navigation--left"
 						busySpinner={ false }
@@ -69,19 +66,18 @@ const TopNavigation = ( {
 						{ children }
 					</BusyStateWrapper>
 				</div>
-				{ tabs.length > 0 && (
-					<TabNavigation
-						tabs={ tabs }
-						activePanel={ activePanel }
-						setActivePanel={ setActivePanel }
-					/>
+
+				{ subNavigation && (
+					<section className="ppcp--top-sub-navigation">
+						{ subNavigation }
+					</section>
 				) }
 
 				{ showProgressBar && (
 					<ProgressBar percent={ progressBarPercent } />
 				) }
-			</div>
-		</div>
+			</nav>
+		</>
 	);
 };
 

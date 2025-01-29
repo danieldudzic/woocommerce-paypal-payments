@@ -5,7 +5,7 @@ import { TabPanel } from '@wordpress/components';
 
 import { updateQueryString } from '../../utils/navigation';
 
-const TabNavigation = ( { tabs, activePanel, setActivePanel } ) => {
+const TabBar = ( { tabs, activePanel, setActivePanel } ) => {
 	const isValidTab = ( tabsList, checkTab ) => {
 		return tabsList.some( ( tab ) => tab.name === checkTab );
 	};
@@ -36,4 +36,4 @@ const TabNavigation = ( { tabs, activePanel, setActivePanel } ) => {
 	);
 };
 
-export default TabNavigation;
+export default TabBar;
