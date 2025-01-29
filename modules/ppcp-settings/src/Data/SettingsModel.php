@@ -31,7 +31,7 @@ class SettingsModel extends AbstractDataModel {
 	 *
 	 * @var array
 	 */
-	public const SUBTOTAL_ADJUSTMENT_OPTIONS = array( 'correction', 'no_details', 'skip_details' );
+	public const SUBTOTAL_ADJUSTMENT_OPTIONS = array( 'no_details', 'correction' );
 
 	/**
 	 * Valid options for landing page.
