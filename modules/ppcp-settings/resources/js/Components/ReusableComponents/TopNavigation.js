@@ -6,6 +6,7 @@ import classNames from 'classnames';
 import useIsScrolled from '../../hooks/useIsScrolled';
 import { useNavigation } from '../../hooks/useNavigation';
 import BusyStateWrapper from './BusyStateWrapper';
+import TabNavigation from './TabNavigation';
 
 const TopNavigation = ( {
 	title,
@@ -15,6 +16,9 @@ const TopNavigation = ( {
 	onTitleClick = null,
 	showProgressBar = false,
 	progressBarPercent = 0,
+	tabs = [],
+	activePanel = '',
+	setActivePanel = () => {},
 } ) => {
 	const { goToWooCommercePaymentsTab } = useNavigation();
 	const { isScrolled } = useIsScrolled();
@@ -42,27 +46,36 @@ const TopNavigation = ( {
 	return (
 		<div className={ className }>
 			<div className="ppcp-r-navigation">
-				<BusyStateWrapper
-					className="ppcp-r-navigation--left"
-					busySpinner={ false }
-					enabled={ ! exitOnTitleClick }
-				>
-					<Button
-						variant="link"
-						onClick={ handleTitleClick }
-						className="is-title"
+				<div className="ppcp-r-navigation--row">
+					<BusyStateWrapper
+						className="ppcp-r-navigation--left"
+						busySpinner={ false }
+						enabled={ ! exitOnTitleClick }
 					>
-						<Icon icon={ chevronLeft } />
-						<span className={ titleClassName }>{ title }</span>
-					</Button>
-				</BusyStateWrapper>
+						<Button
+							variant="link"
+							onClick={ handleTitleClick }
+							className="is-title"
+						>
+							<Icon icon={ chevronLeft } />
+							<span className={ titleClassName }>{ title }</span>
+						</Button>
+					</BusyStateWrapper>
 
-				<BusyStateWrapper
-					className="ppcp-r-navigation--right"
-					busySpinner={ false }
-				>
-					{ children }
-				</BusyStateWrapper>
+					<BusyStateWrapper
+						className="ppcp-r-navigation--right"
+						busySpinner={ false }
+					>
+						{ children }
+					</BusyStateWrapper>
+				</div>
+				{ tabs.length > 0 && (
+					<TabNavigation
+						tabs={ tabs }
+						activePanel={ activePanel }
+						setActivePanel={ setActivePanel }
+					/>
+				) }
 
 				{ showProgressBar && (
 					<ProgressBar percent={ progressBarPercent } />

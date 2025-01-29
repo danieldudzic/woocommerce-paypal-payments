@@ -81,6 +81,11 @@ return array(
 	'settings.data.payment'                       => static function ( ContainerInterface $container ) : PaymentSettings {
 		return new PaymentSettings();
 	},
+	'settings.data.settings'                      => static function ( ContainerInterface $container ) : SettingsModel {
+		return new SettingsModel(
+			$container->get( 'settings.service.sanitizer' )
+		);
+	},
 	'settings.rest.onboarding'                    => static function ( ContainerInterface $container ) : OnboardingRestEndpoint {
 		return new OnboardingRestEndpoint( $container->get( 'settings.data.onboarding' ) );
 	},
@@ -118,6 +123,11 @@ return array(
 			$container->get( 'api.endpoint.webhook' ),
 			$container->get( 'webhook.registrar' ),
 			$container->get( 'webhook.status.simulation' )
+		);
+	},
+	'settings.rest.settings'                      => static function ( ContainerInterface $container ) : SettingsRestEndpoint {
+		return new SettingsRestEndpoint(
+			$container->get( 'settings.data.settings' )
 		);
 	},
 	'settings.casual-selling.supported-countries' => static function ( ContainerInterface $container ) : array {
@@ -223,15 +233,6 @@ return array(
 			$container->get( 'settings.data.onboarding' ),
 			$container->get( 'api.merchant_id' ) !== ''
 		);
-	},
-	'settings.rest.settings'                      => static function( ContainerInterface $container ): SettingsRestEndpoint {
-		return new SettingsRestEndpoint(
-			$container->get( 'settings.data.settings' ),
-			$container->get( 'woocommerce.logger.woocommerce' ),
-		);
-	},
-	'settings.data.settings'                      => static function() : SettingsModel {
-		return new SettingsModel();
 	},
 	'settings.rest.todos'                         => static function ( ContainerInterface $container ) : TodosRestEndpoint {
 		return new TodosRestEndpoint(

@@ -12,10 +12,10 @@ import {
 import { Content, ContentWrapper } from '../../../ReusableComponents/Elements';
 import SettingsCard from '../../../ReusableComponents/SettingsCard';
 import { TITLE_BADGE_POSITIVE } from '../../../ReusableComponents/TitleBadge';
+import { useTodos } from '../../../../data/todos/hooks';
 import { useMerchantInfo } from '../../../../data/common/hooks';
 import { STORE_NAME } from '../../../../data/common';
 import { getFeatures } from '../Components/Overview/features-config';
-import { todosData } from '../todo-items';
 
 import {
 	NOTIFICATION_ERROR,
@@ -23,9 +23,14 @@ import {
 } from '../../../ReusableComponents/Icons';
 
 const TabOverview = () => {
+	const { todos, isReady: areTodosReady } = useTodos();
+
+	// Don't render todos section until data is ready
+	const showTodos = areTodosReady && todos.length > 0;
+
 	return (
 		<div className="ppcp-r-tab-overview">
-			{ todosData.length > 0 && (
+			{ showTodos && (
 				<SettingsCard
 					className="ppcp-r-tab-overview-todo"
 					title={ __(
@@ -37,7 +42,7 @@ const TabOverview = () => {
 						'woocommerce-paypal-payments'
 					) }
 				>
-					<TodoSettingsBlock todosData={ todosData } />
+					<TodoSettingsBlock todosData={ todos } />
 				</SettingsCard>
 			) }
 
