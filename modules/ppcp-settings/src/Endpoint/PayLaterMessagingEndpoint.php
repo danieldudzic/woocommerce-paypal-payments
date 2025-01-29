@@ -1,0 +1,88 @@
+<?php
+/**
+ * REST endpoint to manage the Pay Later Messaging configurator page.
+ *
+ * @package WooCommerce\PayPalCommerce\Settings\Endpoint
+ */
+
+declare( strict_types = 1 );
+
+namespace WooCommerce\PayPalCommerce\Settings\Endpoint;
+
+use WP_REST_Request;
+use WP_REST_Response;
+use WP_REST_Server;
+
+/**
+ * REST controller for the "Pay Later Messaging" settings tab.
+ *
+ * This API acts as the intermediary between the "external world" and our
+ * internal data model.
+ */
+class PayLaterMessagingEndpoint extends RestEndpoint {
+	/**
+	 * The base path for this REST controller.
+	 *
+	 * @var string
+	 */
+	protected $rest_base = 'pay_later_messaging';
+
+	/**
+	 * Configure REST API routes.
+	 */
+	public function register_routes() : void {
+		/**
+		 * GET wc/v3/wc_paypal/pay_later_messaging
+		 */
+		register_rest_route(
+			$this->namespace,
+			'/' . $this->rest_base,
+			array(
+				'methods'             => WP_REST_Server::READABLE,
+				'callback'            => array( $this, 'get_details' ),
+				'permission_callback' => array( $this, 'check_permission' ),
+			)
+		);
+
+		/**
+		 * POST wc/v3/wc_paypal/pay_later_messaging
+		 * {
+		 *     [gateway_id]: {
+		 *         enabled
+		 *         title
+		 *         description
+		 *     }
+		 * }
+		 */
+		register_rest_route(
+			$this->namespace,
+			'/' . $this->rest_base,
+			array(
+				'methods'             => WP_REST_Server::EDITABLE,
+				'callback'            => array( $this, 'update_details' ),
+				'permission_callback' => array( $this, 'check_permission' ),
+			)
+		);
+	}
+
+	/**
+	 * Returns all payment methods details.
+	 *
+	 * @return WP_REST_Response The current payment methods details.
+	 */
+	public function get_details() : WP_REST_Response {
+		return $this->return_success( array() );
+	}
+
+	/**
+	 * Updates payment methods details based on the request.
+	 *
+	 * @param WP_REST_Request $request Full data about the request.
+	 *
+	 * @return WP_REST_Response The updated payment methods details.
+	 */
+	public function update_details( WP_REST_Request $request ) : WP_REST_Response {
+		return $this->get_details();
+	}
+
+}

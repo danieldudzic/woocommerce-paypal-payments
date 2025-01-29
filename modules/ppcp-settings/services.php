@@ -21,6 +21,7 @@ use WooCommerce\PayPalCommerce\Settings\Endpoint\AuthenticationRestEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\CommonRestEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\LoginLinkRestEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\OnboardingRestEndpoint;
+use WooCommerce\PayPalCommerce\Settings\Endpoint\PayLaterMessagingEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\PaymentRestEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\RefreshFeatureStatusEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\WebhookSettingsEndpoint;
@@ -119,6 +120,9 @@ return array(
 			$container->get( 'webhook.registrar' ),
 			$container->get( 'webhook.status.simulation' )
 		);
+	},
+	'settings.rest.pay_later_messaging'           => static function ( ContainerInterface $container ) : PayLaterMessagingEndpoint {
+		return new PayLaterMessagingEndpoint();
 	},
 	'settings.casual-selling.supported-countries' => static function ( ContainerInterface $container ) : array {
 		return array(
