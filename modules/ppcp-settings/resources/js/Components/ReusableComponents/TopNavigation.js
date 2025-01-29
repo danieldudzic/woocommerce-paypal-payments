@@ -6,7 +6,6 @@ import classNames from 'classnames';
 import useIsScrolled from '../../hooks/useIsScrolled';
 import { useNavigation } from '../../hooks/useNavigation';
 import BusyStateWrapper from './BusyStateWrapper';
-import TabNavigation from './TabNavigation';
 
 const TopNavigation = ( {
 	title,
@@ -17,9 +16,6 @@ const TopNavigation = ( {
 	showProgressBar = false,
 	progressBarPercent = 0,
 	subNavigation = null,
-	tabs = [],
-	activePanel = '',
-	setActivePanel = () => {},
 } ) => {
 	const { goToWooCommercePaymentsTab } = useNavigation();
 	const { isScrolled } = useIsScrolled();
@@ -48,50 +44,38 @@ const TopNavigation = ( {
 		<>
 			<nav className={ className }>
 				<div className="ppcp-r-navigation">
-					<div className="ppcp-r-navigation--row">
-						<BusyStateWrapper
-							className="ppcp-r-navigation--left"
-							busySpinner={ false }
-							enabled={ ! exitOnTitleClick }
+					<BusyStateWrapper
+						className="ppcp-r-navigation--left"
+						busySpinner={ false }
+						enabled={ ! exitOnTitleClick }
+					>
+						<Button
+							variant="link"
+							onClick={ handleTitleClick }
+							className="is-title"
 						>
-							<Button
-								variant="link"
-								onClick={ handleTitleClick }
-								className="is-title"
-							>
-								<Icon icon={ chevronLeft } />
-								<span className={ titleClassName }>
-									{ title }
-								</span>
-							</Button>
-						</BusyStateWrapper>
+							<Icon icon={ chevronLeft } />
+							<span className={ titleClassName }>{ title }</span>
+						</Button>
+					</BusyStateWrapper>
 
-						<BusyStateWrapper
-							className="ppcp-r-navigation--right"
-							busySpinner={ false }
-						>
-							{ children }
-						</BusyStateWrapper>
-					</div>
-					{ tabs.length > 0 && (
-						<TabNavigation
-							tabs={ tabs }
-							activePanel={ activePanel }
-							setActivePanel={ setActivePanel }
-						/>
-					) }
-
-					{ showProgressBar && (
-						<ProgressBar percent={ progressBarPercent } />
-					) }
+					<BusyStateWrapper
+						className="ppcp-r-navigation--right"
+						busySpinner={ false }
+					>
+						{ children }
+					</BusyStateWrapper>
 				</div>
-			</nav>
+				{ showProgressBar && (
+					<ProgressBar percent={ progressBarPercent } />
+				) }
 
-			{ subNavigation && (
-				<section className="ppcp--top-sub-navigation">
-					{ subNavigation }
-				</section>
-			) }
+				{ subNavigation && (
+					<section className="ppcp--top-sub-navigation">
+						{ subNavigation }
+					</section>
+				) }
+			</nav>
 		</>
 	);
 };
