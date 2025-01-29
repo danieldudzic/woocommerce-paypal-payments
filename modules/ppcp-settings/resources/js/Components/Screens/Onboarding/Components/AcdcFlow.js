@@ -1,4 +1,4 @@
-import { __, sprintf } from '@wordpress/i18n';
+import { __ } from '@wordpress/i18n';
 
 import BadgeBox from '../../../ReusableComponents/BadgeBox';
 import { Separator } from '../../../ReusableComponents/Elements';
@@ -33,14 +33,13 @@ const AcdcFlow = ( { isFastlane, isPayLater, storeCountry } ) => {
 							'woocommerce-paypal-payments'
 						) }
 						imageBadge={ [ 'icon-button-paypal.svg' ] }
-						description={ sprintf(
-							// translators: %s: Link to PayPal business fees guide
-							__(
-								'Our brand recognition helps give customers the confidence to buy. <a target="_blank" href="%s">Learn more</a>',
+						description={ __(
+							'Our brand recognition helps give customers the confidence to buy.',
 							'woocommerce-paypal-payments'
-							),
-							'https://www.paypal.com/us/business/paypal-business-fees'
 						) }
+						learnMoreLink={
+							'https://www.paypal.com/us/business/paypal-business-fees'
+						}
 					/>
 					<Separator className="ppcp-r-page-welcome-mode-separator" />
 					<BadgeBox
@@ -52,40 +51,37 @@ const AcdcFlow = ( { isFastlane, isPayLater, storeCountry } ) => {
 							'icon-payment-method-paypal-small.svg',
 						] }
 						textBadge={ <PricingTitleBadge item="plater" /> }
-						description={ sprintf(
-							// translators: %s: Link to PayPal business fees guide
-							__(
-								'Offer installment payment options and get paid upfront. <a target="_blank" href="%s">Learn more</a>',
-								'woocommerce-paypal-payments'
-							),
-							'https://www.paypal.com/us/business/paypal-business-fees'
+						description={ __(
+							'Offer installment payment options and get paid upfront.',
+							'woocommerce-paypal-payments'
 						) }
+						learnMoreLink={
+							'https://www.paypal.com/us/business/paypal-business-fees'
+						}
 					/>
 					<Separator className="ppcp-r-page-welcome-mode-separator" />
 					<BadgeBox
 						title={ __( 'Venmo', 'woocommerce-paypal-payments' ) }
 						imageBadge={ [ 'icon-button-venmo.svg' ] }
-						description={ sprintf(
-							// translators: %s: Link to PayPal business fees guide
-							__(
-								'Automatically offer Venmo checkout to millions of active users. <a target="_blank" href="%s">Learn more</a>',
-								'woocommerce-paypal-payments'
-							),
-							'https://www.paypal.com/us/business/paypal-business-fees'
+						description={ __(
+							'Automatically offer Venmo checkout to millions of active users.',
+							'woocommerce-paypal-payments'
 						) }
+						learnMoreLink={
+							'https://www.paypal.com/us/business/paypal-business-fees'
+						}
 					/>
 					<Separator className="ppcp-r-page-welcome-mode-separator" />
 					<BadgeBox
 						title={ __( 'Crypto', 'woocommerce-paypal-payments' ) }
 						imageBadge={ [ 'icon-payment-method-crypto.svg' ] }
-						description={ sprintf(
-							// translators: %s: Link to PayPal business fees guide
-							__(
-								'Let customers checkout with Crypto while you get paid in cash. <a target="_blank" href="%s">Learn more</a>',
-								'woocommerce-paypal-payments'
-							),
-							'https://www.paypal.com/us/business/paypal-business-fees'
+						description={ __(
+							'Let customers checkout with Crypto while you get paid in cash.',
+							'woocommerce-paypal-payments'
 						) }
+						learnMoreLink={
+							'https://www.paypal.com/us/business/paypal-business-fees'
+						}
 					/>
 				</div>
 				<div className="ppcp-r-welcome-docs__col">
@@ -137,14 +133,13 @@ const AcdcFlow = ( { isFastlane, isPayLater, storeCountry } ) => {
 							'woocommerce-paypal-payments'
 						) }
 						imageBadge={ [ 'icon-button-paypal.svg' ] }
-						description={ sprintf(
-							// translators: %s: Link to PayPal REST application guide
-							__(
-								'Our brand recognition helps give customers the confidence to buy. <a target="_blank" href="%s">Learn more</a>',
-								'woocommerce-paypal-payments'
-							),
-							'https://woocommerce.com/document/woocommerce-paypal-payments/#manual-credential-input'
+						description={ __(
+							'Our brand recognition helps give customers the confidence to buy.',
+							'woocommerce-paypal-payments'
 						) }
+						learnMoreLink={
+							'https://woocommerce.com/document/woocommerce-paypal-payments/#manual-credential-input'
+						}
 					/>
 					<Separator className="ppcp-r-page-welcome-mode-separator" />
 					<BadgeBox
@@ -155,14 +150,13 @@ const AcdcFlow = ( { isFastlane, isPayLater, storeCountry } ) => {
 						imageBadge={ [
 							'icon-payment-method-paypal-small.svg',
 						] }
-						description={ sprintf(
-							// translators: %s: Link to PayPal REST application guide
-							__(
-								'Offer installment payment options and get paid upfront - at no extra cost to you. <a target="_blank" href="%s">Learn more</a>',
-								'woocommerce-paypal-payments'
-							),
-							'https://woocommerce.com/document/woocommerce-paypal-payments/#manual-credential-input'
+						description={ __(
+							'Offer installment payment options and get paid upfront - at no extra cost to you.',
+							'woocommerce-paypal-payments'
 						) }
+						learnMoreLink={
+							'https://woocommerce.com/document/woocommerce-paypal-payments/#manual-credential-input'
+						}
 					/>
 				</div>
 				<div className="ppcp-r-welcome-docs__col">
@@ -213,27 +207,25 @@ const AcdcFlow = ( { isFastlane, isPayLater, storeCountry } ) => {
 						'woocommerce-paypal-payments'
 					) }
 					imageBadge={ [ 'icon-button-paypal.svg' ] }
-					description={ sprintf(
-						// translators: %s: Link to PayPal REST application guide
-						__(
-							'Our brand recognition helps give customers the confidence to buy. <a target="_blank" href="%s">Learn more</a>',
-							'woocommerce-paypal-payments'
-						),
-						'https://woocommerce.com/document/woocommerce-paypal-payments/#manual-credential-input'
+					description={ __(
+						'Our brand recognition helps give customers the confidence to buy.',
+						'woocommerce-paypal-payments'
 					) }
+					learnMoreLink={
+						'https://woocommerce.com/document/woocommerce-paypal-payments/#manual-credential-input'
+					}
 				/>
 				<Separator className="ppcp-r-page-welcome-mode-separator" />
 				<BadgeBox
 					title={ __( 'Pay Later', 'woocommerce-paypal-payments' ) }
 					imageBadge={ [ 'icon-payment-method-paypal-small.svg' ] }
-					description={ sprintf(
-						// translators: %s: Link to PayPal REST application guide
-						__(
-							'Offer installment payment options and get paid upfront. <a target="_blank" href="%s">Learn more</a>',
-							'woocommerce-paypal-payments'
-						),
-						'https://woocommerce.com/document/woocommerce-paypal-payments/#manual-credential-input'
+					description={ __(
+						'Offer installment payment options and get paid upfront.',
+						'woocommerce-paypal-payments'
 					) }
+					learnMoreLink={
+						'https://woocommerce.com/document/woocommerce-paypal-payments/#manual-credential-input'
+					}
 				/>
 			</div>
 			<div className="ppcp-r-welcome-docs__col">

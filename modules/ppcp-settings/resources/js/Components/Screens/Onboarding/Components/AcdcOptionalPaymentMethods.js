@@ -1,4 +1,4 @@
-import { __, sprintf } from '@wordpress/i18n';
+import { __ } from '@wordpress/i18n';
 
 import BadgeBox from '../../../ReusableComponents/BadgeBox';
 import { Separator } from '../../../ReusableComponents/Elements';
@@ -24,14 +24,13 @@ const AcdcOptionalPaymentMethods = ( {
 						'icon-button-discover.svg',
 					] }
 					textBadge={ <PricingTitleBadge item="ccf" /> }
-					description={ sprintf(
-						// translators: %s: Link to PayPal business fees guide
-						__(
-							'Style the credit card fields to match your own style. Includes advanced processing with risk management, 3D Secure, fraud protection options, and chargeback protection. <a target="_blank" href="%s">Learn more</a>',
-							'woocommerce-paypal-payments'
-						),
-						'https://www.paypal.com/us/business/paypal-business-fees'
+					description={ __(
+						'Style the credit card fields to match your own style. Includes advanced processing with risk management, 3D Secure, fraud protection options, and chargeback protection.',
+						'woocommerce-paypal-payments'
 					) }
+					learnMoreLink={
+						'https://www.paypal.com/us/business/paypal-business-fees'
+					}
 				/>
 				<Separator className="ppcp-r-optional-payment-methods__separator" />
 				<BadgeBox
@@ -44,14 +43,13 @@ const AcdcOptionalPaymentMethods = ( {
 						'icon-button-google-pay.svg',
 					] }
 					textBadge={ <PricingTitleBadge item="dw" /> }
-					description={ sprintf(
-						// translators: %s: Link to PayPal business fees guide
-						__(
-							'Accept Apple Pay on eligible devices and Google Pay through mobile and web. <a target="_blank" href="%s">Learn more</a>',
-							'woocommerce-paypal-payments'
-						),
-						'https://www.paypal.com/us/business/paypal-business-fees'
+					description={ __(
+						'Accept Apple Pay on eligible devices and Google Pay through mobile and web.',
+						'woocommerce-paypal-payments'
 					) }
+					learnMoreLink={
+						'https://www.paypal.com/us/business/paypal-business-fees'
+					}
 				/>
 				<Separator className="ppcp-r-optional-payment-methods__separator" />
 				<BadgeBox
@@ -65,14 +63,13 @@ const AcdcOptionalPaymentMethods = ( {
 						'icon-button-bancontact.svg',
 					] }
 					textBadge={ <PricingTitleBadge item="apm" /> }
-					description={ sprintf(
-						// translators: %s: Link to PayPal business fees guide
-						__(
-							'Seamless payments for customers across the globe using their preferred payment methods. <a target="_blank" href="%s">Learn more</a>',
-							'woocommerce-paypal-payments'
-						),
-						'https://www.paypal.com/us/business/paypal-business-fees'
+					description={ __(
+						'Seamless payments for customers across the globe using their preferred payment methods.',
+						'woocommerce-paypal-payments'
 					) }
+					learnMoreLink={
+						'https://www.paypal.com/us/business/paypal-business-fees'
+					}
 				/>
 				<Separator className="ppcp-r-optional-payment-methods__separator" />
 				<BadgeBox
@@ -81,14 +78,13 @@ const AcdcOptionalPaymentMethods = ( {
 					textBadge={
 						<PricingTitleBadge item="fast country currency=storeCurrency=storeCountrylane" />
 					}
-					description={ sprintf(
-						// translators: %s: Link to PayPal business fees guide
-						__(
-							'Speed up guest checkout with Fatslane. Link a customer\'s email address to their payment details. <a target="_blank" href="%s">Learn more</a>',
-							'woocommerce-paypal-payments'
-						),
-						'https://www.paypal.com/us/business/paypal-business-fees'
+					description={ __(
+						"Speed up guest checkout with Fatslane. Link a customer's email address to their payment details.",
+						'woocommerce-paypal-payments'
 					) }
+					learnMoreLink={
+						'https://www.paypal.com/us/business/paypal-business-fees'
+					}
 				/>
 			</div>
 		);
@@ -109,14 +105,13 @@ const AcdcOptionalPaymentMethods = ( {
 						'icon-button-discover.svg',
 					] }
 					textBadge={ <PricingTitleBadge item="ccf" /> }
-					description={ sprintf(
-						// translators: %s: Link to PayPal business fees guide
-						__(
-							'Style the credit card fields to match your own style. Includes advanced processing with risk management, 3D Secure, fraud protection options, and chargeback protection. <a target="_blank" href="%s">Learn more</a>',
-							'woocommerce-paypal-payments'
-						),
-						'https://www.paypal.com/us/business/paypal-business-fees'
+					description={ __(
+						'Style the credit card fields to match your own style. Includes advanced processing with risk management, 3D Secure, fraud protection options, and chargeback protection.',
+						'woocommerce-paypal-payments'
 					) }
+					learnMoreLink={
+						'https://www.paypal.com/us/business/paypal-business-fees'
+					}
 				/>
 				<Separator className="ppcp-r-optional-payment-methods__separator" />
 				<BadgeBox
@@ -129,14 +124,13 @@ const AcdcOptionalPaymentMethods = ( {
 						'icon-button-google-pay.svg',
 					] }
 					textBadge={ <PricingTitleBadge item="dw" /> }
-					description={ sprintf(
-						// translators: %s: Link to PayPal business fees guide
-						__(
-							'Accept Apple Pay on eligible devices and Google Pay through mobile and web. <a target="_blank" href="%s">Learn more</a>',
-							'woocommerce-paypal-payments'
-						),
-						'https://www.paypal.com/us/business/paypal-business-fees'
+					description={ __(
+						'Accept Apple Pay on eligible devices and Google Pay through mobile and web.',
+						'woocommerce-paypal-payments'
 					) }
+					learnMoreLink={
+						'https://www.paypal.com/us/business/paypal-business-fees'
+					}
 				/>
 				<Separator className="ppcp-r-optional-payment-methods__separator" />
 				<BadgeBox
@@ -151,14 +145,13 @@ const AcdcOptionalPaymentMethods = ( {
 						'icon-button-bancontact.svg',
 					] }
 					textBadge={ <PricingTitleBadge item="apm" /> }
-					description={ sprintf(
-						// translators: %s: Link to PayPal business fees guide
-						__(
-							'Seamless payments for customers across the globe using their preferred payment methods. <a target="_blank" href="%s">Learn more</a>',
-							'woocommerce-paypal-payments'
-						),
-						'https://www.paypal.com/us/business/paypal-business-fees'
+					description={ __(
+						'Seamless payments for customers across the globe using their preferred payment methods.',
+						'woocommerce-paypal-payments'
 					) }
+					learnMoreLink={
+						'https://www.paypal.com/us/business/paypal-business-fees'
+					}
 				/>
 			</div>
 		);
@@ -178,14 +171,13 @@ const AcdcOptionalPaymentMethods = ( {
 					'icon-button-discover.svg',
 				] }
 				textBadge={ <PricingTitleBadge item="ccf" /> }
-				description={ sprintf(
-					// translators: %s: Link to PayPal business fees guide
-					__(
-						'Style the credit card fields to match your own style. Includes advanced processing with risk management, 3D Secure, fraud protection options, and chargeback protection. <a target="_blank" href="%s">Learn more</a>',
-						'woocommerce-paypal-payments'
-					),
-					'https://www.paypal.com/us/business/paypal-business-fees'
+				description={ __(
+					'Style the credit card fields to match your own style. Includes advanced processing with risk management, 3D Secure, fraud protection options, and chargeback protection.',
+					'woocommerce-paypal-payments'
 				) }
+				learnMoreLink={
+					'https://www.paypal.com/us/business/paypal-business-fees'
+				}
 			/>
 			<Separator className="ppcp-r-optional-payment-methods__separator" />
 			<BadgeBox
@@ -195,14 +187,13 @@ const AcdcOptionalPaymentMethods = ( {
 					'icon-button-google-pay.svg',
 				] }
 				textBadge={ <PricingTitleBadge item="dw" /> }
-				description={ sprintf(
-					// translators: %s: Link to PayPal business fees guide
-					__(
-						'Accept Apple Pay on eligible devices and Google Pay through mobile and web. <a target="_blank" href="%s">Learn more</a>',
-						'woocommerce-paypal-payments'
-					),
-					'https://www.paypal.com/us/business/paypal-business-fees'
+				description={ __(
+					'Accept Apple Pay on eligible devices and Google Pay through mobile and web.',
+					'woocommerce-paypal-payments'
 				) }
+				learnMoreLink={
+					'https://www.paypal.com/us/business/paypal-business-fees'
+				}
 			/>
 			<Separator className="ppcp-r-optional-payment-methods__separator" />
 			<BadgeBox
@@ -217,14 +208,13 @@ const AcdcOptionalPaymentMethods = ( {
 					'icon-button-bancontact.svg',
 				] }
 				textBadge={ <PricingTitleBadge item="apm" /> }
-				description={ sprintf(
-					// translators: %s: Link to PayPal business fees guide
-					__(
-						'Seamless payments for customers across the globe using their preferred payment methods. <a target="_blank" href="%s">Learn more</a>',
-						'woocommerce-paypal-payments'
-					),
-					'https://www.paypal.com/us/business/paypal-business-fees'
+				description={ __(
+					'Seamless payments for customers across the globe using their preferred payment methods.',
+					'woocommerce-paypal-payments'
 				) }
+				learnMoreLink={
+					'https://www.paypal.com/us/business/paypal-business-fees'
+				}
 			/>
 		</div>
 	);

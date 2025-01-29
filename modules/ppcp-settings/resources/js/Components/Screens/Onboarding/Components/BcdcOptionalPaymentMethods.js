@@ -1,4 +1,4 @@
-import { __, sprintf } from '@wordpress/i18n';
+import { __ } from '@wordpress/i18n';
 
 import BadgeBox from '../../../ReusableComponents/BadgeBox';
 import PricingTitleBadge from '../../../ReusableComponents/PricingTitleBadge';
@@ -21,14 +21,13 @@ const BcdcOptionalPaymentMethods = ( { isPayLater, storeCountry } ) => {
 					textBadge={
 						<PricingTitleBadge item="standardCardFields" />
 					}
-					description={ sprintf(
-						// translators: %s: Link to PayPal REST application guide
-						__(
-							'Process major credit and debit cards through PayPal’s card fields. <a target="_blank" href="%s">Learn more</a>',
-							'woocommerce-paypal-payments'
-						),
-						'https://woocommerce.com/document/woocommerce-paypal-payments/#manual-credential-input'
+					description={ __(
+						'Process major credit and debit cards through PayPal’s card fields.',
+						'woocommerce-paypal-payments'
 					) }
+					learnMoreLink={
+						'https://woocommerce.com/document/woocommerce-paypal-payments/#manual-credential-input'
+					}
 				/>
 			</div>
 		);
@@ -48,14 +47,13 @@ const BcdcOptionalPaymentMethods = ( { isPayLater, storeCountry } ) => {
 					'icon-button-discover.svg',
 				] }
 				textBadge={ <PricingTitleBadge item="standardCardFields" /> }
-				description={ sprintf(
-					// translators: %s: Link to PayPal REST application guide
-					__(
-						'Process major credit and debit cards through PayPal’s card fields. <a target="_blank" href="%s">Learn more</a>',
-						'woocommerce-paypal-payments'
-					),
-					'https://woocommerce.com/document/woocommerce-paypal-payments/#manual-credential-input'
+				description={ __(
+					'Process major credit and debit cards through PayPal’s card fields.',
+					'woocommerce-paypal-payments'
 				) }
+				learnMoreLink={
+					'https://woocommerce.com/document/woocommerce-paypal-payments/#manual-credential-input'
+				}
 			/>
 		</div>
 	);
