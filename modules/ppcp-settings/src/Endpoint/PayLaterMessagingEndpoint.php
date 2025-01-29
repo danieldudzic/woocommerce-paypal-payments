@@ -9,6 +9,8 @@ declare( strict_types = 1 );
 
 namespace WooCommerce\PayPalCommerce\Settings\Endpoint;
 
+use WooCommerce\PayPalCommerce\PayLaterConfigurator\Factory\ConfigFactory;
+use WooCommerce\PayPalCommerce\WcGateway\Settings\Settings;
 use WP_REST_Request;
 use WP_REST_Response;
 use WP_REST_Server;
@@ -26,6 +28,22 @@ class PayLaterMessagingEndpoint extends RestEndpoint {
 	 * @var string
 	 */
 	protected $rest_base = 'pay_later_messaging';
+
+	/**
+	 * The settings.
+	 *
+	 * @var Settings
+	 */
+	protected $settings;
+
+	/**
+	 * PayLaterMessagingEndpoint constructor.
+	 *
+	 * @param Settings $settings The settings.
+	 */
+	public function __construct( Settings $settings ) {
+		$this->settings = $settings;
+	}
 
 	/**
 	 * Configure REST API routes.
@@ -46,13 +64,6 @@ class PayLaterMessagingEndpoint extends RestEndpoint {
 
 		/**
 		 * POST wc/v3/wc_paypal/pay_later_messaging
-		 * {
-		 *     [gateway_id]: {
-		 *         enabled
-		 *         title
-		 *         description
-		 *     }
-		 * }
 		 */
 		register_rest_route(
 			$this->namespace,
@@ -71,7 +82,7 @@ class PayLaterMessagingEndpoint extends RestEndpoint {
 	 * @return WP_REST_Response The current payment methods details.
 	 */
 	public function get_details() : WP_REST_Response {
-		return $this->return_success( array() );
+		return $this->return_success( ( new ConfigFactory() )->from_settings( $this->settings ) );
 	}
 
 	/**

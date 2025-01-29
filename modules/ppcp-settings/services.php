@@ -127,7 +127,9 @@ return array(
 		);
 	},
 	'settings.rest.pay_later_messaging'           => static function ( ContainerInterface $container ) : PayLaterMessagingEndpoint {
-		return new PayLaterMessagingEndpoint();
+		return new PayLaterMessagingEndpoint(
+			$container->get( 'wcgateway.settings' )
+		);
 	},
 	'settings.rest.settings'                      => static function ( ContainerInterface $container ) : SettingsRestEndpoint {
 		return new SettingsRestEndpoint(
