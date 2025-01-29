@@ -9,6 +9,7 @@ declare( strict_types = 1 );
 
 namespace WooCommerce\PayPalCommerce\Settings\Endpoint;
 
+use WooCommerce\PayPalCommerce\PayLaterConfigurator\Endpoint\SaveConfig;
 use WooCommerce\PayPalCommerce\PayLaterConfigurator\Factory\ConfigFactory;
 use WooCommerce\PayPalCommerce\WcGateway\Settings\Settings;
 use WP_REST_Request;
@@ -37,12 +38,21 @@ class PayLaterMessagingEndpoint extends RestEndpoint {
 	protected $settings;
 
 	/**
+	 * Save config handler.
+	 *
+	 * @var SaveConfig
+	 */
+	private $save_config;
+
+	/**
 	 * PayLaterMessagingEndpoint constructor.
 	 *
-	 * @param Settings $settings The settings.
+	 * @param Settings   $settings The settings.
+	 * @param SaveConfig $save_config Save config handler.
 	 */
-	public function __construct( Settings $settings ) {
-		$this->settings = $settings;
+	public function __construct( Settings $settings, SaveConfig $save_config ) {
+		$this->settings    = $settings;
+		$this->save_config = $save_config;
 	}
 
 	/**
@@ -77,7 +87,7 @@ class PayLaterMessagingEndpoint extends RestEndpoint {
 	}
 
 	/**
-	 * Returns all payment methods details.
+	 * Returns Pay Later Messaging configuration details.
 	 *
 	 * @return WP_REST_Response The current payment methods details.
 	 */
@@ -86,14 +96,15 @@ class PayLaterMessagingEndpoint extends RestEndpoint {
 	}
 
 	/**
-	 * Updates payment methods details based on the request.
+	 * Updates Pay Later Messaging configuration details based on the request.
 	 *
 	 * @param WP_REST_Request $request Full data about the request.
 	 *
 	 * @return WP_REST_Response The updated payment methods details.
 	 */
 	public function update_details( WP_REST_Request $request ) : WP_REST_Response {
+		$this->save_config->save_config( $request->get_params() );
+
 		return $this->get_details();
 	}
-
 }
