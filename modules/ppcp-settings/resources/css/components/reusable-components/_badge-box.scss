@@ -1,7 +1,7 @@
 .ppcp-r-badge-box {
 	margin: 0 0 8px 0;
 
-	&__title {
+	.ppcp-r-badge-box__title {
 		@include font(14, 20, 700);
 		display: block;
 		margin: 0 0 8px 0;
@@ -20,25 +20,26 @@
 				height: 24px;
 			}
 		}
+	}
 
-		&--has-image-badge .ppcp-r-title-badge--info {
-			display: block;
-			margin: 6px 0 0 0;
-			width: fit-content;
-		}
+	.ppcp-r-badge-box__title--has-image-badge .ppcp-r-title-badge--info {
+		display: block;
+		margin: 6px 0 0 0;
+		width: fit-content;
+	}
 
-		@media screen and (max-width: 480px) {
-			display: flex;
-			justify-content: center;
-			align-items: center;
-			gap: 8px;
-			flex-direction: column;
+	@media screen and (max-width: 480px) {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		gap: 8px;
+		flex-direction: column;
 
-			.ppcp-r-badge-box__title-text:not(:empty) + .ppcp-r-badge-box__title-image-badge {
+		.ppcp-r-badge-box__title-text:not(:empty) + .ppcp-r-badge-box__title-image-badge {
+			margin: 0;
+
+			img:first-of-type {
 				margin: 0;
-				img:first-of-type {
-					margin: 0;
-				}
 			}
 		}
 	}
