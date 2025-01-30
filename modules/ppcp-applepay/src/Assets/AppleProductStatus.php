@@ -60,7 +60,6 @@ class AppleProductStatus extends ProductStatus {
 			return $status_override;
 		}
 
-		// Check if status was checked on previous requests.
 		if ( $this->settings->has( self::SETTINGS_KEY ) && ( $this->settings->get( self::SETTINGS_KEY ) ) ) {
 			return wc_string_to_bool( $this->settings->get( self::SETTINGS_KEY ) );
 		}
@@ -82,25 +81,22 @@ class AppleProductStatus extends ProductStatus {
 			}
 		}
 
-		foreach ( $seller_status->capabilities() as $capability ) {
-			if ( $capability->name() === self::CAPABILITY_NAME && $capability->status() === SellerStatusCapability::STATUS_ACTIVE ) {
-				$has_capability = true;
+		if ( ! $has_capability ) {
+			foreach ( $seller_status->capabilities() as $capability ) {
+				if ( $capability->name() === self::CAPABILITY_NAME && $capability->status() === SellerStatusCapability::STATUS_ACTIVE ) {
+					$has_capability = true;
+				}
 			}
 		}
 
 		if ( $has_capability ) {
-			// Capability found, persist status and return true.
 			$this->settings->set( self::SETTINGS_KEY, self::SETTINGS_VALUE_ENABLED );
-			$this->settings->persist();
-
-			return true;
+		} else {
+			$this->settings->set( self::SETTINGS_KEY, self::SETTINGS_VALUE_DISABLED );
 		}
-
-		// Capability not found, persist status and return false.
-		$this->settings->set( self::SETTINGS_KEY, self::SETTINGS_VALUE_DISABLED );
 		$this->settings->persist();
 
-		return false;
+		return $has_capability;
 	}
 
 	/** {@inheritDoc} */
