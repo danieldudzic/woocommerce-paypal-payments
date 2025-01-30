@@ -19,8 +19,6 @@ const defaultTransient = Object.freeze( {
 
 // Persistent: Values that are loaded from the DB.
 const defaultPersistent = Object.freeze( {
-	// TODO: Add real DB properties here.
-	sampleValue: 'foo',
 	cart: {},
 	checkout: {},
 	product: {},

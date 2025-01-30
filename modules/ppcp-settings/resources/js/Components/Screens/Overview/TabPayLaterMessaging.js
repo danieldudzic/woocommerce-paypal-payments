@@ -2,7 +2,15 @@ import React, { useEffect } from 'react';
 import { PayLaterMessagingHooks } from '../../../data';
 
 const TabPayLaterMessaging = () => {
-	const { config } = PayLaterMessagingHooks.usePayLaterMessaging();
+	const {
+		config,
+		setCart,
+		setCheckout,
+		setProduct,
+		setShop,
+		setHome,
+		setCustom_placement,
+	} = PayLaterMessagingHooks.usePayLaterMessaging();
 	const PcpPayLaterConfigurator =
 		window.ppcpSettings?.PcpPayLaterConfigurator;
 
@@ -28,13 +36,12 @@ const TabPayLaterMessaging = () => {
 					subheader: 'ppcp-r-paylater-configurator__subheader',
 				},
 				onSave: ( data ) => {
-					/*
-                    TODO:
-                    - The saving will be handled in a separate PR.
-                    - One option could be:
-                      - When saving the settings, programmatically click on the configurator's
-                        "Save Changes" button and send the request to PHP.
-                    */
+					setCart( data.config.cart );
+					setCheckout( data.config.checkout );
+					setProduct( data.config.product );
+					setShop( data.config.shop );
+					setHome( data.config.home );
+					setCustom_placement( data.config.custom_placement );
 				},
 			} );
 		}

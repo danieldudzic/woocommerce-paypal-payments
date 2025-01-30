@@ -23,47 +23,52 @@ const useHooks = () => {
 	const [ isReady ] = useTransient( 'isReady' );
 
 	// Persistent accessors.
-	// TODO: Replace with real property.
-	const [ sampleValue, setSampleValue ] = usePersistent( 'sampleValue' );
-
-	const [ cart ] = usePersistent( 'cart' );
-	const [ checkout ] = usePersistent( 'checkout' );
-	const [ product ] = usePersistent( 'product' );
-	const [ shop ] = usePersistent( 'shop' );
-	const [ home ] = usePersistent( 'home' );
-	const [ custom_placement ] = usePersistent( 'custom_placement' );
+	const [ cart, setCart ] = usePersistent( 'cart' );
+	const [ checkout, setCheckout ] = usePersistent( 'checkout' );
+	const [ product, setProduct ] = usePersistent( 'product' );
+	const [ shop, setShop ] = usePersistent( 'shop' );
+	const [ home, setHome ] = usePersistent( 'home' );
+	const [ custom_placement, setCustom_placement ] =
+		usePersistent( 'custom_placement' );
 
 	return {
 		persist,
 		isReady,
-		sampleValue,
-		setSampleValue,
 		cart,
+		setCart,
 		checkout,
+		setCheckout,
 		product,
+		setProduct,
 		shop,
+		setShop,
 		home,
+		setHome,
 		custom_placement,
+		setCustom_placement,
 	};
 };
 
-export const useState = () => {
+export const useStore = () => {
 	const { persist, isReady } = useHooks();
 	return { persist, isReady };
 };
 
-// TODO: Replace with real hook.
-export const useSampleValue = () => {
-	const { sampleValue, setSampleValue } = useHooks();
-
-	return {
-		sampleValue,
-		setSampleValue,
-	};
-};
-
 export const usePayLaterMessaging = () => {
-	const { cart, checkout, product, shop, home, customPlacement } = useHooks();
+	const {
+		cart,
+		setCart,
+		checkout,
+		setCheckout,
+		product,
+		setProduct,
+		shop,
+		setShop,
+		home,
+		setHome,
+		custom_placement,
+		setCustom_placement,
+	} = useHooks();
 
 	return {
 		config: {
@@ -72,7 +77,13 @@ export const usePayLaterMessaging = () => {
 			product,
 			shop,
 			home,
-			customPlacement,
+			custom_placement,
 		},
+		setCart,
+		setCheckout,
+		setProduct,
+		setShop,
+		setHome,
+		setCustom_placement,
 	};
 };
