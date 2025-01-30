@@ -183,7 +183,7 @@ class ApplepayModule implements ServiceModule, ExtendingModule, ExecutableModule
 		);
 
 		add_filter(
-			'woocommerce_paypal_payments_rest_common_merchant_data',
+			'woocommerce_paypal_payments_rest_common_merchant_features',
 			function( array $features ) use ( $c ): array {
 				$product_status = $c->get( 'applepay.apple-product-status' );
 				assert( $product_status instanceof AppleProductStatus );

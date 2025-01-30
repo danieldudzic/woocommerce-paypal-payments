@@ -550,7 +550,7 @@ class WCGatewayModule implements ServiceModule, ExtendingModule, ExecutableModul
 		);
 
 		add_filter(
-			'woocommerce_paypal_payments_rest_common_merchant_data',
+			'woocommerce_paypal_payments_rest_common_merchant_features',
 			static function ( array $features ) use ( $c ) : array {
 				try {
 					$billing_agreements_endpoint = $c->get( 'api.endpoint.billing-agreements' );

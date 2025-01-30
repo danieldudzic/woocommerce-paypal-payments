@@ -60,7 +60,6 @@ class ApmProductStatus extends ProductStatus {
 			return $status_override;
 		}
 
-		// Check if status was checked on previous requests.
 		if ( $this->settings->has( self::SETTINGS_KEY ) && ( $this->settings->get( self::SETTINGS_KEY ) ) ) {
 			return wc_string_to_bool( $this->settings->get( self::SETTINGS_KEY ) );
 		}
