@@ -551,42 +551,64 @@ class WCGatewayModule implements ServiceModule, ExtendingModule, ExecutableModul
 
 		add_filter(
 			'woocommerce_paypal_payments_rest_common_merchant_data',
-			function( array $features ) use ( $c ): array {
-				$billing_agreements_endpoint = $c->get( 'api.endpoint.billing-agreements' );
-				assert( $billing_agreements_endpoint instanceof BillingAgreementsEndpoint );
+			static function ( array $features ) use ( $c ) : array {
+				try {
+					$billing_agreements_endpoint = $c->get( 'api.endpoint.billing-agreements' );
+					assert( $billing_agreements_endpoint instanceof BillingAgreementsEndpoint );
 
-				$reference_transactions_enabled    = $billing_agreements_endpoint->reference_transaction_enabled();
-				$features['save_paypal_and_venmo'] = array(
-					'enabled' => $reference_transactions_enabled,
-				);
-
-				$dcc_product_status = $c->get( 'wcgateway.helper.dcc-product-status' );
-				assert( $dcc_product_status instanceof DCCProductStatus );
-
-				$dcc_enabled                                 = $dcc_product_status->dcc_is_active();
-				$features['advanced_credit_and_debit_cards'] = array(
-					'enabled' => $dcc_enabled,
-				);
-
-				$partners_endpoint = $c->get( 'api.endpoint.partners' );
-				assert( $partners_endpoint instanceof PartnersEndpoint );
-				$seller_status = $partners_endpoint->seller_status();
-
-				$apms_enabled = false;
-				foreach ( $seller_status->products() as $product ) {
-					if ( $product->name() === 'PAYMENT_METHODS' ) {
-						$apms_enabled = true;
-						break;
-					}
+					$reference_transactions_enabled    = $billing_agreements_endpoint->reference_transaction_enabled();
+					$features['save_paypal_and_venmo'] = array(
+						'enabled' => $reference_transactions_enabled,
+					);
+				} catch ( Exception $ex ) {
+					$features['save_paypal_and_venmo'] = array(
+						'enabled' => false,
+					);
 				}
 
-				$features['alternative_payment_methods'] = array(
-					'enabled' => $apms_enabled,
-				);
+				try {
+					$dcc_product_status = $c->get( 'wcgateway.helper.dcc-product-status' );
+					assert( $dcc_product_status instanceof DCCProductStatus );
+					$dcc_enabled                                 = $dcc_product_status->dcc_is_active();
+					$features['advanced_credit_and_debit_cards'] = array(
+						'enabled' => $dcc_enabled,
+					);
+				} catch ( Exception $ex ) {
+					$features['advanced_credit_and_debit_cards'] = array(
+						'enabled' => false,
+					);
+				}
 
-				$features['pay_later_messaging'] = array(
-					'enabled' => true,
-				);
+				try {
+					// TODO: The `seller_status()` call throws a PayPalApiException. Why?
+					$partners_endpoint = $c->get( 'api.endpoint.partners' );
+					assert( $partners_endpoint instanceof PartnersEndpoint );
+					$seller_status = $partners_endpoint->seller_status();
+
+					$apms_enabled = false;
+					foreach ( $seller_status->products() as $product ) {
+						if ( $product->name() === 'PAYMENT_METHODS' ) {
+							$apms_enabled = true;
+							break;
+						}
+					}
+
+					$features['alternative_payment_methods'] = array(
+						'enabled' => $apms_enabled,
+					);
+
+					$features['pay_later_messaging'] = array(
+						'enabled' => true,
+					);
+				} catch ( Exception $ex ) {
+					$features['alternative_payment_methods'] = array(
+						'enabled' => false,
+					);
+
+					$features['pay_later_messaging'] = array(
+						'enabled' => false,
+					);
+				}
 
 				return $features;
 			}
