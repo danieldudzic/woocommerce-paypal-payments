@@ -345,7 +345,7 @@ class WCGatewayModule implements ServiceModule, ExtendingModule, ExecutableModul
 
 				$pui_status = $c->get( 'wcgateway.pay-upon-invoice-product-status' );
 				assert( $pui_status instanceof PayUponInvoiceProductStatus );
-				$pui_status->pui_is_active();
+				$pui_status->is_active();
 			}
 		);
 
@@ -686,7 +686,7 @@ class WCGatewayModule implements ServiceModule, ExtendingModule, ExecutableModul
 
 				if ( 'DE' === $shop_country &&
 					( $is_our_page ||
-						( $is_gateways_list_page && $pui_product_status->pui_is_active() ) ||
+						( $is_gateways_list_page && $pui_product_status->is_active() ) ||
 						( $settings->has( 'products_pui_enabled' ) && $settings->get( 'products_pui_enabled' ) )
 					)
 				) {

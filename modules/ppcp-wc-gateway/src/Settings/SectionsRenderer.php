@@ -176,7 +176,7 @@ class SectionsRenderer {
 			unset( $sections[ Settings::PAY_LATER_TAB_ID ] );
 		}
 
-		if ( ! $this->pui_product_status->pui_is_active() ) {
+		if ( ! $this->pui_product_status->is_active() ) {
 			unset( $sections[ PayUponInvoiceGateway::ID ] );
 		}
 
