@@ -168,7 +168,7 @@ class SectionsRenderer {
 			}
 		}
 
-		if ( ! $this->dcc_product_status->dcc_is_active() || ! $this->dcc_applies->for_country_currency() ) {
+		if ( ! $this->dcc_product_status->is_active() || ! $this->dcc_applies->for_country_currency() ) {
 			unset( $sections['ppcp-credit-card-gateway'] );
 		}
 

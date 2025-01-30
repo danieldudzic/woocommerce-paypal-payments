@@ -341,7 +341,7 @@ class WCGatewayModule implements ServiceModule, ExtendingModule, ExecutableModul
 				// Update caches.
 				$dcc_status = $c->get( 'wcgateway.helper.dcc-product-status' );
 				assert( $dcc_status instanceof DCCProductStatus );
-				$dcc_status->dcc_is_active();
+				$dcc_status->is_active();
 
 				$pui_status = $c->get( 'wcgateway.pay-upon-invoice-product-status' );
 				assert( $pui_status instanceof PayUponInvoiceProductStatus );
@@ -668,7 +668,7 @@ class WCGatewayModule implements ServiceModule, ExtendingModule, ExecutableModul
 					// Performing the full DCCProductStatus check only when on the gateway list page
 					// to avoid sending the API requests all the time.
 					( $is_our_page ||
-						( $is_gateways_list_page && $dcc_product_status->dcc_is_active() ) ||
+						( $is_gateways_list_page && $dcc_product_status->is_active() ) ||
 						( $settings->has( 'products_dcc_enabled' ) && $settings->get( 'products_dcc_enabled' ) )
 					)
 				) {

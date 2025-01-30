@@ -1431,7 +1431,7 @@ return array(
 			$partner_endpoint,
 			$container->get( 'dcc.status-cache' ),
 			$container->get( 'api.helpers.dccapplies' ),
-			$container->get( 'onboarding.state' ),
+			$container->get( 'settings.flag.is-connected' ),
 			$container->get( 'api.helper.failure-registry' )
 		);
 	},
@@ -1728,7 +1728,7 @@ return array(
 		$environment = $container->get( 'onboarding.environment' );
 		assert( $environment instanceof Environment );
 
-		$dcc_enabled = $dcc_product_status->dcc_is_active();
+		$dcc_enabled = $dcc_product_status->is_active();
 
 		$enabled_status_text  = esc_html__( 'Status: Available', 'woocommerce-paypal-payments' );
 		$disabled_status_text = esc_html__( 'Status: Not yet enabled', 'woocommerce-paypal-payments' );
