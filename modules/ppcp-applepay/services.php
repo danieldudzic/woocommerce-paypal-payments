@@ -79,7 +79,7 @@ return array(
 			return new AppleProductStatus(
 				$container->get( 'wcgateway.settings' ),
 				$container->get( 'api.endpoint.partners' ),
-				$container->get( 'onboarding.state' ),
+				$container->get( 'settings.flag.is-connected' ),
 				$container->get( 'api.helper.failure-registry' )
 			);
 		}
