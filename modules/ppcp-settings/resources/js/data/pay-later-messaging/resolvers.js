@@ -22,8 +22,6 @@ export const resolvers = {
 		try {
 			const result = yield apiFetch( { path: REST_HYDRATE_PATH } );
 
-			console.log( result );
-
 			yield dispatch( STORE_NAME ).hydrate( result );
 			yield dispatch( STORE_NAME ).setIsReady( true );
 		} catch ( e ) {

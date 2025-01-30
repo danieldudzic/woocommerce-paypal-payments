@@ -26,11 +26,24 @@ const useHooks = () => {
 	// TODO: Replace with real property.
 	const [ sampleValue, setSampleValue ] = usePersistent( 'sampleValue' );
 
+	const [ cart ] = usePersistent( 'cart' );
+	const [ checkout ] = usePersistent( 'checkout' );
+	const [ product ] = usePersistent( 'product' );
+	const [ shop ] = usePersistent( 'shop' );
+	const [ home ] = usePersistent( 'home' );
+	const [ custom_placement ] = usePersistent( 'custom_placement' );
+
 	return {
 		persist,
 		isReady,
 		sampleValue,
 		setSampleValue,
+		cart,
+		checkout,
+		product,
+		shop,
+		home,
+		custom_placement,
 	};
 };
 
@@ -46,5 +59,20 @@ export const useSampleValue = () => {
 	return {
 		sampleValue,
 		setSampleValue,
+	};
+};
+
+export const usePayLaterMessaging = () => {
+	const { cart, checkout, product, shop, home, customPlacement } = useHooks();
+
+	return {
+		config: {
+			cart,
+			checkout,
+			product,
+			shop,
+			home,
+			customPlacement,
+		},
 	};
 };

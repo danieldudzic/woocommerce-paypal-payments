@@ -1,7 +1,8 @@
 import React, { useEffect } from 'react';
+import { PayLaterMessagingHooks } from '../../../data';
 
 const TabPayLaterMessaging = () => {
-	const config = {}; // Replace with the appropriate/saved configuration.
+	const { config } = PayLaterMessagingHooks.usePayLaterMessaging();
 	const PcpPayLaterConfigurator =
 		window.ppcpSettings?.PcpPayLaterConfigurator;
 
@@ -37,7 +38,7 @@ const TabPayLaterMessaging = () => {
 				},
 			} );
 		}
-	}, [ PcpPayLaterConfigurator ] );
+	}, [ PcpPayLaterConfigurator, config ] );
 
 	return (
 		<div

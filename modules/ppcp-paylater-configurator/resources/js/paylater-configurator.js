@@ -51,6 +51,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 		.then( ( data ) => {
 			if ( data.success ) {
 				const config = data.data;
+				console.log( config );
 
 				merchantConfigurators.Messaging( {
 					config,
