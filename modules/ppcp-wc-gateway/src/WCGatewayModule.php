@@ -63,6 +63,7 @@ use WooCommerce\PayPalCommerce\Vendor\Interop\Container\ServiceProviderInterface
 use WooCommerce\PayPalCommerce\Vendor\Psr\Container\ContainerInterface;
 use WooCommerce\PayPalCommerce\WcGateway\Settings\WcTasks\Registrar\TaskRegistrarInterface;
 use WooCommerce\PayPalCommerce\WcGateway\Helper\DCCGatewayConfiguration;
+use WooCommerce\PayPalCommerce\LocalAlternativePaymentMethods\LocalApmProductStatus;
 
 /**
  * Class WcGatewayModule
@@ -552,63 +553,35 @@ class WCGatewayModule implements ServiceModule, ExtendingModule, ExecutableModul
 		add_filter(
 			'woocommerce_paypal_payments_rest_common_merchant_features',
 			static function ( array $features ) use ( $c ) : array {
-				try {
-					$billing_agreements_endpoint = $c->get( 'api.endpoint.billing-agreements' );
-					assert( $billing_agreements_endpoint instanceof BillingAgreementsEndpoint );
+				$is_connected = $c->get( 'settings.flag.is-connected' );
 
-					$reference_transactions_enabled    = $billing_agreements_endpoint->reference_transaction_enabled();
-					$features['save_paypal_and_venmo'] = array(
-						'enabled' => $reference_transactions_enabled,
-					);
-				} catch ( Exception $ex ) {
-					$features['save_paypal_and_venmo'] = array(
-						'enabled' => false,
-					);
+				if ( ! $is_connected ) {
+					return $features;
 				}
 
-				try {
-					$dcc_product_status = $c->get( 'wcgateway.helper.dcc-product-status' );
-					assert( $dcc_product_status instanceof DCCProductStatus );
-					$dcc_enabled                                 = $dcc_product_status->dcc_is_active();
-					$features['advanced_credit_and_debit_cards'] = array(
-						'enabled' => $dcc_enabled,
-					);
-				} catch ( Exception $ex ) {
-					$features['advanced_credit_and_debit_cards'] = array(
-						'enabled' => false,
-					);
-				}
+				$billing_agreements_endpoint = $c->get( 'api.endpoint.billing-agreements' );
+				assert( $billing_agreements_endpoint instanceof BillingAgreementsEndpoint );
 
-				try {
-					// TODO: The `seller_status()` call throws a PayPalApiException. Why?
-					$partners_endpoint = $c->get( 'api.endpoint.partners' );
-					assert( $partners_endpoint instanceof PartnersEndpoint );
-					$seller_status = $partners_endpoint->seller_status();
+				$dcc_product_status = $c->get( 'wcgateway.helper.dcc-product-status' );
+				assert( $dcc_product_status instanceof DCCProductStatus );
 
-					$apms_enabled = false;
-					foreach ( $seller_status->products() as $product ) {
-						if ( $product->name() === 'PAYMENT_METHODS' ) {
-							$apms_enabled = true;
-							break;
-						}
-					}
+				$apms_product_status = $c->get( 'ppcp-local-apms.product-status' );
+				assert( $apms_product_status instanceof LocalApmProductStatus );
 
-					$features['alternative_payment_methods'] = array(
-						'enabled' => $apms_enabled,
-					);
+				$features['save_paypal_and_venmo'] = array(
+					'enabled' => $billing_agreements_endpoint->reference_transaction_enabled(),
+				);
 
-					$features['pay_later_messaging'] = array(
-						'enabled' => true,
-					);
-				} catch ( Exception $ex ) {
-					$features['alternative_payment_methods'] = array(
-						'enabled' => false,
-					);
+				$features['advanced_credit_and_debit_cards'] = array(
+					'enabled' => $dcc_product_status->is_active(),
+				);
 
-					$features['pay_later_messaging'] = array(
-						'enabled' => false,
-					);
-				}
+				$features['alternative_payment_methods'] = array(
+					'enabled' => $apms_product_status->is_active(),
+				);
+
+				// When local APMs are available, then PayLater messaging is also available.
+				$features['pay_later_messaging'] = $features['alternative_payment_methods'];
 
 				return $features;
 			}
