@@ -117,6 +117,16 @@ return array(
 		$settings    = $container->get( 'wcgateway.settings' );
 		return new State( $settings );
 	},
+	/**
+	 * Checks if the onboarding process is completed and the merchant API can be used.
+	 * This service is overwritten by the ppcp-settings module, when it's active.
+	 */
+	'settings.flag.is-connected'         => static function ( ContainerInterface $container ) : bool {
+		$state = $container->get( 'onboarding.state' );
+		assert( $state instanceof State );
+
+		return $state->current_state() >= State::STATE_ONBOARDED;
+	},
 	'onboarding.environment'             => function( ContainerInterface $container ) : Environment {
 		$settings = $container->get( 'wcgateway.settings' );
 		return new Environment( $settings );
