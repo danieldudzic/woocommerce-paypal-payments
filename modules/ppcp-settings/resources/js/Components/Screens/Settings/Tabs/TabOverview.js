@@ -23,29 +23,9 @@ import {
 } from '../../../ReusableComponents/Icons';
 
 const TabOverview = () => {
-	const { todos, isReady: areTodosReady } = useTodos();
-
-	// Don't render todos section until data is ready
-	const showTodos = areTodosReady && todos.length > 0;
-
 	return (
 		<div className="ppcp-r-tab-overview">
-			{ showTodos && (
-				<SettingsCard
-					className="ppcp-r-tab-overview-todo"
-					title={ __(
-						'Things to do next',
-						'woocommerce-paypal-payments'
-					) }
-					description={ __(
-						'Complete these tasks to keep your store updated with the latest products and services.',
-						'woocommerce-paypal-payments'
-					) }
-				>
-					<TodoSettingsBlock todosData={ todos } />
-				</SettingsCard>
-			) }
-
+			<OverviewTodos />
 			<OverviewFeatures />
 			<OverviewHelp />
 		</div>
@@ -53,6 +33,37 @@ const TabOverview = () => {
 };
 
 export default TabOverview;
+
+const OverviewTodos = () => {
+	const { todos, isReady: areTodosReady, dismissTodo } = useTodos();
+	const { setActiveModal } = useDispatch( STORE_NAME );
+	const { setActiveHighlight } = useDispatch( STORE_NAME );
+
+	// Don't render todos section until data is ready
+	const showTodos = areTodosReady && todos.length > 0;
+
+	if ( ! showTodos ) {
+		return null;
+	}
+
+	return (
+		<SettingsCard
+			className="ppcp-r-tab-overview-todo"
+			title={ __( 'Things to do next', 'woocommerce-paypal-payments' ) }
+			description={ __(
+				'Complete these tasks to keep your store updated with the latest products and services.',
+				'woocommerce-paypal-payments'
+			) }
+		>
+			<TodoSettingsBlock
+				todosData={ todos }
+				setActiveModal={ setActiveModal }
+				setActiveHighlight={ setActiveHighlight }
+				onDismissTodo={ dismissTodo }
+			/>
+		</SettingsCard>
+	);
+};
 
 const OverviewFeatures = () => {
 	const [ isRefreshing, setIsRefreshing ] = useState( false );

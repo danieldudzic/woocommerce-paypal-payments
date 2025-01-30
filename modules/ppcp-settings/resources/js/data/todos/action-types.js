@@ -10,6 +10,7 @@ export default {
 
 	// Persistent data
 	SET_TODOS: 'TODOS:SET_TODOS',
+	SET_DISMISSED_TODOS: 'TODOS:SET_DISMISSED_TODOS',
 
 	// Controls
 	DO_FETCH_TODOS: 'TODOS:DO_FETCH_TODOS',

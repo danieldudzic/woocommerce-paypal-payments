@@ -26,6 +26,7 @@ const defaultTransient = Object.freeze( {
  */
 const defaultPersistent = Object.freeze( {
 	todos: [],
+	dismissedTodos: [],
 } );
 
 // Reducer logic.
@@ -58,6 +59,19 @@ const reducer = createReducer( defaultTransient, defaultPersistent, {
 	 */
 	[ ACTION_TYPES.SET_TODOS ]: ( state, payload ) => {
 		return changePersistent( state, { todos: payload } );
+	},
+
+	/**
+	 * Updates dismissed todos list while preserving existing entries
+	 *
+	 * @param {Object} state   Current state
+	 * @param {Array}  payload Array of todo IDs to mark as dismissed
+	 * @return {Object} Updated state
+	 */
+	[ ACTION_TYPES.SET_DISMISSED_TODOS ]: ( state, payload ) => {
+		return changePersistent( state, {
+			dismissedTodos: Array.isArray( payload ) ? payload : [],
+		} );
 	},
 
 	/**

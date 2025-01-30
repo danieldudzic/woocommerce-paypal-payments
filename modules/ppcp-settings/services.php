@@ -17,6 +17,7 @@ use WooCommerce\PayPalCommerce\Settings\Data\PaymentSettings;
 use WooCommerce\PayPalCommerce\Settings\Data\SettingsModel;
 use WooCommerce\PayPalCommerce\Settings\Data\StylingSettings;
 use WooCommerce\PayPalCommerce\Settings\Data\TodosModel;
+use WooCommerce\PayPalCommerce\Settings\Data\Definition\TodosDefinition;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\AuthenticationRestEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\CommonRestEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\LoginLinkRestEndpoint;
@@ -31,6 +32,7 @@ use WooCommerce\PayPalCommerce\Settings\Handler\ConnectionListener;
 use WooCommerce\PayPalCommerce\Settings\Service\AuthenticationManager;
 use WooCommerce\PayPalCommerce\Settings\Service\ConnectionUrlGenerator;
 use WooCommerce\PayPalCommerce\Settings\Service\OnboardingUrlManager;
+use WooCommerce\PayPalCommerce\Settings\Service\TodosEligibilityService;
 use WooCommerce\PayPalCommerce\Vendor\Psr\Container\ContainerInterface;
 use WooCommerce\PayPalCommerce\Settings\Service\DataSanitizer;
 
@@ -237,9 +239,29 @@ return array(
 	'settings.rest.todos'                         => static function ( ContainerInterface $container ) : TodosRestEndpoint {
 		return new TodosRestEndpoint(
 			$container->get( 'settings.data.todos' ),
+			$container->get( 'settings.data.definition.todos' )
 		);
 	},
 	'settings.data.todos'                         => static function ( ContainerInterface $container ) : TodosModel {
 		return new TodosModel();
+	},
+	'settings.data.definition.todos'              => static function ( ContainerInterface $container ) : TodosDefinition {
+		return new TodosDefinition(
+			$container->get( 'settings.service.todos_eligibilities' )
+		);
+	},
+	'settings.service.todos_eligibilities'        => static function( ContainerInterface $container ): TodosEligibilityService {
+		return new TodosEligibilityService(
+			$container->has( 'axo.eligible' ) && $container->get( 'axo.eligible' ),
+			$container->has( 'card-fields.eligible' ) && $container->get( 'card-fields.eligible' ),
+			$container->has( 'paylater-configurator.is-available' ) && $container->get( 'paylater-configurator.is-available' ),
+			$container->has( 'wc-subscriptions.helper' ) && $container->get( 'wc-subscriptions.helper' )->plugin_is_active(),
+			$container->has( 'apple-pay-domain.eligible' ) && $container->get( 'apple-pay-domain.eligible' ),
+			true,
+			$container->has( 'applepay.eligible' ) && $container->get( 'applepay.eligible' ),
+			$container->has( 'googlepay.eligible' ) && $container->get( 'googlepay.eligible' ),
+			$container->has( 'paylater-messaging.available' ) && $container->get( 'paylater-messaging.available' ),
+			$container->has( 'button.basic-checkout.enabled' ) && ! $container->get( 'button.basic-checkout.enabled' )
+		);
 	},
 );

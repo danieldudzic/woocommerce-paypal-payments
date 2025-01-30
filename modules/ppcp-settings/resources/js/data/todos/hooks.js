@@ -21,13 +21,33 @@ export const useTodos = () => {
 		( select ) => select( STORE_NAME ).getTodos(),
 		[]
 	);
+	// Convert to array if we get an object
+	const dismissedTodos = useSelect( ( select ) => {
+		const dismissed = select( STORE_NAME ).getDismissedTodos() || [];
+		return Array.isArray( dismissed )
+			? dismissed
+			: Object.values( dismissed );
+	}, [] );
 	const isReady = useTransient( 'isReady' );
 
-	const { fetchTodos } = useDispatch( STORE_NAME );
+	const { fetchTodos, setDismissedTodos } = useDispatch( STORE_NAME );
+
+	const dismissTodo = ( todoId ) => {
+		const currentDismissed = dismissedTodos || [];
+		if ( ! currentDismissed.includes( todoId ) ) {
+			const newDismissedTodos = [ ...currentDismissed, todoId ];
+			setDismissedTodos( newDismissedTodos );
+		}
+	};
+
+	const filteredTodos = todos.filter(
+		( todo ) => ! dismissedTodos.includes( todo.id )
+	);
 
 	return {
-		todos,
+		todos: filteredTodos,
 		isReady,
 		fetchTodos,
+		dismissTodo,
 	};
 };

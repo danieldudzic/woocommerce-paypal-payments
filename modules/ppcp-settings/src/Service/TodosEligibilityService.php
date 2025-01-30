@@ -1,0 +1,147 @@
+<?php
+/**
+ * PayPal Commerce eligibility service for WooCommerce.
+ *
+ * This file contains the TodosEligibilityService class which manages eligibility checks
+ * for various PayPal Commerce features including Fastlane, card payments, Pay Later messaging,
+ * subscriptions, Apple Pay, Google Pay, and other digital wallet features.
+ *
+ * @package WooCommerce\PayPalCommerce\Settings\Service
+ */
+
+declare(strict_types=1);
+
+namespace WooCommerce\PayPalCommerce\Settings\Service;
+
+/**
+ * Manages eligibility checks for various PayPal Commerce features.
+ */
+class TodosEligibilityService {
+	/**
+	 * Whether Fastlane is eligible.
+	 *
+	 * @var bool
+	 */
+	private bool $is_fastlane_eligible;
+
+	/**
+	 * Whether card payments are eligible.
+	 *
+	 * @var bool
+	 */
+	private bool $is_card_payment_eligible;
+
+	/**
+	 * Whether Pay Later messaging is eligible.
+	 *
+	 * @var bool
+	 */
+	private bool $is_pay_later_messaging_eligible;
+
+	/**
+	 * Whether subscriptions are eligible.
+	 *
+	 * @var bool
+	 */
+	private bool $is_subscription_eligible;
+
+	/**
+	 * Whether Apple Pay domain registration is eligible.
+	 *
+	 * @var bool
+	 */
+	private bool $is_apple_pay_domain_eligible;
+
+	/**
+	 * Whether digital wallet features are eligible.
+	 *
+	 * @var bool
+	 */
+	private bool $is_digital_wallet_eligible;
+
+	/**
+	 * Whether Apple Pay is eligible.
+	 *
+	 * @var bool
+	 */
+	private bool $is_apple_pay_eligible;
+
+	/**
+	 * Whether Google Pay is eligible.
+	 *
+	 * @var bool
+	 */
+	private bool $is_google_pay_eligible;
+
+	/**
+	 * Whether Pay Later messaging for UI elements is eligible.
+	 *
+	 * @var bool
+	 */
+	private bool $is_pay_later_messaging_ui_eligible;
+
+	/**
+	 * Whether PayPal buttons are eligible.
+	 *
+	 * @var bool
+	 */
+	private bool $is_paypal_buttons_eligible;
+
+	/**
+	 * Constructor.
+	 *
+	 * @param bool $is_fastlane_eligible                Whether Fastlane is eligible.
+	 * @param bool $is_card_payment_eligible            Whether card payments are eligible.
+	 * @param bool $is_pay_later_messaging_eligible     Whether Pay Later messaging is eligible.
+	 * @param bool $is_subscription_eligible            Whether subscriptions are eligible.
+	 * @param bool $is_apple_pay_domain_eligible        Whether Apple Pay domain registration is eligible.
+	 * @param bool $is_digital_wallet_eligible          Whether digital wallet features are eligible.
+	 * @param bool $is_apple_pay_eligible               Whether Apple Pay is eligible.
+	 * @param bool $is_google_pay_eligible              Whether Google Pay is eligible.
+	 * @param bool $is_pay_later_messaging_ui_eligible  Whether Pay Later messaging for UI is eligible.
+	 * @param bool $is_paypal_buttons_eligible          Whether PayPal buttons are eligible.
+	 */
+	public function __construct(
+		bool $is_fastlane_eligible,
+		bool $is_card_payment_eligible,
+		bool $is_pay_later_messaging_eligible,
+		bool $is_subscription_eligible,
+		bool $is_apple_pay_domain_eligible,
+		bool $is_digital_wallet_eligible,
+		bool $is_apple_pay_eligible,
+		bool $is_google_pay_eligible,
+		bool $is_pay_later_messaging_ui_eligible = false,
+		bool $is_paypal_buttons_eligible = false
+	) {
+		$this->is_fastlane_eligible               = $is_fastlane_eligible;
+		$this->is_card_payment_eligible           = $is_card_payment_eligible;
+		$this->is_pay_later_messaging_eligible    = $is_pay_later_messaging_eligible;
+		$this->is_subscription_eligible           = $is_subscription_eligible;
+		$this->is_apple_pay_domain_eligible       = $is_apple_pay_domain_eligible;
+		$this->is_digital_wallet_eligible         = $is_digital_wallet_eligible;
+		$this->is_apple_pay_eligible              = $is_apple_pay_eligible;
+		$this->is_google_pay_eligible             = $is_google_pay_eligible;
+		$this->is_pay_later_messaging_ui_eligible = $is_pay_later_messaging_ui_eligible;
+		$this->is_paypal_buttons_eligible         = $is_paypal_buttons_eligible;
+	}
+
+	/**
+	 * Returns all eligibility checks as callables.
+	 *
+	 * @return array<string, callable>
+	 */
+	public function get_eligibility_checks(): array {
+		return array(
+			'enable_fastlane'                => fn() => ! $this->is_fastlane_eligible,
+			'enable_credit_debit_cards'      => fn() => $this->is_card_payment_eligible,
+			'enable_pay_later_messaging'     => fn() => ! $this->is_pay_later_messaging_eligible,
+			'add_pay_later_messaging'        => fn() => $this->is_pay_later_messaging_eligible && ! $this->is_pay_later_messaging_ui_eligible,
+			'configure_paypal_subscription'  => fn() => $this->is_subscription_eligible,
+			'register_domain_apple_pay'      => fn() => $this->is_apple_pay_domain_eligible,
+			'add_digital_wallets_to_account' => fn() => $this->is_digital_wallet_eligible,
+			'enable_apple_pay'               => fn() => $this->is_apple_pay_eligible && ! $this->is_apple_pay_domain_eligible,
+			'enable_google_pay'              => fn() => $this->is_google_pay_eligible,
+			'add_paypal_buttons'             => fn() => $this->is_paypal_buttons_eligible,
+		);
+	}
+}

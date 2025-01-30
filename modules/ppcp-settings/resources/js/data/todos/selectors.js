@@ -26,3 +26,12 @@ export const getTodos = ( state ) => {
 	const todos = state?.todos || persistentData( state ).todos || EMPTY_ARR;
 	return todos;
 };
+
+export const getDismissedTodos = ( state ) => {
+	// Access dismissed todos directly from state first
+	const dismissedTodos =
+		state?.dismissedTodos ||
+		persistentData( state ).dismissedTodos ||
+		EMPTY_ARR;
+	return dismissedTodos;
+};

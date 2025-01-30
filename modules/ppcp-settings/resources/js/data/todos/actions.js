@@ -19,6 +19,11 @@ export const setTodos = ( todos ) => ( {
 	payload: todos,
 } );
 
+export const setDismissedTodos = ( dismissedTodos ) => ( {
+	type: ACTION_TYPES.SET_DISMISSED_TODOS,
+	payload: dismissedTodos,
+} );
+
 export const fetchTodos = function* () {
 	yield { type: ACTION_TYPES.DO_FETCH_TODOS };
 };
