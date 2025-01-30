@@ -10,9 +10,11 @@ declare( strict_types = 1 );
 namespace WooCommerce\PayPalCommerce\ApiClient\Helper;
 
 use RuntimeException;
+use Exception;
+use WooCommerce\PayPalCommerce\WcGateway\Exception\NotFoundException;
 use WooCommerce\PayPalCommerce\ApiClient\Endpoint\PartnersEndpoint;
-use WooCommerce\PayPalCommerce\WcGateway\Settings\Settings;
 use WooCommerce\PayPalCommerce\ApiClient\Entity\SellerStatus;
+use WooCommerce\PayPalCommerce\WcGateway\Settings\Settings;
 
 /**
  * Class ProductStatus
@@ -81,6 +83,7 @@ abstract class ProductStatus {
 	 *
 	 * @return null|bool Boolean to indicate the status; null if the status not locally defined.
 	 * @throws RuntimeException When the check failed.
+	 * @throws NotFoundException When a relevant service or setting was not found.
 	 */
 	abstract protected function check_local_state() : ?bool;
 
@@ -134,7 +137,7 @@ abstract class ProductStatus {
 			// Check using the merchant-API.
 			$seller_status     = $this->get_seller_status_object();
 			$this->is_eligible = $this->check_active_state( $seller_status );
-		} catch ( RuntimeException $exception ) {
+		} catch ( Exception $exception ) {
 			$this->has_request_failure = true;
 		}
 
