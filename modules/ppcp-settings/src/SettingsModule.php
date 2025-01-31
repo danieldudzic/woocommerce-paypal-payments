@@ -238,6 +238,7 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 					'settings'               => $container->get( 'settings.rest.settings' ),
 					'styling'                => $container->get( 'settings.rest.styling' ),
 					'todos'                  => $container->get( 'settings.rest.todos' ),
+					'pay_later_messaging'    => $container->get( 'settings.rest.pay_later_messaging' ),
 				);
 
 				foreach ( $endpoints as $endpoint ) {

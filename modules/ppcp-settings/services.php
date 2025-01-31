@@ -21,6 +21,7 @@ use WooCommerce\PayPalCommerce\Settings\Endpoint\AuthenticationRestEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\CommonRestEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\LoginLinkRestEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\OnboardingRestEndpoint;
+use WooCommerce\PayPalCommerce\Settings\Endpoint\PayLaterMessagingEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\PaymentRestEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\RefreshFeatureStatusEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\WebhookSettingsEndpoint;
@@ -123,6 +124,12 @@ return array(
 			$container->get( 'api.endpoint.webhook' ),
 			$container->get( 'webhook.registrar' ),
 			$container->get( 'webhook.status.simulation' )
+		);
+	},
+	'settings.rest.pay_later_messaging'           => static function ( ContainerInterface $container ) : PayLaterMessagingEndpoint {
+		return new PayLaterMessagingEndpoint(
+			$container->get( 'wcgateway.settings' ),
+			$container->get( 'paylater-configurator.endpoint.save-config' )
 		);
 	},
 	'settings.rest.settings'                      => static function ( ContainerInterface $container ) : SettingsRestEndpoint {
