@@ -65,8 +65,8 @@ class PayPalSubscriptionsModule implements ServiceModule, ExtendingModule, Execu
 					return $process;
 				}
 
-				$paypal_subscription_id = (string) \WC()->session->get( 'ppcp_subscription_id' ) ?? '';
-				if ( ! $paypal_subscription_id ) {
+				$paypal_subscription_id = \WC()->session->get( 'ppcp_subscription_id' );
+				if ( empty( $paypal_subscription_id ) || ! is_string( $paypal_subscription_id ) ) {
 					return $process;
 				}
 
@@ -77,8 +77,8 @@ class PayPalSubscriptionsModule implements ServiceModule, ExtendingModule, Execu
 				foreach ( $subscriptions as $subscription ) {
 					$subscription->update_meta_data( 'ppcp_subscription', $paypal_subscription_id );
 					$subscription->save();
-
-					$subscription->add_order_note( "PayPal subscription {$paypal_subscription_id} added." );
+					// translators: %s PayPal Subscription id.
+					$subscription->add_order_note( sprintf( __( 'PayPal subscription %s added.', 'woocommerce-paypal-payments' ), $paypal_subscription_id ) );
 				}
 
 				$transaction_id = $gateway->get_paypal_order_transaction_id( $order );
