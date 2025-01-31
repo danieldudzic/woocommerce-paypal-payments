@@ -28,6 +28,7 @@ use WooCommerce\PayPalCommerce\Vendor\Inpsyde\Modularity\Module\ModuleClassNameI
 use WooCommerce\PayPalCommerce\Vendor\Inpsyde\Modularity\Module\ServiceModule;
 use WooCommerce\PayPalCommerce\Vendor\Psr\Container\ContainerInterface;
 use WooCommerce\PayPalCommerce\WcGateway\Exception\NotFoundException;
+use WooCommerce\PayPalCommerce\WcGateway\Gateway\PayPalGateway;
 use WooCommerce\PayPalCommerce\WcGateway\Settings\Settings;
 use WooCommerce\PayPalCommerce\WcSubscriptions\Helper\SubscriptionHelper;
 use WP_Post;
@@ -56,6 +57,43 @@ class PayPalSubscriptionsModule implements ServiceModule, ExtendingModule, Execu
 	 * {@inheritDoc}
 	 */
 	public function run( ContainerInterface $c ): bool {
+
+		add_filter(
+			'woocommerce_paypal_payments_before_order_process',
+			function ( bool $process, \WC_Payment_Gateway $gateway, \WC_Order $wc_order ) use ( $c ) {
+				if ( ! $gateway instanceof PayPalGateway || $gateway::ID !== 'ppcp-gateway' ) {
+					return $process;
+				}
+
+				$paypal_subscription_id = \WC()->session->get( 'ppcp_subscription_id' ) ?? '';
+				if ( ! $paypal_subscription_id ) {
+					return $process;
+				}
+
+				$order = $c->get( 'session.handler' )->order();
+				$gateway->add_paypal_meta( $wc_order, $order, $c->get( 'onboarding.environment' ) );
+
+				$subscriptions = function_exists( 'wcs_get_subscriptions_for_order' ) ? wcs_get_subscriptions_for_order( $wc_order ) : array();
+				foreach ( $subscriptions as $subscription ) {
+					$subscription->update_meta_data( 'ppcp_subscription', $paypal_subscription_id );
+					$subscription->save();
+
+					$subscription->add_order_note( "PayPal subscription {$paypal_subscription_id} added." );
+				}
+
+				$transaction_id = $gateway->get_paypal_order_transaction_id( $order );
+				if ( $transaction_id ) {
+					$gateway->update_transaction_id( $transaction_id, $wc_order, $c->get( 'woocommerce.logger.woocommerce' ) );
+				}
+
+				$wc_order->payment_complete();
+
+				return false;
+			},
+			10,
+			3
+		);
+
 		add_action(
 			'save_post',
 			/**

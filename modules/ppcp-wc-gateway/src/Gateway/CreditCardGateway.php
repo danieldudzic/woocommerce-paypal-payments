@@ -523,7 +523,18 @@ class CreditCardGateway extends \WC_Payment_Gateway_CC {
 		//phpcs:enable WordPress.Security.NonceVerification.Recommended
 
 		try {
-			$this->order_processor->process( $wc_order );
+			/**
+			 * This filter controls if the method 'precess()' from OrderProcessor will be called.
+			 * So you can implement your own for example on subscriptions
+			 *
+			 * - true bool controls execution of 'OrderProcessor::precess()'
+			 * @var $this \WC_Payment_Gateway
+			 * @var $wc_order \WC_Order
+			 */
+			$process = apply_filters( 'woocommerce_paypal_payments_before_order_process', true, $this, $wc_order );
+			if ( $process ) {
+				$this->order_processor->process( $wc_order );
+			}
 
 			do_action( 'woocommerce_paypal_payments_before_handle_payment_success', $wc_order );
 
