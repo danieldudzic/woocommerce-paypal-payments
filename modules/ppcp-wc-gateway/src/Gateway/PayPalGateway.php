@@ -631,8 +631,8 @@ class PayPalGateway extends \WC_Payment_Gateway {
 				 * So you can implement your own for example on subscriptions
 				 *
 				 * - true bool controls execution of 'OrderProcessor::precess()'
-				 * @var $this \WC_Payment_Gateway
-				 * @var $wc_order \WC_Order
+				 * - $this \WC_Payment_Gateway
+				 * - $wc_order \WC_Order
 				 */
 				$process = apply_filters( 'woocommerce_paypal_payments_before_order_process', true, $this, $wc_order );
 				if ( $process ) {
