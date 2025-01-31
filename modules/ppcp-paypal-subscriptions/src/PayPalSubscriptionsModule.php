@@ -65,7 +65,7 @@ class PayPalSubscriptionsModule implements ServiceModule, ExtendingModule, Execu
 					return $process;
 				}
 
-				$paypal_subscription_id = \WC()->session->get( 'ppcp_subscription_id' ) ?? '';
+				$paypal_subscription_id = (string) \WC()->session->get( 'ppcp_subscription_id' ) ?? '';
 				if ( ! $paypal_subscription_id ) {
 					return $process;
 				}
