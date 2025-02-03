@@ -11,9 +11,6 @@ namespace WooCommerce\PayPalCommerce\Onboarding;
 
 use WooCommerce\PayPalCommerce\Onboarding\Render\OnboardingOptionsRenderer;
 use WooCommerce\PayPalCommerce\Vendor\Psr\Container\ContainerInterface;
-use WooCommerce\PayPalCommerce\ApiClient\Authentication\Bearer;
-use WooCommerce\PayPalCommerce\ApiClient\Authentication\ConnectBearer;
-use WooCommerce\PayPalCommerce\ApiClient\Authentication\PayPalBearer;
 use WooCommerce\PayPalCommerce\ApiClient\Helper\Cache;
 use WooCommerce\PayPalCommerce\Onboarding\Assets\OnboardingAssets;
 use WooCommerce\PayPalCommerce\Onboarding\Endpoint\LoginSellerEndpoint;
@@ -85,34 +82,6 @@ return array(
 		}
 		return $container->get( 'api.paypal-website-url-production' );
 
-	},
-
-	'api.bearer'                         => static function ( ContainerInterface $container ): Bearer {
-
-		$state = $container->get( 'onboarding.state' );
-
-		/**
-		 * The State.
-		 *
-		 * @var State $state
-		 */
-		if ( $state->current_state() < State::STATE_ONBOARDED ) {
-			return new ConnectBearer();
-		}
-		$cache  = new Cache( 'ppcp-paypal-bearer' );
-		$key    = $container->get( 'api.key' );
-		$secret = $container->get( 'api.secret' );
-		$host   = $container->get( 'api.host' );
-		$logger = $container->get( 'woocommerce.logger.woocommerce' );
-		$settings = $container->get( 'wcgateway.settings' );
-		return new PayPalBearer(
-			$cache,
-			$host,
-			$key,
-			$secret,
-			$logger,
-			$settings
-		);
 	},
 	'onboarding.state'                   => function( ContainerInterface $container ) : State {
 		$settings    = $container->get( 'wcgateway.settings' );

@@ -116,6 +116,12 @@ return array(
 		return 'WC-';
 	},
 	'api.bearer'                                     => static function ( ContainerInterface $container ): Bearer {
+		$is_connected = $container->get( 'settings.flag.is-connected' );
+
+		if ( ! $is_connected ) {
+			return new ConnectBearer();
+		}
+
 		return new PayPalBearer(
 			$container->get( 'api.paypal-bearer-cache' ),
 			$container->get( 'api.host' ),
