@@ -23,10 +23,7 @@ const defaultConfig = {
 	optionalMethods: [
 		{ name: 'CreditDebitCards', Component: CreditDebitCards },
 		{ name: 'DigitalWallets', Component: DigitalWallets },
-		{
-			name: 'AlternativePaymentMethods',
-			Component: AlternativePaymentMethods,
-		},
+		{ name: 'APMs', Component: AlternativePaymentMethods },
 	],
 	optionalTitle: __(
 		'Optional payment methods',
@@ -49,10 +46,7 @@ const countrySpecificConfigs = {
 		optionalMethods: [
 			{ name: 'CardFields', Component: CardFields },
 			{ name: 'DigitalWallets', Component: DigitalWallets },
-			{
-				name: 'AlternativePaymentMethods',
-				Component: AlternativePaymentMethods,
-			},
+			{ name: 'APMs', Component: AlternativePaymentMethods },
 			{ name: 'Fastlane', Component: Fastlane },
 		],
 		optionalTitle: __( 'Expanded Checkout', 'woocommerce-paypal-payments' ),
