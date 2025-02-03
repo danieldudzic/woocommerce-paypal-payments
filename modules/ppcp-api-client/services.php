@@ -80,6 +80,8 @@ use WooCommerce\PayPalCommerce\ApiClient\Repository\PayeeRepository;
 use WooCommerce\PayPalCommerce\WcGateway\Settings\Settings;
 use WooCommerce\PayPalCommerce\ApiClient\Authentication\ConnectBearer;
 use WooCommerce\PayPalCommerce\WcGateway\Helper\EnvironmentConfig;
+use WooCommerce\PayPalCommerce\Onboarding\State;
+use WooCommerce\PayPalCommerce\WcGateway\Helper\Environment;
 
 return array(
 	'api.host'                                       => function( ContainerInterface $container ) : string {
@@ -932,5 +934,34 @@ return array(
 			$container->get( 'api.endpoint.partner-referrals-production' ),
 			$container->get( 'api.endpoint.partner-referrals-sandbox' )
 		);
+	},
+	'api.sandbox-host'                               => static function ( ContainerInterface $container ): string {
+
+		$state       = $container->get( 'onboarding.state' );
+
+		/**
+		 * The State object.
+		 *
+		 * @var State $state
+		 */
+		if ( $state->current_state() >= State::STATE_ONBOARDED ) {
+			return PAYPAL_SANDBOX_API_URL;
+		}
+		return CONNECT_WOO_SANDBOX_URL;
+	},
+	'api.production-host'                            => static function ( ContainerInterface $container ): string {
+
+		$state       = $container->get( 'onboarding.state' );
+
+		/**
+		 * The Environment and State variables.
+		 *
+		 * @var Environment $environment
+		 * @var State $state
+		 */
+		if ( $state->current_state() >= State::STATE_ONBOARDED ) {
+			return PAYPAL_API_URL;
+		}
+		return CONNECT_WOO_URL;
 	},
 );
