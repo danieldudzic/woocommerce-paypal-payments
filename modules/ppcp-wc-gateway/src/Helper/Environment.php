@@ -56,6 +56,9 @@ class Environment {
 	/**
 	 * Detect whether the current environment equals $environment
 	 *
+	 * @deprecated Use the is_sandbox() and is_production() methods instead.
+	 *             These methods provide better encapsulation, are less error-prone,
+	 *             and improve code readability by removing the need to pass environment constants.
 	 * @param string $environment The value to check against.
 	 *
 	 * @return bool
@@ -70,7 +73,7 @@ class Environment {
 	 * @return bool
 	 */
 	public function is_sandbox() : bool {
-		return $this->current_environment_is( self::SANDBOX );
+		return $this->current_environment() === self::SANDBOX;
 	}
 
 	/**
@@ -79,6 +82,6 @@ class Environment {
 	 * @return bool
 	 */
 	public function is_production() : bool {
-		return $this->current_environment_is( self::PRODUCTION );
+		return $this->current_environment() === self::PRODUCTION;
 	}
 }
