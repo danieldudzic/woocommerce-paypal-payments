@@ -6,30 +6,35 @@ import { PayPalCheckout } from './PaymentOptions';
 import { usePaymentConfig } from '../hooks/usePaymentConfig';
 
 const PaymentFlow = ( { useAcdc, isFastlane, isPayLater, storeCountry } ) => {
-	const config = usePaymentConfig(
-		storeCountry,
-		isPayLater,
-		useAcdc,
-		isFastlane
-	);
+	const {
+		includedMethods,
+		optionalMethods,
+		optionalTitle,
+		optionalDescription,
+		learnMoreConfig,
+	} = usePaymentConfig( storeCountry, isPayLater, useAcdc, isFastlane );
 
 	return (
 		<div className="ppcp-r-welcome-docs__wrapper">
 			<div className="ppcp-r-welcome-docs__col">
-				<PayPalCheckout />
+				<PayPalCheckout learnMore={ learnMoreConfig.PayPalCheckout } />
 				<BadgeBox
 					title={ __(
 						'Included in PayPal Checkout',
 						'woocommerce-paypal-payments'
 					) }
 				/>
-				<PaymentMethodsGroup methods={ config.includedMethods } />
+				<PaymentMethodsGroup
+					methods={ includedMethods }
+					learnMoreConfig={ learnMoreConfig }
+				/>
 			</div>
 
 			<OptionalMethodsSection
-				title={ config.optionalTitle }
-				description={ config.optionalDescription }
-				methods={ config.optionalMethods }
+				title={ optionalTitle }
+				description={ optionalDescription }
+				methods={ optionalMethods }
+				learnMoreConfig={ learnMoreConfig }
 			/>
 		</div>
 	);
@@ -37,15 +42,27 @@ const PaymentFlow = ( { useAcdc, isFastlane, isPayLater, storeCountry } ) => {
 
 export default PaymentFlow;
 
-const OptionalMethodsSection = ( { title, description, methods } ) => {
+const OptionalMethodsSection = ( {
+	title,
+	description,
+	methods,
+	learnMoreConfig,
+} ) => {
 	if ( ! methods.length ) {
 		return null;
 	}
 
 	return (
 		<div className="ppcp-r-welcome-docs__col">
-			<BadgeBox title={ title } description={ description } />
-			<PaymentMethodsGroup methods={ methods } />
+			<BadgeBox
+				title={ title }
+				description={ description }
+				learnMoreLink={ learnMoreConfig.OptionalMethods }
+			/>
+			<PaymentMethodsGroup
+				methods={ methods }
+				learnMoreConfig={ learnMoreConfig }
+			/>
 		</div>
 	);
 };

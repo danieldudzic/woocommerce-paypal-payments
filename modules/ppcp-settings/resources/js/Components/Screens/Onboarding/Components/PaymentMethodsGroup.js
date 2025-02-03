@@ -1,12 +1,13 @@
 import { Separator } from '../../../ReusableComponents/Elements';
 
-const PaymentMethodsGroup = ( { methods } ) => {
+const PaymentMethodsGroup = ( { methods, learnMoreConfig } ) => {
 	return (
 		<>
 			{ methods.map( ( method, index ) => (
 				<PaymentMethodItem
 					key={ method.name }
 					{ ...method }
+					learnMore={ learnMoreConfig[ method.name ] }
 					showSeparator={ index < methods.length - 1 }
 				/>
 			) ) }
@@ -16,10 +17,10 @@ const PaymentMethodsGroup = ( { methods } ) => {
 
 export default PaymentMethodsGroup;
 
-const PaymentMethodItem = ( { Component, showSeparator } ) => {
+const PaymentMethodItem = ( { Component, learnMore, showSeparator } ) => {
 	return (
 		<>
-			<Component />
+			<Component learnMore={ learnMore } />
 			{ showSeparator && (
 				<Separator className="ppcp-r-page-welcome-mode-separator" />
 			) }
