@@ -14,10 +14,12 @@ const PaymentMethodItemBlock = ( {
 		<SettingsBlock className="ppcp--method-item" separatorAndGap={ false }>
 			<div className="ppcp--method-inner">
 				<div className="ppcp--method-title-wrapper">
-					<PaymentMethodIcon
-						icons={ [ paymentMethod.icon ] }
-						type={ paymentMethod.icon }
-					/>
+					{ paymentMethod?.icon && (
+						<PaymentMethodIcon
+							icons={ [ paymentMethod.icon ] }
+							type={ paymentMethod.icon }
+						/>
+					) }
 					<span className="ppcp--method-title">
 						{ paymentMethod.itemTitle }
 					</span>
@@ -27,7 +29,7 @@ const PaymentMethodItemBlock = ( {
 				</p>
 				<div className="ppcp--method-footer">
 					<ToggleControl
-						__nextHasNoMarginBottom={ true }
+						__nextHasNoMarginBottom
 						checked={ isSelected }
 						onChange={ onSelect }
 					/>
