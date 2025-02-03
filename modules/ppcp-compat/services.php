@@ -141,7 +141,7 @@ return array(
 					'merchant_id'            => 'merchant_id',
 					'client_id'              => 'client_id',
 					'client_secret'          => 'client_secret',
-					'is_sandbox'             => 'sandbox_merchant',
+					'sandbox_on'             => 'sandbox_merchant',
 					'live_client_id'         => 'client_id',
 					'live_client_secret'     => 'client_secret',
 					'live_merchant_id'       => 'merchant_id',
