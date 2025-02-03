@@ -145,6 +145,7 @@ return array(
 				 * the credentials are used for.
 				 */
 				array(
+					'merchant_id'            => 'merchant_id',
 					'is_sandbox'             => 'sandbox_merchant',
 					'live_client_id'         => 'client_id',
 					'live_client_secret'     => 'client_secret',
