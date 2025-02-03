@@ -1,13 +1,13 @@
 <?php
 /**
- * Used to detect the current environment.
+ * Describes the current API environment (production or sandbox).
  *
- * @package WooCommerce\PayPalCommerce\Onboarding
+ * @package WooCommerce\PayPalCommerce\WcGateway\Helper
  */
 
 declare(strict_types=1);
 
-namespace WooCommerce\PayPalCommerce\Onboarding;
+namespace WooCommerce\PayPalCommerce\WcGateway\Helper;
 
 use WooCommerce\PayPalCommerce\Vendor\Psr\Container\ContainerInterface;
 
@@ -16,9 +16,8 @@ use WooCommerce\PayPalCommerce\Vendor\Psr\Container\ContainerInterface;
  */
 class Environment {
 
-
-	const PRODUCTION = 'production';
-	const SANDBOX    = 'sandbox';
+	public const PRODUCTION = 'production';
+	public const SANDBOX    = 'sandbox';
 
 	/**
 	 * The Settings.
