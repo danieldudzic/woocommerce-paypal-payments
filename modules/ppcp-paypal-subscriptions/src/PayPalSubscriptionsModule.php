@@ -59,6 +59,37 @@ class PayPalSubscriptionsModule implements ServiceModule, ExtendingModule, Execu
 	public function run( ContainerInterface $c ): bool {
 
 		add_filter(
+			'woocommerce_paypal_payments_paypal_gateway_supports',
+			function ( array $supports ) use ( $c ): array {
+				$subscriptions_helper = $c->get( 'wc-subscriptions.helper' );
+				assert( $subscriptions_helper instanceof SubscriptionHelper );
+
+				$settings = $c->get( 'wcgateway.settings' );
+				assert( $settings instanceof Settings );
+
+				$subscriptions_mode = $settings->has( 'subscriptions_mode' ) ? $settings->get( 'subscriptions_mode' ) : '';
+
+				if ( 'subscriptions_api' === $subscriptions_mode && $subscriptions_helper->plugin_is_active() ) {
+					$supports = array(
+						'subscriptions',
+						'subscription_cancellation',
+						'subscription_suspension',
+						'subscription_reactivation',
+						'subscription_amount_changes',
+						'subscription_date_changes',
+						'subscription_payment_method_change',
+						'subscription_payment_method_change_customer',
+						'subscription_payment_method_change_admin',
+						'multiple_subscriptions',
+						'gateway_scheduled_payments',
+					);
+				}
+
+				return $supports;
+			}
+		);
+
+		add_filter(
 			'woocommerce_paypal_payments_before_order_process',
 			function ( bool $process, \WC_Payment_Gateway $gateway, \WC_Order $wc_order ) use ( $c ) {
 				if ( ! $gateway instanceof PayPalGateway || $gateway::ID !== 'ppcp-gateway' ) {

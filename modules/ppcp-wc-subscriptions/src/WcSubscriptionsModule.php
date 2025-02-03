@@ -236,31 +236,6 @@ class WcSubscriptionsModule implements ServiceModule, ExtendingModule, Executabl
 			}
 		);
 
-		// Remove `gateway_scheduled_payments` feature support for non PayPal Subscriptions at subscription level.
-		add_filter(
-			'woocommerce_subscription_payment_gateway_supports',
-			/**
-			 * Param types removed to avoid third-party issues.
-			 *
-			 * @psalm-suppress MissingClosureParamType
-			 */
-			function( $is_supported, $feature, $subscription ) {
-				if (
-				$subscription->get_payment_method() === PayPalGateway::ID
-				&& $feature === 'gateway_scheduled_payments'
-				) {
-					$subscription_connected = $subscription->get_meta( 'ppcp_subscription' ) ?? '';
-					if ( ! $subscription_connected ) {
-						$is_supported = false;
-					}
-				}
-
-				return $is_supported;
-			},
-			10,
-			3
-		);
-
 		return true;
 	}
 
@@ -417,7 +392,7 @@ class WcSubscriptionsModule implements ServiceModule, ExtendingModule, Executabl
 
 				$subscriptions_mode = $settings->has( 'subscriptions_mode' ) ? $settings->get( 'subscriptions_mode' ) : '';
 
-				if ( 'disable_paypal_subscriptions' !== $subscriptions_mode && $subscriptions_helper->plugin_is_active() ) {
+				if ( 'vaulting_api' === $subscriptions_mode && $subscriptions_helper->plugin_is_active() ) {
 					$supports = array(
 						'subscriptions',
 						'subscription_cancellation',
@@ -429,7 +404,6 @@ class WcSubscriptionsModule implements ServiceModule, ExtendingModule, Executabl
 						'subscription_payment_method_change_customer',
 						'subscription_payment_method_change_admin',
 						'multiple_subscriptions',
-						'gateway_scheduled_payments',
 					);
 				}
 
@@ -446,9 +420,10 @@ class WcSubscriptionsModule implements ServiceModule, ExtendingModule, Executabl
 				$settings = $c->get( 'wcgateway.settings' );
 				assert( $settings instanceof Settings );
 
-				$vaulting_enabled = $settings->has( 'vault_enabled_dcc' ) && $settings->get( 'vault_enabled_dcc' );
+				$vaulting_enabled   = $settings->has( 'vault_enabled_dcc' ) && $settings->get( 'vault_enabled_dcc' );
+				$subscriptions_mode = $settings->has( 'subscriptions_mode' ) ? $settings->get( 'subscriptions_mode' ) : '';
 
-				if ( $vaulting_enabled && $subscriptions_helper->plugin_is_active() ) {
+				if ( $vaulting_enabled && 'vaulting_api' === $subscriptions_mode && $subscriptions_helper->plugin_is_active() ) {
 					$supports = array(
 						'subscriptions',
 						'subscription_cancellation',
@@ -478,7 +453,7 @@ class WcSubscriptionsModule implements ServiceModule, ExtendingModule, Executabl
 
 				$subscriptions_mode = $settings->has( 'subscriptions_mode' ) ? $settings->get( 'subscriptions_mode' ) : '';
 
-				if ( 'disable_paypal_subscriptions' !== $subscriptions_mode && $subscriptions_helper->plugin_is_active() ) {
+				if ( 'vaulting_api' === $subscriptions_mode && $subscriptions_helper->plugin_is_active() ) {
 					$supports = array(
 						'subscriptions',
 						'subscription_cancellation',
