@@ -129,8 +129,8 @@ return array(
 		$login_seller_sandbox    = $container->get( 'api.endpoint.login-seller-sandbox' );
 		$partner_referrals_data  = $container->get( 'api.repository.partner-referrals-data' );
 		$settings                = $container->get( 'wcgateway.settings' );
-		$cache = new Cache( 'ppcp-paypal-bearer' );
-		$logger = $container->get( 'woocommerce.logger.woocommerce' );
+		$cache                   = $container->get( 'api.paypal-bearer-cache' );
+		$logger                  = $container->get( 'woocommerce.logger.woocommerce' );
 		return new LoginSellerEndpoint(
 			$request_data,
 			$login_seller_production,

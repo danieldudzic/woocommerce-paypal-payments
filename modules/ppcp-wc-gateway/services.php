@@ -570,10 +570,10 @@ return array(
 		$settings         = $container->get( 'wcgateway.settings' );
 		$fields           = $container->get( 'wcgateway.settings.fields' );
 		$webhook_registrar = $container->get( 'webhook.registrar' );
-		$state            = $container->get( 'onboarding.state' );
-		$cache = new Cache( 'ppcp-paypal-bearer' );
-		$bearer = $container->get( 'api.bearer' );
-		$page_id = $container->get( 'wcgateway.current-ppcp-settings-page-id' );
+		$state             = $container->get( 'onboarding.state' );
+		$cache             = $container->get( 'api.paypal-bearer-cache' );
+		$bearer            = $container->get( 'api.bearer' );
+		$page_id           = $container->get( 'wcgateway.current-ppcp-settings-page-id' );
 		$signup_link_cache = $container->get( 'onboarding.signup-link-cache' );
 		$signup_link_ids = $container->get( 'onboarding.signup-link-ids' );
 		$pui_status_cache = $container->get( 'pui.status-cache' );

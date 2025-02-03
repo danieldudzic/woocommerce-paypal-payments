@@ -817,7 +817,7 @@ return array(
 		return new OrderHelper();
 	},
 	'api.helper.order-transient'                     => static function( ContainerInterface $container ): OrderTransient {
-		$cache                   = new Cache( 'ppcp-paypal-bearer' );
+		$cache                   = $container->get( 'api.paypal-bearer-cache' );
 		$purchase_unit_sanitizer = $container->get( 'api.helper.purchase-unit-sanitizer' );
 		return new OrderTransient( $cache, $purchase_unit_sanitizer );
 	},
