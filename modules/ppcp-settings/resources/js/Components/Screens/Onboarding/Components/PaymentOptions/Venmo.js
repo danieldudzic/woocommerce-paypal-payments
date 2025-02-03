@@ -1,4 +1,5 @@
 import { __ } from '@wordpress/i18n';
+
 import BadgeBox from '../../../../ReusableComponents/BadgeBox';
 
 const Venmo = () => (

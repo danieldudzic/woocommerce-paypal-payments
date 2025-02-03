@@ -1,4 +1,5 @@
 import { __ } from '@wordpress/i18n';
+
 import PricingTitleBadge from '../../../../ReusableComponents/PricingTitleBadge';
 import BadgeBox from '../../../../ReusableComponents/BadgeBox';
 
