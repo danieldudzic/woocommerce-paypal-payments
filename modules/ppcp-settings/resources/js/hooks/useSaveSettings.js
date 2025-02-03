@@ -2,6 +2,7 @@ import { useCallback } from '@wordpress/element';
 
 import {
 	CommonHooks,
+	PayLaterMessagingHooks,
 	PaymentHooks,
 	SettingsHooks,
 	StylingHooks,
@@ -15,8 +16,13 @@ export const useSaveSettings = () => {
 	const { persist: persistSettings } = SettingsHooks.useStore();
 	const { persist: persistStyling } = StylingHooks.useStore();
 	const { persist: persistTodos } = TodosHooks.useStore();
+	const { persist: persistPayLaterMessaging } =
+		PayLaterMessagingHooks.useStore();
 
 	const persistAll = useCallback( () => {
+		// Executes onSave on TabPayLaterMessaging component.
+		document.getElementById( 'configurator-publishButton' )?.click();
+
 		withActivity(
 			'persist-methods',
 			'Save payment methods',
@@ -33,11 +39,17 @@ export const useSaveSettings = () => {
 			persistStyling
 		);
 		withActivity( 'persist-todos', 'Save todos state', persistTodos );
+		withActivity(
+			'persist-pay-later-messaging',
+			'Save pay later messaging details',
+			persistPayLaterMessaging
+		);
 	}, [
 		persistPayment,
 		persistSettings,
 		persistStyling,
 		persistTodos,
+		persistPayLaterMessaging,
 		withActivity,
 	] );
 

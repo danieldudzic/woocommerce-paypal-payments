@@ -22,6 +22,7 @@ use WooCommerce\PayPalCommerce\Settings\Endpoint\AuthenticationRestEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\CommonRestEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\LoginLinkRestEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\OnboardingRestEndpoint;
+use WooCommerce\PayPalCommerce\Settings\Endpoint\PayLaterMessagingEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\PaymentRestEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\RefreshFeatureStatusEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\ResetDismissedTodosEndpoint;
@@ -89,6 +90,15 @@ return array(
 			$container->get( 'settings.service.sanitizer' )
 		);
 	},
+	/**
+	 * Checks if valid merchant connection details are stored in the DB.
+	 */
+	'settings.flag.is-connected'                  => static function ( ContainerInterface $container ) : bool {
+		$data = $container->get( 'settings.data.general' );
+		assert( $data instanceof GeneralSettings );
+
+		return $data->is_merchant_connected();
+	},
 	'settings.rest.onboarding'                    => static function ( ContainerInterface $container ) : OnboardingRestEndpoint {
 		return new OnboardingRestEndpoint( $container->get( 'settings.data.onboarding' ) );
 	},
@@ -126,6 +136,12 @@ return array(
 			$container->get( 'api.endpoint.webhook' ),
 			$container->get( 'webhook.registrar' ),
 			$container->get( 'webhook.status.simulation' )
+		);
+	},
+	'settings.rest.pay_later_messaging'           => static function ( ContainerInterface $container ) : PayLaterMessagingEndpoint {
+		return new PayLaterMessagingEndpoint(
+			$container->get( 'wcgateway.settings' ),
+			$container->get( 'paylater-configurator.endpoint.save-config' )
 		);
 	},
 	'settings.rest.settings'                      => static function ( ContainerInterface $container ) : SettingsRestEndpoint {
