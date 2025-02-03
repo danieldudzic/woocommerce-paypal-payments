@@ -936,32 +936,21 @@ return array(
 		);
 	},
 	'api.sandbox-host'                               => static function ( ContainerInterface $container ): string {
+		$is_connected = $container->get( 'settings.flag.is-connected' );
 
-		$state       = $container->get( 'onboarding.state' );
-
-		/**
-		 * The State object.
-		 *
-		 * @var State $state
-		 */
-		if ( $state->current_state() >= State::STATE_ONBOARDED ) {
+		if ( $is_connected ) {
 			return PAYPAL_SANDBOX_API_URL;
 		}
+
 		return CONNECT_WOO_SANDBOX_URL;
 	},
 	'api.production-host'                            => static function ( ContainerInterface $container ): string {
+		$is_connected = $container->get( 'settings.flag.is-connected' );
 
-		$state       = $container->get( 'onboarding.state' );
-
-		/**
-		 * The Environment and State variables.
-		 *
-		 * @var Environment $environment
-		 * @var State $state
-		 */
-		if ( $state->current_state() >= State::STATE_ONBOARDED ) {
+		if ( $is_connected ) {
 			return PAYPAL_API_URL;
 		}
+
 		return CONNECT_WOO_URL;
 	},
 );
