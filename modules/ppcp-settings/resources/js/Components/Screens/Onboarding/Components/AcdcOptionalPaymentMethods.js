@@ -3,6 +3,7 @@ import { __ } from '@wordpress/i18n';
 import BadgeBox from '../../../ReusableComponents/BadgeBox';
 import { Separator } from '../../../ReusableComponents/Elements';
 import PricingTitleBadge from '../../../ReusableComponents/PricingTitleBadge';
+import { CardFields } from './PaymentOptions';
 
 const AcdcOptionalPaymentMethods = ( {
 	isFastlane,
@@ -12,26 +13,7 @@ const AcdcOptionalPaymentMethods = ( {
 	if ( isFastlane && isPayLater && storeCountry === 'US' ) {
 		return (
 			<div className="ppcp-r-optional-payment-methods__wrapper">
-				<BadgeBox
-					title={ __(
-						'Custom Card Fields',
-						'woocommerce-paypal-payments'
-					) }
-					imageBadge={ [
-						'icon-button-visa.svg',
-						'icon-button-mastercard.svg',
-						'icon-button-amex.svg',
-						'icon-button-discover.svg',
-					] }
-					textBadge={ <PricingTitleBadge item="ccf" /> }
-					description={ __(
-						'Style the credit card fields to match your own style. Includes advanced processing with risk management, 3D Secure, fraud protection options, and chargeback protection.',
-						'woocommerce-paypal-payments'
-					) }
-					learnMoreLink={
-						'https://www.paypal.com/us/business/paypal-business-fees'
-					}
-				/>
+				<CardFields />
 				<Separator className="ppcp-r-optional-payment-methods__separator" />
 				<BadgeBox
 					title={ __(
@@ -93,26 +75,7 @@ const AcdcOptionalPaymentMethods = ( {
 	if ( isPayLater && storeCountry === 'uk' ) {
 		return (
 			<div className="ppcp-r-optional-payment-methods__wrapper">
-				<BadgeBox
-					title={ __(
-						'Custom Card Fields',
-						'woocommerce-paypal-payments'
-					) }
-					imageBadge={ [
-						'icon-button-visa.svg',
-						'icon-button-mastercard.svg',
-						'icon-button-amex.svg',
-						'icon-button-discover.svg',
-					] }
-					textBadge={ <PricingTitleBadge item="ccf" /> }
-					description={ __(
-						'Style the credit card fields to match your own style. Includes advanced processing with risk management, 3D Secure, fraud protection options, and chargeback protection.',
-						'woocommerce-paypal-payments'
-					) }
-					learnMoreLink={
-						'https://www.paypal.com/us/business/paypal-business-fees'
-					}
-				/>
+				<CardFields />
 				<Separator className="ppcp-r-optional-payment-methods__separator" />
 				<BadgeBox
 					title={ __(
@@ -159,26 +122,7 @@ const AcdcOptionalPaymentMethods = ( {
 
 	return (
 		<div className="ppcp-r-optional-payment-methods__wrapper">
-			<BadgeBox
-				title={ __(
-					'Custom Card Fields',
-					'woocommerce-paypal-payments'
-				) }
-				imageBadge={ [
-					'icon-button-visa.svg',
-					'icon-button-mastercard.svg',
-					'icon-button-amex.svg',
-					'icon-button-discover.svg',
-				] }
-				textBadge={ <PricingTitleBadge item="ccf" /> }
-				description={ __(
-					'Style the credit card fields to match your own style. Includes advanced processing with risk management, 3D Secure, fraud protection options, and chargeback protection.',
-					'woocommerce-paypal-payments'
-				) }
-				learnMoreLink={
-					'https://www.paypal.com/us/business/paypal-business-fees'
-				}
-			/>
+			<CardFields />
 			<Separator className="ppcp-r-optional-payment-methods__separator" />
 			<BadgeBox
 				title={ __( 'Digital Wallets', 'woocommerce-paypal-payments' ) }
