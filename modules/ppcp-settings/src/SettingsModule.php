@@ -238,6 +238,7 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 					'settings'               => $container->get( 'settings.rest.settings' ),
 					'styling'                => $container->get( 'settings.rest.styling' ),
 					'todos'                  => $container->get( 'settings.rest.todos' ),
+					'pay_later_messaging'    => $container->get( 'settings.rest.pay_later_messaging' ),
 				);
 
 				foreach ( $endpoints as $endpoint ) {
@@ -299,7 +300,7 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 				assert( $dcc_applies instanceof DCCApplies );
 
 				// Unset BCDC if merchant is eligible for ACDC.
-				if ( $dcc_product_status->dcc_is_active() && ! $container->get( 'wcgateway.settings.allow_card_button_gateway' ) ) {
+				if ( $dcc_product_status->is_active() && ! $container->get( 'wcgateway.settings.allow_card_button_gateway' ) ) {
 					unset( $payment_methods[ CardButtonGateway::ID ] );
 				}
 
@@ -319,7 +320,7 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 				}
 
 				// Unset Fastlane if store location is not United States or merchant is not eligible for ACDC.
-				if ( $container->get( 'api.shop.country' ) !== 'US' || ! $dcc_product_status->dcc_is_active() ) {
+				if ( $container->get( 'api.shop.country' ) !== 'US' || ! $dcc_product_status->is_active() ) {
 					unset( $payment_methods['ppcp-axo-gateway'] );
 				}
 
