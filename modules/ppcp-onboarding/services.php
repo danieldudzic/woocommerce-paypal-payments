@@ -20,6 +20,7 @@ use WooCommerce\PayPalCommerce\Onboarding\Endpoint\LoginSellerEndpoint;
 use WooCommerce\PayPalCommerce\Onboarding\Endpoint\UpdateSignupLinksEndpoint;
 use WooCommerce\PayPalCommerce\Onboarding\Render\OnboardingSendOnlyNoticeRenderer;
 use WooCommerce\PayPalCommerce\Onboarding\Render\OnboardingRenderer;
+use WooCommerce\PayPalCommerce\WcGateway\Helper\Environment;
 
 return array(
 	'api.sandbox-host'                   => static function ( ContainerInterface $container ): string {
