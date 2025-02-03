@@ -23,6 +23,14 @@ use WooCommerce\PayPalCommerce\WcGateway\Settings\Settings;
  */
 abstract class ProductStatus {
 	/**
+	 * Caches the SellerStatus API response to avoid duplicate API calls
+	 * during the same request.
+	 *
+	 * @var ?SellerStatus
+	 */
+	private static ?SellerStatus $seller_status = null;
+
+	/**
 	 * The current status stored in memory.
 	 *
 	 * @var bool|null
@@ -147,19 +155,21 @@ abstract class ProductStatus {
 	/**
 	 * Fetches the seller-status object from the PayPal merchant API.
 	 *
-	 * TODO: We might cache the SellerStatus, as it's usually accessed multiple times during one request.
-	 *
 	 * @return SellerStatus
 	 * @throws RuntimeException When the check failed.
 	 */
 	protected function get_seller_status_object() : SellerStatus {
-		// Check API failure registry to prevent multiple failed API requests.
-		if ( $this->api_failure_registry->has_failure_in_timeframe( FailureRegistry::SELLER_STATUS_KEY, HOUR_IN_SECONDS ) ) {
-			throw new RuntimeException( 'Timeout for re-check not reached yet' );
+		if ( null === self::$seller_status ) {
+			// Check API failure registry to prevent multiple failed API requests.
+			if ( $this->api_failure_registry->has_failure_in_timeframe( FailureRegistry::SELLER_STATUS_KEY, MINUTE_IN_SECONDS ) ) {
+				throw new RuntimeException( 'Timeout for re-check not reached yet' );
+			}
+
+			// Request seller status via PayPal API, might throw an Exception.
+			self::$seller_status = $this->partners_endpoint->seller_status();
 		}
 
-		// Request seller status via PayPal API, might throw an Exception.
-		return $this->partners_endpoint->seller_status();
+		return self::$seller_status;
 	}
 
 	/**
