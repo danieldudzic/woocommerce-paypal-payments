@@ -5,7 +5,13 @@ import PaymentMethodsGroup from './PaymentMethodsGroup';
 import { PayPalCheckout } from './PaymentOptions';
 import { usePaymentConfig } from '../hooks/usePaymentConfig';
 
-const PaymentFlow = ( { useAcdc, isFastlane, isPayLater, storeCountry } ) => {
+const PaymentFlow = ( {
+	useAcdc,
+	isFastlane,
+	isPayLater,
+	storeCountry,
+	onlyOptional = false,
+} ) => {
 	const {
 		includedMethods,
 		optionalMethods,
@@ -14,21 +20,21 @@ const PaymentFlow = ( { useAcdc, isFastlane, isPayLater, storeCountry } ) => {
 		learnMoreConfig,
 	} = usePaymentConfig( storeCountry, isPayLater, useAcdc, isFastlane );
 
+	if ( onlyOptional ) {
+		return (
+			<OptionalMethodsSection
+				methods={ optionalMethods }
+				learnMoreConfig={ learnMoreConfig }
+			/>
+		);
+	}
+
 	return (
 		<div className="ppcp-r-welcome-docs__wrapper">
-			<div className="ppcp-r-welcome-docs__col">
-				<PayPalCheckout learnMore={ learnMoreConfig.PayPalCheckout } />
-				<BadgeBox
-					title={ __(
-						'Included in PayPal Checkout',
-						'woocommerce-paypal-payments'
-					) }
-				/>
-				<PaymentMethodsGroup
-					methods={ includedMethods }
-					learnMoreConfig={ learnMoreConfig }
-				/>
-			</div>
+			<DefaultMethodsSection
+				methods={ includedMethods }
+				learnMoreConfig={ learnMoreConfig }
+			/>
 
 			<OptionalMethodsSection
 				title={ optionalTitle }
@@ -42,9 +48,27 @@ const PaymentFlow = ( { useAcdc, isFastlane, isPayLater, storeCountry } ) => {
 
 export default PaymentFlow;
 
+const DefaultMethodsSection = ( { methods, learnMoreConfig } ) => {
+	return (
+		<div className="ppcp-r-welcome-docs__col">
+			<PayPalCheckout learnMore={ learnMoreConfig.PayPalCheckout } />
+			<BadgeBox
+				title={ __(
+					'Included in PayPal Checkout',
+					'woocommerce-paypal-payments'
+				) }
+			/>
+			<PaymentMethodsGroup
+				methods={ methods }
+				learnMoreConfig={ learnMoreConfig }
+			/>
+		</div>
+	);
+};
+
 const OptionalMethodsSection = ( {
-	title,
-	description,
+	title = '',
+	description = '',
 	methods,
 	learnMoreConfig,
 } ) => {
@@ -54,11 +78,13 @@ const OptionalMethodsSection = ( {
 
 	return (
 		<div className="ppcp-r-welcome-docs__col">
-			<BadgeBox
-				title={ title }
-				description={ description }
-				learnMoreLink={ learnMoreConfig.OptionalMethods }
-			/>
+			{ title && (
+				<BadgeBox
+					title={ title }
+					description={ description }
+					learnMoreLink={ learnMoreConfig.OptionalMethods }
+				/>
+			) }
 			<PaymentMethodsGroup
 				methods={ methods }
 				learnMoreConfig={ learnMoreConfig }
