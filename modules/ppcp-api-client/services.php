@@ -84,8 +84,15 @@ use WooCommerce\PayPalCommerce\Onboarding\State;
 use WooCommerce\PayPalCommerce\WcGateway\Helper\Environment;
 
 return array(
-	'api.host'                                       => function( ContainerInterface $container ) : string {
-		return PAYPAL_API_URL;
+	'api.host'                                       => static function( ContainerInterface $container ) : string {
+		$environment = $container->get( 'onboarding.environment' );
+		assert( $environment instanceof Environment );
+
+		if ( $environment->is_sandbox() ) {
+			return (string) $container->get( 'api.sandbox-host' );
+		}
+
+		return (string) $container->get( 'api.production-host' );
 	},
 	'api.paypal-host'                                => function( ContainerInterface $container ) : string {
 		return PAYPAL_API_URL;

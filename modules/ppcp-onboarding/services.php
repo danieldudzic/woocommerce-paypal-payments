@@ -20,18 +20,6 @@ use WooCommerce\PayPalCommerce\Onboarding\Render\OnboardingRenderer;
 use WooCommerce\PayPalCommerce\WcGateway\Helper\Environment;
 
 return array(
-	'api.host'                           => static function ( ContainerInterface $container ): string {
-		$environment = $container->get( 'onboarding.environment' );
-
-		/**
-		 * The Environment and State variables.
-		 *
-		 * @var Environment $environment
-		 */
-		return $environment->current_environment_is( Environment::SANDBOX )
-			? (string) $container->get( 'api.sandbox-host' ) : (string) $container->get( 'api.production-host' );
-
-	},
 	'api.paypal-host'                    => function( ContainerInterface $container ) : string {
 		$environment = $container->get( 'onboarding.environment' );
 		/**
