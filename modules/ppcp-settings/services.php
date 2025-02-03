@@ -24,6 +24,7 @@ use WooCommerce\PayPalCommerce\Settings\Endpoint\LoginLinkRestEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\OnboardingRestEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\PaymentRestEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\RefreshFeatureStatusEndpoint;
+use WooCommerce\PayPalCommerce\Settings\Endpoint\ResetDismissedTodosEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\WebhookSettingsEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\SettingsRestEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\StylingRestEndpoint;
@@ -239,7 +240,8 @@ return array(
 	'settings.rest.todos'                         => static function ( ContainerInterface $container ) : TodosRestEndpoint {
 		return new TodosRestEndpoint(
 			$container->get( 'settings.data.todos' ),
-			$container->get( 'settings.data.definition.todos' )
+			$container->get( 'settings.data.definition.todos' ),
+			$container->get( 'settings.rest.settings' )
 		);
 	},
 	'settings.data.todos'                         => static function ( ContainerInterface $container ) : TodosModel {
@@ -255,13 +257,25 @@ return array(
 			$container->has( 'axo.eligible' ) && $container->get( 'axo.eligible' ),
 			$container->has( 'card-fields.eligible' ) && $container->get( 'card-fields.eligible' ),
 			$container->has( 'paylater-configurator.is-available' ) && $container->get( 'paylater-configurator.is-available' ),
-			$container->has( 'wc-subscriptions.helper' ) && $container->get( 'wc-subscriptions.helper' )->plugin_is_active(),
+			$container->has( 'wc-subscriptions.helper' ) && $container->get( 'wc-subscriptions.helper' )->plugin_is_active() && empty(
+				wc_get_products(
+					array(
+						'type'  => 'subscription',
+						'limit' => 1,
+					)
+				)
+			),
 			$container->has( 'apple-pay-domain.eligible' ) && $container->get( 'apple-pay-domain.eligible' ),
 			true,
 			$container->has( 'applepay.eligible' ) && $container->get( 'applepay.eligible' ),
-			$container->has( 'googlepay.eligible' ) && $container->get( 'googlepay.eligible' ),
+			$container->has( 'googlepay.eligible' ) &&
+			$container->get( 'googlepay.eligible' ) &&
+			( $container->get( 'googlepay.available' ) && ! $container->get( 'googlepay.is_referral' ) ),
 			$container->has( 'paylater-messaging.available' ) && $container->get( 'paylater-messaging.available' ),
 			$container->has( 'button.basic-checkout.enabled' ) && ! $container->get( 'button.basic-checkout.enabled' )
 		);
+	},
+	'settings.rest.reset_dismissed_todos'         => static function( ContainerInterface $container ): ResetDismissedTodosEndpoint {
+		return new ResetDismissedTodosEndpoint();
 	},
 );

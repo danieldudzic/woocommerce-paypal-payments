@@ -14,7 +14,9 @@ import SettingsCard from '../../../ReusableComponents/SettingsCard';
 import { TITLE_BADGE_POSITIVE } from '../../../ReusableComponents/TitleBadge';
 import { useTodos } from '../../../../data/todos/hooks';
 import { useMerchantInfo } from '../../../../data/common/hooks';
-import { STORE_NAME } from '../../../../data/common';
+import { STORE_NAME as COMMON_STORE_NAME } from '../../../../data/common';
+import { STORE_NAME as TODOS_STORE_NAME } from '../../../../data/todos';
+
 import { getFeatures } from '../Components/Overview/features-config';
 
 import {
@@ -35,12 +37,33 @@ const TabOverview = () => {
 export default TabOverview;
 
 const OverviewTodos = () => {
+	const [ isResetting, setIsResetting ] = useState( false );
 	const { todos, isReady: areTodosReady, dismissTodo } = useTodos();
-	const { setActiveModal } = useDispatch( STORE_NAME );
-	const { setActiveHighlight } = useDispatch( STORE_NAME );
+	const { setActiveModal, setActiveHighlight } =
+		useDispatch( COMMON_STORE_NAME );
+	const { resetDismissedTodos, setDismissedTodos } =
+		useDispatch( TODOS_STORE_NAME );
+	const { createSuccessNotice } = useDispatch( noticesStore );
 
-	// Don't render todos section until data is ready
 	const showTodos = areTodosReady && todos.length > 0;
+
+	const resetHandler = async () => {
+		setIsResetting( true );
+		try {
+			await setDismissedTodos( [] );
+			await resetDismissedTodos();
+
+			createSuccessNotice(
+				__(
+					'Dismissed items restored successfully.',
+					'woocommerce-paypal-payments'
+				),
+				{ icon: NOTIFICATION_SUCCESS }
+			);
+		} finally {
+			setIsResetting( false );
+		}
+	};
 
 	if ( ! showTodos ) {
 		return null;
@@ -50,10 +73,29 @@ const OverviewTodos = () => {
 		<SettingsCard
 			className="ppcp-r-tab-overview-todo"
 			title={ __( 'Things to do next', 'woocommerce-paypal-payments' ) }
-			description={ __(
-				'Complete these tasks to keep your store updated with the latest products and services.',
-				'woocommerce-paypal-payments'
-			) }
+			description={
+				<>
+					<p>
+						{ __(
+							'Complete these tasks to keep your store updated with the latest products and services.',
+							'woocommerce-paypal-payments'
+						) }
+					</p>
+					<Button
+						variant="tertiary"
+						onClick={ resetHandler }
+						disabled={ isResetting }
+					>
+						<Icon icon={ reusableBlock } size={ 18 } />
+						{ isResetting
+							? __( 'Restoring…', 'woocommerce-paypal-payments' )
+							: __(
+									'Restore dismissed Things To Do',
+									'woocommerce-paypal-payments'
+							  ) }
+					</Button>
+				</>
+			}
 		>
 			<TodoSettingsBlock
 				todosData={ todos }
@@ -69,7 +111,7 @@ const OverviewFeatures = () => {
 	const [ isRefreshing, setIsRefreshing ] = useState( false );
 	const { merchant, features: merchantFeatures } = useMerchantInfo();
 	const { refreshFeatureStatuses, setActiveModal } =
-		useDispatch( STORE_NAME );
+		useDispatch( COMMON_STORE_NAME );
 	const { createSuccessNotice, createErrorNotice } =
 		useDispatch( noticesStore );
 
@@ -79,7 +121,7 @@ const OverviewFeatures = () => {
 		[ setActiveModal ]
 	);
 
-	// Map merchant features status to our config
+	// Map merchant features status to the config
 	const features = useMemo( () => {
 		return featuresData.map( ( feature ) => {
 			const merchantFeature = merchantFeatures?.[ feature.id ];

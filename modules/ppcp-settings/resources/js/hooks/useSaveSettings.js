@@ -5,6 +5,7 @@ import {
 	PaymentHooks,
 	SettingsHooks,
 	StylingHooks,
+	TodosHooks,
 } from '../data';
 
 export const useSaveSettings = () => {
@@ -13,6 +14,7 @@ export const useSaveSettings = () => {
 	const { persist: persistPayment } = PaymentHooks.useStore();
 	const { persist: persistSettings } = SettingsHooks.useStore();
 	const { persist: persistStyling } = StylingHooks.useStore();
+	const { persist: persistTodos } = TodosHooks.useStore();
 
 	const persistAll = useCallback( () => {
 		withActivity(
@@ -30,7 +32,14 @@ export const useSaveSettings = () => {
 			'Save styling details',
 			persistStyling
 		);
-	}, [ persistPayment, persistSettings, persistStyling, withActivity ] );
+		withActivity( 'persist-todos', 'Save todos state', persistTodos );
+	}, [
+		persistPayment,
+		persistSettings,
+		persistStyling,
+		persistTodos,
+		withActivity,
+	] );
 
 	return { persistAll };
 };

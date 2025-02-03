@@ -8,7 +8,11 @@
  */
 
 import apiFetch from '@wordpress/api-fetch';
-import { REST_PATH } from './constants';
+import {
+	REST_PATH,
+	REST_PERSIST_PATH,
+	REST_RESET_DISMISSED_TODOS_PATH,
+} from './constants';
 import ACTION_TYPES from './action-types';
 
 export const controls = {
@@ -18,5 +22,26 @@ export const controls = {
 			method: 'GET',
 		} );
 		return response?.data || [];
+	},
+	async [ ACTION_TYPES.DO_PERSIST_DATA ]( { data } ) {
+		return await apiFetch( {
+			path: REST_PERSIST_PATH,
+			method: 'POST',
+			data,
+		} );
+	},
+	async [ ACTION_TYPES.DO_RESET_DISMISSED_TODOS ]() {
+		try {
+			return await apiFetch( {
+				path: REST_RESET_DISMISSED_TODOS_PATH,
+				method: 'POST',
+			} );
+		} catch ( e ) {
+			return {
+				success: false,
+				error: e,
+				message: e.message,
+			};
+		}
 	},
 };

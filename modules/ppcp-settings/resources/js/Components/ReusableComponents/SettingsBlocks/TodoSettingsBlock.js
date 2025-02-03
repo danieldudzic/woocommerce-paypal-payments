@@ -1,5 +1,7 @@
 import { selectTab, TAB_IDS } from '../../../utils/tabSelector';
-import { useState } from '@wordpress/element';
+import { useEffect, useState } from '@wordpress/element';
+import { useSelect } from '@wordpress/data';
+import { STORE_NAME as TODOS_STORE_NAME } from '../../../data/todos';
 
 const TodoSettingsBlock = ( {
 	todosData,
@@ -9,6 +11,21 @@ const TodoSettingsBlock = ( {
 	onDismissTodo,
 } ) => {
 	const [ dismissingIds, setDismissingIds ] = useState( new Set() );
+	const { completedTodos, dismissedTodos } = useSelect(
+		( select ) => ( {
+			completedTodos:
+				select( TODOS_STORE_NAME ).getCompletedTodos() || [],
+			dismissedTodos:
+				select( TODOS_STORE_NAME ).getDismissedTodos() || [],
+		} ),
+		[]
+	);
+
+	useEffect( () => {
+		if ( dismissedTodos.length === 0 ) {
+			setDismissingIds( new Set() );
+		}
+	}, [ dismissedTodos ] );
 
 	if ( todosData.length === 0 ) {
 		return null;
@@ -24,17 +41,22 @@ const TodoSettingsBlock = ( {
 		}, 300 );
 	};
 
+	// Filter out dismissed todos for display
+	const visibleTodos = todosData.filter(
+		( todo ) => ! dismissedTodos.includes( todo.id )
+	);
+
 	return (
 		<div
 			className={ `ppcp-r-settings-block__todo ppcp-r-todo-items ${ className }` }
 		>
-			{ todosData.map( ( todo ) => (
+			{ visibleTodos.map( ( todo ) => (
 				<TodoItem
 					key={ todo.id }
 					id={ todo.id }
 					title={ todo.title }
 					description={ todo.description }
-					isCompleted={ todo.isCompleted }
+					isCompleted={ completedTodos.includes( todo.id ) }
 					isDismissing={ dismissingIds.has( todo.id ) }
 					onDismiss={ ( e ) => handleDismiss( todo.id, e ) }
 					onClick={ async () => {
