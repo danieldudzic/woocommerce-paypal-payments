@@ -1,39 +1,29 @@
 <?php
 /**
- * Manage the Seller status.
+ * Status of local alternative payment methods.
  *
- * @package WooCommerce\PayPalCommerce\WcGateway\Helper
+ * @package WooCommerce\PayPalCommerce\LocalAlternativePaymentMethods
  */
 
-declare( strict_types=1 );
+declare( strict_types = 1 );
 
-namespace WooCommerce\PayPalCommerce\WcGateway\Helper;
+namespace WooCommerce\PayPalCommerce\LocalAlternativePaymentMethods;
 
 use WooCommerce\PayPalCommerce\ApiClient\Endpoint\PartnersEndpoint;
-use WooCommerce\PayPalCommerce\ApiClient\Entity\SellerStatusProduct;
-use WooCommerce\PayPalCommerce\ApiClient\Helper\Cache;
 use WooCommerce\PayPalCommerce\ApiClient\Helper\FailureRegistry;
 use WooCommerce\PayPalCommerce\WcGateway\Settings\Settings;
 use WooCommerce\PayPalCommerce\ApiClient\Helper\ProductStatus;
 use WooCommerce\PayPalCommerce\ApiClient\Entity\SellerStatus;
 
 /**
- * Class PayUponInvoiceProductStatus
+ * Class LocalApmProductStatus
  */
-class PayUponInvoiceProductStatus extends ProductStatus {
-	public const SETTINGS_KEY         = 'products_pui_enabled';
-	public const PUI_STATUS_CACHE_KEY = 'pui_status_cache';
+class LocalApmProductStatus extends ProductStatus {
+	public const SETTINGS_KEY = 'products_local_apms_enabled';
 
 	public const SETTINGS_VALUE_ENABLED   = 'yes';
 	public const SETTINGS_VALUE_DISABLED  = 'no';
 	public const SETTINGS_VALUE_UNDEFINED = '';
-
-	/**
-	 * The Cache.
-	 *
-	 * @var Cache
-	 */
-	protected Cache $cache;
 
 	/**
 	 * The settings.
@@ -43,33 +33,26 @@ class PayUponInvoiceProductStatus extends ProductStatus {
 	private Settings $settings;
 
 	/**
-	 * PayUponInvoiceProductStatus constructor.
+	 * ApmProductStatus constructor.
 	 *
 	 * @param Settings         $settings             The Settings.
 	 * @param PartnersEndpoint $partners_endpoint    The Partner Endpoint.
-	 * @param Cache            $cache                The cache.
 	 * @param bool             $is_connected         The onboarding state.
 	 * @param FailureRegistry  $api_failure_registry The API failure registry.
 	 */
 	public function __construct(
 		Settings $settings,
 		PartnersEndpoint $partners_endpoint,
-		Cache $cache,
 		bool $is_connected,
 		FailureRegistry $api_failure_registry
 	) {
 		parent::__construct( $is_connected, $partners_endpoint, $api_failure_registry );
 
 		$this->settings = $settings;
-		$this->cache    = $cache;
 	}
 
 	/** {@inheritDoc} */
 	protected function check_local_state() : ?bool {
-		if ( $this->cache->has( self::PUI_STATUS_CACHE_KEY ) ) {
-			return wc_string_to_bool( $this->cache->get( self::PUI_STATUS_CACHE_KEY ) );
-		}
-
 		if ( $this->settings->has( self::SETTINGS_KEY ) && ( $this->settings->get( self::SETTINGS_KEY ) ) ) {
 			return wc_string_to_bool( $this->settings->get( self::SETTINGS_KEY ) );
 		}
@@ -79,34 +62,23 @@ class PayUponInvoiceProductStatus extends ProductStatus {
 
 	/** {@inheritDoc} */
 	protected function check_active_state( SellerStatus $seller_status ) : bool {
+		$has_capability = false;
+
 		foreach ( $seller_status->products() as $product ) {
-			if ( $product->name() !== 'PAYMENT_METHODS' ) {
-				continue;
-			}
-
-			if ( ! in_array(
-				$product->vetting_status(),
-				array(
-					SellerStatusProduct::VETTING_STATUS_APPROVED,
-					SellerStatusProduct::VETTING_STATUS_SUBSCRIBED,
-				),
-				true
-			)
-			) {
-				continue;
-			}
-
-			if ( in_array( 'PAY_UPON_INVOICE', $product->capabilities(), true ) ) {
-				$this->settings->set( self::SETTINGS_KEY, self::SETTINGS_VALUE_ENABLED );
-				$this->settings->persist();
-				$this->cache->set( self::PUI_STATUS_CACHE_KEY, self::SETTINGS_VALUE_ENABLED, MONTH_IN_SECONDS );
-				return true;
+			if ( $product->name() === 'PAYMENT_METHODS' ) {
+				$has_capability = true;
+				break;
 			}
 		}
 
-		$this->cache->set( self::PUI_STATUS_CACHE_KEY, self::SETTINGS_VALUE_DISABLED, MONTH_IN_SECONDS );
+		if ( $has_capability ) {
+			$this->settings->set( self::SETTINGS_KEY, self::SETTINGS_VALUE_ENABLED );
+		} else {
+			$this->settings->set( self::SETTINGS_KEY, self::SETTINGS_VALUE_DISABLED );
+		}
+		$this->settings->persist();
 
-		return false;
+		return $has_capability;
 	}
 
 	/** {@inheritDoc} */
@@ -119,7 +91,5 @@ class PayUponInvoiceProductStatus extends ProductStatus {
 			$settings->set( self::SETTINGS_KEY, self::SETTINGS_VALUE_UNDEFINED );
 			$settings->persist();
 		}
-
-		$this->cache->delete( self::PUI_STATUS_CACHE_KEY );
 	}
 }

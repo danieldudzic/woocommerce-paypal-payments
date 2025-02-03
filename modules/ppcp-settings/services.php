@@ -87,6 +87,15 @@ return array(
 			$container->get( 'settings.service.sanitizer' )
 		);
 	},
+	/**
+	 * Checks if valid merchant connection details are stored in the DB.
+	 */
+	'settings.flag.is-connected'                  => static function ( ContainerInterface $container ) : bool {
+		$data = $container->get( 'settings.data.general' );
+		assert( $data instanceof GeneralSettings );
+
+		return $data->is_merchant_connected();
+	},
 	'settings.rest.onboarding'                    => static function ( ContainerInterface $container ) : OnboardingRestEndpoint {
 		return new OnboardingRestEndpoint( $container->get( 'settings.data.onboarding' ) );
 	},
