@@ -2,21 +2,21 @@ import { __ } from '@wordpress/i18n';
 import PricingTitleBadge from '../../../../ReusableComponents/PricingTitleBadge';
 import BadgeBox from '../../../../ReusableComponents/BadgeBox';
 
-const Fastlane = () => (
-	<BadgeBox
-		title={ __( '', 'woocommerce-paypal-payments' ) }
-		imageBadge={ [ 'icon-payment-method-fastlane-small.svg' ] }
-		textBadge={
-			<PricingTitleBadge item="fast country currency=storeCurrency=storeCountrylane" />
-		}
-		description={ __(
-			"Speed up guest checkout with Fatslane. Link a customer's email address to their payment details.",
-			'woocommerce-paypal-payments'
-		) }
-		learnMoreLink={
-			'https://www.paypal.com/us/business/paypal-business-fees'
-		}
-	/>
-);
+const Fastlane = ( { learnMore = '' } ) => {
+	return (
+		<BadgeBox
+			title={ __( '', 'woocommerce-paypal-payments' ) }
+			imageBadge={ [ 'icon-payment-method-fastlane-small.svg' ] }
+			textBadge={
+				<PricingTitleBadge item="fast country currency=storeCurrency=storeCountrylane" />
+			}
+			description={ __(
+				"Speed up guest checkout with Fatslane. Link a customer's email address to their payment details.",
+				'woocommerce-paypal-payments'
+			) }
+			learnMoreLink={ learnMore }
+		/>
+	);
+};
 
 export default Fastlane;
