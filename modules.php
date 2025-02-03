@@ -93,8 +93,8 @@ return function ( string $root_dir ): iterable {
 
 	if ( apply_filters(
 		'woocommerce.feature-flags.woocommerce_paypal_payments.settings_enabled',
-		getenv( 'PCP_SETTINGS_ENABLED' ) === '1'
-	) ) {
+		getenv( 'PCP_SETTINGS_ENABLED' ) !== '0'
+	) && get_option('woocommerce-ppcp-is-new-merchant') === '1') {
 		$modules[] = ( require "$modules_dir/ppcp-settings/module.php" )();
 	}
 

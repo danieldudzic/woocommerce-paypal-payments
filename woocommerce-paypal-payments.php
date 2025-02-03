@@ -229,4 +229,11 @@ define( 'PPCP_PAYPAL_BN_CODE', 'Woo_PPCP' );
 		return class_exists( 'woocommerce' );
 	}
 
+	// Set new merchant flag on plugin install.
+	add_action( 'woocommerce_paypal_payments_gateway_migrate', function() {
+		$legacy_settings = get_option(Settings::KEY);
+		if(! $legacy_settings) {
+			update_option('woocommerce-ppcp-is-new-merchant', true);
+		}
+	});
 } )();
