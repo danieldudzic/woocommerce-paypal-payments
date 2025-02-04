@@ -59,36 +59,81 @@ class PayPalSubscriptionsModule implements ServiceModule, ExtendingModule, Execu
 	public function run( ContainerInterface $c ): bool {
 
 		add_filter(
-			'woocommerce_paypal_payments_paypal_gateway_supports',
-			function ( array $supports ) use ( $c ): array {
-				$subscriptions_helper = $c->get( 'wc-subscriptions.helper' );
-				assert( $subscriptions_helper instanceof SubscriptionHelper );
-
+			'woocommerce_available_payment_gateways',
+			function ( array $gateways ) use ( $c ) {
+				if ( ! WC()->cart || WC()->cart->is_empty() ) {
+					return $gateways;
+				}
 				$settings = $c->get( 'wcgateway.settings' );
 				assert( $settings instanceof Settings );
 
 				$subscriptions_mode = $settings->has( 'subscriptions_mode' ) ? $settings->get( 'subscriptions_mode' ) : '';
-
-				if ( 'subscriptions_api' === $subscriptions_mode && $subscriptions_helper->plugin_is_active() ) {
-					$supports = array_merge(
-						$supports,
-						array(
-							'subscriptions',
-							'subscription_cancellation',
-							'subscription_suspension',
-							'subscription_reactivation',
-							'subscription_amount_changes',
-							'subscription_payment_method_change',
-							'subscription_payment_method_change_customer',
-							'subscription_payment_method_change_admin',
-							'multiple_subscriptions',
-							'gateway_scheduled_payments',
-						)
-					);
+				if ( $subscriptions_mode !== 'subscriptions_api' ) {
+					return $gateways;
 				}
 
-				return $supports;
+				$subscriptions_product    = false;
+				$pp_subscriptions_product = false;
+				foreach ( WC()->cart->get_cart() as $cart_item ) {
+					$cart_product = wc_get_product( $cart_item['product_id'] );
+					if ( $cart_product instanceof \WC_Product_Subscription || $cart_product instanceof \WC_Product_Variable_Subscription ) {
+						$subscriptions_product = true;
+						if ( $cart_product->get_meta( '_ppcp_enable_subscription_product', true ) === 'yes' ) {
+							$pp_subscriptions_product = true;
+						}
+					}
+				}
+
+				if ( $pp_subscriptions_product ) {
+					foreach ( $gateways as $id => $gateway ) {
+						if ( $gateway->id !== PayPalGateway::ID ) {
+							unset( $gateways[ $id ] );
+						}
+					}
+					return $gateways;
+				}
+
+				if ( $subscriptions_product ) {
+					foreach ( $gateways as $id => $gateway ) {
+						if ( $gateway->id === PayPalGateway::ID ) {
+							unset( $gateways[ $id ] );
+						}
+					}
+				}
+
+				return $gateways;
 			}
+		);
+
+		add_filter(
+			'woocommerce_subscription_payment_gateway_supports',
+			function ( bool $payment_gateway_supports, string $payment_gateway_feature, \WC_Subscription $wc_order ): bool {
+				if ( ! in_array( $payment_gateway_feature, array( 'gateway_scheduled_payments', 'subscription_date_changes' ), true ) ) {
+					return $payment_gateway_supports;
+				}
+
+				$subscription = wcs_get_subscription( $wc_order->get_id() );
+				if ( ! is_a( $subscription, WC_Subscription::class ) ) {
+					return $payment_gateway_supports;
+				}
+
+				$subscription_id = $subscription->get_meta( 'ppcp_subscription' ) ?? '';
+				if ( ! $subscription_id ) {
+					return $payment_gateway_supports;
+				}
+
+				if ( $payment_gateway_feature === 'gateway_scheduled_payments' ) {
+					return true;
+				}
+
+				if ( $payment_gateway_feature === 'subscription_date_changes' ) {
+					return false;
+				}
+
+				return $payment_gateway_supports;
+			},
+			10,
+			3
 		);
 
 		add_filter(

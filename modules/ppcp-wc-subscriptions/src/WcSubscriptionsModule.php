@@ -37,6 +37,19 @@ class WcSubscriptionsModule implements ServiceModule, ExtendingModule, Executabl
 	use ModuleClassNameIdTrait;
 	use TransactionIdHandlingTrait;
 
+	private const VAULT_SUPPORTS_SUBSCRIPTIONS = array(
+		'subscriptions',
+		'subscription_cancellation',
+		'subscription_suspension',
+		'subscription_reactivation',
+		'subscription_amount_changes',
+		'subscription_date_changes',
+		'subscription_payment_method_change',
+		'subscription_payment_method_change_customer',
+		'subscription_payment_method_change_admin',
+		'multiple_subscriptions',
+	);
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -56,6 +69,7 @@ class WcSubscriptionsModule implements ServiceModule, ExtendingModule, Executabl
 	 */
 	public function run( ContainerInterface $c ): bool {
 		$this->add_gateways_support( $c );
+
 		add_action(
 			'woocommerce_scheduled_subscription_payment_' . PayPalGateway::ID,
 			/**
@@ -384,100 +398,60 @@ class WcSubscriptionsModule implements ServiceModule, ExtendingModule, Executabl
 		add_filter(
 			'woocommerce_paypal_payments_paypal_gateway_supports',
 			function ( array $supports ) use ( $c ): array {
-				$subscriptions_helper = $c->get( 'wc-subscriptions.helper' );
-				assert( $subscriptions_helper instanceof SubscriptionHelper );
-
 				$settings = $c->get( 'wcgateway.settings' );
 				assert( $settings instanceof Settings );
 
 				$subscriptions_mode = $settings->has( 'subscriptions_mode' ) ? $settings->get( 'subscriptions_mode' ) : '';
-
-				if ( 'vaulting_api' === $subscriptions_mode && $subscriptions_helper->plugin_is_active() ) {
-					$supports = array_merge(
-						$supports,
-						array(
-							'subscriptions',
-							'subscription_cancellation',
-							'subscription_suspension',
-							'subscription_reactivation',
-							'subscription_amount_changes',
-							'subscription_date_changes',
-							'subscription_payment_method_change',
-							'subscription_payment_method_change_customer',
-							'subscription_payment_method_change_admin',
-							'multiple_subscriptions',
-						)
-					);
+				if ( 'disable_paypal_subscriptions' === $subscriptions_mode ) {
+					return $supports;
 				}
 
-				return $supports;
+				return array_merge(
+					$supports,
+					self::VAULT_SUPPORTS_SUBSCRIPTIONS
+				);
 			}
 		);
 
 		add_filter(
 			'woocommerce_paypal_payments_credit_card_gateway_supports',
 			function ( array $supports ) use ( $c ): array {
-				$subscriptions_helper = $c->get( 'wc-subscriptions.helper' );
-				assert( $subscriptions_helper instanceof SubscriptionHelper );
-
 				$settings = $c->get( 'wcgateway.settings' );
 				assert( $settings instanceof Settings );
 
-				$vaulting_enabled   = $settings->has( 'vault_enabled_dcc' ) && $settings->get( 'vault_enabled_dcc' );
 				$subscriptions_mode = $settings->has( 'subscriptions_mode' ) ? $settings->get( 'subscriptions_mode' ) : '';
-
-				if ( $vaulting_enabled && 'vaulting_api' === $subscriptions_mode && $subscriptions_helper->plugin_is_active() ) {
-					$supports = array_merge(
-						$supports,
-						array(
-							'subscriptions',
-							'subscription_cancellation',
-							'subscription_suspension',
-							'subscription_reactivation',
-							'subscription_amount_changes',
-							'subscription_date_changes',
-							'subscription_payment_method_change',
-							'subscription_payment_method_change_customer',
-							'subscription_payment_method_change_admin',
-							'multiple_subscriptions',
-						)
-					);
+				if ( 'disable_paypal_subscriptions' === $subscriptions_mode ) {
+					return $supports;
 				}
-
-				return $supports;
+				$vaulting_enabled = $settings->has( 'vault_enabled_dcc' ) && $settings->get( 'vault_enabled_dcc' );
+				if ( ! $vaulting_enabled ) {
+					return $supports;
+				}
+				return array_merge(
+					$supports,
+					self::VAULT_SUPPORTS_SUBSCRIPTIONS
+				);
 			}
 		);
 
 		add_filter(
 			'woocommerce_paypal_payments_card_button_gateway_supports',
 			function ( array $supports ) use ( $c ): array {
-				$subscriptions_helper = $c->get( 'wc-subscriptions.helper' );
-				assert( $subscriptions_helper instanceof SubscriptionHelper );
-
 				$settings = $c->get( 'wcgateway.settings' );
 				assert( $settings instanceof Settings );
 
 				$subscriptions_mode = $settings->has( 'subscriptions_mode' ) ? $settings->get( 'subscriptions_mode' ) : '';
-
-				if ( 'vaulting_api' === $subscriptions_mode && $subscriptions_helper->plugin_is_active() ) {
-					$supports = array_merge(
-						$supports,
-						array(
-							'subscriptions',
-							'subscription_cancellation',
-							'subscription_suspension',
-							'subscription_reactivation',
-							'subscription_amount_changes',
-							'subscription_date_changes',
-							'subscription_payment_method_change',
-							'subscription_payment_method_change_customer',
-							'subscription_payment_method_change_admin',
-							'multiple_subscriptions',
-						)
-					);
+				if ( 'disable_paypal_subscriptions' === $subscriptions_mode ) {
+					return $supports;
 				}
-
-				return $supports;
+				$vaulting_enabled = $settings->has( 'vault_enabled' ) && $settings->get( 'vault_enabled' );
+				if ( ! $vaulting_enabled ) {
+					return $supports;
+				}
+				return array_merge(
+					$supports,
+					self::VAULT_SUPPORTS_SUBSCRIPTIONS
+				);
 			}
 		);
 	}
