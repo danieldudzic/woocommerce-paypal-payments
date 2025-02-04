@@ -49,6 +49,7 @@ Shoppers are nearly **three times more likely to buy** when you offer PayPal.¹ 
 Drive repeat business for stable, predictable income using [WooCommerce Subscriptions](https://woocommerce.com/products/woocommerce-subscriptions/) or [PayPal Subscriptions](https://www.paypal.com/webapps/mpp/subscription-payments).
 
 You can also use PayPal's [Vaulting](https://www.paypal.com/us/brc/article/securely-store-payments) feature to:
+
 * Offer flexible plans with fixed or quantity-based pricing.
 * Set billing cycles for any period.
 * Offer discounted trial periods or prorated payments.
