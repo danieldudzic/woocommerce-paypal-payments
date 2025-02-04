@@ -2,6 +2,9 @@
 /**
  * REST endpoint to manage the things to do items.
  *
+ * Provides endpoints for retrieving, updating, and resetting todos
+ * via WP REST API routes.
+ *
  * @package WooCommerce\PayPalCommerce\Settings\Endpoint
  */
 
@@ -9,9 +12,11 @@ declare(strict_types=1);
 
 namespace WooCommerce\PayPalCommerce\Settings\Endpoint;
 
-use WP_REST_Response;
 use WP_REST_Server;
+use WP_REST_Response;
+use WP_REST_Request;
 use WooCommerce\PayPalCommerce\Settings\Data\TodosModel;
+use WooCommerce\PayPalCommerce\Settings\Data\Definition\TodosDefinition;
 
 /**
  * REST controller for the "Things To Do" items in the Overview tab.
@@ -36,138 +41,111 @@ class TodosRestEndpoint extends RestEndpoint {
 	protected TodosModel $todos;
 
 	/**
-	 * Constructor.
+	 * The todos definition instance.
 	 *
-	 * @param TodosModel $todos The todos model instance.
+	 * @var TodosDefinition
 	 */
-	public function __construct( TodosModel $todos ) {
-		$this->todos = $todos;
+	protected TodosDefinition $todos_definition;
+
+	/**
+	 * The settings endpoint instance.
+	 *
+	 * @var SettingsRestEndpoint
+	 */
+	protected SettingsRestEndpoint $settings;
+
+	/**
+	 * TodosRestEndpoint constructor.
+	 *
+	 * @param TodosModel           $todos The todos model instance.
+	 * @param TodosDefinition      $todos_definition The todos definition instance.
+	 * @param SettingsRestEndpoint $settings The settings endpoint instance.
+	 */
+	public function __construct(
+		TodosModel $todos,
+		TodosDefinition $todos_definition,
+		SettingsRestEndpoint $settings
+	) {
+		$this->todos            = $todos;
+		$this->todos_definition = $todos_definition;
+		$this->settings         = $settings;
 	}
 
 	/**
-	 * Configure REST API routes.
+	 * Registers the REST API routes for todos management.
 	 */
 	public function register_routes(): void {
+		/**
+		 * GET wc/v3/wc_paypal/todos
+		 * POST wc/v3/wc_paypal/todos
+		 */
 		register_rest_route(
 			$this->namespace,
 			'/' . $this->rest_base,
 			array(
-				'methods'             => WP_REST_Server::READABLE,
-				'callback'            => array( $this, 'get_todos' ),
-				'permission_callback' => array( $this, 'check_permission' ),
+				array(
+					'methods'             => WP_REST_Server::READABLE,
+					'callback'            => array( $this, 'get_todos' ),
+					'permission_callback' => array( $this, 'check_permission' ),
+				),
+				array(
+					'methods'             => WP_REST_Server::EDITABLE,
+					'callback'            => array( $this, 'update_todos' ),
+					'permission_callback' => array( $this, 'check_permission' ),
+				),
 			)
 		);
 	}
 
 	/**
-	 * Returns the full list of todo definitions with their eligibility conditions.
+	 * Retrieves the current todos.
 	 *
-	 * @return array The array of todo definitions.
-	 */
-	protected function get_todo_definitions(): array {
-		return array(
-			'enable_fastlane'                => array(
-				'title'       => __( 'Enable Fastlane', 'woocommerce-paypal-payments' ),
-				'description' => __( 'Accelerate your guest checkout with Fastlane by PayPal.', 'woocommerce-paypal-payments' ),
-				'isEligible'  => fn() => true,
-				'action'      => array(
-					'type'    => 'tab',
-					'tab'     => 'payment_methods',
-					'section' => 'ppcp-card-payments-card',
-				),
-			),
-			'enable_credit_debit_cards'      => array(
-				'title'       => __( 'Enable Credit and Debit Cards on your checkout', 'woocommerce-paypal-payments' ),
-				'description' => __( 'Credit and Debit Cards is now available for Blocks checkout pages.', 'woocommerce-paypal-payments' ),
-				'isEligible'  => fn() => true,
-				'action'      => array(
-					'type'    => 'tab',
-					'tab'     => 'payment_methods',
-					'section' => 'ppcp-card-payments-card',
-				),
-			),
-			'enable_pay_later_messaging'     => array(
-				'title'       => __( 'Enable Pay Later messaging', 'woocommerce-paypal-payments' ),
-				'description' => __( 'Show Pay Later messaging to boost conversion rate and increase cart size.', 'woocommerce-paypal-payments' ),
-				'isEligible'  => fn() => true,
-				'action'      => array(
-					'type'    => 'tab',
-					'tab'     => 'overview',
-					'section' => 'pay_later_messaging',
-				),
-			),
-			'configure_paypal_subscription'  => array(
-				'title'       => __( 'Configure a PayPal Subscription', 'woocommerce-paypal-payments' ),
-				'description' => __( 'Connect a subscriptions-type product from WooCommerce with PayPal.', 'woocommerce-paypal-payments' ),
-				'isEligible'  => fn() => true,
-				'action'      => array(
-					'type' => 'external',
-					'url'  => admin_url( 'edit.php?post_type=product&product_type=subscription' ),
-				),
-			),
-			'register_domain_apple_pay'      => array(
-				'title'       => __( 'Register Domain for Apple Pay', 'woocommerce-paypal-payments' ),
-				'description' => __( 'To enable Apple Pay, you must register your domain with PayPal.', 'woocommerce-paypal-payments' ),
-				'isEligible'  => fn() => true,
-				'action'      => array(
-					'type'    => 'tab',
-					'tab'     => 'overview',
-					'section' => 'apple_pay',
-				),
-			),
-			'add_digital_wallets_to_account' => array(
-				'title'       => __( 'Add digital wallets to your account', 'woocommerce-paypal-payments' ),
-				'description' => __( 'Add the ability to accept Apple Pay & Google Pay to your PayPal account.', 'woocommerce-paypal-payments' ),
-				'isEligible'  => fn() => true,
-				'action'      => array(
-					'type' => 'external',
-					'url'  => 'https://www.paypal.com/businessmanage/account/settings',
-				),
-			),
-			'enable_apple_pay'               => array(
-				'title'       => __( 'Enable Apple Pay', 'woocommerce-paypal-payments' ),
-				'description' => __( 'Allow your buyers to check out via Apple Pay.', 'woocommerce-paypal-payments' ),
-				'isEligible'  => fn() => true,
-				'action'      => array(
-					'type'    => 'tab',
-					'tab'     => 'overview',
-					'section' => 'apple_pay',
-				),
-			),
-			'enable_google_pay'              => array(
-				'title'       => __( 'Enable Google Pay', 'woocommerce-paypal-payments' ),
-				'description' => __( 'Allow your buyers to check out via Google Pay.', 'woocommerce-paypal-payments' ),
-				'isEligible'  => fn() => true,
-				'action'      => array(
-					'type'    => 'tab',
-					'tab'     => 'overview',
-					'section' => 'google_pay',
-				),
-			),
-		);
-	}
-
-	/**
-	 * Returns all eligible todo items.
-	 *
-	 * @return WP_REST_Response The response containing eligible todo items.
+	 * @return WP_REST_Response The response containing todos data.
 	 */
 	public function get_todos(): WP_REST_Response {
-		$completion_states = $this->todos->get();
-		$todos             = array();
+		$settings      = get_option( 'ppcp-settings', array() );
+		$dismissed_ids = $settings['dismissedTodos'] ?? array();
 
-		foreach ( $this->get_todo_definitions() as $id => $todo ) {
+		$todos = array();
+		foreach ( $this->todos_definition->get() as $id => $todo ) {
 			if ( $todo['isEligible']() ) {
 				$todos[] = array_merge(
-					array(
-						'id'          => $id,
-						'isCompleted' => $completion_states[ $id ] ?? false,
-					),
+					array( 'id' => $id ),
 					array_diff_key( $todo, array( 'isEligible' => true ) )
 				);
 			}
 		}
 
-		return $this->return_success( $todos );
+		return $this->return_success(
+			array(
+				'todos'          => $todos,
+				'dismissedTodos' => $dismissed_ids,
+			)
+		);
+	}
+
+	/**
+	 * Updates the todos with provided data.
+	 *
+	 * @param WP_REST_Request $request The request instance containing todo updates.
+	 * @return WP_REST_Response The response containing updated todos or error details.
+	 */
+	public function update_todos( WP_REST_Request $request ): WP_REST_Response {
+		$data     = $request->get_json_params();
+		$settings = get_option( 'ppcp-settings', array() );
+
+		if ( isset( $data['dismissedTodos'] ) ) {
+			$settings['dismissedTodos'] = array_unique(
+				is_array( $data['dismissedTodos'] ) ? $data['dismissedTodos'] : array()
+			);
+
+			$update_result = update_option( 'ppcp-settings', $settings );
+
+			if ( $update_result ) {
+				return $this->return_success( $settings );
+			}
+		}
+
+		return $this->return_success( $data );
 	}
 }

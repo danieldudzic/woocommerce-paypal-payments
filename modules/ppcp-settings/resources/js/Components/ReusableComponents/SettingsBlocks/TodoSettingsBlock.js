@@ -1,20 +1,64 @@
 import { selectTab, TAB_IDS } from '../../../utils/tabSelector';
+import { useEffect, useState } from '@wordpress/element';
+import { useSelect } from '@wordpress/data';
+import { STORE_NAME as TODOS_STORE_NAME } from '../../../data/todos';
 
-const TodoSettingsBlock = ( { todosData, className = '' } ) => {
+const TodoSettingsBlock = ( {
+	todosData,
+	className = '',
+	setActiveModal,
+	setActiveHighlight,
+	onDismissTodo,
+} ) => {
+	const [ dismissingIds, setDismissingIds ] = useState( new Set() );
+	const { completedTodos, dismissedTodos } = useSelect(
+		( select ) => ( {
+			completedTodos:
+				select( TODOS_STORE_NAME ).getCompletedTodos() || [],
+			dismissedTodos:
+				select( TODOS_STORE_NAME ).getDismissedTodos() || [],
+		} ),
+		[]
+	);
+
+	useEffect( () => {
+		if ( dismissedTodos.length === 0 ) {
+			setDismissingIds( new Set() );
+		}
+	}, [ dismissedTodos ] );
+
 	if ( todosData.length === 0 ) {
 		return null;
 	}
+
+	const handleDismiss = ( todoId, e ) => {
+		e.preventDefault();
+		e.stopPropagation();
+		setDismissingIds( ( prev ) => new Set( [ ...prev, todoId ] ) );
+
+		setTimeout( () => {
+			onDismissTodo( todoId );
+		}, 300 );
+	};
+
+	// Filter out dismissed todos for display
+	const visibleTodos = todosData.filter(
+		( todo ) => ! dismissedTodos.includes( todo.id )
+	);
 
 	return (
 		<div
 			className={ `ppcp-r-settings-block__todo ppcp-r-todo-items ${ className }` }
 		>
-			{ todosData.slice( 0, 5 ).map( ( todo ) => (
+			{ visibleTodos.map( ( todo ) => (
 				<TodoItem
 					key={ todo.id }
+					id={ todo.id }
 					title={ todo.title }
 					description={ todo.description }
-					isCompleted={ todo.isCompleted }
+					isCompleted={ completedTodos.includes( todo.id ) }
+					isDismissing={ dismissingIds.has( todo.id ) }
+					onDismiss={ ( e ) => handleDismiss( todo.id, e ) }
 					onClick={ async () => {
 						if ( todo.action.type === 'tab' ) {
 							const tabId =
@@ -23,6 +67,13 @@ const TodoSettingsBlock = ( { todosData, className = '' } ) => {
 						} else if ( todo.action.type === 'external' ) {
 							window.open( todo.action.url, '_blank' );
 						}
+
+						if ( todo.action.modal ) {
+							setActiveModal( todo.action.modal );
+						}
+						if ( todo.action.highlight ) {
+							setActiveHighlight( todo.action.highlight );
+						}
 					} }
 				/>
 			) ) }
@@ -30,12 +81,19 @@ const TodoSettingsBlock = ( { todosData, className = '' } ) => {
 	);
 };
 
-const TodoItem = ( { title, description, isCompleted, onClick } ) => {
+const TodoItem = ( {
+	title,
+	description,
+	isCompleted,
+	isDismissing,
+	onClick,
+	onDismiss,
+} ) => {
 	return (
 		<div
 			className={ `ppcp-r-todo-item ${
 				isCompleted ? 'is-completed' : ''
-			}` }
+			} ${ isDismissing ? 'is-dismissing' : '' }` }
 			onClick={ onClick }
 		>
 			<div className="ppcp-r-todo-item__inner">
@@ -54,6 +112,13 @@ const TodoItem = ( { title, description, isCompleted, onClick } ) => {
 						</div>
 					) }
 				</div>
+				<button
+					className="ppcp-r-todo-item__dismiss"
+					onClick={ onDismiss }
+					aria-label="Dismiss todo item"
+				>
+					<span className="dashicons dashicons-no-alt"></span>
+				</button>
 			</div>
 		</div>
 	);

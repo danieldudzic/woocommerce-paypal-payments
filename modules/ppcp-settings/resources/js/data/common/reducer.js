@@ -16,6 +16,7 @@ const defaultTransient = Object.freeze( {
 	isReady: false,
 	activities: new Map(),
 	activeModal: '',
+	activeHighlight: '',
 
 	// Read only values, provided by the server via hydrate.
 	merchant: Object.freeze( {

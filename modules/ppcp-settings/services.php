@@ -17,6 +17,7 @@ use WooCommerce\PayPalCommerce\Settings\Data\PaymentSettings;
 use WooCommerce\PayPalCommerce\Settings\Data\SettingsModel;
 use WooCommerce\PayPalCommerce\Settings\Data\StylingSettings;
 use WooCommerce\PayPalCommerce\Settings\Data\TodosModel;
+use WooCommerce\PayPalCommerce\Settings\Data\Definition\TodosDefinition;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\AuthenticationRestEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\CommonRestEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\LoginLinkRestEndpoint;
@@ -24,6 +25,7 @@ use WooCommerce\PayPalCommerce\Settings\Endpoint\OnboardingRestEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\PayLaterMessagingEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\PaymentRestEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\RefreshFeatureStatusEndpoint;
+use WooCommerce\PayPalCommerce\Settings\Endpoint\ResetDismissedTodosEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\WebhookSettingsEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\SettingsRestEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\StylingRestEndpoint;
@@ -32,6 +34,7 @@ use WooCommerce\PayPalCommerce\Settings\Handler\ConnectionListener;
 use WooCommerce\PayPalCommerce\Settings\Service\AuthenticationManager;
 use WooCommerce\PayPalCommerce\Settings\Service\ConnectionUrlGenerator;
 use WooCommerce\PayPalCommerce\Settings\Service\OnboardingUrlManager;
+use WooCommerce\PayPalCommerce\Settings\Service\TodosEligibilityService;
 use WooCommerce\PayPalCommerce\Vendor\Psr\Container\ContainerInterface;
 use WooCommerce\PayPalCommerce\Settings\Service\DataSanitizer;
 
@@ -253,9 +256,62 @@ return array(
 	'settings.rest.todos'                         => static function ( ContainerInterface $container ) : TodosRestEndpoint {
 		return new TodosRestEndpoint(
 			$container->get( 'settings.data.todos' ),
+			$container->get( 'settings.data.definition.todos' ),
+			$container->get( 'settings.rest.settings' )
 		);
 	},
 	'settings.data.todos'                         => static function ( ContainerInterface $container ) : TodosModel {
 		return new TodosModel();
+	},
+	'settings.data.definition.todos'              => static function ( ContainerInterface $container ) : TodosDefinition {
+		return new TodosDefinition(
+			$container->get( 'settings.service.todos_eligibilities' )
+		);
+	},
+	'settings.service.todos_eligibilities'        => static function( ContainerInterface $container ): TodosEligibilityService {
+		$features = apply_filters(
+			'woocommerce_paypal_payments_rest_common_merchant_features',
+			array()
+		);
+
+		$payment_endpoint = $container->get( 'settings.rest.payment' );
+		$settings = $payment_endpoint->get_details()->get_data();
+
+		// Settings status.
+		$gateways = array(
+			'apple_pay'   => $settings['data']['ppcp-applepay']['enabled'] ?? false,
+			'google_pay'  => $settings['data']['ppcp-googlepay']['enabled'] ?? false,
+			'axo'         => $settings['data']['ppcp-axo-gateway']['enabled'] ?? false,
+			'card-button' => $settings['data']['ppcp-card-button-gateway']['enabled'] ?? false,
+		);
+
+		// Merchant eligibility.
+		$capabilities = array(
+			'apple_pay'   => $features['apple_pay']['enabled'] ?? false,
+			'google_pay'  => $features['google_pay']['enabled'] ?? false,
+			'acdc'        => $features['advanced_credit_and_debit_cards']['enabled'] ?? false,
+			'save_paypal' => $features['save_paypal_and_venmo']['enabled'] ?? false,
+			'apm'         => $features['alternative_payment_methods']['enabled'] ?? false,
+			'paylater'    => $features['pay_later_messaging']['enabled'] ?? false,
+		);
+
+		return new TodosEligibilityService(
+			$capabilities['acdc'] && ! $gateways['axo'], // Enable Fastlane.
+			$capabilities['acdc'] && ! $gateways['card-button'], // Enable Credit and Debit Cards on your checkout.
+			true,                         // Enable Pay Later messaging.
+			true,                              // Add Pay Later messaging.
+			true,                      // Configure a PayPal Subscription.
+			true,                     // Add PayPal buttons.
+			true,                                              // Register Domain for Apple Pay.
+			$capabilities['acdc'] && ! ( $capabilities['apple_pay'] && $capabilities['google_pay'] ), // Add digital wallets to your account.
+			$capabilities['acdc'] && ! $capabilities['apple_pay'],      // Add Apple Pay to your account.
+			$capabilities['acdc'] && ! $capabilities['google_pay'],     // Add Google Pay to your account.
+			true,                      // Configure a PayPal Subscription.
+			$capabilities['apple_pay'] && ! $gateways['apple_pay'],     // Enable Apple Pay.
+			$capabilities['google_pay'] && ! $gateways['google_pay']    // Enable Google Pay.
+		);
+	},
+	'settings.rest.reset_dismissed_todos'         => static function( ContainerInterface $container ): ResetDismissedTodosEndpoint {
+		return new ResetDismissedTodosEndpoint();
 	},
 );

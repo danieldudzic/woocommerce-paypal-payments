@@ -22,7 +22,16 @@ export const transientData = ( state ) => {
 };
 
 export const getTodos = ( state ) => {
-	// Access todos directly from state first
-	const todos = state?.todos || persistentData( state ).todos || EMPTY_ARR;
-	return todos;
+	const todos = state?.todos || persistentData( state ).todos;
+	return todos || EMPTY_ARR;
+};
+
+export const getDismissedTodos = ( state ) => {
+	const dismissed =
+		state?.dismissedTodos || persistentData( state ).dismissedTodos;
+	return dismissed || EMPTY_ARR;
+};
+
+export const getCompletedTodos = ( state ) => {
+	return state?.completedTodos || EMPTY_ARR; // Only look at root state, not persistent data
 };
