@@ -317,29 +317,6 @@ class PayPalSubscriptionsModule implements ServiceModule, ExtendingModule, Execu
 			}
 		);
 
-		add_filter(
-			'woocommerce_order_actions',
-			/**
-			 * Param types removed to avoid third-party issues.
-			 *
-			 * @psalm-suppress MissingClosureParamType
-			 */
-			function( $actions, $subscription = null ): array {
-				if ( ! is_array( $actions ) || ! is_a( $subscription, WC_Subscription::class ) ) {
-					return $actions;
-				}
-
-				$subscription_id = $subscription->get_meta( 'ppcp_subscription' ) ?? '';
-				if ( $subscription_id && isset( $actions['wcs_process_renewal'] ) ) {
-					unset( $actions['wcs_process_renewal'] );
-				}
-
-				return $actions;
-			},
-			20,
-			2
-		);
-
 		add_action(
 			'woocommerce_subscription_before_actions',
 			/**

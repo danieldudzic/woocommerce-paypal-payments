@@ -83,23 +83,12 @@ class SubscriptionStatus {
 
 		if ( $subscription_status === 'on-hold' || $subscription_status === 'pending-cancel' ) {
 			try {
-				if ( $subscription_status === 'on-hold' ) {
-					$this->logger->info(
-						sprintf(
-							'Suspending PayPal subscription #%s.',
-							$subscription_id
-						)
-					);
-				}
-				if ( $subscription_status === 'pending-cancel' ) {
-					$this->logger->info(
-						sprintf(
-							'Suspending PayPal subscription #%s till cancellation',
-							$subscription_id
-						)
-					);
-				}
-
+				$this->logger->info(
+					sprintf(
+						'Suspending PayPal subscription #%s.',
+						$subscription_id
+					)
+				);
 
 				$this->subscriptions_endpoint->suspend( $subscription_id );
 			} catch ( RuntimeException $exception ) {
