@@ -70,23 +70,37 @@ class PayPalSubscriptionsModule implements ServiceModule, ExtendingModule, Execu
 				$subscriptions_mode = $settings->has( 'subscriptions_mode' ) ? $settings->get( 'subscriptions_mode' ) : '';
 
 				if ( 'subscriptions_api' === $subscriptions_mode && $subscriptions_helper->plugin_is_active() ) {
-					$supports = array(
-						'subscriptions',
-						'subscription_cancellation',
-						'subscription_suspension',
-						'subscription_reactivation',
-						'subscription_amount_changes',
-						'subscription_date_changes',
-						'subscription_payment_method_change',
-						'subscription_payment_method_change_customer',
-						'subscription_payment_method_change_admin',
-						'multiple_subscriptions',
-						'gateway_scheduled_payments',
+					$supports = array_merge(
+						$supports,
+						array(
+							'subscriptions',
+							'subscription_cancellation',
+							'subscription_suspension',
+							'subscription_reactivation',
+							'subscription_amount_changes',
+							'subscription_payment_method_change',
+							'subscription_payment_method_change_customer',
+							'subscription_payment_method_change_admin',
+							'multiple_subscriptions',
+							'gateway_scheduled_payments',
+						)
 					);
 				}
 
 				return $supports;
 			}
+		);
+
+		add_filter(
+			'woocommerce_can_subscription_be_updated_to_active',
+			function ( bool $can_be_updated, \WC_Subscription $subscription ) use ( $c ) {
+				if ( $subscription->payment_method_supports( 'gateway_scheduled_payments' ) && $subscription->get_status() === 'pending-cancel' && $subscription->get_payment_method() === PayPalGateway::ID ) {
+					return true;
+				}
+				return $can_be_updated;
+			},
+			10,
+			2
 		);
 
 		add_filter(
@@ -324,104 +338,6 @@ class PayPalSubscriptionsModule implements ServiceModule, ExtendingModule, Execu
 			},
 			20,
 			2
-		);
-
-		add_filter(
-			'wcs_view_subscription_actions',
-			/**
-			 * Param types removed to avoid third-party issues.
-			 *
-			 * @psalm-suppress MissingClosureParamType
-			 */
-			function( $actions, $subscription ): array {
-				if ( ! is_a( $subscription, WC_Subscription::class ) ) {
-					return $actions;
-				}
-
-				$subscription_id = $subscription->get_meta( 'ppcp_subscription' ) ?? '';
-				if ( $subscription_id && $subscription->get_status() === 'active' ) {
-					$url = wp_nonce_url(
-						add_query_arg(
-							array(
-								'change_subscription_to'   => 'cancelled',
-								'ppcp_cancel_subscription' => $subscription->get_id(),
-							)
-						),
-						'ppcp_cancel_subscription_nonce'
-					);
-
-					array_unshift(
-						$actions,
-						array(
-							'url'  => esc_url( $url ),
-							'name' => esc_html__( 'Cancel', 'woocommerce-paypal-payments' ),
-						)
-					);
-
-					$actions['cancel']['name'] = esc_html__( 'Suspend', 'woocommerce-paypal-payments' );
-					unset( $actions['subscription_renewal_early'] );
-				}
-
-				return $actions;
-			},
-			11,
-			2
-		);
-
-		add_action(
-			'wp_loaded',
-			function() use ( $c ) {
-				if ( ! function_exists( 'wcs_get_subscription' ) ) {
-					return;
-				}
-
-				$cancel_subscription_id = wc_clean( wp_unslash( $_GET['ppcp_cancel_subscription'] ?? '' ) );
-				$subscription           = wcs_get_subscription( absint( $cancel_subscription_id ) );
-				if ( ! wcs_is_subscription( $subscription ) || $subscription === false ) {
-					return;
-				}
-
-				$subscription_id = $subscription->get_meta( 'ppcp_subscription' ) ?? '';
-				$nonce           = wc_clean( wp_unslash( $_GET['_wpnonce'] ?? '' ) );
-				if ( ! is_string( $nonce ) ) {
-					return;
-				}
-
-				if (
-					$subscription_id
-					&& $cancel_subscription_id
-					&& $nonce
-				) {
-					if (
-						! wp_verify_nonce( $nonce, 'ppcp_cancel_subscription_nonce' )
-						|| ! user_can( get_current_user_id(), 'edit_shop_subscription_status', $subscription->get_id() )
-					) {
-						return;
-					}
-
-					$subscriptions_endpoint = $c->get( 'api.endpoint.billing-subscriptions' );
-					$subscription_id        = $subscription->get_meta( 'ppcp_subscription' );
-					try {
-						$subscriptions_endpoint->cancel( $subscription_id );
-
-						$subscription->update_status( 'cancelled' );
-						$subscription->add_order_note( __( 'Subscription cancelled by the subscriber from their account page.', 'woocommerce-paypal-payments' ) );
-						wc_add_notice( __( 'Your subscription has been cancelled.', 'woocommerce-paypal-payments' ) );
-
-						wp_safe_redirect( $subscription->get_view_order_url() );
-						exit;
-					} catch ( RuntimeException $exception ) {
-						$error = $exception->getMessage();
-						if ( is_a( $exception, PayPalApiException::class ) ) {
-							$error = $exception->get_details( $error );
-						}
-
-						$logger = $c->get( 'woocommerce.logger.woocommerce' );
-						$logger->error( 'Could not cancel subscription product on PayPal. ' . $error );
-					}
-				}
-			},
-			100
 		);
 
 		add_action(

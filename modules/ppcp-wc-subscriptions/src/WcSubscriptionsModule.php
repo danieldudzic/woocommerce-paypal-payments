@@ -393,17 +393,20 @@ class WcSubscriptionsModule implements ServiceModule, ExtendingModule, Executabl
 				$subscriptions_mode = $settings->has( 'subscriptions_mode' ) ? $settings->get( 'subscriptions_mode' ) : '';
 
 				if ( 'vaulting_api' === $subscriptions_mode && $subscriptions_helper->plugin_is_active() ) {
-					$supports = array(
-						'subscriptions',
-						'subscription_cancellation',
-						'subscription_suspension',
-						'subscription_reactivation',
-						'subscription_amount_changes',
-						'subscription_date_changes',
-						'subscription_payment_method_change',
-						'subscription_payment_method_change_customer',
-						'subscription_payment_method_change_admin',
-						'multiple_subscriptions',
+					$supports = array_merge(
+						$supports,
+						array(
+							'subscriptions',
+							'subscription_cancellation',
+							'subscription_suspension',
+							'subscription_reactivation',
+							'subscription_amount_changes',
+							'subscription_date_changes',
+							'subscription_payment_method_change',
+							'subscription_payment_method_change_customer',
+							'subscription_payment_method_change_admin',
+							'multiple_subscriptions',
+						)
 					);
 				}
 
@@ -424,17 +427,20 @@ class WcSubscriptionsModule implements ServiceModule, ExtendingModule, Executabl
 				$subscriptions_mode = $settings->has( 'subscriptions_mode' ) ? $settings->get( 'subscriptions_mode' ) : '';
 
 				if ( $vaulting_enabled && 'vaulting_api' === $subscriptions_mode && $subscriptions_helper->plugin_is_active() ) {
-					$supports = array(
-						'subscriptions',
-						'subscription_cancellation',
-						'subscription_suspension',
-						'subscription_reactivation',
-						'subscription_amount_changes',
-						'subscription_date_changes',
-						'subscription_payment_method_change',
-						'subscription_payment_method_change_customer',
-						'subscription_payment_method_change_admin',
-						'multiple_subscriptions',
+					$supports = array_merge(
+						$supports,
+						array(
+							'subscriptions',
+							'subscription_cancellation',
+							'subscription_suspension',
+							'subscription_reactivation',
+							'subscription_amount_changes',
+							'subscription_date_changes',
+							'subscription_payment_method_change',
+							'subscription_payment_method_change_customer',
+							'subscription_payment_method_change_admin',
+							'multiple_subscriptions',
+						)
 					);
 				}
 
@@ -454,17 +460,20 @@ class WcSubscriptionsModule implements ServiceModule, ExtendingModule, Executabl
 				$subscriptions_mode = $settings->has( 'subscriptions_mode' ) ? $settings->get( 'subscriptions_mode' ) : '';
 
 				if ( 'vaulting_api' === $subscriptions_mode && $subscriptions_helper->plugin_is_active() ) {
-					$supports = array(
-						'subscriptions',
-						'subscription_cancellation',
-						'subscription_suspension',
-						'subscription_reactivation',
-						'subscription_amount_changes',
-						'subscription_date_changes',
-						'subscription_payment_method_change',
-						'subscription_payment_method_change_customer',
-						'subscription_payment_method_change_admin',
-						'multiple_subscriptions',
+					$supports = array_merge(
+						$supports,
+						array(
+							'subscriptions',
+							'subscription_cancellation',
+							'subscription_suspension',
+							'subscription_reactivation',
+							'subscription_amount_changes',
+							'subscription_date_changes',
+							'subscription_payment_method_change',
+							'subscription_payment_method_change_customer',
+							'subscription_payment_method_change_admin',
+							'multiple_subscriptions',
+						)
 					);
 				}
 
