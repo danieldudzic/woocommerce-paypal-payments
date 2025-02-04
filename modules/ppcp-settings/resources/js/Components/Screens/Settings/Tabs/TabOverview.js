@@ -314,7 +314,7 @@ const OverviewHelp = () => {
 										'View full documentation',
 										'woocommerce-paypal-payments'
 									),
-									url: 'https://woocommerce.com/document/woocommerce-paypal-payments/ ',
+									url: 'https://woocommerce.com/document/woocommerce-paypal-payments/',
 								},
 							],
 						} }
