@@ -94,7 +94,7 @@ const AcdcOptionalPaymentMethods = ( {
 		);
 	}
 
-	if ( isPayLater && storeCountry === 'uk' ) {
+	if ( isPayLater && storeCountry === 'GB' ) {
 		return (
 			<div className="ppcp-r-optional-payment-methods__wrapper">
 				<BadgeBox

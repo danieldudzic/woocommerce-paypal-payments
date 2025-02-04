@@ -115,7 +115,7 @@ const AcdcFlow = ( { isFastlane, isPayLater, storeCountry } ) => {
 		);
 	}
 
-	if ( isPayLater && storeCountry === 'UK' ) {
+	if ( isPayLater && storeCountry === 'GB' ) {
 		return (
 			<div className="ppcp-r-welcome-docs__wrapper">
 				<div className="ppcp-r-welcome-docs__col">
