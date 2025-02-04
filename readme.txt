@@ -100,7 +100,7 @@ Yes! [Review our feature previews FAQ](https://github.com/woocommerce/woocommerc
 
 Yes, you can! [Join our GitHub repository](https://github.com/woocommerce/woocommerce-paypal-payments/issues).
 
-If you like this extension, please [leave a review on WordPress.org](http://WordPress.org) or [WooCommerce.com](https://woocommerce.com/products/woocommerce-paypal-payments/#reviews) — your valuable feedback is appreciated.
+If you like this extension, please [leave a review on WordPress.org](https://wordpress.org/support/plugin/woocommerce-paypal-payments/reviews) or [WooCommerce.com](https://woocommerce.com/products/woocommerce-paypal-payments/#reviews) — your valuable feedback is appreciated.
 
 = My question is not listed; where can I find more answers? =
 
