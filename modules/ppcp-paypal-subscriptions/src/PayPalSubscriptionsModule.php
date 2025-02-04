@@ -126,11 +126,7 @@ class PayPalSubscriptionsModule implements ServiceModule, ExtendingModule, Execu
 					return true;
 				}
 
-				if ( $payment_gateway_feature === 'subscription_date_changes' ) {
-					return false;
-				}
-
-				return $payment_gateway_supports;
+				return false;
 			},
 			10,
 			3
