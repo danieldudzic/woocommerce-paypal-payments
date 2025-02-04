@@ -18,12 +18,11 @@ export const resolvers = {
 		try {
 			const response = yield apiFetch( { path: REST_PATH } );
 
-			// Make sure we're accessing the correct part of the response
-			const todos = response?.data || [];
+			const { todos = [], dismissedTodos = [] } = response?.data || {};
 
 			yield dispatch( STORE_NAME ).setTodos( todos );
+			yield dispatch( STORE_NAME ).setDismissedTodos( dismissedTodos );
 			yield dispatch( STORE_NAME ).setIsReady( true );
-
 		} catch ( e ) {
 			console.error( 'Resolver error:', e );
 			yield dispatch( STORE_NAME ).setIsReady( false );

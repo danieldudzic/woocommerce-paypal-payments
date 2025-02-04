@@ -308,5 +308,4 @@ return array(
 			$container->get( 'woocommerce.logger.woocommerce' )
 		);
 	},
-
 );
