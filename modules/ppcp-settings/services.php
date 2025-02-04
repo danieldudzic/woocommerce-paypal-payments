@@ -269,26 +269,46 @@ return array(
 		);
 	},
 	'settings.service.todos_eligibilities'        => static function( ContainerInterface $container ): TodosEligibilityService {
+		$features = apply_filters(
+			'woocommerce_paypal_payments_rest_common_merchant_features',
+			array()
+		);
+
+		$payment_endpoint = $container->get( 'settings.rest.payment' );
+		$settings = $payment_endpoint->get_details()->get_data();
+
+		// Settings status.
+		$gateways = array(
+			'apple_pay'   => $settings['data']['ppcp-applepay']['enabled'] ?? false,
+			'google_pay'  => $settings['data']['ppcp-googlepay']['enabled'] ?? false,
+			'axo'         => $settings['data']['ppcp-axo-gateway']['enabled'] ?? false,
+			'card-button' => $settings['data']['ppcp-card-button-gateway']['enabled'] ?? false,
+		);
+
+		// Merchant eligibility.
+		$capabilities = array(
+			'apple_pay'   => $features['apple_pay']['enabled'] ?? false,
+			'google_pay'  => $features['google_pay']['enabled'] ?? false,
+			'acdc'        => $features['advanced_credit_and_debit_cards']['enabled'] ?? false,
+			'save_paypal' => $features['save_paypal_and_venmo']['enabled'] ?? false,
+			'apm'         => $features['alternative_payment_methods']['enabled'] ?? false,
+			'paylater'    => $features['pay_later_messaging']['enabled'] ?? false,
+		);
+
 		return new TodosEligibilityService(
-			$container->has( 'axo.eligible' ) && $container->get( 'axo.eligible' ),
-			$container->has( 'card-fields.eligible' ) && $container->get( 'card-fields.eligible' ),
-			$container->has( 'paylater-configurator.is-available' ) && $container->get( 'paylater-configurator.is-available' ),
-			$container->has( 'wc-subscriptions.helper' ) && $container->get( 'wc-subscriptions.helper' )->plugin_is_active() && empty(
-				wc_get_products(
-					array(
-						'type'  => 'subscription',
-						'limit' => 1,
-					)
-				)
-			),
-			$container->has( 'apple-pay-domain.eligible' ) && $container->get( 'apple-pay-domain.eligible' ),
-			true,
-			$container->has( 'applepay.eligible' ) && $container->get( 'applepay.eligible' ),
-			$container->has( 'googlepay.eligible' ) &&
-			$container->get( 'googlepay.eligible' ) &&
-			( $container->get( 'googlepay.available' ) && ! $container->get( 'googlepay.is_referral' ) ),
-			$container->has( 'paylater-messaging.available' ) && $container->get( 'paylater-messaging.available' ),
-			$container->has( 'button.basic-checkout.enabled' ) && ! $container->get( 'button.basic-checkout.enabled' )
+			$capabilities['acdc'] && ! $gateways['axo'], // Enable Fastlane.
+			$capabilities['acdc'] && ! $gateways['card-button'], // Enable Credit and Debit Cards on your checkout.
+			true,                         // Enable Pay Later messaging.
+			true,                              // Add Pay Later messaging.
+			true,                      // Configure a PayPal Subscription.
+			true,                     // Add PayPal buttons.
+			true,                                              // Register Domain for Apple Pay.
+			$capabilities['acdc'] && ! ( $capabilities['apple_pay'] && $capabilities['google_pay'] ), // Add digital wallets to your account.
+			$capabilities['acdc'] && ! $capabilities['apple_pay'],      // Add Apple Pay to your account.
+			$capabilities['acdc'] && ! $capabilities['google_pay'],     // Add Google Pay to your account.
+			true,                      // Configure a PayPal Subscription.
+			$capabilities['apple_pay'] && ! $gateways['apple_pay'],     // Enable Apple Pay.
+			$capabilities['google_pay'] && ! $gateways['google_pay']    // Enable Google Pay.
 		);
 	},
 	'settings.rest.reset_dismissed_todos'         => static function( ContainerInterface $container ): ResetDismissedTodosEndpoint {

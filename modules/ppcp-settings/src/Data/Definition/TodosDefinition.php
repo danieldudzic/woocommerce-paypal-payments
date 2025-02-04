@@ -44,18 +44,19 @@ class TodosDefinition {
 		$eligibility_checks = $this->eligibilities->get_eligibility_checks();
 
 		return array(
-			'enable_fastlane'                => array(
+			'enable_fastlane'               => array(
 				'title'       => __( 'Enable Fastlane', 'woocommerce-paypal-payments' ),
 				'description' => __( 'Accelerate your guest checkout with Fastlane by PayPal', 'woocommerce-paypal-payments' ),
 				'isEligible'  => $eligibility_checks['enable_fastlane'],
 				'action'      => array(
-					'type'    => 'tab',
-					'tab'     => 'payment_methods',
-					'section' => 'ppcp-fastlane',
-					'modal'   => 'ppcp-fastlane-gateway',
+					'type'      => 'tab',
+					'tab'       => 'payment_methods',
+					'section'   => 'ppcp-fastlane',
+					'modal'     => 'ppcp-fastlane-gateway',
+					'highlight' => 'ppcp-fastlane-gateway',
 				),
 			),
-			'enable_credit_debit_cards'      => array(
+			'enable_credit_debit_cards'     => array(
 				'title'       => __( 'Enable Credit and Debit Cards on your checkout', 'woocommerce-paypal-payments' ),
 				'description' => __( 'Credit and Debit Cards is now available for Blocks checkout pages', 'woocommerce-paypal-payments' ),
 				'isEligible'  => $eligibility_checks['enable_credit_debit_cards'],
@@ -66,7 +67,7 @@ class TodosDefinition {
 					'highlight' => 'ppcp-card-button-gateway',
 				),
 			),
-			'enable_pay_later_messaging'     => array(
+			'enable_pay_later_messaging'    => array(
 				'title'       => __( 'Enable Pay Later messaging', 'woocommerce-paypal-payments' ),
 				'description' => __( 'Show Pay Later messaging to boost conversion rate and increase cart size.', 'woocommerce-paypal-payments' ),
 				'isEligible'  => $eligibility_checks['enable_pay_later_messaging'],
@@ -76,9 +77,9 @@ class TodosDefinition {
 					'section' => 'pay_later_messaging',
 				),
 			),
-			'add_pay_later_messaging'        => array(
-				'title'       => __( 'Add Pay Later messaging to site', 'woocommerce-paypal-payments' ),
-				'description' => __( 'Present Pay Later messaging on your site to boost conversion rate and increase cart size.', 'woocommerce-paypal-payments' ),
+			'add_pay_later_messaging'       => array(
+				'title'       => __( 'Add Pay Later messaging', 'woocommerce-paypal-payments' ),
+				'description' => __( 'Present Pay Later messaging on your <x> page to boost conversion rate and increase cart size.', 'woocommerce-paypal-payments' ),
 				'isEligible'  => $eligibility_checks['add_pay_later_messaging'],
 				'action'      => array(
 					'type'    => 'tab',
@@ -86,7 +87,7 @@ class TodosDefinition {
 					'section' => 'pay_later_messaging',
 				),
 			),
-			'configure_paypal_subscription'  => array(
+			'configure_paypal_subscription' => array(
 				'title'       => __( 'Configure a PayPal Subscription', 'woocommerce-paypal-payments' ),
 				'description' => __( 'Connect a subscriptions-type product from WooCommerce with PayPal', 'woocommerce-paypal-payments' ),
 				'isEligible'  => $eligibility_checks['configure_paypal_subscription'],
@@ -95,7 +96,16 @@ class TodosDefinition {
 					'url'  => admin_url( 'edit.php?post_type=product&product_type=subscription' ),
 				),
 			),
-			'register_domain_apple_pay'      => array(
+			'add_paypal_buttons'            => array(
+				'title'       => __( 'Add PayPal buttons', 'woocommerce-paypal-payments' ),
+				'description' => __( 'Allow customers to check out quickly and securely from the <x> page. Customers save time and get through checkout in fewer clicks.', 'woocommerce-paypal-payments' ),
+				'isEligible'  => $eligibility_checks['add_paypal_buttons'],
+				'action'      => array(
+					'type' => 'tab',
+					'tab'  => 'styling',
+				),
+			),
+			'register_domain_apple_pay'     => array(
 				'title'       => __( 'Register Domain for Apple Pay', 'woocommerce-paypal-payments' ),
 				'description' => __( 'To enable Apple Pay, you must register your domain with PayPal', 'woocommerce-paypal-payments' ),
 				'isEligible'  => $eligibility_checks['register_domain_apple_pay'],
@@ -105,43 +115,53 @@ class TodosDefinition {
 					'section' => 'apple_pay',
 				),
 			),
-			'add_digital_wallets_to_account' => array(
+			'add_digital_wallets'           => array(
 				'title'       => __( 'Add digital wallets to your account', 'woocommerce-paypal-payments' ),
 				'description' => __( 'Add the ability to accept Apple Pay & Google Pay to your PayPal account', 'woocommerce-paypal-payments' ),
-				'isEligible'  => $eligibility_checks['add_digital_wallets_to_account'],
+				'isEligible'  => $eligibility_checks['add_digital_wallets'],
 				'action'      => array(
 					'type' => 'external',
 					'url'  => 'https://www.paypal.com/businessmanage/account/settings',
 				),
 			),
-			'enable_apple_pay'               => array(
+			'add_apple_pay'                 => array(
+				'title'       => __( 'Add Apple Pay to your account', 'woocommerce-paypal-payments' ),
+				'description' => __( 'Add the ability to accept Apple Pay to your PayPal account', 'woocommerce-paypal-payments' ),
+				'isEligible'  => $eligibility_checks['add_apple_pay'],
+				'action'      => array(
+					'type' => 'external',
+					'url'  => 'https://www.paypal.com/businessmanage/account/settings',
+				),
+			),
+			'add_google_pay'                => array(
+				'title'       => __( 'Add Google Pay to your account', 'woocommerce-paypal-payments' ),
+				'description' => __( 'Add the ability to accept Google Pay to your PayPal account', 'woocommerce-paypal-payments' ),
+				'isEligible'  => $eligibility_checks['add_google_pay'],
+				'action'      => array(
+					'type' => 'external',
+					'url'  => 'https://www.paypal.com/businessmanage/account/settings',
+				),
+			),
+			'enable_apple_pay'              => array(
 				'title'       => __( 'Enable Apple Pay', 'woocommerce-paypal-payments' ),
 				'description' => __( 'Allow your buyers to check out via Apple Pay', 'woocommerce-paypal-payments' ),
 				'isEligible'  => $eligibility_checks['enable_apple_pay'],
 				'action'      => array(
-					'type'    => 'tab',
-					'tab'     => 'overview',
-					'section' => 'apple_pay',
+					'type'      => 'tab',
+					'tab'       => 'payment_methods',
+					'section'   => 'ppcp-applepay',
+					'highlight' => 'ppcp-applepay',
 				),
 			),
-			'enable_google_pay'              => array(
+			'enable_google_pay'             => array(
 				'title'       => __( 'Enable Google Pay', 'woocommerce-paypal-payments' ),
 				'description' => __( 'Allow your buyers to check out via Google Pay', 'woocommerce-paypal-payments' ),
 				'isEligible'  => $eligibility_checks['enable_google_pay'],
 				'action'      => array(
-					'type'    => 'tab',
-					'tab'     => 'overview',
-					'section' => 'google_pay',
-				),
-			),
-			'add_paypal_buttons'             => array(
-				'title'       => __( 'Add PayPal buttons to site', 'woocommerce-paypal-payments' ),
-				'description' => __( 'Allow customers to check out quickly and securely. Customers save time and get through checkout in fewer clicks.', 'woocommerce-paypal-payments' ),
-				'isEligible'  => $eligibility_checks['add_paypal_buttons'],
-				'action'      => array(
-					'type'    => 'tab',
-					'tab'     => 'overview',
-					'section' => 'styling',
+					'type'      => 'tab',
+					'tab'       => 'payment_methods',
+					'section'   => 'ppcp-googlepay',
+					'highlight' => 'ppcp-googlepay',
 				),
 			),
 		);
