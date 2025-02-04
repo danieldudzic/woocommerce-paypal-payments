@@ -23,6 +23,7 @@ const useHooks = () => {
 		authenticateWithOAuth,
 		startWebhookSimulation,
 		checkWebhookSimulationState,
+		disconnectMerchant,
 	} = useDispatch( STORE_NAME );
 
 	// Transient accessors.
@@ -78,6 +79,7 @@ const useHooks = () => {
 		productionOnboardingUrl,
 		authenticateWithCredentials,
 		authenticateWithOAuth,
+		disconnectMerchant,
 		merchant,
 		wooSettings,
 		features,
@@ -113,6 +115,11 @@ export const useAuthentication = () => {
 		authenticateWithCredentials,
 		authenticateWithOAuth,
 	};
+};
+
+export const useDisconnectMerchant = () => {
+	const { disconnectMerchant } = useHooks();
+	return { disconnectMerchant };
 };
 
 export const useWooSettings = () => {
