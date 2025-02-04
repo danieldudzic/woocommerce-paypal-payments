@@ -189,8 +189,7 @@ class GooglePayGateway extends WC_Payment_Gateway {
 		}
 		//phpcs:enable WordPress.Security.NonceVerification.Recommended
 
-		do_action_deprecated( 'woocommerce_paypal_payments_before_process_order', array( $wc_order ),  '2.9.7', 'woocommerce_paypal_payments_before_order_process', __( 'Usage of this action is deprecated. Please use the filter woocommerce_paypal_payments_before_order_process instead.', 'woocommerce-paypal-payments' ) );
-
+		do_action_deprecated( 'woocommerce_paypal_payments_before_process_order', array( $wc_order ), '2.9.7', 'woocommerce_paypal_payments_before_order_process', __( 'Usage of this action is deprecated. Please use the filter woocommerce_paypal_payments_before_order_process instead.', 'woocommerce-paypal-payments' ) );
 
 		try {
 			try {
