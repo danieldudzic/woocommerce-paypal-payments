@@ -306,10 +306,8 @@ class PayPalGateway extends \WC_Payment_Gateway {
 
 		$this->method_title       = $this->define_method_title();
 		$this->method_description = $this->define_method_description();
-		$this->title              = $this->config->has( 'title' ) ?
-			$this->config->get( 'title' ) : $this->method_title;
-		$this->description        = $this->config->has( 'description' ) ?
-			$this->config->get( 'description' ) : $this->method_description;
+		$this->title              = apply_filters( 'woocommerce_paypal_payments_gateway_title', $this->config->has( 'title' ) ? $this->config->get( 'title' ) : $this->method_title );
+		$this->description        = apply_filters( 'woocommerce_paypal_payments_gateway_description', $this->config->has( 'description' ) ? $this->config->get( 'description' ) : $this->method_description );
 
 		$funding_source = $this->session_handler->funding_source();
 		if ( $funding_source ) {
