@@ -62,6 +62,8 @@ export const getSteps = ( flags, isCasualSeller ) => {
 		( step ) => flags.canUseCasualSelling || step.id !== 'business',
 		// Card payments: Unlocks the "Extended Checkout" choice.
 		( step ) => flags.canUseCardPayments || step.id !== 'methods',
+		// Card payments are only available for business sellers.
+		( step ) => ! isCasualSeller || step.id !== 'methods',
 	] );
 
 	const totalStepsCount = steps.length;
