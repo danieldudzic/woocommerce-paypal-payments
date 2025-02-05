@@ -9,6 +9,7 @@ declare( strict_types = 1 );
 
 namespace WooCommerce\PayPalCommerce\Settings;
 
+use WC_Payment_Gateway;
 use WooCommerce\PayPalCommerce\ApiClient\Helper\DccApplies;
 use WooCommerce\PayPalCommerce\Applepay\Assets\AppleProductStatus;
 use WooCommerce\PayPalCommerce\Googlepay\Helper\ApmProductStatus;
@@ -343,6 +344,35 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 				}
 
 				return $payment_methods;
+			}
+		);
+
+		add_filter(
+			'woocommerce_payment_gateways',
+			/**
+			 * Param types removed to avoid third-party issues.
+			 *
+			 * @psalm-suppress MissingClosureParamType
+			 */
+			static function ( $methods ) use ( $container ): array {
+				if ( ! is_array( $methods ) ) {
+					return $methods;
+				}
+
+				$googlepay_gateway = $container->get( 'googlepay.wc-gateway' );
+				assert( $googlepay_gateway instanceof WC_Payment_Gateway );
+
+				$applepay_gateway = $container->get( 'applepay.wc-gateway' );
+				assert( $applepay_gateway instanceof WC_Payment_Gateway );
+
+				$axo_gateway = $container->get( 'axo.gateway' );
+				assert( $axo_gateway instanceof WC_Payment_Gateway );
+
+				$methods[] = $googlepay_gateway;
+				$methods[] = $applepay_gateway;
+				$methods[] = $axo_gateway;
+
+				return $methods;
 			}
 		);
 
