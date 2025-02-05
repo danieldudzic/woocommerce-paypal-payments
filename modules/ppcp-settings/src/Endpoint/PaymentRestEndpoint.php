@@ -131,6 +131,7 @@ class PaymentRestEndpoint extends RestEndpoint {
 					'woocommerce-paypal-payments'
 				),
 				'icon'            => 'payment-method-venmo',
+				'enabled'         => $this->settings->get_venmo_enabled(),
 			),
 			'pay-later'               => array(
 				'id'              => 'pay-later',
@@ -140,6 +141,7 @@ class PaymentRestEndpoint extends RestEndpoint {
 					'woocommerce-paypal-payments'
 				),
 				'icon'            => 'payment-method-paypal',
+				'enabled'         => $this->settings->get_paylater_enabled(),
 			),
 			CardButtonGateway::ID     => array(
 				'id'              => CardButtonGateway::ID,
@@ -647,7 +649,7 @@ class PaymentRestEndpoint extends RestEndpoint {
 		$gateway_settings = array();
 
 		foreach ( $this->gateways() as $key => $value ) {
-			// Here we handle the payments methods that are listed on the page but not registered as WooCommerce Payment gateways.
+			// Here we handle the payment methods that are listed on the page but not registered as WooCommerce Payment gateways.
 			if ( ! isset( $all_gateways[ $key ] ) ) {
 				$gateway_settings[ $key ] = array(
 					'id'              => $this->gateways()[ $key ]['id'] ?? '',
@@ -704,7 +706,7 @@ class PaymentRestEndpoint extends RestEndpoint {
 		$request_data = $request->get_params();
 
 		foreach ( $this->gateways() as $key => $value ) {
-			// Here we handle the payments methods that are listed on the page but not registered as WooCommerce Payment gateways.
+			// Here we handle the payment methods that are listed on the page but not registered as WooCommerce Payment gateways.
 			if ( ! isset( $all_gateways[ $key ] ) && isset( $request_data[ $key ] ) ) {
 				switch ( $key ) {
 					case 'venmo':
