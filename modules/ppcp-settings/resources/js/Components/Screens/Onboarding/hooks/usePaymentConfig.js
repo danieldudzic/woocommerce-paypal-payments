@@ -113,7 +113,6 @@ const countrySpecificConfigs = {
 	GB: {
 		includedMethods: [
 			{ name: 'PayWithPayPal', Component: PayWithPayPal },
-			{ name: 'PayLater', Component: PayLater },
 			{ name: 'PayInThree', Component: PayInThree },
 		],
 	},
