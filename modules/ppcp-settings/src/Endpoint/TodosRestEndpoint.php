@@ -109,7 +109,7 @@ class TodosRestEndpoint extends RestEndpoint {
 
 		$todos = array();
 		foreach ( $this->todos_definition->get() as $id => $todo ) {
-			// Skip if todo has completeOnClick flag and is in completed list
+			// Skip if todo has completeOnClick flag and is in completed list.
 			if (
 				in_array( $id, $completed_onclick_ids, true ) &&
 				isset( $todo['action']['completeOnClick'] ) &&
@@ -118,7 +118,7 @@ class TodosRestEndpoint extends RestEndpoint {
 				continue;
 			}
 
-			// Check eligibility and add to todos if eligible
+			// Check eligibility and add to todos if eligible.
 			if ( $todo['isEligible']() ) {
 				$todos[] = array_merge(
 					array( 'id' => $id ),

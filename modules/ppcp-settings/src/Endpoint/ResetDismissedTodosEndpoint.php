@@ -59,7 +59,7 @@ class ResetDismissedTodosEndpoint extends RestEndpoint {
 		$settings['dismissedTodos'] = array();
 
 		// Clear the completedOnClickTodos for testing purposes.
-		// $settings['completedOnClickTodos'] = array();
+		// $settings['completedOnClickTodos'] = array();.
 
 		$update_result = update_option( 'ppcp-settings', $settings );
 
