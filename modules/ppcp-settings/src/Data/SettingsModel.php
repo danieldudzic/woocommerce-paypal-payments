@@ -139,7 +139,8 @@ class SettingsModel extends AbstractDataModel {
 	 * @param string $descriptor The soft descriptor to set.
 	 */
 	public function set_soft_descriptor( string $descriptor ) : void {
-		$this->data['soft_descriptor'] = $this->sanitizer->sanitize_text( $descriptor );
+		$trimmed_descriptor = substr( $descriptor, 0, 22 );
+		$this->data['soft_descriptor'] = $this->sanitizer->sanitize_text( $trimmed_descriptor );
 	}
 
 	/**
