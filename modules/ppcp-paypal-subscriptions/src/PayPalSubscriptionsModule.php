@@ -61,7 +61,7 @@ class PayPalSubscriptionsModule implements ServiceModule, ExtendingModule, Execu
 		add_filter(
 			'woocommerce_available_payment_gateways',
 			function ( array $gateways ) use ( $c ) {
-				if ( ! WC()->cart || WC()->cart->is_empty() ) {
+				if ( ! WC()->cart || WC()->cart->is_empty() || is_account_page() || is_admin() ) {
 					return $gateways;
 				}
 				$settings = $c->get( 'wcgateway.settings' );
