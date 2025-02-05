@@ -27,7 +27,7 @@ export const getFeatures = ( setActiveModal ) => {
 				},
 				{
 					type: 'secondary',
-					text: __( 'Apply', 'woocommerce-paypal-payments' ),
+					text: __( 'Sign up', 'woocommerce-paypal-payments' ),
 					urls: {
 						sandbox:
 							'https://www.sandbox.paypal.com/bizsignup/entry?product=ADVANCED_VAULTING',
@@ -74,7 +74,7 @@ export const getFeatures = ( setActiveModal ) => {
 				},
 				{
 					type: 'secondary',
-					text: __( 'Apply', 'woocommerce-paypal-payments' ),
+					text: __( 'Sign up', 'woocommerce-paypal-payments' ),
 					urls: {
 						sandbox:
 							'https://www.sandbox.paypal.com/bizsignup/entry?product=ppcp',
@@ -116,7 +116,7 @@ export const getFeatures = ( setActiveModal ) => {
 				},
 				{
 					type: 'secondary',
-					text: __( 'Apply', 'woocommerce-paypal-payments' ),
+					text: __( 'Sign up', 'woocommerce-paypal-payments' ),
 					url: 'https://developer.paypal.com/docs/checkout/apm/',
 					showWhen: 'disabled',
 					class: 'small-button',
@@ -153,7 +153,7 @@ export const getFeatures = ( setActiveModal ) => {
 				},
 				{
 					type: 'secondary',
-					text: __( 'Apply', 'woocommerce-paypal-payments' ),
+					text: __( 'Sign up', 'woocommerce-paypal-payments' ),
 					urls: {
 						sandbox:
 							'https://www.sandbox.paypal.com/bizsignup/add-product?product=payment_methods&capabilities=GOOGLE_PAY',
@@ -214,7 +214,7 @@ export const getFeatures = ( setActiveModal ) => {
 				},
 				{
 					type: 'secondary',
-					text: __( 'Apply', 'woocommerce-paypal-payments' ),
+					text: __( 'Sign up', 'woocommerce-paypal-payments' ),
 					urls: {
 						sandbox:
 							'https://www.sandbox.paypal.com/bizsignup/add-product?product=payment_methods&capabilities=APPLE_PAY',
@@ -258,7 +258,7 @@ export const getFeatures = ( setActiveModal ) => {
 				},
 				{
 					type: 'secondary',
-					text: __( 'Apply', 'woocommerce-paypal-payments' ),
+					text: __( 'Sign up', 'woocommerce-paypal-payments' ),
 					urls: {
 						sandbox: '#',
 						live: '#',

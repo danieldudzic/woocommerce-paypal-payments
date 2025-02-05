@@ -18,6 +18,7 @@ import ACTION_TYPES from './action-types';
  */
 const defaultTransient = Object.freeze( {
 	isReady: false,
+	completedTodos: [],
 } );
 
 /**
@@ -26,6 +27,8 @@ const defaultTransient = Object.freeze( {
  */
 const defaultPersistent = Object.freeze( {
 	todos: [],
+	dismissedTodos: [],
+	completedOnClickTodos: [],
 } );
 
 // Reducer logic.
@@ -58,6 +61,41 @@ const reducer = createReducer( defaultTransient, defaultPersistent, {
 	 */
 	[ ACTION_TYPES.SET_TODOS ]: ( state, payload ) => {
 		return changePersistent( state, { todos: payload } );
+	},
+
+	/**
+	 * Updates dismissed todos list while preserving existing entries
+	 *
+	 * @param {Object} state   Current state
+	 * @param {Array}  payload Array of todo IDs to mark as dismissed
+	 * @return {Object} Updated state
+	 */
+	[ ACTION_TYPES.SET_DISMISSED_TODOS ]: ( state, payload ) => {
+		return changePersistent( state, {
+			dismissedTodos: Array.isArray( payload ) ? payload : [],
+		} );
+	},
+
+	/**
+	 * Updates completed todos list while preserving existing entries
+	 *
+	 * @param {Object} state   Current state
+	 * @param {Array}  payload Array of todo IDs to mark as completed
+	 * @return {Object} Updated state
+	 */
+	[ ACTION_TYPES.SET_COMPLETED_TODOS ]: ( state, payload ) => {
+		return changeTransient( state, {
+			completedTodos: Array.isArray( payload ) ? payload : [],
+		} );
+	},
+
+	/**
+	 * Resets dismissed todos list to an empty array
+	 * @param {Object} state Current state
+	 * @return {Object} Updated state
+	 */
+	[ ACTION_TYPES.DO_RESET_DISMISSED_TODOS ]: ( state ) => {
+		return changePersistent( state, { dismissedTodos: [] } );
 	},
 
 	/**
