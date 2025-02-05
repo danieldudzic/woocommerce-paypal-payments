@@ -32,9 +32,9 @@ const SettingsApp = () => {
 		loading: ! onboardingIsReady,
 	} );
 
-	const defaultPanel = 'overview';
-	const [ activePanel, setActivePanel ] = useState( defaultPanel );
-	useEffect( () => setActivePanel( getQuery().panel || defaultPanel ), [] );
+	const [ activePanel, setActivePanel ] = useState(
+		getQuery().panel || 'overview'
+	);
 
 	const Content = useMemo( () => {
 		if ( ! onboardingIsReady || ! merchantIsReady ) {
