@@ -76,7 +76,6 @@ export const setIsReady = ( isReady ) => setTransient( 'isReady', isReady );
 export function persist() {
 	return async ( { select } ) => {
 		const data = select.persistentData();
-		console.log( 'Perist data:', data );
 
 		try {
 			await apiFetch( {
