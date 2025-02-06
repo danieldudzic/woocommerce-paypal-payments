@@ -60,7 +60,7 @@ const BusyStateWrapper = ( {
 	return (
 		<BusyContext.Provider value={ isBusyComponent }>
 			<div className={ wrapperClassName }>
-				{ showSpinner && <SpinnerOverlay /> }
+				{ showSpinner && <SpinnerOverlay asModal={ false } /> }
 				{ memoizedChildren }
 			</div>
 		</BusyContext.Provider>
