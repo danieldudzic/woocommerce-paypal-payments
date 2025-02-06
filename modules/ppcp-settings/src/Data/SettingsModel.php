@@ -140,7 +140,7 @@ class SettingsModel extends AbstractDataModel {
 	 */
 	public function set_soft_descriptor( string $descriptor ) : void {
 		$descriptor = $this->sanitizer->sanitize_text( $descriptor );
-		$descriptor = preg_replace( '/[^a-zA-Z0-9\-*. ]/', '', $descriptor );
+		$descriptor = preg_replace( '/[^a-zA-Z0-9\-*. ]/', '', $descriptor ) ?? '';
 		$this->data['soft_descriptor'] = substr( $descriptor, 0, 22 );
 	}
 
