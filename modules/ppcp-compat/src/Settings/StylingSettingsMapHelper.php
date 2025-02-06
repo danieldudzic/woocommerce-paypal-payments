@@ -64,33 +64,33 @@ class StylingSettingsMapHelper {
 	 *
 	 * @return mixed The value of the mapped setting, (null if not found).
 	 */
-	public function mapped_value(string $old_key, array $styling_models) {
-		switch ($old_key) {
+	public function mapped_value( string $old_key, array $styling_models ) {
+		switch ( $old_key ) {
 			case 'smart_button_locations':
-				return $this->mapped_smart_button_locations_value($styling_models);
+				return $this->mapped_smart_button_locations_value( $styling_models );
 
 			case 'pay_later_button_locations':
-				return $this->mapped_pay_later_button_locations_value($styling_models);
+				return $this->mapped_pay_later_button_locations_value( $styling_models );
 
 			case 'disable_funding':
-				return $this->mapped_disabled_funding_value($styling_models);
+				return $this->mapped_disabled_funding_value( $styling_models );
 
 			case 'googlepay_button_enabled':
-				return $this->mapped_google_pay_or_apple_pay_enabled_value($styling_models, 'googleplay');
+				return $this->mapped_google_pay_or_apple_pay_enabled_value( $styling_models, 'googlepay' );
 
 			case 'applepay_button_enabled':
-				return $this->mapped_google_pay_or_apple_pay_enabled_value($styling_models, 'applepay');
+				return $this->mapped_google_pay_or_apple_pay_enabled_value( $styling_models, 'applepay' );
 
 			default:
-				foreach ($this->locations_map() as $old_location_name => $new_location_name) {
-					foreach ($this->styles() as $style) {
-						if ($old_key !== $this->get_old_styling_setting_key($old_location_name, $style)) {
+				foreach ( $this->locations_map() as $old_location_name => $new_location_name ) {
+					foreach ( $this->styles() as $style ) {
+						if ( $old_key !== $this->get_old_styling_setting_key( $old_location_name, $style ) ) {
 							continue;
 						}
 
-						$location_settings = $styling_models[$new_location_name] ?? false;
+						$location_settings = $styling_models[ $new_location_name ] ?? false;
 
-						if (!$location_settings instanceof LocationStylingDTO) {
+						if ( ! $location_settings instanceof LocationStylingDTO ) {
 							continue;
 						}
 
@@ -123,13 +123,13 @@ class StylingSettingsMapHelper {
 	 */
 	protected function current_context_to_new_button_location_map(): array {
 		return array(
-			'product'                => 'product',
-			'cart'                   => 'cart',
-			'cart-block'             => 'cart',
-			'checkout'               => 'classic_checkout',
-			'pay-now'                => 'classic_checkout',
-			'mini-cart'              => 'mini_cart',
-			'checkout-block'         => 'express_checkout',
+			'product'        => 'product',
+			'cart'           => 'cart',
+			'cart-block'     => 'cart',
+			'checkout'       => 'classic_checkout',
+			'pay-now'        => 'classic_checkout',
+			'mini-cart'      => 'mini_cart',
+			'checkout-block' => 'express_checkout',
 		);
 	}
 
@@ -177,7 +177,7 @@ class StylingSettingsMapHelper {
 				continue;
 			}
 
-			$enabled_locations[] = $locations[$model->location] ?? '';
+			$enabled_locations[] = $locations[ $model->location ] ?? '';
 		}
 
 		return $enabled_locations;
@@ -197,7 +197,7 @@ class StylingSettingsMapHelper {
 				continue;
 			}
 
-			$enabled_locations[] = $locations[$model->location] ?? '';
+			$enabled_locations[] = $locations[ $model->location ] ?? '';
 		}
 
 		return $enabled_locations;
@@ -214,7 +214,7 @@ class StylingSettingsMapHelper {
 		$locations_to_context_map = $this->current_context_to_new_button_location_map();
 
 		foreach ( $styling_models as $model ) {
-			if ( $model->location !== $locations_to_context_map[$this->context()] || in_array( 'venmo', $model->methods, true ) ) {
+			if ( $model->location !== $locations_to_context_map[ $this->context() ] || in_array( 'venmo', $model->methods, true ) ) {
 				continue;
 			}
 
@@ -229,7 +229,7 @@ class StylingSettingsMapHelper {
 	/**
 	 * Retrieves the mapped enabled/disabled Google Pay or Apple Pay value from the new settings.
 	 *
-	 * @param LocationStylingDTO[] $styling_models The list of location styling models.
+	 * @param LocationStylingDTO[]   $styling_models The list of location styling models.
 	 * @param 'googlepay'|'applepay' $button_name The button name ('googlepay' or 'applepay').
 	 * @return int The enabled (1) or disabled (0) state.
 	 * @throws RuntimeException If an invalid button name is provided.
@@ -243,7 +243,7 @@ class StylingSettingsMapHelper {
 
 		foreach ( $styling_models as $model ) {
 			if ( ! $model->enabled
-				|| $model->location !== $locations_to_context_map[$this->context()]
+				|| $model->location !== $locations_to_context_map[ $this->context() ]
 				|| ! in_array( $button_name, $model->methods, true )
 			) {
 				continue;
