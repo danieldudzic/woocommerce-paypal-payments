@@ -131,6 +131,7 @@ class PaymentRestEndpoint extends RestEndpoint {
 					'woocommerce-paypal-payments'
 				),
 				'icon'            => 'payment-method-venmo',
+				'enabled'         => $this->settings->get_venmo_enabled(),
 			),
 			'pay-later'               => array(
 				'id'              => 'pay-later',
@@ -140,6 +141,7 @@ class PaymentRestEndpoint extends RestEndpoint {
 					'woocommerce-paypal-payments'
 				),
 				'icon'            => 'payment-method-paypal',
+				'enabled'         => $this->settings->get_paylater_enabled(),
 			),
 			CardButtonGateway::ID     => array(
 				'id'              => CardButtonGateway::ID,
@@ -647,12 +649,13 @@ class PaymentRestEndpoint extends RestEndpoint {
 		$gateway_settings = array();
 
 		foreach ( $this->gateways() as $key => $value ) {
+			// Here we handle the payment methods that are listed on the page but not registered as WooCommerce Payment gateways.
 			if ( ! isset( $all_gateways[ $key ] ) ) {
 				$gateway_settings[ $key ] = array(
 					'id'              => $this->gateways()[ $key ]['id'] ?? '',
 					'title'           => $this->gateways()[ $key ]['title'] ?? '',
 					'description'     => $this->gateways()[ $key ]['description'] ?? '',
-					'enabled'         => false,
+					'enabled'         => $this->gateways()[ $key ]['enabled'] ?? false,
 					'icon'            => $this->gateways()[ $key ]['icon'] ?? '',
 					'itemTitle'       => $this->gateways()[ $key ]['itemTitle'] ?? '',
 					'itemDescription' => $this->gateways()[ $key ]['itemDescription'] ?? '',
@@ -703,6 +706,20 @@ class PaymentRestEndpoint extends RestEndpoint {
 		$request_data = $request->get_params();
 
 		foreach ( $this->gateways() as $key => $value ) {
+			// Here we handle the payment methods that are listed on the page but not registered as WooCommerce Payment gateways.
+			if ( ! isset( $all_gateways[ $key ] ) && isset( $request_data[ $key ] ) ) {
+				switch ( $key ) {
+					case 'venmo':
+						$this->settings->set_venmo_enabled( $request_data[ $key ]['enabled'] );
+						break;
+					case 'pay-later':
+						$this->settings->set_paylater_enabled( $request_data[ $key ]['enabled'] );
+						break;
+				}
+
+				continue;
+			}
+
 			// Check if the REST body contains details for this gateway.
 			if ( ! isset( $request_data[ $key ] ) || ! isset( $all_gateways[ $key ] ) ) {
 				continue;
