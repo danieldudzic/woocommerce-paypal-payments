@@ -58,7 +58,9 @@ class CardFieldsRenderer {
 			},
 			onError( error ) {
 				console.error( error );
-				this.spinner.unblock();
+				if (this.spinner) {
+                    this.spinner.unblock();
+                }
 			},
 		} );
 
@@ -105,7 +107,9 @@ class CardFieldsRenderer {
 				}
 
 				cardFields.submit().catch( ( error ) => {
-					this.spinner.unblock();
+                    if (this.spinner) {
+                        this.spinner.unblock();
+                    }
 					console.error( error );
 					this.errorHandler.message(
 						this.defaultConfig.hosted_fields.labels.fields_not_valid
