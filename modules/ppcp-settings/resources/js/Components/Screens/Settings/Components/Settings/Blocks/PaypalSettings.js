@@ -9,6 +9,7 @@ import {
 import SettingsBlock from '../../../../../ReusableComponents/SettingsBlock';
 import Accordion from '../../../../../ReusableComponents/AccordionSection';
 import { SettingsHooks } from '../../../../../../data';
+import SoftDescriptorInput from '../../../../../ReusableComponents/Controls/SoftdescriptorInput';
 
 const PaypalSettings = () => {
 	const {
@@ -92,7 +93,7 @@ const PaypalSettings = () => {
 					'woocommerce-paypal-payments'
 				) }
 			>
-				<ControlTextInput
+				<SoftDescriptorInput
 					value={ softDescriptor }
 					onChange={ setSoftDescriptor }
 					placeholder={ __(
