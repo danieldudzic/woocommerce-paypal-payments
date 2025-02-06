@@ -58,6 +58,12 @@ class PayPalSubscriptionsModule implements ServiceModule, ExtendingModule, Execu
 	 */
 	public function run( ContainerInterface $c ): bool {
 
+		$subscriptions_helper = $c->get( 'wc-subscriptions.helper' );
+		assert( $subscriptions_helper instanceof SubscriptionHelper );
+		if ( ! $subscriptions_helper->plugin_is_active() ) {
+			return true;
+		}
+
 		add_filter(
 			'woocommerce_available_payment_gateways',
 			function ( array $gateways ) use ( $c ) {
@@ -68,7 +74,7 @@ class PayPalSubscriptionsModule implements ServiceModule, ExtendingModule, Execu
 				assert( $settings instanceof Settings );
 
 				$subscriptions_mode = $settings->has( 'subscriptions_mode' ) ? $settings->get( 'subscriptions_mode' ) : '';
-				if ( $subscriptions_mode !== 'subscriptions_api' ) {
+				if ( $subscriptions_mode === 'disable_paypal_subscriptions' ) {
 					return $gateways;
 				}
 
@@ -76,10 +82,18 @@ class PayPalSubscriptionsModule implements ServiceModule, ExtendingModule, Execu
 				$pp_subscriptions_product = false;
 				foreach ( WC()->cart->get_cart() as $cart_item ) {
 					$cart_product = wc_get_product( $cart_item['product_id'] );
-					if ( $cart_product instanceof \WC_Product_Subscription || $cart_product instanceof \WC_Product_Variable_Subscription ) {
+					if ( isset( $cart_item['subscription_renewal']['subscription_id'] ) ) {
+						$subscription_renewal = wcs_get_subscription( $cart_item['subscription_renewal']['subscription_id'] );
+						$subscription_id      = $subscription_renewal->get_meta( 'ppcp_subscription' ) ?? '';
+						if ( $subscription_id ) {
+							$pp_subscriptions_product = true;
+							break;
+						}
+					} elseif ( $cart_product instanceof \WC_Product_Subscription || $cart_product instanceof \WC_Product_Variable_Subscription ) {
 						$subscriptions_product = true;
 						if ( $cart_product->get_meta( '_ppcp_enable_subscription_product', true ) === 'yes' ) {
 							$pp_subscriptions_product = true;
+							break;
 						}
 					}
 				}
@@ -188,12 +202,6 @@ class PayPalSubscriptionsModule implements ServiceModule, ExtendingModule, Execu
 			 * @psalm-suppress MissingClosureParamType
 			 */
 			function( $product_id ) use ( $c ) {
-				$subscriptions_helper = $c->get( 'wc-subscriptions.helper' );
-				assert( $subscriptions_helper instanceof SubscriptionHelper );
-				if ( ! $subscriptions_helper->plugin_is_active() ) {
-					return;
-				}
-
 				$settings = $c->get( 'wcgateway.settings' );
 				assert( $settings instanceof Settings );
 
@@ -291,8 +299,7 @@ class PayPalSubscriptionsModule implements ServiceModule, ExtendingModule, Execu
 				assert( $subscriptions_helper instanceof SubscriptionHelper );
 
 				if (
-					! $subscriptions_helper->plugin_is_active()
-					|| ! WC_Subscriptions_Product::is_subscription( $variation_id )
+					! WC_Subscriptions_Product::is_subscription( $variation_id )
 					|| ! is_string( $wcsnonce_save_variations )
 					|| ! wp_verify_nonce( $wcsnonce_save_variations, 'wcs_subscription_variations' )
 				) {
@@ -550,8 +557,7 @@ class PayPalSubscriptionsModule implements ServiceModule, ExtendingModule, Execu
 				assert( $subscriptions_helper instanceof SubscriptionHelper );
 
 				if (
-					! $subscriptions_helper->plugin_is_active()
-					|| ! (
+					! (
 						is_a( $product, WC_Product_Subscription::class )
 						|| is_a( $product, WC_Product_Variable_Subscription::class )
 						|| is_a( $product, WC_Product_Subscription_Variation::class )
