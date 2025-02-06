@@ -1,46 +1,83 @@
-import { select } from '@wordpress/data';
-
-import ACTION_TYPES from './action-types';
-import { hydrate } from './actions';
-import { STORE_NAME } from './constants';
+import {
+	REST_CONNECTION_URL_PATH,
+	REST_DIRECT_AUTHENTICATION_PATH,
+	REST_DISCONNECT_MERCHANT_PATH,
+	REST_HYDRATE_MERCHANT_PATH,
+	REST_OAUTH_AUTHENTICATION_PATH,
+	REST_PERSIST_PATH,
+	REST_REFRESH_FEATURES_PATH,
+	REST_WEBHOOKS,
+	REST_WEBHOOKS_SIMULATE,
+} from './constants';
+import apiFetch from '@wordpress/api-fetch';
 
 /**
  * Side effect. Saves the persistent details to the WP database.
  *
- * @return {Action} The action.
+ * @return {Function} The thunk function.
  */
-export const persist = function* () {
-	const data = yield select( STORE_NAME ).persistentData();
+export function persist() {
+	return async ( { select } ) => {
+		const data = select.persistentData();
 
-	yield { type: ACTION_TYPES.DO_PERSIST_DATA, data };
-};
+		await apiFetch( {
+			path: REST_PERSIST_PATH,
+			method: 'POST',
+			data,
+		} );
+	};
+}
 
 /**
  * Side effect. Fetches the ISU-login URL for a sandbox account.
  *
- * @return {Action} The action.
+ * @return {Function} The thunk function.
  */
-export const sandboxOnboardingUrl = function* () {
-	return yield {
-		type: ACTION_TYPES.DO_GENERATE_ONBOARDING_URL,
-		useSandbox: true,
-		products: [ 'EXPRESS_CHECKOUT' ],
+export function sandboxOnboardingUrl() {
+	return async () => {
+		try {
+			return apiFetch( {
+				path: REST_CONNECTION_URL_PATH,
+				method: 'POST',
+				data: {
+					useSandbox: true,
+					products: [ 'EXPRESS_CHECKOUT' ],
+				},
+			} );
+		} catch ( e ) {
+			return {
+				success: false,
+				error: e,
+			};
+		}
 	};
-};
+}
 
 /**
  * Side effect. Fetches the ISU-login URL for a production account.
  *
  * @param {string[]} products Which products/features to display in the ISU popup.
- * @return {Action} The action.
+ * @return {Function} The thunk function.
  */
-export const productionOnboardingUrl = function* ( products = [] ) {
-	return yield {
-		type: ACTION_TYPES.DO_GENERATE_ONBOARDING_URL,
-		useSandbox: false,
-		products,
+export function productionOnboardingUrl( products = [] ) {
+	return async () => {
+		try {
+			return apiFetch( {
+				path: REST_CONNECTION_URL_PATH,
+				method: 'POST',
+				data: {
+					useSandbox: false,
+					products,
+				},
+			} );
+		} catch ( e ) {
+			return {
+				success: false,
+				error: e,
+			};
+		}
 	};
-};
+}
 
 /**
  * Side effect. Initiates a direct connection attempt using the provided client ID and secret.
@@ -52,20 +89,32 @@ export const productionOnboardingUrl = function* ( products = [] ) {
  * @param {string}  clientId     - AP client ID (always 80-characters, starting with "A").
  * @param {string}  clientSecret - API client secret.
  * @param {boolean} useSandbox   - Whether the credentials are for a sandbox account.
- * @return {Action} The action.
+ * @return {Function} The thunk function.
  */
-export const authenticateWithCredentials = function* (
+export function authenticateWithCredentials(
 	clientId,
 	clientSecret,
 	useSandbox
 ) {
-	return yield {
-		type: ACTION_TYPES.DO_DIRECT_API_AUTHENTICATION,
-		clientId,
-		clientSecret,
-		useSandbox,
+	return async () => {
+		try {
+			return await apiFetch( {
+				path: REST_DIRECT_AUTHENTICATION_PATH,
+				method: 'POST',
+				data: {
+					clientId,
+					clientSecret,
+					useSandbox,
+				},
+			} );
+		} catch ( e ) {
+			return {
+				success: false,
+				error: e,
+			};
+		}
 	};
-};
+}
 
 /**
  * Side effect. Completes the ISU login by authenticating the user via the one time sharedId and
@@ -75,97 +124,156 @@ export const authenticateWithCredentials = function* (
  * parameters are dynamically generated during the authentication process, and not managed by our
  * Redux store.
  *
- * @param {string}  sharedId   - OAuth client ID; called "sharedId" to prevent confusion with the API client ID.
+ * @param {string}  sharedId   - OAuth client ID; called "sharedId" to prevent confusion with the
+ *                             API client ID.
  * @param {string}  authCode   - OAuth authorization code provided during onboarding.
  * @param {boolean} useSandbox - Whether the credentials are for a sandbox account.
- * @return {Action} The action.
+ * @return {Function} The thunk function.
  */
-export const authenticateWithOAuth = function* (
-	sharedId,
-	authCode,
-	useSandbox
-) {
-	return yield {
-		type: ACTION_TYPES.DO_OAUTH_AUTHENTICATION,
-		sharedId,
-		authCode,
-		useSandbox,
+export function authenticateWithOAuth( sharedId, authCode, useSandbox ) {
+	return async () => {
+		try {
+			return await apiFetch( {
+				path: REST_OAUTH_AUTHENTICATION_PATH,
+				method: 'POST',
+				data: {
+					sharedId,
+					authCode,
+					useSandbox,
+				},
+			} );
+		} catch ( e ) {
+			return {
+				success: false,
+				error: e,
+			};
+		}
 	};
-};
+}
 
 /**
  * Side effect. Checks webhook simulation.
  *
- * @return {Action} The action.
+ * @return {Function} The thunk function.
  */
-export const disconnectMerchant = function* () {
-	return yield { type: ACTION_TYPES.DO_DISCONNECT_MERCHANT };
-};
+export function disconnectMerchant() {
+	return async () => {
+		return await apiFetch( {
+			path: REST_DISCONNECT_MERCHANT_PATH,
+			method: 'POST',
+		} );
+	};
+}
 
 /**
  * Side effect. Clears and refreshes the merchant data via a REST request.
  *
- * @return {Action} The action.
+ * @return {Function} The thunk function.
  */
-export const refreshMerchantData = function* () {
-	const result = yield { type: ACTION_TYPES.DO_REFRESH_MERCHANT };
+export function refreshMerchantData() {
+	return async ( { dispatch } ) => {
+		try {
+			const result = await apiFetch( {
+				path: REST_HYDRATE_MERCHANT_PATH,
+			} );
 
-	if ( result.success && result.merchant ) {
-		yield hydrate( result );
-	}
+			if ( result.success && result.merchant ) {
+				dispatch.hydrate( result );
+			}
 
-	return result;
-};
+			return result;
+		} catch ( e ) {
+			return {
+				success: false,
+				error: e,
+			};
+		}
+	};
+}
 
 /**
  * Side effect.
  * Purges all feature status data via a REST request.
  * Refreshes the merchant data via a REST request.
  *
- * @return {Action} The action.
+ * @return {Function} The thunk function.
  */
-export const refreshFeatureStatuses = function* () {
-	const result = yield { type: ACTION_TYPES.DO_REFRESH_FEATURES };
+export function refreshFeatureStatuses() {
+	return async ( { dispatch } ) => {
+		try {
+			const result = await apiFetch( {
+				path: REST_REFRESH_FEATURES_PATH,
+				method: 'POST',
+			} );
 
-	if ( result && result.success ) {
-		// TODO: Review if we can get the updated feature details in the result.data instead of
-		//       doing a second refreshMerchantData() request.
-		yield refreshMerchantData();
-	}
+			if ( result && result.success ) {
+				// TODO: Review if we can get the updated feature details in the result.data
+				// instead of doing a second refreshMerchantData() request.
+				await dispatch.refreshMerchantData();
+			}
 
-	return result;
-};
+			return result;
+		} catch ( e ) {
+			return {
+				success: false,
+				error: e,
+				message: e.message,
+			};
+		}
+	};
+}
 
 /**
  * Side effect
  * Refreshes subscribed webhooks via a REST request
  *
- * @return {Action} The action.
+ * @return {Function} The thunk function.
  */
-export const resubscribeWebhooks = function* () {
-	const result = yield { type: ACTION_TYPES.DO_RESUBSCRIBE_WEBHOOKS };
+export function resubscribeWebhooks() {
+	return async ( { dispatch } ) => {
+		try {
+			const result = await apiFetch( {
+				method: 'POST',
+				path: REST_WEBHOOKS,
+			} );
 
-	if ( result && result.success ) {
-		yield hydrate( result );
-	}
+			if ( result.success && result.merchant ) {
+				dispatch.hydrate( result );
+			}
 
-	return result;
-};
+			return result;
+		} catch ( e ) {
+			return {
+				success: false,
+				error: e,
+			};
+		}
+	};
+}
 
 /**
  * Side effect. Starts webhook simulation.
  *
- * @return {Action} The action.
+ * @return {Function} The thunk function.
  */
-export const startWebhookSimulation = function* () {
-	return yield { type: ACTION_TYPES.DO_START_WEBHOOK_SIMULATION };
-};
+export function startWebhookSimulation() {
+	return async () => {
+		return await apiFetch( {
+			method: 'POST',
+			path: REST_WEBHOOKS_SIMULATE,
+		} );
+	};
+}
 
 /**
  * Side effect. Checks webhook simulation.
  *
- * @return {Action} The action.
+ * @return {Function} The thunk function.
  */
-export const checkWebhookSimulationState = function* () {
-	return yield { type: ACTION_TYPES.DO_CHECK_WEBHOOK_SIMULATION };
-};
+export function checkWebhookSimulationState() {
+	return async () => {
+		return await apiFetch( {
+			path: REST_WEBHOOKS_SIMULATE,
+		} );
+	};
+}
