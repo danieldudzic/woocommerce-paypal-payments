@@ -2,16 +2,15 @@
 /**
  * A helper for mapping the new/old settings.
  *
- * @package WooCommerce\PayPalCommerce\Compat
+ * @package WooCommerce\PayPalCommerce\Compat\Settings
  */
 
 declare( strict_types = 1 );
 
-namespace WooCommerce\PayPalCommerce\Compat;
+namespace WooCommerce\PayPalCommerce\Compat\Settings;
 
 use RuntimeException;
 use WooCommerce\PayPalCommerce\Settings\Data\StylingSettings;
-use WooCommerce\PayPalCommerce\Settings\DTO\LocationStylingDTO;
 
 /**
  * A helper class to manage the transition between legacy and new settings.

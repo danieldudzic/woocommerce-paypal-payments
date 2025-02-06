@@ -9,8 +9,11 @@ declare(strict_types=1);
 
 namespace WooCommerce\PayPalCommerce\Compat;
 
-use WooCommerce\PayPalCommerce\Vendor\Psr\Container\ContainerInterface;
 use WooCommerce\PayPalCommerce\Compat\Assets\CompatAssets;
+use WooCommerce\PayPalCommerce\Compat\Settings\SettingsMap;
+use WooCommerce\PayPalCommerce\Compat\Settings\SettingsMapHelper;
+use WooCommerce\PayPalCommerce\Compat\Settings\StylingSettingsMapHelper;
+use WooCommerce\PayPalCommerce\Vendor\Psr\Container\ContainerInterface;
 
 return array(
 

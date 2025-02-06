@@ -2,12 +2,12 @@
 /**
  * A helper for mapping the old/new styling settings.
  *
- * @package WooCommerce\PayPalCommerce\Compat
+ * @package WooCommerce\PayPalCommerce\Compat\Settings
  */
 
 declare(strict_types=1);
 
-namespace WooCommerce\PayPalCommerce\Compat;
+namespace WooCommerce\PayPalCommerce\Compat\Settings;
 
 use WooCommerce\PayPalCommerce\Settings\DTO\LocationStylingDTO;
 

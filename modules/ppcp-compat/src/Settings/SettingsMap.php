@@ -2,12 +2,12 @@
 /**
  * A map of old to new settings.
  *
- * @package WooCommerce\PayPalCommerce\Compat
+ * @package WooCommerce\PayPalCommerce\Compat\Settings
  */
 
 declare(strict_types=1);
 
-namespace WooCommerce\PayPalCommerce\Compat;
+namespace WooCommerce\PayPalCommerce\Compat\Settings;
 
 use WooCommerce\PayPalCommerce\Settings\Data\AbstractDataModel;
 
