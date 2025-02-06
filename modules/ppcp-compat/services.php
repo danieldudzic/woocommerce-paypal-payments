@@ -115,4 +115,69 @@ return array(
 			$container->get( 'api.bearer' )
 		);
 	},
+
+	/**
+	 * Configuration for the new/old settings map.
+	 *
+	 * @returns SettingsMap[]
+	 */
+	'compat.setting.new-to-old-map'                  => static function( ContainerInterface $container ) : array {
+		$are_new_settings_enabled = $container->get( 'wcgateway.settings.admin-settings-enabled' );
+		if ( ! $are_new_settings_enabled ) {
+			return array();
+		}
+
+		$styling_settings_map_helper = $container->get( 'compat.settings.styling_map_helper' );
+		assert( $styling_settings_map_helper instanceof StylingSettingsMapHelper );
+
+		return array(
+			new SettingsMap(
+				$container->get( 'settings.data.general' ),
+				/**
+				 * The new GeneralSettings class stores the current connection
+				 * details, without adding an environment-suffix (no `_sandbox`
+				 * or `_production` in the field name)
+				 * Only the `sandbox_merchant` flag indicates, which environment
+				 * the credentials are used for.
+				 */
+				array(
+					'merchant_id'            => 'merchant_id',
+					'client_id'              => 'client_id',
+					'client_secret'          => 'client_secret',
+					'sandbox_on'             => 'sandbox_merchant',
+					'live_client_id'         => 'client_id',
+					'live_client_secret'     => 'client_secret',
+					'live_merchant_id'       => 'merchant_id',
+					'live_merchant_email'    => 'merchant_email',
+					'sandbox_client_id'      => 'client_id',
+					'sandbox_client_secret'  => 'client_secret',
+					'sandbox_merchant_id'    => 'merchant_id',
+					'sandbox_merchant_email' => 'merchant_email',
+				)
+			),
+			new SettingsMap(
+				$container->get( 'settings.data.styling' ),
+				/**
+				 * The `StylingSettings` class stores settings as `LocationStylingDTO` objects.
+				 * This method creates a mapping from old setting keys to the corresponding style names.
+				 *
+				 * Example:
+				 * 'button_product_layout' => 'layout'
+				 *
+				 * This mapping will allow to retrieve the correct style value
+				 * from a `LocationStylingDTO` object by dynamically accessing its properties.
+				 */
+				$styling_settings_map_helper->map()
+			),
+		);
+	},
+	'compat.settings.settings_map_helper'            => static function( ContainerInterface $container ) : SettingsMapHelper {
+		return new SettingsMapHelper(
+			$container->get( 'compat.setting.new-to-old-map' ),
+			$container->get( 'compat.settings.styling_map_helper' )
+		);
+	},
+	'compat.settings.styling_map_helper'             => static function() : StylingSettingsMapHelper {
+		return new StylingSettingsMapHelper();
+	},
 );
