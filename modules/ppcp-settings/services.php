@@ -107,7 +107,7 @@ return array(
 		return new CommonRestEndpoint( $container->get( 'settings.data.general' ) );
 	},
 	'settings.rest.payment'                       => static function ( ContainerInterface $container ) : PaymentRestEndpoint {
-		return new PaymentRestEndpoint( $container->get( 'settings.data.payment' ) );
+		return new PaymentRestEndpoint( $container->get( 'settings.data.payment' ), $container->get( 'woocommerce.logger.woocommerce' ) );
 	},
 	'settings.rest.styling'                       => static function ( ContainerInterface $container ) : StylingRestEndpoint {
 		return new StylingRestEndpoint(
@@ -312,11 +312,5 @@ return array(
 			$capabilities['apple_pay'] && ! $gateways['apple_pay'],     // Enable Apple Pay.
 			$capabilities['google_pay'] && ! $gateways['google_pay']    // Enable Google Pay.
 		);
-	},
-	'settings.rest.reset_dismissed_todos'         => static function( ContainerInterface $container ): ResetDismissedTodosEndpoint {
-		return new ResetDismissedTodosEndpoint();
-	},
-	'settings.rest.complete_onclick'              => static function( ContainerInterface $container ): CompleteOnClickEndpoint {
-		return new CompleteOnClickEndpoint();
 	},
 );
