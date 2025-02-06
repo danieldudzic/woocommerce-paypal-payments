@@ -2,14 +2,14 @@
 /**
  * A helper for mapping the old/new styling settings.
  *
- * @package WooCommerce\PayPalCommerce\Compat
+ * @package WooCommerce\PayPalCommerce\Settings\Compat
  */
 
 declare(strict_types=1);
 
-namespace WooCommerce\PayPalCommerce\Compat;
+namespace WooCommerce\PayPalCommerce\Settings\Compat;
 
-use WooCommerce\PayPalCommerce\Settings\DTO\LocationStylingDTO;
+use WooCommerce\PayPalCommerce\Settings\Data\StylingSettings;
 
 /**
  * A map of old to new styling settings.
@@ -18,6 +18,16 @@ use WooCommerce\PayPalCommerce\Settings\DTO\LocationStylingDTO;
  * @psalm-import-type oldSettingsKey from SettingsMap
  */
 class StylingSettingsMapHelper {
+
+	/**
+	 * The constructor.
+	 *
+	 * @param StylingSettings $model The styling settings model.
+	 */
+	public function __construct( StylingSettings $model ) {
+		$this->model = $model;
+	}
+
 	/**
 	 * Maps old setting keys to new setting style names.
 	 *
@@ -49,23 +59,24 @@ class StylingSettingsMapHelper {
 	/**
 	 * Retrieves the value of a mapped key from the new settings.
 	 *
-	 * @param string               $old_key The key from the legacy settings.
-	 * @param LocationStylingDTO[] $model The list of location styling models.
+	 * @param string $old_key The key from the legacy settings.
 	 *
 	 * @return mixed|null The value of the mapped setting, or null if not found.
 	 */
-	public function mapped_value( string $old_key, array $model ) {
+	public function mapped_value( string $old_key ) {
 		foreach ( $this->locations_map() as $old_location_name => $new_location_name ) {
 			foreach ( $this->styles() as $style ) {
 				if ( $old_key !== $this->get_old_styling_setting_key( $old_location_name, $style ) ) {
 					continue;
 				}
 
-				$location_settings = $model[ $new_location_name ] ?? false;
+				$method = "get_{$new_location_name}";
 
-				if ( ! $location_settings instanceof LocationStylingDTO ) {
-					continue;
+				if ( ! method_exists( $this->model, $method ) ) {
+					return null;
 				}
+
+				$location_settings = $this->model->$method();
 
 				return $location_settings->$style ?? null;
 			}
@@ -113,7 +124,7 @@ class StylingSettingsMapHelper {
 	 * @param string $style    The style name.
 	 * @return string The old styling setting key name.
 	 */
-	public function get_old_styling_setting_key( string $location, string $style ): string {
+	protected function get_old_styling_setting_key( string $location, string $style ): string {
 		$location_setting_name_part = $location === 'checkout' ? '' : "_{$location}";
 		return "button{$location_setting_name_part}_{$style}";
 	}

@@ -2,16 +2,15 @@
 /**
  * A helper for mapping the new/old settings.
  *
- * @package WooCommerce\PayPalCommerce\Compat
+ * @package WooCommerce\PayPalCommerce\Settings\Compat
  */
 
 declare( strict_types = 1 );
 
-namespace WooCommerce\PayPalCommerce\Compat;
+namespace WooCommerce\PayPalCommerce\Settings\Compat;
 
 use RuntimeException;
 use WooCommerce\PayPalCommerce\Settings\Data\StylingSettings;
-use WooCommerce\PayPalCommerce\Settings\DTO\LocationStylingDTO;
 
 /**
  * A helper class to manage the transition between legacy and new settings.
@@ -102,7 +101,12 @@ class SettingsMapHelper {
 			return null;
 		}
 
-		return $this->get_cached_model_value( spl_object_id( $model ), $old_key, $mapping['new_key'], $mapping['model'] );
+		switch ( true ) {
+			case $model instanceof StylingSettings:
+				return $this->styling_settings_map_helper->mapped_value( $old_key );
+			default:
+				return $this->get_cached_model_value( spl_object_id( $model ), $mapping['new_key'], $model );
+		}
 	}
 
 	/**
@@ -122,23 +126,17 @@ class SettingsMapHelper {
 	 * Retrieves a cached model value or caches it if not already cached.
 	 *
 	 * @param int    $model_id The unique identifier for the model object.
-	 * @param string $old_key  The key in the old settings structure.
 	 * @param string $new_key  The key in the new settings structure.
 	 * @param object $model    The model object.
 	 *
 	 * @return mixed|null The value of the key in the model, or null if not found.
 	 */
-	protected function get_cached_model_value( int $model_id, string $old_key, string $new_key, object $model ) {
+	protected function get_cached_model_value( int $model_id, string $new_key, object $model ) {
 		if ( ! isset( $this->model_cache[ $model_id ] ) ) {
 			$this->model_cache[ $model_id ] = $model->to_array();
 		}
 
-		switch ( true ) {
-			case $model instanceof StylingSettings:
-				return $this->styling_settings_map_helper->mapped_value( $old_key, $this->model_cache[ $model_id ] );
-			default:
-				return $this->model_cache[ $model_id ][ $new_key ] ?? null;
-		}
+		return $this->model_cache[ $model_id ][ $new_key ] ?? null;
 	}
 
 	/**
