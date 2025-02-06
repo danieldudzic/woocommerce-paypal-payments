@@ -106,10 +106,12 @@ class CardFieldsRenderer {
 
 				cardFields.submit().catch( ( error ) => {
                     this.spinner.unblock();
-					console.error( error );
-					this.errorHandler.message(
-						this.defaultConfig.hosted_fields.labels.fields_not_valid
-					);
+                    if (!error.type || error.type !== 'create-order-error') {
+                        console.error( error );
+                        this.errorHandler.message(
+                            this.defaultConfig.hosted_fields.labels.fields_not_valid
+                        );
+                    }
 				} );
 			} );
 	}
