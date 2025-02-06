@@ -1,3 +1,5 @@
+import apiFetch from '@wordpress/api-fetch';
+
 import {
 	REST_CONNECTION_URL_PATH,
 	REST_DIRECT_AUTHENTICATION_PATH,
@@ -9,7 +11,6 @@ import {
 	REST_WEBHOOKS,
 	REST_WEBHOOKS_SIMULATE,
 } from './constants';
-import apiFetch from '@wordpress/api-fetch';
 
 /**
  * Side effect. Saves the persistent details to the WP database.
