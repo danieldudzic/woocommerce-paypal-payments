@@ -84,7 +84,7 @@ class PayPalSubscriptionsModule implements ServiceModule, ExtendingModule, Execu
 					$cart_product = wc_get_product( $cart_item['product_id'] );
 					if ( isset( $cart_item['subscription_renewal']['subscription_id'] ) ) {
 						$subscription_renewal = wcs_get_subscription( $cart_item['subscription_renewal']['subscription_id'] );
-						if ($subscription_renewal && $subscription_renewal->get_meta( 'ppcp_subscription' ) ) {
+						if ( $subscription_renewal && $subscription_renewal->get_meta( 'ppcp_subscription' ) ) {
 							$pp_subscriptions_product = true;
 							break;
 						}
