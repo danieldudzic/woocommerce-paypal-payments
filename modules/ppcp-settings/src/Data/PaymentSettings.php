@@ -32,6 +32,8 @@ class PaymentSettings extends AbstractDataModel {
 			'three_d_secure'             => 'no-3d-secure',
 			'fastlane_cardholder_name'   => false,
 			'fastlane_display_watermark' => false,
+			'venmo_enabled'              => false,
+			'paylater_enabled'           => false,
 		);
 	}
 
@@ -72,6 +74,24 @@ class PaymentSettings extends AbstractDataModel {
 	}
 
 	/**
+	 * Get Venmo enabled.
+	 *
+	 * @return bool
+	 */
+	public function get_venmo_enabled(): bool {
+		return (bool) $this->data['venmo_enabled'];
+	}
+
+	/**
+	 * Get Pay Later enabled.
+	 *
+	 * @return bool
+	 */
+	public function get_paylater_enabled(): bool {
+		return (bool) $this->data['paylater_enabled'];
+	}
+
+	/**
 	 * Set PayPal show logo.
 	 *
 	 * @param bool $value The value.
@@ -109,5 +129,25 @@ class PaymentSettings extends AbstractDataModel {
 	 */
 	public function set_fastlane_display_watermark( bool $value ): void {
 		$this->data['fastlane_display_watermark'] = $value;
+	}
+
+	/**
+	 * Set Venmo enabled.
+	 *
+	 * @param bool $value The value.
+	 * @return void
+	 */
+	public function set_venmo_enabled( bool $value ): void {
+		$this->data['venmo_enabled'] = $value;
+	}
+
+	/**
+	 * Set Pay Later enabled.
+	 *
+	 * @param bool $value The value.
+	 * @return void
+	 */
+	public function set_paylater_enabled( bool $value ): void {
+		$this->data['paylater_enabled'] = $value;
 	}
 }
