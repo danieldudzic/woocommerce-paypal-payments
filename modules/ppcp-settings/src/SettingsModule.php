@@ -9,6 +9,7 @@ declare( strict_types = 1 );
 
 namespace WooCommerce\PayPalCommerce\Settings;
 
+use WC_Payment_Gateway;
 use WooCommerce\PayPalCommerce\ApiClient\Helper\DccApplies;
 use WooCommerce\PayPalCommerce\Applepay\Assets\AppleProductStatus;
 use WooCommerce\PayPalCommerce\Googlepay\Helper\ApmProductStatus;
@@ -343,6 +344,104 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 
 				return $payment_methods;
 			}
+		);
+
+		add_filter(
+			'woocommerce_payment_gateways',
+			/**
+			 * Param types removed to avoid third-party issues.
+			 *
+			 * @psalm-suppress MissingClosureParamType
+			 */
+			static function ( $methods ) use ( $container ): array {
+				if ( ! is_array( $methods ) ) {
+					return $methods;
+				}
+
+				$googlepay_gateway = $container->get( 'googlepay.wc-gateway' );
+				assert( $googlepay_gateway instanceof WC_Payment_Gateway );
+
+				$applepay_gateway = $container->get( 'applepay.wc-gateway' );
+				assert( $applepay_gateway instanceof WC_Payment_Gateway );
+
+				$axo_gateway = $container->get( 'axo.gateway' );
+				assert( $axo_gateway instanceof WC_Payment_Gateway );
+
+				$methods[] = $googlepay_gateway;
+				$methods[] = $applepay_gateway;
+				$methods[] = $axo_gateway;
+
+				return $methods;
+			}
+		);
+
+		add_filter(
+			'woocommerce_paypal_payments_gateway_title',
+			function( string $title, WC_Payment_Gateway $gateway ) {
+				return $gateway->get_option( 'title', $title );
+			},
+			10,
+			2
+		);
+		add_filter(
+			'woocommerce_paypal_payments_gateway_description',
+			function( string $description, WC_Payment_Gateway $gateway ) {
+				return $gateway->get_option( 'description', $description );
+			},
+			10,
+			2
+		);
+
+		add_filter(
+			'woocommerce_paypal_payments_credit_card_gateway_form_fields',
+			function( array $form_fields ) {
+				$form_fields['enabled'] = array(
+					'title'       => __( 'Enable/Disable', 'woocommerce-paypal-payments' ),
+					'type'        => 'checkbox',
+					'desc_tip'    => true,
+					'description' => __( 'Once enabled, the Credit Card option will show up in the checkout.', 'woocommerce-paypal-payments' ),
+					'label'       => __( 'Enable Advanced Card Processing', 'woocommerce-paypal-payments' ),
+					'default'     => 'no',
+				);
+
+				return $form_fields;
+			}
+		);
+		add_filter( 'woocommerce_paypal_payments_credit_card_gateway_should_update_enabled', '__return_false' );
+
+		add_filter(
+			'woocommerce_paypal_payments_credit_card_gateway_title',
+			function( string $title, WC_Payment_Gateway $gateway ) {
+				return $gateway->get_option( 'title', $title );
+			},
+			10,
+			2
+		);
+		add_filter(
+			'woocommerce_paypal_payments_credit_card_gateway_description',
+			function( string $description, WC_Payment_Gateway $gateway ) {
+				return $gateway->get_option( 'description', $description );
+			},
+			10,
+			2
+		);
+
+		add_filter( 'woocommerce_paypal_payments_axo_gateway_should_update_enabled', '__return_false' );
+		add_filter(
+			'woocommerce_paypal_payments_axo_gateway_title',
+			function( string $title, WC_Payment_Gateway $gateway ) {
+				return $gateway->get_option( 'title', $title );
+			},
+			10,
+			2
+		);
+		add_filter(
+			'woocommerce_paypal_payments_axo_gateway_description',
+			function( string $description, WC_Payment_Gateway $gateway ) {
+				return $gateway->get_option( 'description', $description );
+			},
+			10,
+			2
 		);
 
 		return true;
