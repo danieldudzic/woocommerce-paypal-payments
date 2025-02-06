@@ -107,7 +107,7 @@ return array(
 		return new CommonRestEndpoint( $container->get( 'settings.data.general' ) );
 	},
 	'settings.rest.payment'                       => static function ( ContainerInterface $container ) : PaymentRestEndpoint {
-		return new PaymentRestEndpoint( $container->get( 'settings.data.payment' ), $container->get( 'woocommerce.logger.woocommerce' ) );
+		return new PaymentRestEndpoint( $container->get( 'settings.data.payment' ) );
 	},
 	'settings.rest.styling'                       => static function ( ContainerInterface $container ) : StylingRestEndpoint {
 		return new StylingRestEndpoint(
