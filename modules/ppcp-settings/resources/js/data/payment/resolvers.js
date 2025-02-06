@@ -24,7 +24,6 @@ export function persistentData() {
 			await dispatch.hydrate( result );
 			await dispatch.setIsReady( true );
 		} catch ( e ) {
-			// TODO: Add the module name to the error message.
 			await registry
 				.dispatch( 'core/notices' )
 				.createErrorNotice(

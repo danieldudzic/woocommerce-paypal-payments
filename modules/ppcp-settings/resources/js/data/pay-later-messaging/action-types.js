@@ -12,7 +12,4 @@ export default {
 	SET_PERSISTENT: 'ppcp/paylater/SET_PERSISTENT',
 	RESET: 'ppcp/paylater/RESET',
 	HYDRATE: 'ppcp/paylater/HYDRATE',
-
-	// Controls - always start with "DO_".
-	DO_PERSIST_DATA: 'ppcp/paylater/DO_PERSIST_DATA',
 };
