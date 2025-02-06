@@ -111,8 +111,8 @@ class SettingsModel extends AbstractDataModel {
 	 *
 	 * @return string The brand name.
 	 */
-	public function get_brand_name() : string {
-		return $this->data['brand_name'];
+	public function get_brand_name(): string {
+		return ! empty( $this->data['brand_name'] ) ? $this->data['brand_name'] : get_bloginfo( 'name' );
 	}
 
 	/**

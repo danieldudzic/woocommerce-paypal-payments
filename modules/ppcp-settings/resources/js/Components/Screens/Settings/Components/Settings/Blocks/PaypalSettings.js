@@ -1,5 +1,5 @@
 import { __ } from '@wordpress/i18n';
-
+import { useSelect } from '@wordpress/data';
 import {
 	ControlRadioGroup,
 	ControlToggleButton,
@@ -25,7 +25,8 @@ const PaypalSettings = () => {
 		buttonLanguage,
 		setButtonLanguage,
 	} = SettingsHooks.useSettings();
-
+	const siteData = useSelect( ( select ) => select( 'core' ).getSite(), [] );
+	const siteTitle = siteData?.title;
 	return (
 		<Accordion
 			className="ppcp--paypal-settings"
@@ -77,10 +78,10 @@ const PaypalSettings = () => {
 				<ControlTextInput
 					value={ brandName }
 					onChange={ setBrandName }
-					placeholder={ __(
-						'Brand name',
-						'woocommerce-paypal-payments'
-					) }
+					placeholder={
+						siteTitle ||
+						__( 'Brand name', 'woocommerce-paypal-payments' )
+					}
 				/>
 			</SettingsBlock>
 
