@@ -113,7 +113,7 @@ class StylingSettingsMapHelper {
 	 * @param string $style    The style name.
 	 * @return string The old styling setting key name.
 	 */
-	public function get_old_styling_setting_key( string $location, string $style ): string {
+	protected function get_old_styling_setting_key( string $location, string $style ): string {
 		$location_setting_name_part = $location === 'checkout' ? '' : "_{$location}";
 		return "button{$location_setting_name_part}_{$style}";
 	}
