@@ -394,6 +394,23 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 			2
 		);
 
+		add_filter(
+			'woocommerce_paypal_payments_credit_card_gateway_title',
+			function( string $title, WC_Payment_Gateway $gateway ) {
+				return $gateway->get_option( 'title', $title );
+			},
+			10,
+			2
+		);
+		add_filter(
+			'woocommerce_paypal_payments_credit_card_gateway_description',
+			function( string $description, WC_Payment_Gateway $gateway ) {
+				return $gateway->get_option( 'description', $description );
+			},
+			10,
+			2
+		);
+
 		return true;
 	}
 

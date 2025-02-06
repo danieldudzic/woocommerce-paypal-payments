@@ -278,8 +278,9 @@ class CreditCardGateway extends \WC_Payment_Gateway_CC {
 			'Accept debit and credit cards, and local payment methods with PayPal’s latest solution.',
 			'woocommerce-paypal-payments'
 		);
-		$this->title              = $this->dcc_configuration->gateway_title();
-		$this->description        = $this->dcc_configuration->gateway_description();
+
+		$this->title              = apply_filters( 'woocommerce_paypal_payments_credit_card_gateway_title', $this->dcc_configuration->gateway_title(), $this );
+		$this->description        = apply_filters( 'woocommerce_paypal_payments_credit_card_gateway_description', $this->dcc_configuration->gateway_description(), $this );
 		$this->card_icons         = $card_icons;
 
 		$this->init_form_fields();
