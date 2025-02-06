@@ -173,6 +173,7 @@ export function disconnectMerchant() {
 export function refreshMerchantData() {
 	return async ( { dispatch } ) => {
 		try {
+			await dispatch.resetMerchant();
 			const result = await apiFetch( {
 				path: REST_HYDRATE_MERCHANT_PATH,
 			} );

@@ -110,6 +110,13 @@ export const setManualConnectionMode = ( useManualConnection ) =>
 export const setWebhooks = ( webhooks ) =>
 	setPersistent( 'webhooks', webhooks );
 
+/**
+ * Reset merchant details in the store.
+ *
+ * @return {Action} The action.
+ */
+export const resetMerchant = () => ( { type: ACTION_TYPES.RESET_MERCHANT } );
+
 // Activity control - see useBusyState() hook.
 
 /**

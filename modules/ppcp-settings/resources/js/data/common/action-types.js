@@ -12,6 +12,7 @@ export default {
 	SET_PERSISTENT: 'ppcp/common/SET_PERSISTENT',
 	RESET: 'ppcp/common/RESET',
 	HYDRATE: 'ppcp/common/HYDRATE',
+	RESET_MERCHANT: 'ppcp/common/RESET_MERCHANT',
 
 	// Activity management (advanced solution that replaces the isBusy state).
 	START_ACTIVITY: 'ppcp/common/START_ACTIVITY',
