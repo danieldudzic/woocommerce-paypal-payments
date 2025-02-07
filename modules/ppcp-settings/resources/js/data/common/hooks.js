@@ -8,7 +8,7 @@
  */
 
 import { useDispatch, useSelect } from '@wordpress/data';
-import { useCallback } from '@wordpress/element';
+import { useCallback, useEffect, useState } from '@wordpress/element';
 
 import { createHooksForStore } from '../utils';
 import { STORE_NAME } from './constants';
@@ -194,6 +194,8 @@ export const useBusyState = () => {
 	const withActivity = useCallback(
 		async ( id, description, asyncFn ) => {
 			startActivity( id, description );
+
+			// Intentionally does not catch errors but propagates them to the calling module.
 			try {
 				return await asyncFn();
 			} finally {
@@ -206,6 +208,54 @@ export const useBusyState = () => {
 	return {
 		withActivity, // HOC
 		isBusy, // Boolean.
-		activities, // Object.
+	};
+};
+
+export const useActivityObserver = () => {
+	const activities = useSelect(
+		( select ) => select( STORE_NAME ).getActivityList(),
+		[]
+	);
+
+	const [ prevActivities, setPrevActivities ] = useState( activities );
+
+	useEffect( () => {
+		setPrevActivities( activities );
+	}, [ activities ] );
+
+	const onStarted = useCallback(
+		( callback ) => {
+			const newActivities = Object.keys( activities ).filter(
+				( id ) => ! prevActivities[ id ]
+			);
+			if ( ! newActivities.length ) {
+				return;
+			}
+			newActivities.forEach( ( id ) =>
+				callback( id, Object.keys( activities ) )
+			);
+		},
+		[ activities, prevActivities ]
+	);
+
+	const onFinished = useCallback(
+		( callback ) => {
+			const finishedActivities = Object.keys( prevActivities ).filter(
+				( id ) => ! activities[ id ]
+			);
+			if ( ! finishedActivities.length ) {
+				return;
+			}
+			finishedActivities.forEach( ( id ) =>
+				callback( id, Object.keys( activities ) )
+			);
+		},
+		[ activities, prevActivities ]
+	);
+
+	return {
+		activities,
+		onStarted,
+		onFinished,
 	};
 };

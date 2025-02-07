@@ -63,10 +63,10 @@ export const setPersistent = ( prop, value ) => ( {
 /**
  * Transient. Changes the "ready-state" of the module.
  *
- * @param {boolean} state Whether the store is ready to be used.
+ * @param {boolean} isReady Whether the store is ready to be used.
  * @return {Action} The action.
  */
-export const setIsReady = ( state ) => setTransient( 'isReady', state );
+export const setIsReady = ( isReady ) => setTransient( 'isReady', isReady );
 
 /**
  * Thunk action creator. Triggers the persistence of store data to the server.
@@ -75,16 +75,10 @@ export const setIsReady = ( state ) => setTransient( 'isReady', state );
  */
 export function persist() {
 	return async ( { select } ) => {
-		const data = select.persistentData();
-
-		try {
-			await apiFetch( {
-				path: REST_PERSIST_PATH,
-				method: 'POST',
-				data,
-			} );
-		} catch ( e ) {
-			console.error( 'Error saving progress.', e );
-		}
+		await apiFetch( {
+			path: REST_PERSIST_PATH,
+			method: 'POST',
+			data: select.persistentData(),
+		} );
 	};
 }

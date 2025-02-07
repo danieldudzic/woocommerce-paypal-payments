@@ -48,11 +48,10 @@ export function fetchTodos() {
 
 export function persist() {
 	return async ( { select } ) => {
-		const data = await select.persistentData();
 		return await apiFetch( {
 			path: REST_PERSIST_PATH,
 			method: 'POST',
-			data,
+			data: select.persistentData(),
 		} );
 	};
 }
