@@ -45,6 +45,20 @@ const PaymentStepTitle = () => {
 	);
 };
 
+const OptionalMethodTitle = () => {
+	const { isCasualSeller } = OnboardingHooks.useBusiness();
+
+	// The BCDC flow does not show a title.
+	if ( isCasualSeller ) {
+		return '';
+	}
+
+	return __(
+		'Available with additional application',
+		'woocommerce-paypal-payments'
+	);
+};
+
 const OptionalMethodDescription = () => {
 	const { storeCountry, storeCurrency } = CommonHooks.useWooSettings();
 	const { isCasualSeller } = OnboardingHooks.useBusiness();
@@ -68,10 +82,7 @@ const OptionalMethodDescription = () => {
 const methodChoices = [
 	{
 		value: true,
-		title: __(
-			'Available with additional application',
-			'woocommerce-paypal-payments'
-		),
+		title: <OptionalMethodTitle />,
 		description: <OptionalMethodDescription />,
 	},
 	{
