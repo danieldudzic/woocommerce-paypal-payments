@@ -132,4 +132,21 @@ $margin_bottom: 48px;
 			}
 		}
 	}
+
+	.ppcp-r-navbar-notice {
+		background: var(--navbar-notice-background);
+		color: var(--navbar-notice-color);
+
+		position: absolute;
+		top: 48px;
+		right: 0;
+		white-space: nowrap;
+		padding: 6px 12px;
+		border-radius: 3px;
+
+		&.ppcp--success {
+			--navbar-notice-background: var(--color-success-background);
+			--navbar-notice-color: var(--color-success-text);
+		}
+	}
 }
