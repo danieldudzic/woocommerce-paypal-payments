@@ -11,6 +11,9 @@ import classNames from 'classnames';
 // How long the save confirmation stays visible, in milliseconds.
 const SAVE_CONFIRMATION_DURATION = 2500;
 
+// How long does the CSS transition last (match this with _navigation.scss values)
+const NOTIFICATION_ANIMATION_DURATION = 300;
+
 const SettingsNavigation = ( {
 	canSave = true,
 	tabs,
@@ -50,6 +53,7 @@ export default SettingsNavigation;
 const SaveStateMessage = () => {
 	const [ isSaving, setIsSaving ] = useState( false );
 	const [ isVisible, setIsVisible ] = useState( false );
+	const [ isAnimating, setIsAnimating ] = useState( false );
 	const { onStarted, onFinished } = CommonHooks.useActivityObserver();
 	const timerRef = useRef( null );
 
@@ -57,6 +61,7 @@ const SaveStateMessage = () => {
 		if ( started.startsWith( 'persist' ) ) {
 			setIsSaving( true );
 			setIsVisible( false );
+			setIsAnimating( false );
 
 			if ( timerRef.current ) {
 				clearTimeout( timerRef.current );
@@ -68,8 +73,17 @@ const SaveStateMessage = () => {
 		( done, remaining ) => {
 			if ( isSaving && remaining.length === 0 ) {
 				setIsSaving( false );
-			setIsVisible( true );
-		}
+				setIsVisible( true );
+				setTimeout( () => setIsAnimating( true ), 50 );
+
+				timerRef.current = setTimeout( () => {
+					setIsAnimating( false );
+					setTimeout(
+						() => setIsVisible( false ),
+						NOTIFICATION_ANIMATION_DURATION
+					);
+				}, SAVE_CONFIRMATION_DURATION );
+			}
 		},
 		[ isSaving ]
 	);
@@ -84,6 +98,7 @@ const SaveStateMessage = () => {
 	}
 
 	const className = classNames( 'ppcp-r-navbar-notice', 'ppcp--success', {
+		'ppcp--animating': isAnimating,
 	} );
 
 	return (
