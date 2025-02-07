@@ -110,6 +110,7 @@ class StylingSettingsMapHelper {
 		return array(
 			'product'                => 'product',
 			'cart'                   => 'cart',
+			'cart-block'             => 'cart',
 			'checkout'               => 'classic_checkout',
 			'mini-cart'              => 'mini_cart',
 			'checkout-block-express' => 'express_checkout',
@@ -178,6 +179,9 @@ class StylingSettingsMapHelper {
 			}
 
 			$enabled_locations[] = $locations[ $model->location ] ?? '';
+			if ( $model->location === 'cart' ) {
+				$enabled_locations[] = 'cart';
+			}
 		}
 
 		return $enabled_locations;
@@ -198,6 +202,9 @@ class StylingSettingsMapHelper {
 			}
 
 			$enabled_locations[] = $locations[ $model->location ] ?? '';
+			if ( $model->location === 'cart' ) {
+				$enabled_locations[] = 'cart';
+			}
 		}
 
 		return $enabled_locations;
@@ -234,7 +241,7 @@ class StylingSettingsMapHelper {
 	 * @return int The enabled (1) or disabled (0) state.
 	 * @throws RuntimeException If an invalid button name is provided.
 	 */
-	protected function mapped_google_pay_or_apple_pay_enabled_value( array $styling_models, string $button_name ): int {
+	protected function mapped_google_pay_or_apple_pay_enabled_value( array $styling_models, string $button_name ): ?int {
 		if ( $button_name !== 'googlepay' && $button_name !== 'applepay' ) {
 			throw new RuntimeException( 'Wrong button name is provided. Either "googlepay" or "applepay" can be used' );
 		}
