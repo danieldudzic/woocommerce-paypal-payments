@@ -15,6 +15,7 @@ namespace WooCommerce\PayPalCommerce\Settings\Endpoint;
 use WP_REST_Server;
 use WP_REST_Response;
 use WP_REST_Request;
+use WooCommerce\PayPalCommerce\Settings\Data\TodosModel;
 
 /**
  * Class ResetDismissedTodosEndpoint
@@ -28,6 +29,22 @@ class ResetDismissedTodosEndpoint extends RestEndpoint {
 	 * @var string
 	 */
 	protected $rest_base = 'reset-dismissed-todos';
+
+	/**
+	 * The todos model instance.
+	 *
+	 * @var TodosModel
+	 */
+	protected TodosModel $todos;
+
+	/**
+	 * Constructor.
+	 *
+	 * @param TodosModel $todos The todos model instance.
+	 */
+	public function __construct( TodosModel $todos ) {
+		$this->todos = $todos;
+	}
 
 	/**
 	 * Registers the REST API route for resetting todos.
@@ -54,23 +71,18 @@ class ResetDismissedTodosEndpoint extends RestEndpoint {
 	 * @return WP_REST_Response The response containing reset status.
 	 */
 	public function reset_dismissed_todos( WP_REST_Request $request ): WP_REST_Response {
-		$settings = get_option( 'ppcp-settings', array() );
+		try {
+			$this->todos->reset_dismissed_todos();
 
-		$settings['dismissedTodos'] = array();
-
-		// Clear the completedOnClickTodos for testing purposes.
-		// $settings['completedOnClickTodos'] = array();.
-
-		$update_result = update_option( 'ppcp-settings', $settings );
-
-		if ( ! $update_result ) {
-			return $this->return_error( __( 'Failed to reset dismissed todos.', 'woocommerce-paypal-payments' ) );
+			return $this->return_success(
+				array(
+					'message' => __( 'Dismissed todos reset successfully.', 'woocommerce-paypal-payments' ),
+				)
+			);
+		} catch ( \Exception $e ) {
+			return $this->return_error(
+				__( 'Failed to reset dismissed todos.', 'woocommerce-paypal-payments' )
+			);
 		}
-
-		return $this->return_success(
-			array(
-				'message' => __( 'Dismissed todos reset successfully.', 'woocommerce-paypal-payments' ),
-			)
-		);
 	}
 }
