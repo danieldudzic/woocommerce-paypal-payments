@@ -64,9 +64,8 @@ class TodosDefinition {
 				'action'      => array(
 					'type'      => 'tab',
 					'tab'       => 'payment_methods',
-					'section'   => 'ppcp-fastlane',
-					'modal'     => 'ppcp-fastlane-gateway',
-					'highlight' => 'ppcp-fastlane-gateway',
+					'section'   => 'ppcp-axo-gateway',
+					'highlight' => 'ppcp-axo-gateway',
 				),
 			),
 			'enable_credit_debit_cards'     => array(
