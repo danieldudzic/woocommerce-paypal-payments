@@ -19,12 +19,10 @@ import {
  */
 export function persist() {
 	return async ( { select } ) => {
-		const data = select.persistentData();
-
 		await apiFetch( {
 			path: REST_PERSIST_PATH,
 			method: 'POST',
-			data,
+			data: select.persistentData(),
 		} );
 	};
 }

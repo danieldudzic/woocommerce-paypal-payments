@@ -87,16 +87,10 @@ export const changePaymentSettings = ( id, props ) => ( {
  */
 export function persist() {
 	return async ( { select } ) => {
-		const data = select.persistentData();
-
-		try {
-			await apiFetch( {
-				path: REST_PERSIST_PATH,
-				method: 'POST',
-				data,
-			} );
-		} catch ( e ) {
-			console.error( 'Error saving progress.', e );
-		}
+		await apiFetch( {
+			path: REST_PERSIST_PATH,
+			method: 'POST',
+			data: select.persistentData(),
+		} );
 	};
 }
