@@ -38,7 +38,7 @@ const SettingsApp = () => {
 
 	const Content = useMemo( () => {
 		if ( ! onboardingIsReady || ! merchantIsReady ) {
-			return <SpinnerOverlay />;
+			return <SpinnerOverlay asModal={ true } />;
 		}
 
 		if ( isSendOnlyCountry ) {
