@@ -7,6 +7,9 @@ import { useSaveSettings } from '../../../../hooks/useSaveSettings';
 import { CommonHooks } from '../../../../data';
 import TabBar from '../../../ReusableComponents/TabBar';
 
+// How long the save confirmation stays visible, in milliseconds.
+const SAVE_CONFIRMATION_DURATION = 2500;
+
 const SettingsNavigation = ( {
 	canSave = true,
 	tabs,
@@ -92,7 +95,7 @@ const SaveStateMessage = () => {
 		// Restart the hide-timer, when the message is visible.
 		refHideTimer.current = setTimeout( () => {
 			setShowMessage( false );
-		}, 2500 );
+		}, SAVE_CONFIRMATION_DURATION );
 	}, [ showMessage, isSaving ] );
 
 	if ( ! showMessage ) {
