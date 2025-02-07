@@ -194,6 +194,8 @@ export const useBusyState = () => {
 	const withActivity = useCallback(
 		async ( id, description, asyncFn ) => {
 			startActivity( id, description );
+
+			// Intentionally does not catch errors but propagates them to the calling module.
 			try {
 				return await asyncFn();
 			} finally {
