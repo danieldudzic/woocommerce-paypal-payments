@@ -10,11 +10,11 @@ export const countryPriceInfo = {
 		checkout: 3.49,
 		plater: 4.99,
 		ccf: {
-			percentage: 2.59,
+			percentage: 2.89,
 			fixedFee: 0.29,
 		},
 		dw: {
-			percentage: 2.59,
+			percentage: 2.89,
 			fixedFee: 0.29,
 		},
 		apm: {
@@ -22,7 +22,7 @@ export const countryPriceInfo = {
 			fixedFee: 0.29,
 		},
 		fast: {
-			percentage: 2.59,
+			percentage: 2.89,
 			fixedFee: 0.29,
 		},
 		standardCardFields: 2.99,
