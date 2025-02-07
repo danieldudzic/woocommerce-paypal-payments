@@ -104,7 +104,9 @@ const SaveStateMessage = () => {
 
 	return (
 		<span className="ppcp-r-navbar-notice ppcp--success">
+			<span className="ppcp--inner-text">
 			{ __( 'Completed', 'woocommerce-paypal-payments' ) }
+		</span>
 		</span>
 	);
 };
