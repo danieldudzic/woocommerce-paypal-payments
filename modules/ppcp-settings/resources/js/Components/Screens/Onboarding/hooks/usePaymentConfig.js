@@ -17,15 +17,22 @@ import {
 
 // Default configuration, used for all countries, unless they override individual attributes below.
 const defaultConfig = {
+	// Included: Items in the left column.
 	includedMethods: [
 		{ name: 'PayWithPayPal', Component: PayWithPayPal },
 		{ name: 'PayLater', Component: PayLater },
 	],
-	optionalMethods: [
-		{ name: 'CreditDebitCards', Component: CreditDebitCards },
+
+	// Basic: Items on right side for BCDC-flow.
+	basicMethods: [ { name: 'CreditDebitCards', Component: CreditDebitCards } ],
+
+	// Extended: Items on right side for ACDC-flow.
+	extendedMethods: [
 		{ name: 'DigitalWallets', Component: DigitalWallets },
 		{ name: 'APMs', Component: AlternativePaymentMethods },
 	],
+
+	// Title, Description: Header above the right column items.
 	optionalTitle: __(
 		'Optional payment methods',
 		'woocommerce-paypal-payments'
@@ -44,7 +51,10 @@ const countrySpecificConfigs = {
 			{ name: 'Venmo', Component: Venmo },
 			{ name: 'Crypto', Component: Crypto },
 		],
-		optionalMethods: [
+		basicMethods: [
+			{ name: 'CreditDebitCards', Component: CreditDebitCards },
+		],
+		extendedMethods: [
 			{ name: 'CardFields', Component: CardFields },
 			{ name: 'DigitalWallets', Component: DigitalWallets },
 			{ name: 'APMs', Component: AlternativePaymentMethods },
@@ -81,18 +91,25 @@ export const usePaymentConfig = (
 		const config = { ...defaultConfig, ...countryConfig };
 		const learnMoreConfig = learnMoreLinks[ country ] || {};
 
+		// Filter the "left side" list. PayLater is conditional.
 		const includedMethods = filterMethods( config.includedMethods, [
 			( method ) => isPayLater || method.name !== 'PayLater',
 		] );
 
-		const optionalMethods = filterMethods( config.optionalMethods, [
+		// Determine the "right side" items: Either BCDC or ACDC items.
+		const optionalMethods = useAcdc
+			? config.extendedMethods
+			: config.basicMethods;
+
+		// Remove conditional items from the right side list.
+		const availableOptionalMethods = filterMethods( optionalMethods, [
 			( method ) => method.name !== 'Fastlane' || isFastlane,
 		] );
 
 		return {
 			...config,
 			includedMethods,
-			optionalMethods,
+			optionalMethods: availableOptionalMethods,
 			learnMoreConfig,
 		};
 	}, [ country, isPayLater, useAcdc, isFastlane ] );
