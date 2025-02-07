@@ -106,7 +106,8 @@ const commonReducer = createReducer( defaultTransient, defaultPersistent, {
 		return changeTransient( state, { activities: newActivities } );
 	},
 
-	[ ACTION_TYPES.DO_REFRESH_MERCHANT ]: ( state ) => ( {
+	// Instantly reset the merchant data and features before refreshing the details.
+	[ ACTION_TYPES.RESET_MERCHANT ]: ( state ) => ( {
 		...state,
 		merchant: Object.freeze( { ...defaultTransient.merchant } ),
 		features: Object.freeze( { ...defaultTransient.features } ),
