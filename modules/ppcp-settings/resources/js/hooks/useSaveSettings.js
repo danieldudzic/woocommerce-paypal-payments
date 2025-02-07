@@ -57,7 +57,12 @@ export const useSaveSettings = () => {
 	);
 
 	const persistAll = useCallback( () => {
-		// Executes onSave on TabPayLaterMessaging component.
+		/**
+		 * Executes onSave on TabPayLaterMessaging component.
+		 *
+		 * Todo: find a better way for this, because it's highly unreliable
+		 *       (it only works when the user is still on the "Pay Later Messaging" tab)
+		 */
 		document.getElementById( 'configurator-publishButton' )?.click();
 
 		persistActions.forEach( ( { key, message, action } ) => {
