@@ -162,10 +162,10 @@ class TodosEligibilityService {
 	 */
 	public function get_eligibility_checks(): array {
 		return array(
-			'enable_fastlane'               => fn() => ! $this->is_fastlane_eligible,
+			'enable_fastlane'               => fn() => $this->is_fastlane_eligible,
 			'enable_credit_debit_cards'     => fn() => $this->is_card_payment_eligible,
-			'enable_pay_later_messaging'    => fn() => ! $this->is_pay_later_messaging_eligible,
-			'add_pay_later_messaging'       => fn() => $this->is_pay_later_messaging_eligible && ! $this->is_pay_later_messaging_ui_eligible,
+			'enable_pay_later_messaging'    => fn() => $this->is_pay_later_messaging_eligible,
+			'add_pay_later_messaging'       => fn() => $this->is_pay_later_messaging_eligible,
 			'configure_paypal_subscription' => fn() => $this->is_subscription_eligible,
 			'add_paypal_buttons'            => fn() => $this->is_paypal_buttons_eligible,
 			'register_domain_apple_pay'     => fn() => $this->is_apple_pay_domain_eligible,
