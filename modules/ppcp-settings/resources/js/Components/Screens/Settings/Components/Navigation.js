@@ -6,6 +6,7 @@ import TopNavigation from '../../../ReusableComponents/TopNavigation';
 import { useSaveSettings } from '../../../../hooks/useSaveSettings';
 import { CommonHooks } from '../../../../data';
 import TabBar from '../../../ReusableComponents/TabBar';
+import classNames from 'classnames';
 
 // How long the save confirmation stays visible, in milliseconds.
 const SAVE_CONFIRMATION_DURATION = 2500;
@@ -48,26 +49,27 @@ export default SettingsNavigation;
 
 const SaveStateMessage = () => {
 	const [ isSaving, setIsSaving ] = useState( false );
-	const [ showMessage, setShowMessage ] = useState( false );
+	const [ isVisible, setIsVisible ] = useState( false );
 	const { onStarted, onFinished } = CommonHooks.useActivityObserver();
-	const hideTimerRef = useRef( null );
+	const timerRef = useRef( null );
 
-	const handleActivityStart = useCallback(
-		( started ) => {
-			if ( ! isSaving && started.startsWith( 'persist' ) ) {
-				setIsSaving( true );
-				setShowMessage( false );
+	const handleActivityStart = useCallback( ( started ) => {
+		if ( started.startsWith( 'persist' ) ) {
+			setIsSaving( true );
+			setIsVisible( false );
+
+			if ( timerRef.current ) {
+				clearTimeout( timerRef.current );
 			}
-		},
-		[ isSaving ]
-	);
+		}
+	}, [] );
 
 	const handleActivityDone = useCallback(
 		( done, remaining ) => {
-			if ( remaining.length === 0 && isSaving ) {
+			if ( isSaving && remaining.length === 0 ) {
 				setIsSaving( false );
-				setShowMessage( true );
-			}
+			setIsVisible( true );
+		}
 		},
 		[ isSaving ]
 	);
@@ -75,34 +77,17 @@ const SaveStateMessage = () => {
 	useEffect( () => {
 		onStarted( handleActivityStart );
 		onFinished( handleActivityDone );
-
-		return () => {
-			if ( hideTimerRef.current ) {
-				clearTimeout( hideTimerRef.current );
-			}
-		};
 	}, [ onStarted, onFinished, handleActivityStart, handleActivityDone ] );
 
-	useEffect( () => {
-		if ( showMessage && ! isSaving ) {
-			hideTimerRef.current = setTimeout( () => {
-				setShowMessage( false );
-			}, SAVE_CONFIRMATION_DURATION );
-		}
-
-		return () => {
-			if ( hideTimerRef.current ) {
-				clearTimeout( hideTimerRef.current );
-			}
-		};
-	}, [ showMessage, isSaving ] );
-
-	if ( ! showMessage ) {
+	if ( ! isVisible ) {
 		return null;
 	}
 
+	const className = classNames( 'ppcp-r-navbar-notice', 'ppcp--success', {
+	} );
+
 	return (
-		<span className="ppcp-r-navbar-notice ppcp--success">
+		<span className={ className }>
 			<span className="ppcp--inner-text">
 				{ __( 'Completed', 'woocommerce-paypal-payments' ) }
 			</span>
