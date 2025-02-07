@@ -78,6 +78,15 @@ export const setActiveModal = ( activeModal ) =>
 	setTransient( 'activeModal', activeModal );
 
 /**
+ * Transient. Sets the active settings highlight.
+ *
+ * @param {string} activeHighlight
+ * @return {Action} The action.
+ */
+export const setActiveHighlight = ( activeHighlight ) =>
+	setTransient( 'activeHighlight', activeHighlight );
+
+/**
  * Transient (Activity): Marks the start of an async activity
  * Think of it as "setIsBusy(true)"
  *

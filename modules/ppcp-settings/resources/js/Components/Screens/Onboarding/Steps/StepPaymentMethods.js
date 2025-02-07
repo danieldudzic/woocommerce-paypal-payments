@@ -2,9 +2,9 @@ import { __ } from '@wordpress/i18n';
 
 import { CommonHooks, OnboardingHooks } from '../../../../data';
 import { OptionSelector } from '../../../ReusableComponents/Fields';
-import PricingDescription from '../../../ReusableComponents/PricingDescription';
+import PricingDescription from '../Components/PricingDescription';
 import OnboardingHeader from '../Components/OnboardingHeader';
-import OptionalPaymentMethods from '../Components/OptionalPaymentMethods';
+import PaymentFlow from '../Components/PaymentFlow';
 
 const StepPaymentMethods = ( {} ) => {
 	const { optionalMethods, setOptionalMethods } =
@@ -49,7 +49,8 @@ const OptionalMethodDescription = () => {
 	const { storeCountry, storeCurrency } = CommonHooks.useWooSettings();
 
 	return (
-		<OptionalPaymentMethods
+		<PaymentFlow
+			onlyOptional={ true }
 			useAcdc={ true }
 			isFastlane={ true }
 			isPayLater={ true }

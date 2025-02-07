@@ -28,6 +28,8 @@ const useHooks = () => {
 	// Transient accessors.
 	const [ isReady ] = useTransient( 'isReady' );
 	const [ activeModal, setActiveModal ] = useTransient( 'activeModal' );
+	const [ activeHighlight, setActiveHighlight ] =
+		useTransient( 'activeHighlight' );
 
 	// Persistent accessors.
 	const [ isSandboxMode, setSandboxMode ] = usePersistent( 'useSandbox' );
@@ -62,6 +64,8 @@ const useHooks = () => {
 		isReady,
 		activeModal,
 		setActiveModal,
+		activeHighlight,
+		setActiveHighlight,
 		isSandboxMode,
 		setSandboxMode: ( state ) => {
 			return savePersistent( setSandboxMode, state );
@@ -109,6 +113,11 @@ export const useAuthentication = () => {
 		authenticateWithCredentials,
 		authenticateWithOAuth,
 	};
+};
+
+export const useDisconnectMerchant = () => {
+	const { disconnectMerchant } = useDispatch( STORE_NAME );
+	return { disconnectMerchant };
 };
 
 export const useWooSettings = () => {
@@ -160,6 +169,11 @@ export const useMerchantInfo = () => {
 export const useActiveModal = () => {
 	const { activeModal, setActiveModal } = useHooks();
 	return { activeModal, setActiveModal };
+};
+
+export const useActiveHighlight = () => {
+	const { activeHighlight, setActiveHighlight } = useHooks();
+	return { activeHighlight, setActiveHighlight };
 };
 
 // -- Not using the `useHooks()` data provider --

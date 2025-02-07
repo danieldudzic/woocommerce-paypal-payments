@@ -9,6 +9,7 @@ declare( strict_types = 1 );
 
 namespace WooCommerce\PayPalCommerce\Settings;
 
+use WC_Payment_Gateway;
 use WooCommerce\PayPalCommerce\ApiClient\Helper\DccApplies;
 use WooCommerce\PayPalCommerce\Applepay\Assets\AppleProductStatus;
 use WooCommerce\PayPalCommerce\Googlepay\Helper\ApmProductStatus;
@@ -237,6 +238,10 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 					'payment'                => $container->get( 'settings.rest.payment' ),
 					'settings'               => $container->get( 'settings.rest.settings' ),
 					'styling'                => $container->get( 'settings.rest.styling' ),
+					'todos'                  => $container->get( 'settings.rest.todos' ),
+					'reset_dismissed_todos'  => $container->get( 'settings.rest.reset_dismissed_todos' ),
+					'pay_later_messaging'    => $container->get( 'settings.rest.pay_later_messaging' ),
+					'complete_onclick'       => $container->get( 'settings.rest.complete_onclick' ),
 				);
 
 				foreach ( $endpoints as $endpoint ) {
@@ -298,7 +303,7 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 				assert( $dcc_applies instanceof DCCApplies );
 
 				// Unset BCDC if merchant is eligible for ACDC.
-				if ( $dcc_product_status->dcc_is_active() && ! $container->get( 'wcgateway.settings.allow_card_button_gateway' ) ) {
+				if ( $dcc_product_status->is_active() && ! $container->get( 'wcgateway.settings.allow_card_button_gateway' ) ) {
 					unset( $payment_methods[ CardButtonGateway::ID ] );
 				}
 
@@ -318,7 +323,7 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 				}
 
 				// Unset Fastlane if store location is not United States or merchant is not eligible for ACDC.
-				if ( $container->get( 'api.shop.country' ) !== 'US' || ! $dcc_product_status->dcc_is_active() ) {
+				if ( $container->get( 'api.shop.country' ) !== 'US' || ! $dcc_product_status->is_active() ) {
 					unset( $payment_methods['ppcp-axo-gateway'] );
 				}
 
@@ -341,6 +346,104 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 
 				return $payment_methods;
 			}
+		);
+
+		add_filter(
+			'woocommerce_payment_gateways',
+			/**
+			 * Param types removed to avoid third-party issues.
+			 *
+			 * @psalm-suppress MissingClosureParamType
+			 */
+			static function ( $methods ) use ( $container ): array {
+				if ( ! is_array( $methods ) ) {
+					return $methods;
+				}
+
+				$googlepay_gateway = $container->get( 'googlepay.wc-gateway' );
+				assert( $googlepay_gateway instanceof WC_Payment_Gateway );
+
+				$applepay_gateway = $container->get( 'applepay.wc-gateway' );
+				assert( $applepay_gateway instanceof WC_Payment_Gateway );
+
+				$axo_gateway = $container->get( 'axo.gateway' );
+				assert( $axo_gateway instanceof WC_Payment_Gateway );
+
+				$methods[] = $googlepay_gateway;
+				$methods[] = $applepay_gateway;
+				$methods[] = $axo_gateway;
+
+				return $methods;
+			}
+		);
+
+		add_filter(
+			'woocommerce_paypal_payments_gateway_title',
+			function( string $title, WC_Payment_Gateway $gateway ) {
+				return $gateway->get_option( 'title', $title );
+			},
+			10,
+			2
+		);
+		add_filter(
+			'woocommerce_paypal_payments_gateway_description',
+			function( string $description, WC_Payment_Gateway $gateway ) {
+				return $gateway->get_option( 'description', $description );
+			},
+			10,
+			2
+		);
+
+		add_filter(
+			'woocommerce_paypal_payments_credit_card_gateway_form_fields',
+			function( array $form_fields ) {
+				$form_fields['enabled'] = array(
+					'title'       => __( 'Enable/Disable', 'woocommerce-paypal-payments' ),
+					'type'        => 'checkbox',
+					'desc_tip'    => true,
+					'description' => __( 'Once enabled, the Credit Card option will show up in the checkout.', 'woocommerce-paypal-payments' ),
+					'label'       => __( 'Enable Advanced Card Processing', 'woocommerce-paypal-payments' ),
+					'default'     => 'no',
+				);
+
+				return $form_fields;
+			}
+		);
+		add_filter( 'woocommerce_paypal_payments_credit_card_gateway_should_update_enabled', '__return_false' );
+
+		add_filter(
+			'woocommerce_paypal_payments_credit_card_gateway_title',
+			function( string $title, WC_Payment_Gateway $gateway ) {
+				return $gateway->get_option( 'title', $title );
+			},
+			10,
+			2
+		);
+		add_filter(
+			'woocommerce_paypal_payments_credit_card_gateway_description',
+			function( string $description, WC_Payment_Gateway $gateway ) {
+				return $gateway->get_option( 'description', $description );
+			},
+			10,
+			2
+		);
+
+		add_filter( 'woocommerce_paypal_payments_axo_gateway_should_update_enabled', '__return_false' );
+		add_filter(
+			'woocommerce_paypal_payments_axo_gateway_title',
+			function( string $title, WC_Payment_Gateway $gateway ) {
+				return $gateway->get_option( 'title', $title );
+			},
+			10,
+			2
+		);
+		add_filter(
+			'woocommerce_paypal_payments_axo_gateway_description',
+			function( string $description, WC_Payment_Gateway $gateway ) {
+				return $gateway->get_option( 'description', $description );
+			},
+			10,
+			2
 		);
 
 		return true;

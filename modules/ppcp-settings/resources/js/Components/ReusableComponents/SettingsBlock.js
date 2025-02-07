@@ -2,6 +2,7 @@ import classNames from 'classnames';
 import { Description, Header, Title, TitleExtra, Content } from './Elements';
 
 const SettingsBlock = ( {
+	id,
 	className,
 	children,
 	title,
@@ -15,33 +16,37 @@ const SettingsBlock = ( {
 		'ppcp--horizontal': horizontalLayout,
 	} );
 
-	const BlockTitle = ( { blockTitle, blockSuffix, blockDescription } ) => {
-		if ( ! blockTitle && ! blockDescription ) {
-			return null;
-		}
-
-		return (
-			<Header>
-				<Title>
-					{ blockTitle }
-					<TitleExtra>{ blockSuffix }</TitleExtra>
-				</Title>
-				<Description>{ blockDescription }</Description>
-			</Header>
-		);
+	const props = {
+		className: blockClassName,
+		...( id && { id } ),
 	};
 
 	return (
-		<div className={ blockClassName }>
+		<div { ...props }>
 			<BlockTitle
 				blockTitle={ title }
 				blockSuffix={ titleSuffix }
 				blockDescription={ description }
 			/>
-
 			<Content asCard={ false }>{ children }</Content>
 		</div>
 	);
 };
 
 export default SettingsBlock;
+
+const BlockTitle = ( { blockTitle, blockSuffix, blockDescription } ) => {
+	if ( ! blockTitle && ! blockDescription ) {
+		return null;
+	}
+
+	return (
+		<Header>
+			<Title>
+				{ blockTitle }
+				<TitleExtra>{ blockSuffix }</TitleExtra>
+			</Title>
+			<Description>{ blockDescription }</Description>
+		</Header>
+	);
+};

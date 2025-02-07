@@ -18,7 +18,7 @@ use WooCommerce\PayPalCommerce\ApiClient\Endpoint\PaymentsEndpoint;
 use WooCommerce\PayPalCommerce\ApiClient\Endpoint\PaymentTokensEndpoint;
 use WooCommerce\PayPalCommerce\ApiClient\Exception\PayPalApiException;
 use WooCommerce\PayPalCommerce\ApiClient\Exception\RuntimeException;
-use WooCommerce\PayPalCommerce\Onboarding\Environment;
+use WooCommerce\PayPalCommerce\WcGateway\Helper\Environment;
 use WooCommerce\PayPalCommerce\Onboarding\State;
 use WooCommerce\PayPalCommerce\Session\SessionHandler;
 use WooCommerce\PayPalCommerce\Vaulting\PaymentTokenRepository;
@@ -278,9 +278,10 @@ class CreditCardGateway extends \WC_Payment_Gateway_CC {
 			'Accept debit and credit cards, and local payment methods with PayPal’s latest solution.',
 			'woocommerce-paypal-payments'
 		);
-		$this->title              = $this->dcc_configuration->gateway_title();
-		$this->description        = $this->dcc_configuration->gateway_description();
-		$this->card_icons         = $card_icons;
+
+		$this->title       = apply_filters( 'woocommerce_paypal_payments_credit_card_gateway_title', $this->dcc_configuration->gateway_title(), $this );
+		$this->description = apply_filters( 'woocommerce_paypal_payments_credit_card_gateway_description', $this->dcc_configuration->gateway_description(), $this );
+		$this->card_icons  = $card_icons;
 
 		$this->init_form_fields();
 		$this->init_settings();
@@ -298,10 +299,13 @@ class CreditCardGateway extends \WC_Payment_Gateway_CC {
 	 * Initialize the form fields.
 	 */
 	public function init_form_fields() {
-		$this->form_fields = array(
-			'ppcp' => array(
-				'type' => 'ppcp',
-			),
+		$this->form_fields = apply_filters(
+			'woocommerce_paypal_payments_credit_card_gateway_form_fields',
+			array(
+				'ppcp' => array(
+					'type' => 'ppcp',
+				),
+			)
 		);
 	}
 
@@ -593,6 +597,10 @@ class CreditCardGateway extends \WC_Payment_Gateway_CC {
 	public function init_settings() {
 		parent::init_settings();
 
+		if ( ! apply_filters( 'woocommerce_paypal_payments_credit_card_gateway_should_update_enabled', true ) ) {
+			return;
+		}
+
 		// looks like in some cases WC uses this field instead of get_option.
 		$this->enabled = $this->is_enabled() ? 'yes' : '';
 	}
@@ -605,6 +613,10 @@ class CreditCardGateway extends \WC_Payment_Gateway_CC {
 	 * @return mixed
 	 */
 	public function get_option( $key, $empty_value = null ) {
+		if ( ! apply_filters( 'woocommerce_paypal_payments_credit_card_gateway_should_update_enabled', true ) ) {
+			return parent::get_option( $key, $empty_value );
+		}
+
 		if ( 'enabled' === $key ) {
 			return $this->is_enabled();
 		}
@@ -621,6 +633,10 @@ class CreditCardGateway extends \WC_Payment_Gateway_CC {
 	 */
 	public function update_option( $key, $value = '' ) {
 		$ret = parent::update_option( $key, $value );
+
+		if ( ! apply_filters( 'woocommerce_paypal_payments_credit_card_gateway_should_update_enabled', true ) ) {
+			return $ret;
+		}
 
 		if ( 'enabled' === $key ) {
 

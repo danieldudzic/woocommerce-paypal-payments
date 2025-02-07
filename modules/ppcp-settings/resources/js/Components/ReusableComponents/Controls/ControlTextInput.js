@@ -10,6 +10,7 @@ const ControlTextInput = ( {
 } ) => (
 	<Action>
 		<TextControl
+			__nextHasNoMarginBottom
 			className="ppcp-r-vertical-text-control"
 			placeholder={ placeholder }
 			value={ value }
