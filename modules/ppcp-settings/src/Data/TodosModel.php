@@ -80,6 +80,14 @@ class TodosModel extends AbstractDataModel {
 	}
 
 	/**
+	 * Resets completed onclick todos.
+	 */
+	public function reset_completed_onclick_todos(): void {
+		$this->data['completedOnClickTodos'] = array();
+		$this->save();
+	}
+
+	/**
 	 * Gets current todos data including dismissed and completed states.
 	 *
 	 * @return array The todos data array.
