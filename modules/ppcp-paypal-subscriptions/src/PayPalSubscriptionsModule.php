@@ -67,7 +67,7 @@ class PayPalSubscriptionsModule implements ServiceModule, ExtendingModule, Execu
 		add_filter(
 			'woocommerce_available_payment_gateways',
 			function ( array $gateways ) use ( $c ) {
-				if ( ! WC()->cart || WC()->cart->is_empty() || is_account_page() || is_admin() ) {
+				if ( is_account_page() || is_admin() || wcs_is_manual_renewal_enabled() || ! WC()->cart || WC()->cart->is_empty() ) {
 					return $gateways;
 				}
 				$settings = $c->get( 'wcgateway.settings' );
@@ -121,7 +121,7 @@ class PayPalSubscriptionsModule implements ServiceModule, ExtendingModule, Execu
 		add_filter(
 			'woocommerce_subscription_payment_gateway_supports',
 			function ( bool $payment_gateway_supports, string $payment_gateway_feature, \WC_Subscription $wc_order ): bool {
-				if ( ! in_array( $payment_gateway_feature, array( 'gateway_scheduled_payments', 'subscription_date_changes' ), true ) ) {
+				if ( ! in_array( $payment_gateway_feature, array( 'gateway_scheduled_payments', 'subscription_date_changes', 'subscription_amount_changes' ), true ) ) {
 					return $payment_gateway_supports;
 				}
 
@@ -148,7 +148,8 @@ class PayPalSubscriptionsModule implements ServiceModule, ExtendingModule, Execu
 		add_filter(
 			'woocommerce_can_subscription_be_updated_to_active',
 			function ( bool $can_be_updated, \WC_Subscription $subscription ) use ( $c ) {
-				if ( $subscription->payment_method_supports( 'gateway_scheduled_payments' ) && $subscription->get_status() === 'pending-cancel' && $subscription->get_payment_method() === PayPalGateway::ID ) {
+				$subscription_id = $subscription->get_meta( 'ppcp_subscription' ) ?? '';
+				if ( $subscription_id && $subscription->get_status() === 'pending-cancel' ) {
 					return true;
 				}
 				return $can_be_updated;
@@ -172,7 +173,7 @@ class PayPalSubscriptionsModule implements ServiceModule, ExtendingModule, Execu
 				$order = $c->get( 'session.handler' )->order();
 				$gateway->add_paypal_meta( $wc_order, $order, $c->get( 'onboarding.environment' ) );
 
-				$subscriptions = function_exists( 'wcs_get_subscriptions_for_order' ) ? wcs_get_subscriptions_for_order( $wc_order ) : array();
+				$subscriptions = wcs_get_subscriptions_for_order( $wc_order );
 				foreach ( $subscriptions as $subscription ) {
 					$subscription->update_meta_data( 'ppcp_subscription', $paypal_subscription_id );
 					$subscription->save();
@@ -249,14 +250,9 @@ class PayPalSubscriptionsModule implements ServiceModule, ExtendingModule, Execu
 					return false;
 				}
 
-				$settings = $c->get( 'wcgateway.settings' );
-				assert( $settings instanceof Settings );
-
-				$subscriptions_mode     = $settings->has( 'subscriptions_mode' ) ? $settings->get( 'subscriptions_mode' ) : '';
-				$is_paypal_subscription = static function ( $product ) use ( $subscriptions_mode ): bool {
+				$is_paypal_subscription = static function ( $product ): bool {
 					return $product &&
 						in_array( $product->get_type(), array( 'subscription', 'variable-subscription' ), true ) &&
-						'subscriptions_api' === $subscriptions_mode &&
 						$product->get_meta( '_ppcp_enable_subscription_product', true ) === 'yes';
 				};
 
