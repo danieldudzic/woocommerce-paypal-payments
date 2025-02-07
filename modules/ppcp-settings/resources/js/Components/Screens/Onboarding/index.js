@@ -6,9 +6,8 @@ import OnboardingNavigation from './Components/Navigation';
 
 const OnboardingScreen = () => {
 	const { step, setStep, flags } = OnboardingHooks.useSteps();
-	const { isCasualSeller } = OnboardingHooks.useBusiness();
 
-	const Steps = getSteps( flags, isCasualSeller );
+	const Steps = getSteps( flags );
 	const currentStep = getCurrentStep( step, Steps );
 
 	const handleNext = () => setStep( currentStep.nextStep );
