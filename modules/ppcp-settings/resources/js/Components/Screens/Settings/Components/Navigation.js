@@ -50,52 +50,51 @@ const SaveStateMessage = () => {
 	const [ isSaving, setIsSaving ] = useState( false );
 	const [ showMessage, setShowMessage ] = useState( false );
 	const { onStarted, onFinished } = CommonHooks.useActivityObserver();
-	const refHideTimer = useRef( null );
+	const hideTimerRef = useRef( null );
 
 	const handleActivityStart = useCallback(
 		( started ) => {
-			if ( isSaving || ! started.match( /^persist/ ) ) {
-			return;
-		}
-		setIsSaving( true );
-			setShowMessage( false );
+			if ( ! isSaving && started.startsWith( 'persist' ) ) {
+				setIsSaving( true );
+				setShowMessage( false );
+			}
 		},
 		[ isSaving ]
 	);
 
 	const handleActivityDone = useCallback(
 		( done, remaining ) => {
-			if ( remaining.length || ! isSaving ) {
-				return;
+			if ( remaining.length === 0 && isSaving ) {
+				setIsSaving( false );
+				setShowMessage( true );
 			}
-			setIsSaving( false );
-			setShowMessage( true );
 		},
 		[ isSaving ]
 	);
 
 	useEffect( () => {
 		onStarted( handleActivityStart );
-	}, [ onStarted, handleActivityStart ] );
-
-	useEffect( () => {
 		onFinished( handleActivityDone );
-	}, [ onFinished, handleActivityDone ] );
+
+		return () => {
+			if ( hideTimerRef.current ) {
+				clearTimeout( hideTimerRef.current );
+			}
+		};
+	}, [ onStarted, onFinished, handleActivityStart, handleActivityDone ] );
 
 	useEffect( () => {
-		// Clear the timer, every time the "showMessage" flag changes.
-		if ( refHideTimer.current ) {
-			clearTimeout( refHideTimer.current );
-			refHideTimer.current = null;
-		}
-		if ( ! showMessage || isSaving ) {
-			return;
+		if ( showMessage && ! isSaving ) {
+			hideTimerRef.current = setTimeout( () => {
+				setShowMessage( false );
+			}, SAVE_CONFIRMATION_DURATION );
 		}
 
-		// Restart the hide-timer, when the message is visible.
-		refHideTimer.current = setTimeout( () => {
-			setShowMessage( false );
-		}, SAVE_CONFIRMATION_DURATION );
+		return () => {
+			if ( hideTimerRef.current ) {
+				clearTimeout( hideTimerRef.current );
+			}
+		};
 	}, [ showMessage, isSaving ] );
 
 	if ( ! showMessage ) {
@@ -105,8 +104,8 @@ const SaveStateMessage = () => {
 	return (
 		<span className="ppcp-r-navbar-notice ppcp--success">
 			<span className="ppcp--inner-text">
-			{ __( 'Completed', 'woocommerce-paypal-payments' ) }
-		</span>
+				{ __( 'Completed', 'woocommerce-paypal-payments' ) }
+			</span>
 		</span>
 	);
 };
