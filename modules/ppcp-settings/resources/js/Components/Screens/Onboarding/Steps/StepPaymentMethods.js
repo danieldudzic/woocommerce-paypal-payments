@@ -47,11 +47,16 @@ const PaymentStepTitle = () => {
 
 const OptionalMethodDescription = () => {
 	const { storeCountry, storeCurrency } = CommonHooks.useWooSettings();
+	const { isCasualSeller } = OnboardingHooks.useBusiness();
 
+	/**
+	 * Casual sellers = Personal accounts. Those accounts have no ACDC-capabilities, but should get
+	 *   the choice for BCDC-payments.
+	 */
 	return (
 		<PaymentFlow
 			onlyOptional={ true }
-			useAcdc={ true }
+			useAcdc={ ! isCasualSeller }
 			isFastlane={ true }
 			isPayLater={ true }
 			storeCountry={ storeCountry }
