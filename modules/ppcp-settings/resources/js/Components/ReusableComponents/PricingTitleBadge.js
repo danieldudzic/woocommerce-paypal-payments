@@ -27,10 +27,8 @@ const PricingTitleBadge = ( { item } ) => {
 		typeof infos[ itemKey ] === 'number'
 			? infos[ itemKey ].toFixed( 2 )
 			: infos[ itemKey ].percentage.toFixed( 2 );
-	let itemFixedAmount = infos[ itemKey ].fixedFee || 0;
-	if ( itemKey === 'checkout' || itemKey === 'plater' ) {
-		itemFixedAmount = infos.fixedFee[ storeCurrency ];
-	}
+	const itemFixedAmount =
+		infos[ itemKey ].fixedFee ?? infos.fixedFee[ storeCurrency ] ?? 0;
 	const fixedAmount = getFixedAmount(
 		storeCurrency,
 		infos.fixedFee,
