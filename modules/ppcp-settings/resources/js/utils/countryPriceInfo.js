@@ -29,7 +29,7 @@ export const countryPriceInfo = {
 	},
 	GB: {
 		fixedFee: {
-			GPB: 0.3,
+			GBP: 0.3,
 			USD: 0.3,
 			CAD: 0.3,
 			AUD: 0.3,
