@@ -75,15 +75,14 @@ export const setIsReady = ( isReady ) => setTransient( 'isReady', isReady );
  */
 export function persist() {
 	return async ( { select } ) => {
-		const data = select.persistentData();
-
 		try {
 			await apiFetch( {
 				path: REST_PERSIST_PATH,
 				method: 'POST',
-				data,
+				data: select.persistentData(),
 			} );
 		} catch ( e ) {
+			// We catch errors here, as the onboarding module is not handled by the persistAll hook.
 			console.error( 'Error saving progress.', e );
 		}
 	};
