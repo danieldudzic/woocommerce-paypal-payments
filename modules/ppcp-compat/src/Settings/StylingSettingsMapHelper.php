@@ -44,6 +44,7 @@ class StylingSettingsMapHelper {
 			'pay_later_button_locations' => '',
 			'disable_funding'            => '',
 			'googlepay_button_enabled'   => '',
+			'applepay_button_enabled'    => '',
 		);
 
 		foreach ( $this->locations_map() as $old_location_name => $new_location_name ) {
