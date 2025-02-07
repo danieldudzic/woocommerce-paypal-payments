@@ -1,6 +1,6 @@
 import { Button } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
-import { useCallback, useEffect, useState } from '@wordpress/element';
+import { useCallback, useEffect, useRef, useState } from '@wordpress/element';
 
 import TopNavigation from '../../../ReusableComponents/TopNavigation';
 import { useSaveSettings } from '../../../../hooks/useSaveSettings';
@@ -47,20 +47,25 @@ const SaveStateMessage = () => {
 	const [ isSaving, setIsSaving ] = useState( false );
 	const [ showMessage, setShowMessage ] = useState( false );
 	const { onStarted, onFinished } = CommonHooks.useActivityObserver();
+	const refHideTimer = useRef( null );
 
-	const handleActivityStart = useCallback( ( started ) => {
-		if ( ! started.match( /^persist/ ) ) {
+	const handleActivityStart = useCallback(
+		( started ) => {
+			if ( isSaving || ! started.match( /^persist/ ) ) {
 			return;
 		}
 		setIsSaving( true );
-	}, [] );
+			setShowMessage( false );
+		},
+		[ isSaving ]
+	);
 
 	const handleActivityDone = useCallback(
 		( done, remaining ) => {
 			if ( remaining.length || ! isSaving ) {
 				return;
 			}
-
+			setIsSaving( false );
 			setShowMessage( true );
 		},
 		[ isSaving ]
@@ -73,6 +78,22 @@ const SaveStateMessage = () => {
 	useEffect( () => {
 		onFinished( handleActivityDone );
 	}, [ onFinished, handleActivityDone ] );
+
+	useEffect( () => {
+		// Clear the timer, every time the "showMessage" flag changes.
+		if ( refHideTimer.current ) {
+			clearTimeout( refHideTimer.current );
+			refHideTimer.current = null;
+		}
+		if ( ! showMessage || isSaving ) {
+			return;
+		}
+
+		// Restart the hide-timer, when the message is visible.
+		refHideTimer.current = setTimeout( () => {
+			setShowMessage( false );
+		}, 2500 );
+	}, [ showMessage, isSaving ] );
 
 	if ( ! showMessage ) {
 		return null;
