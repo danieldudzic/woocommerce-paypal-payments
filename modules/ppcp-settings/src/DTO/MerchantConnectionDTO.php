@@ -9,6 +9,8 @@ declare( strict_types = 1 );
 
 namespace WooCommerce\PayPalCommerce\Settings\DTO;
 
+use WooCommerce\PayPalCommerce\Settings\Enum\SellerTypeEnum;
+
 /**
  * DTO that collects all details of a "merchant connection".
  *
@@ -56,7 +58,7 @@ class MerchantConnectionDTO {
 	 *
 	 * @var string
 	 */
-	public string $seller_type = 'unknown';
+	public string $seller_type = SellerTypeEnum::UNKNOWN;
 
 	/**
 	 * Constructor.
@@ -74,7 +76,7 @@ class MerchantConnectionDTO {
 		string $client_secret,
 		string $merchant_id,
 		string $merchant_email,
-		string $seller_type = 'unknown'
+		string $seller_type = SellerTypeEnum::UNKNOWN
 	) {
 		$this->is_sandbox     = $is_sandbox;
 		$this->client_id      = $client_id;
