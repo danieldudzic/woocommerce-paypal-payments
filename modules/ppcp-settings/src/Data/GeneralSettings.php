@@ -75,6 +75,7 @@ class GeneralSettings extends AbstractDataModel {
 			'merchant_email'        => '',
 			'client_id'             => '',
 			'client_secret'         => '',
+			'seller_type'           => 'unknown',
 		);
 	}
 
@@ -138,6 +139,7 @@ class GeneralSettings extends AbstractDataModel {
 		$this->data['merchant_email']     = sanitize_email( $connection->merchant_email );
 		$this->data['client_id']          = sanitize_text_field( $connection->client_id );
 		$this->data['client_secret']      = sanitize_text_field( $connection->client_secret );
+		$this->data['seller_type']        = sanitize_text_field( $connection->seller_type );
 		$this->data['merchant_connected'] = $this->is_merchant_connected();
 	}
 
@@ -152,7 +154,8 @@ class GeneralSettings extends AbstractDataModel {
 			$this->data['client_id'],
 			$this->data['client_secret'],
 			$this->data['merchant_id'],
-			$this->data['merchant_email']
+			$this->data['merchant_email'],
+			$this->data['seller_type']
 		);
 	}
 
@@ -169,6 +172,7 @@ class GeneralSettings extends AbstractDataModel {
 		$this->data['merchant_email']     = $defaults['merchant_email'];
 		$this->data['client_id']          = $defaults['client_id'];
 		$this->data['client_secret']      = $defaults['client_secret'];
+		$this->data['seller_type']        = $defaults['seller_type'];
 		$this->data['merchant_connected'] = false;
 	}
 

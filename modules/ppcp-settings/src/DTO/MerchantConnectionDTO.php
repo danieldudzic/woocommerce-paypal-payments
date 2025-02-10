@@ -51,6 +51,14 @@ class MerchantConnectionDTO {
 	public string $merchant_email = '';
 
 	/**
+	 * Whether the merchant is a business or personal account.
+	 * Possible values: ['business'|'personal'|'unknown']
+	 *
+	 * @var string
+	 */
+	public string $seller_type = 'unknown';
+
+	/**
 	 * Constructor.
 	 *
 	 * @param bool   $is_sandbox     Whether this connection is a sandbox account.
@@ -58,18 +66,21 @@ class MerchantConnectionDTO {
 	 * @param string $client_secret  API client secret.
 	 * @param string $merchant_id    PayPal's 13-character merchant ID.
 	 * @param string $merchant_email Email address of the merchant account.
+	 * @param string $seller_type    Whether the merchant is a business or personal account.
 	 */
 	public function __construct(
 		bool $is_sandbox,
 		string $client_id,
 		string $client_secret,
 		string $merchant_id,
-		string $merchant_email
+		string $merchant_email,
+		string $seller_type = 'unknown'
 	) {
 		$this->is_sandbox     = $is_sandbox;
 		$this->client_id      = $client_id;
 		$this->client_secret  = $client_secret;
 		$this->merchant_id    = $merchant_id;
 		$this->merchant_email = $merchant_email;
+		$this->seller_type    = $seller_type;
 	}
 }
