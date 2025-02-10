@@ -1,4 +1,5 @@
 import { __ } from '@wordpress/i18n';
+import classNames from 'classnames';
 
 import SettingsCard from '../../../../ReusableComponents/SettingsCard';
 import { CommonHooks } from '../../../../../data';
@@ -8,11 +9,15 @@ import SettingsBlock from '../../../../ReusableComponents/SettingsBlock';
 import { ControlStaticValue } from '../../../../ReusableComponents/Controls';
 
 const ConnectionStatus = () => {
-	const { merchant } = CommonHooks.useMerchantInfo();
+	const merchant = CommonHooks.useMerchant();
+	const className = classNames( 'ppcp-connection-details ppcp--value-list', {
+		'ppcp--type-business': merchant.isBusinessSeller,
+		'ppcp--type-casual': merchant.isCasualSeller,
+	} );
 
 	return (
 		<SettingsCard
-			className="ppcp-connection-details ppcp--value-list"
+			className={ className }
 			title={ __( 'Connection status', 'woocommerce-paypal-payments' ) }
 			description={ <ConnectionDescription /> }
 		>
