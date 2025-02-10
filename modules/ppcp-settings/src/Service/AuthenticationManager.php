@@ -23,6 +23,7 @@ use WooCommerce\PayPalCommerce\WcGateway\Helper\EnvironmentConfig;
 use WooCommerce\WooCommerce\Logging\Logger\NullLogger;
 use WooCommerce\PayPalCommerce\Settings\DTO\MerchantConnectionDTO;
 use WooCommerce\PayPalCommerce\Webhooks\WebhookRegistrar;
+use WooCommerce\PayPalCommerce\Settings\Enum\SellerTypeEnum;
 
 /**
  * Class that manages the connection to PayPal.
@@ -186,7 +187,8 @@ class AuthenticationManager {
 			$client_id,
 			$client_secret,
 			$payee['merchant_id'],
-			$payee['email_address']
+			$payee['email_address'],
+			SellerTypeEnum::BUSINESS
 		);
 
 		$this->update_connection_details( $connection );
