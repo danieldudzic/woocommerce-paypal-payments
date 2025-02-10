@@ -11,6 +11,7 @@ namespace WooCommerce\PayPalCommerce\Settings\Data;
 
 use RuntimeException;
 use WooCommerce\PayPalCommerce\Settings\DTO\MerchantConnectionDTO;
+use WooCommerce\PayPalCommerce\Settings\Enum\SellerTypeEnum;
 
 /**
  * Class GeneralSettings
@@ -195,6 +196,30 @@ class GeneralSettings extends AbstractDataModel {
 			&& $this->data['merchant_id']
 			&& $this->data['client_id']
 			&& $this->data['client_secret'];
+	}
+
+	/**
+	 * Whether the merchant uses a business account.
+	 *
+	 * Note: It's possible that the seller type is unknown, and both methods,
+	 * `is_casual_seller()` and `is_business_seller()` return false.
+	 *
+	 * @return bool
+	 */
+	public function is_business_seller() : bool {
+		return SellerTypeEnum::BUSINESS === $this->data['seller_type'];
+	}
+
+	/**
+	 * Whether the merchant is a casual seller using a personal account.
+	 *
+	 * Note: It's possible that the seller type is unknown, and both methods,
+	 * `is_casual_seller()` and `is_business_seller()` return false.
+	 *
+	 * @return bool
+	 */
+	public function is_casual_seller() : bool {
+		return SellerTypeEnum::PERSONAL === $this->data['seller_type'];
 	}
 
 	/**
