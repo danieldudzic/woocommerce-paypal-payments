@@ -144,7 +144,8 @@ export const useWebhooks = () => {
 };
 
 export const useMerchantInfo = () => {
-	const { isReady, merchant, features } = useHooks();
+	const { isReady, features } = useHooks();
+	const merchant = useMerchant();
 	const { refreshMerchantData } = useDispatch( STORE_NAME );
 
 	const verifyLoginStatus = useCallback( async () => {
@@ -163,6 +164,22 @@ export const useMerchantInfo = () => {
 		merchant, // Merchant details
 		features, // Eligible merchant features
 		verifyLoginStatus, // Callback
+	};
+};
+
+// Read-only access to the sanitized merchant details.
+export const useMerchant = () => {
+	const { merchant } = useHooks();
+
+	return {
+		isConnected: merchant.isConnected ?? false,
+		isSandbox: merchant.isSandbox ?? true,
+		id: merchant.id ?? '',
+		email: merchant.email ?? '',
+		clientId: merchant.clientId ?? '',
+		clientSecret: merchant.clientSecret ?? '',
+		isBusinessSeller: 'business' === merchant.sellerType,
+		isCasualSeller: 'personal' === merchant.sellerType,
 	};
 };
 
