@@ -411,7 +411,6 @@ class WcSubscriptionsModule implements ServiceModule, ExtendingModule, Executabl
 				if ( 'disable_paypal_subscriptions' === $subscriptions_mode ) {
 					return $supports;
 				}
-
 				return array_merge(
 					$supports,
 					self::VAULT_SUPPORTS_SUBSCRIPTIONS
@@ -448,10 +447,6 @@ class WcSubscriptionsModule implements ServiceModule, ExtendingModule, Executabl
 
 				$subscriptions_mode = $settings->has( 'subscriptions_mode' ) ? $settings->get( 'subscriptions_mode' ) : '';
 				if ( 'disable_paypal_subscriptions' === $subscriptions_mode ) {
-					return $supports;
-				}
-				$vaulting_enabled = $settings->has( 'vault_enabled' ) && $settings->get( 'vault_enabled' );
-				if ( ! $vaulting_enabled ) {
 					return $supports;
 				}
 				return array_merge(
