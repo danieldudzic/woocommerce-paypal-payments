@@ -96,7 +96,7 @@ const ManualConnectionForm = () => {
 	// On-the-fly form validation.
 	useEffect( () => {
 		setClientValid(
-			! manualClientId || /^A[\w-]{79}$/.test( manualClientId )
+			! manualClientId || /^[\w-]{80,}$/.test( manualClientId )
 		);
 		setSecretValid( manualClientSecret && manualClientSecret.length > 0 );
 	}, [ manualClientId, manualClientSecret ] );
