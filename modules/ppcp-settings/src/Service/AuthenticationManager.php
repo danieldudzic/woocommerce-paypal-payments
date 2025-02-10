@@ -245,9 +245,11 @@ class AuthenticationManager {
 		$credentials = $this->get_credentials( $shared_id, $auth_code, $use_sandbox );
 
 		/**
-		 * The merchant's email is set by `ConnectionListener`. That listener
+		 * Some details are set by `ConnectionListener`. That listener
 		 * is invoked during the page reload, once the user clicks the blue
 		 * "Return to Store" button in PayPal's login popup.
+		 *
+		 * It sets: merchant_email, seller_type.
 		 */
 		$connection = $this->common_settings->get_merchant_data();
 
@@ -269,8 +271,9 @@ class AuthenticationManager {
 	 * @throws RuntimeException Missing or invalid credentials.
 	 */
 	public function finish_oauth_authentication( array $request_data ) : void {
-		$merchant_id    = $request_data['merchant_id'];
-		$merchant_email = $request_data['merchant_email'];
+		$merchant_id    = $request_data['merchant_id'] ?? '';
+		$merchant_email = $request_data['merchant_email'] ?? '';
+		$seller_type    = $request_data['seller_type'] ?? '';
 
 		if ( empty( $merchant_id ) || empty( $merchant_email ) ) {
 			throw new RuntimeException( 'Missing merchant ID or email in request' );
@@ -284,6 +287,10 @@ class AuthenticationManager {
 
 		$connection->merchant_id    = $merchant_id;
 		$connection->merchant_email = $merchant_email;
+
+		if ( SellerTypeEnum::is_valid( $seller_type ) ) {
+			$connection->seller_type = $seller_type;
+		}
 
 		$this->update_connection_details( $connection );
 	}
