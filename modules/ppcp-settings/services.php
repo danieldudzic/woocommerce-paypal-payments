@@ -313,10 +313,4 @@ return array(
 			$capabilities['google_pay'] && ! $gateways['google_pay']    // Enable Google Pay.
 		);
 	},
-	'settings.rest.reset_dismissed_todos'         => static function( ContainerInterface $container ): ResetDismissedTodosEndpoint {
-		return new ResetDismissedTodosEndpoint();
-	},
-	'settings.rest.complete_onclick'              => static function( ContainerInterface $container ): CompleteOnClickEndpoint {
-		return new CompleteOnClickEndpoint();
-	},
 );

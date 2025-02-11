@@ -23,6 +23,7 @@ use WooCommerce\PayPalCommerce\LocalAlternativePaymentMethods\P24Gateway;
 use WooCommerce\PayPalCommerce\LocalAlternativePaymentMethods\TrustlyGateway;
 use WooCommerce\PayPalCommerce\Settings\Ajax\SwitchSettingsUiEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Data\OnboardingProfile;
+use WooCommerce\PayPalCommerce\Settings\Data\TodosModel;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\RestEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Handler\ConnectionListener;
 use WooCommerce\PayPalCommerce\Vendor\Inpsyde\Modularity\Module\ExecutableModule;
@@ -239,9 +240,7 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 					'settings'               => $container->get( 'settings.rest.settings' ),
 					'styling'                => $container->get( 'settings.rest.styling' ),
 					'todos'                  => $container->get( 'settings.rest.todos' ),
-					'reset_dismissed_todos'  => $container->get( 'settings.rest.reset_dismissed_todos' ),
 					'pay_later_messaging'    => $container->get( 'settings.rest.pay_later_messaging' ),
-					'complete_onclick'       => $container->get( 'settings.rest.complete_onclick' ),
 				);
 
 				foreach ( $endpoints as $endpoint ) {
@@ -265,12 +264,19 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 		add_action(
 			'woocommerce_paypal_payments_merchant_disconnected',
 			static function () use ( $container ) : void {
+				// Reset onboarding profile.
 				$onboarding_profile = $container->get( 'settings.data.onboarding' );
 				assert( $onboarding_profile instanceof OnboardingProfile );
 
 				$onboarding_profile->set_completed( false );
 				$onboarding_profile->set_step( 0 );
 				$onboarding_profile->save();
+
+				// Reset dismissed and completed on click todos.
+				$todos = $container->get( 'settings.data.todos' );
+				assert( $todos instanceof TodosModel );
+				$todos->reset_dismissed_todos();
+				$todos->reset_completed_onclick_todos();
 			}
 		);
 

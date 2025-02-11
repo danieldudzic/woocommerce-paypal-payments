@@ -1,4 +1,4 @@
-import { useCallback } from '@wordpress/element';
+import { useCallback, useMemo } from '@wordpress/element';
 
 import {
 	CommonHooks,
@@ -19,39 +19,56 @@ export const useSaveSettings = () => {
 	const { persist: persistPayLaterMessaging } =
 		PayLaterMessagingHooks.useStore();
 
+	const persistActions = useMemo(
+		() => [
+			{
+				key: 'persist-methods',
+				message: 'Save payment methods',
+				action: persistPayment,
+			},
+			{
+				key: 'persist-settings',
+				message: 'Save the settings',
+				action: persistSettings,
+			},
+			{
+				key: 'persist-styling',
+				message: 'Save styling details',
+				action: persistStyling,
+			},
+			{
+				key: 'persist-todos',
+				message: 'Save todos state',
+				action: persistTodos,
+			},
+			{
+				key: 'persist-pay-later-messaging',
+				message: 'Save pay later messaging details',
+				action: persistPayLaterMessaging,
+			},
+		],
+		[
+			persistPayLaterMessaging,
+			persistPayment,
+			persistSettings,
+			persistStyling,
+			persistTodos,
+		]
+	);
+
 	const persistAll = useCallback( () => {
-		// Executes onSave on TabPayLaterMessaging component.
+		/**
+		 * Executes onSave on TabPayLaterMessaging component.
+		 *
+		 * Todo: find a better way for this, because it's highly unreliable
+		 *       (it only works when the user is still on the "Pay Later Messaging" tab)
+		 */
 		document.getElementById( 'configurator-publishButton' )?.click();
 
-		withActivity(
-			'persist-methods',
-			'Save payment methods',
-			persistPayment
-		);
-		withActivity(
-			'persist-settings',
-			'Save the settings',
-			persistSettings
-		);
-		withActivity(
-			'persist-styling',
-			'Save styling details',
-			persistStyling
-		);
-		withActivity( 'persist-todos', 'Save todos state', persistTodos );
-		withActivity(
-			'persist-pay-later-messaging',
-			'Save pay later messaging details',
-			persistPayLaterMessaging
-		);
-	}, [
-		persistPayment,
-		persistSettings,
-		persistStyling,
-		persistTodos,
-		persistPayLaterMessaging,
-		withActivity,
-	] );
+		persistActions.forEach( ( { key, message, action } ) => {
+			withActivity( key, message, action );
+		} );
+	}, [ persistActions, withActivity ] );
 
 	return { persistAll };
 };

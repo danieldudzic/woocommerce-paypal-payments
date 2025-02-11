@@ -7,10 +7,10 @@
  * @file
  */
 
-import { select } from '@wordpress/data';
+import apiFetch from '@wordpress/api-fetch';
 
 import ACTION_TYPES from './action-types';
-import { STORE_NAME } from './constants';
+import { REST_PERSIST_PATH } from './constants';
 
 /**
  * @typedef {Object} Action An action object that is handled by a reducer or control.
@@ -69,12 +69,21 @@ export const setPersistent = ( prop, value ) => ( {
 export const setIsReady = ( isReady ) => setTransient( 'isReady', isReady );
 
 /**
- * Side effect. Triggers the persistence of onboarding data to the server.
+ * Thunk action creator. Triggers the persistence of onboarding data to the server.
  *
- * @return {Action} The action.
+ * @return {Function} The thunk function.
  */
-export const persist = function* () {
-	const data = yield select( STORE_NAME ).persistentData();
-
-	yield { type: ACTION_TYPES.DO_PERSIST_DATA, data };
-};
+export function persist() {
+	return async ( { select } ) => {
+		try {
+			await apiFetch( {
+				path: REST_PERSIST_PATH,
+				method: 'POST',
+				data: select.persistentData(),
+			} );
+		} catch ( e ) {
+			// We catch errors here, as the onboarding module is not handled by the persistAll hook.
+			console.error( 'Error saving progress.', e );
+		}
+	};
+}

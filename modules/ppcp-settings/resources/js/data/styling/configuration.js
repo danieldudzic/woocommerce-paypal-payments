@@ -109,23 +109,28 @@ export const STYLING_PAYMENT_METHODS = {
 		label: __( 'PayPal', 'woocommerce-paypal-payments' ),
 		checked: true,
 		disabled: true,
+		paymentMethod: 'ppcp-gateway',
 	},
 	venmo: {
 		value: 'venmo',
 		label: __( 'Venmo', 'woocommerce-paypal-payments' ),
 		isFunding: true,
+		paymentMethod: 'venmo',
 	},
 	paylater: {
 		value: 'paylater',
 		label: __( 'Pay Later', 'woocommerce-paypal-payments' ),
 		isFunding: true,
+		paymentMethod: 'pay-later',
 	},
 	googlepay: {
 		value: 'googlepay',
 		label: __( 'Google Pay', 'woocommerce-paypal-payments' ),
+		paymentMethod: 'ppcp-googlepay',
 	},
 	applepay: {
 		value: 'applepay',
 		label: __( 'Apple Pay', 'woocommerce-paypal-payments' ),
+		paymentMethod: 'ppcp-applepay',
 	},
 };

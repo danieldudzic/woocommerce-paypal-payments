@@ -50,6 +50,7 @@ const OptionItem = ( {
 	const boxClassName = classNames( 'ppcp-r-select-box', {
 		'ppcp--selected': isSelected,
 		'ppcp--multiselect': isMulti,
+		'ppcp--no-title': ! itemTitle,
 	} );
 
 	return (
@@ -64,7 +65,9 @@ const OptionItem = ( {
 
 			<div className="ppcp--box-content">
 				<div className="ppcp--box-content-inner">
-					<span className="ppcp--box-title">{ itemTitle }</span>
+					{ itemTitle && (
+						<span className="ppcp--box-title">{ itemTitle }</span>
+					) }
 					<div className="ppcp--box-description">
 						{ itemDescription }
 					</div>
