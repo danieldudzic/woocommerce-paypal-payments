@@ -74,7 +74,7 @@ class PayPalSubscriptionsModule implements ServiceModule, ExtendingModule, Execu
 				assert( $settings instanceof Settings );
 
 				$subscriptions_mode = $settings->has( 'subscriptions_mode' ) ? $settings->get( 'subscriptions_mode' ) : '';
-				if ( $subscriptions_mode === 'disable_paypal_subscriptions' ) {
+				if ( $subscriptions_mode !== 'subscriptions_api' ) {
 					return $gateways;
 				}
 
@@ -560,52 +560,23 @@ class PayPalSubscriptionsModule implements ServiceModule, ExtendingModule, Execu
 					'woocommerce-paypal-payments'
 				);
 
-				//phpcs:disable WordPress.Security.NonceVerification.Recommended
-				$post_id = wc_clean( wp_unslash( $_GET['post'] ?? '' ) );
-				$product = wc_get_product( $post_id );
-				if ( ! ( is_a( $product, WC_Product::class ) ) ) {
+				$product = wc_get_product();
+				if ( ! $product ) {
 					return;
-				}
-
-				if (
-					! (
-						is_a( $product, WC_Product_Subscription::class )
-						|| is_a( $product, WC_Product_Variable_Subscription::class )
-						|| is_a( $product, WC_Product_Subscription_Variation::class )
-					)
-					|| ! WC_Subscriptions_Product::is_subscription( $product )
-				) {
-					return;
-				}
-
-				$products = array( $this->set_product_config( $product ) );
-				if ( $product->get_type() === 'variable-subscription' ) {
-					$products = array();
-
-					/**
-					 * Suppress pslam.
-					 *
-					 * @psalm-suppress TypeDoesNotContainType
-					 *
-					 * WC_Product_Variable_Subscription extends WC_Product_Variable.
-					 */
-					assert( $product instanceof WC_Product_Variable );
-					$available_variations = $product->get_available_variations();
-					foreach ( $available_variations as $variation ) {
-						/**
-						 * The method is defined in WooCommerce.
-						 *
-						 * @psalm-suppress UndefinedMethod
-						 */
-						$variation  = wc_get_product_object( 'variation', $variation['variation_id'] );
-						$products[] = $this->set_product_config( $variation );
-					}
 				}
 
 				wp_localize_script(
 					'ppcp-paypal-subscription',
 					'PayPalCommerceGatewayPayPalSubscriptionProducts',
-					$products
+					array(
+						'ajax'       => array(
+							'deactivate_plan' => array(
+								'endpoint' => \WC_AJAX::get_endpoint( DeactivatePlanEndpoint::ENDPOINT ),
+								'nonce'    => wp_create_nonce( DeactivatePlanEndpoint::ENDPOINT ),
+							),
+						),
+						'product_id' => $product->get_id(),
+					)
 				);
 			}
 		);
@@ -754,29 +725,6 @@ class PayPalSubscriptionsModule implements ServiceModule, ExtendingModule, Execu
 	}
 
 	/**
-	 * Returns subscription product configuration.
-	 *
-	 * @param WC_Product $product The product.
-	 * @return array
-	 */
-	private function set_product_config( WC_Product $product ): array {
-		$plan    = $product->get_meta( 'ppcp_subscription_plan' ) ?? array();
-		$plan_id = $plan['id'] ?? '';
-
-		return array(
-			'product_connected' => $product->get_meta( '_ppcp_enable_subscription_product' ) ?? '',
-			'plan_id'           => $plan_id,
-			'product_id'        => $product->get_id(),
-			'ajax'              => array(
-				'deactivate_plan' => array(
-					'endpoint' => \WC_AJAX::get_endpoint( DeactivatePlanEndpoint::ENDPOINT ),
-					'nonce'    => wp_create_nonce( DeactivatePlanEndpoint::ENDPOINT ),
-				),
-			),
-		);
-	}
-
-	/**
 	 * Render PayPal Subscriptions fields.
 	 *
 	 * @param WC_Product  $product WC Product.
@@ -786,15 +734,18 @@ class PayPalSubscriptionsModule implements ServiceModule, ExtendingModule, Execu
 	private function render_paypal_subscription_fields( WC_Product $product, Environment $environment ): void {
 		$enable_subscription_product = $product->get_meta( '_ppcp_enable_subscription_product' );
 		$style                       = $product->get_type() === 'subscription_variation' ? 'float:left; width:150px;' : '';
+		$subscription_product        = $product->get_meta( 'ppcp_subscription_product' );
+		$subscription_plan           = $product->get_meta( 'ppcp_subscription_plan' );
+		$subscription_plan_name      = $product->get_meta( '_ppcp_subscription_plan_name' );
 
 		echo '<p class="form-field">';
 		echo sprintf(
 		// translators: %1$s and %2$s are label open and close tags.
 			esc_html__( '%1$sConnect to PayPal%2$s', 'woocommerce-paypal-payments' ),
-			'<label for="_ppcp_enable_subscription_product-' . esc_attr( (string) $product->get_id() ) . '" style="' . esc_attr( $style ) . '">',
+			'<label for="ppcp_enable_subscription_product-' . esc_attr( (string) $product->get_id() ) . '" style="' . esc_attr( $style ) . '">',
 			'</label>'
 		);
-		echo '<input type="checkbox" id="ppcp_enable_subscription_product-' . esc_attr( (string) $product->get_id() ) . '" name="_ppcp_enable_subscription_product" value="yes" ' . checked( $enable_subscription_product, 'yes', false ) . '/>';
+		echo '<input type="checkbox" id="ppcp_enable_subscription_product-' . esc_attr( (string) $product->get_id() ) . '" data-subs-plan="'. esc_attr( (string) $subscription_plan['id'] ) . '" name="_ppcp_enable_subscription_product" value="yes" ' . checked( $enable_subscription_product, 'yes', false ) . '/>';
 		echo sprintf(
 		// translators: %1$s and %2$s are label open and close tags.
 			esc_html__( '%1$sConnect Product to PayPal Subscriptions Plan%2$s', 'woocommerce-paypal-payments' ),
@@ -805,9 +756,6 @@ class PayPalSubscriptionsModule implements ServiceModule, ExtendingModule, Execu
 		echo wc_help_tip( esc_html__( 'Create a subscription product and plan to bill customers at regular intervals. Be aware that certain subscription settings cannot be modified once the PayPal Subscription is linked to this product. Unlink the product to edit disabled fields.', 'woocommerce-paypal-payments' ) );
 		echo '</p>';
 
-		$subscription_product   = $product->get_meta( 'ppcp_subscription_product' );
-		$subscription_plan      = $product->get_meta( 'ppcp_subscription_plan' );
-		$subscription_plan_name = $product->get_meta( '_ppcp_subscription_plan_name' );
 		if ( $subscription_product || $subscription_plan ) {
 			$display_unlink_p = 'display:none;';
 			if ( $enable_subscription_product !== 'yes' ) {
@@ -817,7 +765,7 @@ class PayPalSubscriptionsModule implements ServiceModule, ExtendingModule, Execu
 			// translators: %1$s and %2$s are button and wrapper html tags.
 				esc_html__( '%1$sUnlink PayPal Subscription Plan%2$s', 'woocommerce-paypal-payments' ),
 				'<p class="form-field ppcp-enable-subscription" id="ppcp-enable-subscription-' . esc_attr( (string) $product->get_id() ) . '" style="' . esc_attr( $display_unlink_p ) . '"><label></label><button class="button ppcp-unlink-sub-plan" id="ppcp-unlink-sub-plan-' . esc_attr( (string) $product->get_id() ) . '">',
-				'</button><span class="spinner is-active" id="spinner-unlink-plan" style="float: none; display:none;"></span></p>'
+				'</button><span class="spinner is-active" id="spinner-unlink-plan-' . esc_attr( (string) $product->get_id() ) . '" style="float: none; display:none;"></span></p>'
 			);
 			echo sprintf(
 			// translators: %1$s and %2$s is open and closing paragraph tag.
@@ -845,7 +793,7 @@ class PayPalSubscriptionsModule implements ServiceModule, ExtendingModule, Execu
 			}
 		} else {
 			$display_plan_name_p = '';
-			if ( $enable_subscription_product !== 'yes' && $product->get_name() !== 'AUTO-DRAFT' ) {
+			if ( $enable_subscription_product !== 'yes' ) {
 				$display_plan_name_p = 'display:none;';
 			}
 			echo sprintf(
