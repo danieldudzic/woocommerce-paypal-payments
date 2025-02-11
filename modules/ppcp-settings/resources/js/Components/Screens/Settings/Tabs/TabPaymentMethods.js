@@ -3,7 +3,7 @@ import { useCallback } from '@wordpress/element';
 
 import SettingsCard from '../../../ReusableComponents/SettingsCard';
 import { PaymentMethodsBlock } from '../../../ReusableComponents/SettingsBlocks';
-import { CommonHooks, PaymentHooks } from '../../../../data';
+import { CommonHooks, OnboardingHooks, PaymentHooks } from '../../../../data';
 import { useActiveModal } from '../../../../data/common/hooks';
 import Modal from '../Components/Payment/Modal';
 
@@ -46,6 +46,7 @@ const TabPaymentMethods = () => {
 	);
 
 	const merchant = CommonHooks.useMerchant();
+	const { canUseCardPayments } = OnboardingHooks.useFlags();
 
 	return (
 		<div className="ppcp-r-payment-methods">
@@ -60,7 +61,7 @@ const TabPaymentMethods = () => {
 				methods={ methods.paypal }
 				onTriggerModal={ setActiveModal }
 			/>
-			{ merchant.isBusinessSeller && (
+			{ merchant.isBusinessSeller && canUseCardPayments && (
 				<PaymentMethodCard
 					id="ppcp-card-payments-card"
 					title={ __(
