@@ -8,7 +8,7 @@
  */
 
 import { useDispatch, useSelect } from '@wordpress/data';
-import { useCallback, useEffect, useState } from '@wordpress/element';
+import { useCallback, useEffect, useMemo, useState } from '@wordpress/element';
 
 import { createHooksForStore } from '../utils';
 import { STORE_NAME } from './constants';
@@ -35,10 +35,6 @@ const useHooks = () => {
 	const [ isSandboxMode, setSandboxMode ] = usePersistent( 'useSandbox' );
 	const [ isManualConnectionMode, setManualConnectionMode ] = usePersistent(
 		'useManualConnection'
-	);
-	const merchant = useSelect(
-		( select ) => select( STORE_NAME ).merchant(),
-		[]
 	);
 
 	// Read-only properties.
@@ -78,7 +74,6 @@ const useHooks = () => {
 		productionOnboardingUrl,
 		authenticateWithCredentials,
 		authenticateWithOAuth,
-		merchant,
 		wooSettings,
 		features,
 		webhooks,
@@ -144,7 +139,8 @@ export const useWebhooks = () => {
 };
 
 export const useMerchantInfo = () => {
-	const { isReady, merchant, features } = useHooks();
+	const { isReady, features } = useHooks();
+	const merchant = useMerchant();
 	const { refreshMerchantData } = useDispatch( STORE_NAME );
 
 	const verifyLoginStatus = useCallback( async () => {
@@ -164,6 +160,29 @@ export const useMerchantInfo = () => {
 		features, // Eligible merchant features
 		verifyLoginStatus, // Callback
 	};
+};
+
+// Read-only access to the sanitized merchant details.
+export const useMerchant = () => {
+	const merchant = useSelect(
+		( select ) => select( STORE_NAME ).merchant(),
+		[]
+	);
+
+	return useMemo(
+		() => ( {
+			isConnected: merchant.isConnected ?? false,
+			isSandbox: merchant.isSandbox ?? true,
+			id: merchant.id ?? '',
+			email: merchant.email ?? '',
+			clientId: merchant.clientId ?? '',
+			clientSecret: merchant.clientSecret ?? '',
+			isBusinessSeller: 'business' === merchant.sellerType,
+			isCasualSeller: 'personal' === merchant.sellerType,
+		} ),
+		// the merchant object is stable, so a new memo is only generated when a merchant prop changes.
+		[ merchant ]
+	);
 };
 
 export const useActiveModal = () => {
