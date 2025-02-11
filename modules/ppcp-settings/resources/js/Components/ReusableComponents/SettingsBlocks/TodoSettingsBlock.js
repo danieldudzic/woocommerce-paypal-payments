@@ -49,10 +49,10 @@ const TodoSettingsBlock = ( {
 			await selectTab( tabId, todo.action.section );
 		} else if ( todo.action.type === 'external' ) {
 			window.open( todo.action.url, '_blank' );
-			// If it has completeOnClick flag, trigger the action
-			if ( todo.action.completeOnClick === true ) {
-				await completeOnClick( todo.id );
-			}
+		}
+
+		if ( todo.action.completeOnClick === true ) {
+			await completeOnClick( todo.id );
 		}
 
 		if ( todo.action.modal ) {

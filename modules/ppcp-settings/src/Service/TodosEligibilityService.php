@@ -39,6 +39,27 @@ class TodosEligibilityService {
 	private bool $is_pay_later_messaging_eligible;
 
 	/**
+	 * Whether Pay Later messaging for product page is eligible.
+	 *
+	 * @var bool
+	 */
+	private bool $is_pay_later_messaging_product_eligible;
+
+	/**
+	 * Whether Pay Later messaging for cart is eligible.
+	 *
+	 * @var bool
+	 */
+	private bool $is_pay_later_messaging_cart_eligible;
+
+	/**
+	 * Whether Pay Later messaging for checkout is eligible.
+	 *
+	 * @var bool
+	 */
+	private bool $is_pay_later_messaging_checkout_eligible;
+
+	/**
 	 * Whether subscriptions are eligible.
 	 *
 	 * @var bool
@@ -74,13 +95,6 @@ class TodosEligibilityService {
 	private bool $is_google_pay_eligible;
 
 	/**
-	 * Whether Pay Later messaging for UI elements is eligible.
-	 *
-	 * @var bool
-	 */
-	private bool $is_pay_later_messaging_ui_eligible;
-
-	/**
 	 * Whether PayPal buttons are eligible.
 	 *
 	 * @var bool
@@ -114,7 +128,9 @@ class TodosEligibilityService {
 	 * @param bool $is_fastlane_eligible                Whether Fastlane is eligible.
 	 * @param bool $is_card_payment_eligible            Whether card payments are eligible.
 	 * @param bool $is_pay_later_messaging_eligible     Whether Pay Later messaging is eligible.
-	 * @param bool $is_pay_later_messaging_ui_eligible  Whether Pay Later messaging for UI is eligible.
+	 * @param bool $is_pay_later_messaging_product_eligible Whether Pay Later messaging for product page is eligible.
+	 * @param bool $is_pay_later_messaging_cart_eligible Whether Pay Later messaging for cart is eligible.
+	 * @param bool $is_pay_later_messaging_checkout_eligible Whether Pay Later messaging for checkout is eligible.
 	 * @param bool $is_subscription_eligible            Whether subscriptions are eligible.
 	 * @param bool $is_paypal_buttons_eligible          Whether PayPal buttons are eligible.
 	 * @param bool $is_apple_pay_domain_eligible        Whether Apple Pay domain registration is eligible.
@@ -129,7 +145,9 @@ class TodosEligibilityService {
 		bool $is_fastlane_eligible,
 		bool $is_card_payment_eligible,
 		bool $is_pay_later_messaging_eligible,
-		bool $is_pay_later_messaging_ui_eligible,
+		bool $is_pay_later_messaging_product_eligible,
+		bool $is_pay_later_messaging_cart_eligible,
+		bool $is_pay_later_messaging_checkout_eligible,
 		bool $is_subscription_eligible,
 		bool $is_paypal_buttons_eligible,
 		bool $is_apple_pay_domain_eligible,
@@ -140,19 +158,21 @@ class TodosEligibilityService {
 		bool $is_enable_apple_pay_eligible,
 		bool $is_enable_google_pay_eligible
 	) {
-		$this->is_fastlane_eligible               = $is_fastlane_eligible;
-		$this->is_card_payment_eligible           = $is_card_payment_eligible;
-		$this->is_pay_later_messaging_eligible    = $is_pay_later_messaging_eligible;
-		$this->is_pay_later_messaging_ui_eligible = $is_pay_later_messaging_ui_eligible;
-		$this->is_subscription_eligible           = $is_subscription_eligible;
-		$this->is_paypal_buttons_eligible         = $is_paypal_buttons_eligible;
-		$this->is_apple_pay_domain_eligible       = $is_apple_pay_domain_eligible;
-		$this->is_digital_wallet_eligible         = $is_digital_wallet_eligible;
-		$this->is_apple_pay_eligible              = $is_apple_pay_eligible;
-		$this->is_google_pay_eligible             = $is_google_pay_eligible;
-		$this->is_add_subscription_eligible       = $is_add_subscription_eligible;
-		$this->is_enable_apple_pay_eligible       = $is_enable_apple_pay_eligible;
-		$this->is_enable_google_pay_eligible      = $is_enable_google_pay_eligible;
+		$this->is_fastlane_eligible                     = $is_fastlane_eligible;
+		$this->is_card_payment_eligible                 = $is_card_payment_eligible;
+		$this->is_pay_later_messaging_eligible          = $is_pay_later_messaging_eligible;
+		$this->is_pay_later_messaging_product_eligible  = $is_pay_later_messaging_product_eligible;
+		$this->is_pay_later_messaging_cart_eligible     = $is_pay_later_messaging_cart_eligible;
+		$this->is_pay_later_messaging_checkout_eligible = $is_pay_later_messaging_checkout_eligible;
+		$this->is_subscription_eligible                 = $is_subscription_eligible;
+		$this->is_paypal_buttons_eligible               = $is_paypal_buttons_eligible;
+		$this->is_apple_pay_domain_eligible             = $is_apple_pay_domain_eligible;
+		$this->is_digital_wallet_eligible               = $is_digital_wallet_eligible;
+		$this->is_apple_pay_eligible                    = $is_apple_pay_eligible;
+		$this->is_google_pay_eligible                   = $is_google_pay_eligible;
+		$this->is_add_subscription_eligible             = $is_add_subscription_eligible;
+		$this->is_enable_apple_pay_eligible             = $is_enable_apple_pay_eligible;
+		$this->is_enable_google_pay_eligible            = $is_enable_google_pay_eligible;
 	}
 
 	/**
@@ -162,18 +182,20 @@ class TodosEligibilityService {
 	 */
 	public function get_eligibility_checks(): array {
 		return array(
-			'enable_fastlane'               => fn() => $this->is_fastlane_eligible,
-			'enable_credit_debit_cards'     => fn() => $this->is_card_payment_eligible,
-			'enable_pay_later_messaging'    => fn() => $this->is_pay_later_messaging_eligible,
-			'add_pay_later_messaging'       => fn() => $this->is_pay_later_messaging_eligible,
-			'configure_paypal_subscription' => fn() => $this->is_subscription_eligible,
-			'add_paypal_buttons'            => fn() => $this->is_paypal_buttons_eligible,
-			'register_domain_apple_pay'     => fn() => $this->is_apple_pay_domain_eligible,
-			'add_digital_wallets'           => fn() => $this->is_digital_wallet_eligible,
-			'add_apple_pay'                 => fn() => $this->is_apple_pay_eligible,
-			'add_google_pay'                => fn() => $this->is_google_pay_eligible,
-			'enable_apple_pay'              => fn() => $this->is_enable_apple_pay_eligible,
-			'enable_google_pay'             => fn() => $this->is_enable_google_pay_eligible,
+			'enable_fastlane'                      => fn() => $this->is_fastlane_eligible,
+			'enable_credit_debit_cards'            => fn() => $this->is_card_payment_eligible,
+			'enable_pay_later_messaging'           => fn() => $this->is_pay_later_messaging_eligible,
+			'add_pay_later_messaging_product_page' => fn() => $this->is_pay_later_messaging_product_eligible,
+			'add_pay_later_messaging_cart'         => fn() => $this->is_pay_later_messaging_cart_eligible,
+			'add_pay_later_messaging_checkout'     => fn() => $this->is_pay_later_messaging_checkout_eligible,
+			'configure_paypal_subscription'        => fn() => $this->is_subscription_eligible,
+			'add_paypal_buttons'                   => fn() => $this->is_paypal_buttons_eligible,
+			'register_domain_apple_pay'            => fn() => $this->is_apple_pay_domain_eligible,
+			'add_digital_wallets'                  => fn() => $this->is_digital_wallet_eligible,
+			'add_apple_pay'                        => fn() => $this->is_apple_pay_eligible,
+			'add_google_pay'                       => fn() => $this->is_google_pay_eligible,
+			'enable_apple_pay'                     => fn() => $this->is_enable_apple_pay_eligible,
+			'enable_google_pay'                    => fn() => $this->is_enable_google_pay_eligible,
 		);
 	}
 }
