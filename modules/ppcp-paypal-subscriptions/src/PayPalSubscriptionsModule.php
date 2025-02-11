@@ -57,14 +57,14 @@ class PayPalSubscriptionsModule implements ServiceModule, ExtendingModule, Execu
 
 		$subscriptions_helper = $c->get( 'wc-subscriptions.helper' );
 		assert( $subscriptions_helper instanceof SubscriptionHelper );
-		if ( ! $subscriptions_helper->plugin_is_active() || wcs_is_manual_renewal_enabled() ) {
+		if ( ! $subscriptions_helper->plugin_is_active() ) {
 			return true;
 		}
 
 		add_filter(
 			'woocommerce_available_payment_gateways',
 			function ( array $gateways ) use ( $c ) {
-				if ( is_account_page() || is_admin() || ! WC()->cart || WC()->cart->is_empty() ) {
+				if ( is_account_page() || is_admin() || ! WC()->cart || WC()->cart->is_empty() || wcs_is_manual_renewal_enabled() ) {
 					return $gateways;
 				}
 				$settings = $c->get( 'wcgateway.settings' );
@@ -214,6 +214,7 @@ class PayPalSubscriptionsModule implements ServiceModule, ExtendingModule, Execu
 				$nonce = wc_clean( wp_unslash( $_POST['_wcsnonce'] ?? '' ) );
 				if (
 					$subscriptions_mode !== 'subscriptions_api'
+					|| wcs_is_manual_renewal_enabled()
 					|| ! is_string( $nonce )
 					|| ! wp_verify_nonce( $nonce, 'wcs_subscription_meta' ) ) {
 					return;
@@ -239,7 +240,7 @@ class PayPalSubscriptionsModule implements ServiceModule, ExtendingModule, Execu
 			 * @psalm-suppress MissingClosureParamType
 			 */
 			static function ( $passed_validation, $product_id ) use ( $c ) {
-				if ( WC()->cart->is_empty() ) {
+				if ( WC()->cart->is_empty() || wcs_is_manual_renewal_enabled() ) {
 					return $passed_validation;
 				}
 
@@ -297,6 +298,7 @@ class PayPalSubscriptionsModule implements ServiceModule, ExtendingModule, Execu
 
 				if (
 					! WC_Subscriptions_Product::is_subscription( $variation_id )
+					|| wcs_is_manual_renewal_enabled()
 					|| ! is_string( $wcsnonce_save_variations )
 					|| ! wp_verify_nonce( $wcsnonce_save_variations, 'wcs_subscription_variations' )
 				) {
@@ -466,6 +468,9 @@ class PayPalSubscriptionsModule implements ServiceModule, ExtendingModule, Execu
 		add_action(
 			'woocommerce_product_options_general_product_data',
 			function() use ( $c ) {
+				if ( wcs_is_manual_renewal_enabled() ) {
+					return;
+				}
 				$settings = $c->get( 'wcgateway.settings' );
 				assert( $settings instanceof Settings );
 
@@ -503,6 +508,9 @@ class PayPalSubscriptionsModule implements ServiceModule, ExtendingModule, Execu
 			 * @psalm-suppress MissingClosureParamType
 			 */
 			function( $loop, $variation_data, $variation ) use ( $c ) {
+				if ( wcs_is_manual_renewal_enabled() ) {
+					return;
+				}
 				$settings = $c->get( 'wcgateway.settings' );
 				assert( $settings instanceof Settings );
 
@@ -534,7 +542,7 @@ class PayPalSubscriptionsModule implements ServiceModule, ExtendingModule, Execu
 			 * @psalm-suppress MissingClosureParamType
 			 */
 			function( $hook ) use ( $c ) {
-				if ( ! is_string( $hook ) ) {
+				if ( ! is_string( $hook ) || wcs_is_manual_renewal_enabled() ) {
 					return;
 				}
 				$settings          = $c->get( 'wcgateway.settings' );
