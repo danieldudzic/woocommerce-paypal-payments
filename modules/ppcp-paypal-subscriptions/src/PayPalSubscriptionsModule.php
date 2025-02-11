@@ -739,10 +739,10 @@ class PayPalSubscriptionsModule implements ServiceModule, ExtendingModule, Execu
 		echo sprintf(
 		// translators: %1$s and %2$s are label open and close tags.
 			esc_html__( '%1$sConnect to PayPal%2$s', 'woocommerce-paypal-payments' ),
-			'<label for="ppcp_enable_subscription_product-' . esc_attr( $product->get_id() ) . '" style="' . esc_attr( $style ) . '">',
+			'<label for="ppcp_enable_subscription_product-' . esc_attr( (string) $product->get_id() ) . '" style="' . esc_attr( $style ) . '">',
 			'</label>'
 		);
-		echo '<input type="checkbox" id="ppcp_enable_subscription_product-' . esc_attr( $product->get_id() ) . '" data-subs-plan="' . esc_attr( $subscription_plan['id'] ) . '" name="_ppcp_enable_subscription_product" value="yes" ' . checked( $enable_subscription_product, 'yes', false ) . '/>';
+		echo '<input type="checkbox" id="ppcp_enable_subscription_product-' . esc_attr( (string) $product->get_id() ) . '" data-subs-plan="' . esc_attr( (string) $subscription_plan['id'] ) . '" name="_ppcp_enable_subscription_product" value="yes" ' . checked( $enable_subscription_product, 'yes', false ) . '/>';
 		echo sprintf(
 		// translators: %1$s and %2$s are label open and close tags.
 			esc_html__( '%1$sConnect Product to PayPal Subscriptions Plan%2$s', 'woocommerce-paypal-payments' ),
@@ -761,13 +761,13 @@ class PayPalSubscriptionsModule implements ServiceModule, ExtendingModule, Execu
 			echo sprintf(
 			// translators: %1$s and %2$s are button and wrapper html tags.
 				esc_html__( '%1$sUnlink PayPal Subscription Plan%2$s', 'woocommerce-paypal-payments' ),
-				'<p class="form-field ppcp-enable-subscription" id="ppcp-enable-subscription-' . esc_attr( $product->get_id() ) . '" style="' . esc_attr( $display_unlink_p ) . '"><label></label><button class="button ppcp-unlink-sub-plan" id="ppcp-unlink-sub-plan-' . esc_attr( $product->get_id() ) . '">',
-				'</button><span class="spinner is-active" id="spinner-unlink-plan-' . esc_attr( $product->get_id() ) . '" style="float: none; display:none;"></span></p>'
+				'<p class="form-field ppcp-enable-subscription" id="ppcp-enable-subscription-' . esc_attr( (string) $product->get_id() ) . '" style="' . esc_attr( $display_unlink_p ) . '"><label></label><button class="button ppcp-unlink-sub-plan" id="ppcp-unlink-sub-plan-' . esc_attr( (string) $product->get_id() ) . '">',
+				'</button><span class="spinner is-active" id="spinner-unlink-plan-' . esc_attr( (string) $product->get_id() ) . '" style="float: none; display:none;"></span></p>'
 			);
 			echo sprintf(
 			// translators: %1$s and %2$s is open and closing paragraph tag.
 				esc_html__( '%1$sPlan unlinked successfully ✔️%2$s', 'woocommerce-paypal-payments' ),
-				'<p class="form-field pcpp-plan-unlinked" id="pcpp-plan-unlinked-' . esc_attr( $product->get_id() ) . '" style="display: none;">',
+				'<p class="form-field pcpp-plan-unlinked" id="pcpp-plan-unlinked-' . esc_attr( (string) $product->get_id() ) . '" style="display: none;">',
 				'</p>'
 			);
 
@@ -776,7 +776,7 @@ class PayPalSubscriptionsModule implements ServiceModule, ExtendingModule, Execu
 				echo sprintf(
 				// translators: %1$s and %2$s are wrapper html tags.
 					esc_html__( '%1$sProduct%2$s', 'woocommerce-paypal-payments' ),
-					'<p class="form-field pcpp-product" id="pcpp-product-' . esc_attr( $product->get_id() ) . '"><label style="' . esc_attr( $style ) . '">',
+					'<p class="form-field pcpp-product" id="pcpp-product-' . esc_attr( (string) $product->get_id() ) . '"><label style="' . esc_attr( $style ) . '">',
 					'</label><a href="' . esc_url( $host . '/billing/plans/products/' . $subscription_product['id'] ) . '" target="_blank">' . esc_attr( $subscription_product['id'] ) . '</a></p>'
 				);
 			}
@@ -784,7 +784,7 @@ class PayPalSubscriptionsModule implements ServiceModule, ExtendingModule, Execu
 				echo sprintf(
 				// translators: %1$s and %2$s are wrapper html tags.
 					esc_html__( '%1$sPlan%2$s', 'woocommerce-paypal-payments' ),
-					'<p class="form-field pcpp-plan" id="pcpp-plan-' . esc_attr( $product->get_id() ) . '"><label style="' . esc_attr( $style ) . '">',
+					'<p class="form-field pcpp-plan" id="pcpp-plan-' . esc_attr( (string) $product->get_id() ) . '"><label style="' . esc_attr( $style ) . '">',
 					'</label><a href="' . esc_url( $host . '/billing/plans/' . $subscription_plan['id'] ) . '" target="_blank">' . esc_attr( $subscription_plan['id'] ) . '</a></p>'
 				);
 			}
@@ -796,8 +796,8 @@ class PayPalSubscriptionsModule implements ServiceModule, ExtendingModule, Execu
 			echo sprintf(
 			// translators: %1$s and %2$s are wrapper html tags.
 				esc_html__( '%1$sPlan Name%2$s', 'woocommerce-paypal-payments' ),
-				'<p class="form-field ppcp_subscription_plan_name_p" id="ppcp_subscription_plan_name_p-' . esc_attr( $product->get_id() ) . '" style="' . esc_attr( $display_plan_name_p ) . '"><label for="_ppcp_subscription_plan_name-' . esc_attr( $product->get_id() ) . '">',
-				'</label><input type="text" class="short ppcp_subscription_plan_name" id="ppcp_subscription_plan_name-' . esc_attr( $product->get_id() ) . '" name="_ppcp_subscription_plan_name" value="' . esc_attr( $subscription_plan_name ) . '"></p>'
+				'<p class="form-field ppcp_subscription_plan_name_p" id="ppcp_subscription_plan_name_p-' . esc_attr( (string) $product->get_id() ) . '" style="' . esc_attr( $display_plan_name_p ) . '"><label for="_ppcp_subscription_plan_name-' . esc_attr( (string) $product->get_id() ) . '">',
+				'</label><input type="text" class="short ppcp_subscription_plan_name" id="ppcp_subscription_plan_name-' . esc_attr( (string) $product->get_id() ) . '" name="_ppcp_subscription_plan_name" value="' . esc_attr( $subscription_plan_name ) . '"></p>'
 			);
 		}
 	}
