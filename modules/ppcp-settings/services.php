@@ -279,6 +279,18 @@ return array(
 		$payment_endpoint = $container->get( 'settings.rest.payment' );
 		$settings = $payment_endpoint->get_details()->get_data();
 
+		$pay_later_endpoint = $container->get( 'settings.rest.pay_later_messaging' );
+		$pay_later_settings = $pay_later_endpoint->get_details()->get_data();
+		$pay_later_statuses = array(
+			'cart'             => $pay_later_settings['data']['cart']['status'] === 'enabled',
+			'checkout'         => $pay_later_settings['data']['checkout']['status'] === 'enabled',
+			'product'          => $pay_later_settings['data']['product']['status'] === 'enabled',
+			'shop'             => $pay_later_settings['data']['shop']['status'] === 'enabled',
+			'home'             => $pay_later_settings['data']['home']['status'] === 'enabled',
+			'custom_placement' => ! empty( $pay_later_settings['data']['custom_placement'] ) &&
+				$pay_later_settings['data']['custom_placement'][0]['status'] === 'enabled',
+		);
+
 		// Settings status.
 		$gateways = array(
 			'apple_pay'   => $settings['data']['ppcp-applepay']['enabled'] ?? false,
@@ -297,20 +309,24 @@ return array(
 			'paylater'    => $features['pay_later_messaging']['enabled'] ?? false,
 		);
 
+		$is_pay_later_messaging_enabled_for_any_location = ! array_filter( $pay_later_statuses );
+
 		return new TodosEligibilityService(
 			$capabilities['acdc'] && ! $gateways['axo'], // Enable Fastlane.
 			$capabilities['acdc'] && ! $gateways['card-button'], // Enable Credit and Debit Cards on your checkout.
-			true,                         // Enable Pay Later messaging.
-			true,                              // Add Pay Later messaging.
-			true,                      // Configure a PayPal Subscription.
-			true,                     // Add PayPal buttons.
-			true,                                              // Register Domain for Apple Pay.
+			$is_pay_later_messaging_enabled_for_any_location, // Enable Pay Later messaging.
+			! $is_pay_later_messaging_enabled_for_any_location && ! $pay_later_statuses['product'], // Add Pay Later messaging (Product page).
+			! $is_pay_later_messaging_enabled_for_any_location && ! $pay_later_statuses['cart'], // Add Pay Later messaging (Cart).
+			! $is_pay_later_messaging_enabled_for_any_location && ! $pay_later_statuses['checkout'], // Add Pay Later messaging (Checkout).
+			true, // Configure a PayPal Subscription.
+			true, // Add PayPal buttons.
+			true, // Register Domain for Apple Pay.
 			$capabilities['acdc'] && ! ( $capabilities['apple_pay'] && $capabilities['google_pay'] ), // Add digital wallets to your account.
-			$capabilities['acdc'] && ! $capabilities['apple_pay'],      // Add Apple Pay to your account.
-			$capabilities['acdc'] && ! $capabilities['google_pay'],     // Add Google Pay to your account.
-			true,                      // Configure a PayPal Subscription.
-			$capabilities['apple_pay'] && ! $gateways['apple_pay'],     // Enable Apple Pay.
-			$capabilities['google_pay'] && ! $gateways['google_pay']    // Enable Google Pay.
+			$capabilities['acdc'] && ! $capabilities['apple_pay'], // Add Apple Pay to your account.
+			$capabilities['acdc'] && ! $capabilities['google_pay'], // Add Google Pay to your account.
+			true, // Configure a PayPal Subscription.
+			$capabilities['apple_pay'] && ! $gateways['apple_pay'], // Enable Apple Pay.
+			$capabilities['google_pay'] && ! $gateways['google_pay'], // Enable Google Pay.
 		);
 	},
 );
