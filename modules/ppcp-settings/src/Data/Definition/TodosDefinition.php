@@ -67,6 +67,7 @@ class TodosDefinition {
 					'section'   => 'ppcp-axo-gateway',
 					'highlight' => 'ppcp-axo-gateway',
 				),
+				'priority'    => 1,
 			),
 			'enable_credit_debit_cards'            => array(
 				'title'       => __( 'Enable Credit and Debit Cards on your checkout', 'woocommerce-paypal-payments' ),
@@ -78,6 +79,7 @@ class TodosDefinition {
 					'section'   => 'ppcp-card-button-gateway',
 					'highlight' => 'ppcp-card-button-gateway',
 				),
+				'priority'    => 2,
 			),
 			'enable_pay_later_messaging'           => array(
 				'title'       => __( 'Enable Pay Later messaging', 'woocommerce-paypal-payments' ),
@@ -87,6 +89,7 @@ class TodosDefinition {
 					'type' => 'tab',
 					'tab'  => 'pay_later_messaging',
 				),
+				'priority'    => 3,
 			),
 			'add_pay_later_messaging_product_page' => array(
 				'title'       => __( 'Add Pay Later messaging to the Product page', 'woocommerce-paypal-payments' ),
@@ -96,6 +99,7 @@ class TodosDefinition {
 					'type' => 'tab',
 					'tab'  => 'pay_later_messaging',
 				),
+				'priority'    => 4,
 			),
 			'add_pay_later_messaging_cart'         => array(
 				'title'       => __( 'Add Pay Later messaging to the Cart page', 'woocommerce-paypal-payments' ),
@@ -105,6 +109,7 @@ class TodosDefinition {
 					'type' => 'tab',
 					'tab'  => 'pay_later_messaging',
 				),
+				'priority'    => 4,
 			),
 			'add_pay_later_messaging_checkout'     => array(
 				'title'       => __( 'Add Pay Later messaging to the Checkout page', 'woocommerce-paypal-payments' ),
@@ -114,6 +119,7 @@ class TodosDefinition {
 					'type' => 'tab',
 					'tab'  => 'pay_later_messaging',
 				),
+				'priority'    => 4,
 			),
 			'configure_paypal_subscription'        => array(
 				'title'       => __( 'Configure a PayPal Subscription', 'woocommerce-paypal-payments' ),
@@ -123,6 +129,7 @@ class TodosDefinition {
 					'type' => 'external',
 					'url'  => admin_url( 'edit.php?post_type=product&product_type=subscription' ),
 				),
+				'priority'    => 5,
 			),
 			'add_paypal_buttons'                   => array(
 				'title'       => __( 'Add PayPal buttons', 'woocommerce-paypal-payments' ),
@@ -132,6 +139,7 @@ class TodosDefinition {
 					'type' => 'tab',
 					'tab'  => 'styling',
 				),
+				'priority'    => 6,
 			),
 			'register_domain_apple_pay'            => array(
 				'title'       => __( 'Register Domain for Apple Pay', 'woocommerce-paypal-payments' ),
@@ -144,6 +152,7 @@ class TodosDefinition {
 						: 'https://www.paypal.com/uccservicing/apm/applepay',
 					'completeOnClick' => true,
 				),
+				'priority'    => 7,
 			),
 			'add_digital_wallets'                  => array(
 				'title'       => __( 'Add digital wallets to your account', 'woocommerce-paypal-payments' ),
@@ -153,6 +162,7 @@ class TodosDefinition {
 					'type' => 'external',
 					'url'  => 'https://www.paypal.com/businessmanage/account/settings',
 				),
+				'priority'    => 8,
 			),
 			'add_apple_pay'                        => array(
 				'title'       => __( 'Add Apple Pay to your account', 'woocommerce-paypal-payments' ),
@@ -162,6 +172,7 @@ class TodosDefinition {
 					'type' => 'external',
 					'url'  => 'https://www.paypal.com/businessmanage/account/settings',
 				),
+				'priority'    => 9,
 			),
 			'add_google_pay'                       => array(
 				'title'       => __( 'Add Google Pay to your account', 'woocommerce-paypal-payments' ),
@@ -171,6 +182,7 @@ class TodosDefinition {
 					'type' => 'external',
 					'url'  => 'https://www.paypal.com/businessmanage/account/settings',
 				),
+				'priority'    => 10,
 			),
 			'enable_apple_pay'                     => array(
 				'title'       => __( 'Enable Apple Pay', 'woocommerce-paypal-payments' ),
@@ -182,6 +194,7 @@ class TodosDefinition {
 					'section'   => 'ppcp-applepay',
 					'highlight' => 'ppcp-applepay',
 				),
+				'priority'    => 11,
 			),
 			'enable_google_pay'                    => array(
 				'title'       => __( 'Enable Google Pay', 'woocommerce-paypal-payments' ),
@@ -193,6 +206,7 @@ class TodosDefinition {
 					'section'   => 'ppcp-googlepay',
 					'highlight' => 'ppcp-googlepay',
 				),
+				'priority'    => 12,
 			),
 		);
 	}

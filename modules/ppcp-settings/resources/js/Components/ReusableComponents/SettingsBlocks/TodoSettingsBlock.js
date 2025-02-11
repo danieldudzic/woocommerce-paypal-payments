@@ -63,10 +63,10 @@ const TodoSettingsBlock = ( {
 		}
 	};
 
-	// Filter out dismissed todos for display
-	const visibleTodos = todosData.filter(
-		( todo ) => ! dismissedTodos.includes( todo.id )
-	);
+	// Filter out dismissed todos for display and limit to 5.
+	const visibleTodos = todosData
+		.filter( ( todo ) => ! dismissedTodos.includes( todo.id ) )
+		.slice( 0, 5 );
 
 	return (
 		<div

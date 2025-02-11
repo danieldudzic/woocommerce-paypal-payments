@@ -157,7 +157,8 @@ class TodosRestEndpoint extends RestEndpoint {
 			}
 		}
 
-		$filtered_todos = $this->filter_pay_later_todos( $todos );
+		$sorted_todos   = $this->sort_todos_by_priority( $todos );
+		$filtered_todos = $this->filter_pay_later_todos( $sorted_todos );
 
 		return $this->return_success(
 			array(
@@ -287,5 +288,24 @@ class TodosRestEndpoint extends RestEndpoint {
 		return $priority_pay_later_todo
 			? array_merge( $other_todos, array( $priority_pay_later_todo ) )
 			: $other_todos;
+	}
+
+	/**
+	 * Sorts todos by their priority value.
+	 *
+	 * @param array $todos Array of todos to sort.
+	 * @return array Sorted array of todos.
+	 */
+	private function sort_todos_by_priority( array $todos ): array {
+		usort(
+			$todos,
+			function( $a, $b ) {
+				$priority_a = $a['priority'] ?? 999;
+				$priority_b = $b['priority'] ?? 999;
+				return $priority_a <=> $priority_b;
+			}
+		);
+
+		return $todos;
 	}
 }
