@@ -648,7 +648,7 @@ class WCGatewayModule implements ServiceModule, ExtendingModule, ExecutableModul
 					$methods[] = $container->get( 'wcgateway.credit-card-gateway' );
 				}
 
-				if ( $paypal_gateway_enabled && $container->get( 'wcgateway.settings.allow_card_button_gateway' ) ) {
+				if ( $paypal_gateway_enabled && apply_filters( 'woocommerce_paypal_payments_card_button_gateway_should_register_gateway', $container->get( 'wcgateway.settings.allow_card_button_gateway' ) ) ) {
 					$methods[] = $container->get( 'wcgateway.card-button-gateway' );
 				}
 

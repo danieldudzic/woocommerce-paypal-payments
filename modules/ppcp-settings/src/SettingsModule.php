@@ -308,8 +308,9 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 				$dcc_applies = $container->get( 'api.helpers.dccapplies' );
 				assert( $dcc_applies instanceof DCCApplies );
 
-				// Unset BCDC if merchant is eligible for ACDC.
-				if ( $dcc_product_status->is_active() && ! $container->get( 'wcgateway.settings.allow_card_button_gateway' ) ) {
+				// Unset BCDC if merchant is eligible for ACDC and country is eligible for card fields.
+				$card_fields_eligible = $container->get( 'card-fields.eligible' );
+				if ( $dcc_product_status->is_active() && $card_fields_eligible ) {
 					unset( $payment_methods[ CardButtonGateway::ID ] );
 				}
 
@@ -366,6 +367,9 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 					return $methods;
 				}
 
+				$card_button_gateway = $container->get( 'wcgateway.card-button-gateway' );
+				assert( $card_button_gateway instanceof CardButtonGateway );
+
 				$googlepay_gateway = $container->get( 'googlepay.wc-gateway' );
 				assert( $googlepay_gateway instanceof WC_Payment_Gateway );
 
@@ -375,6 +379,7 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 				$axo_gateway = $container->get( 'axo.gateway' );
 				assert( $axo_gateway instanceof WC_Payment_Gateway );
 
+				$methods[] = $card_button_gateway;
 				$methods[] = $googlepay_gateway;
 				$methods[] = $applepay_gateway;
 				$methods[] = $axo_gateway;
@@ -399,6 +404,8 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 			10,
 			2
 		);
+
+		add_filter( 'woocommerce_paypal_payments_card_button_gateway_should_register_gateway', '__return_true' );
 
 		add_filter(
 			'woocommerce_paypal_payments_credit_card_gateway_form_fields',
