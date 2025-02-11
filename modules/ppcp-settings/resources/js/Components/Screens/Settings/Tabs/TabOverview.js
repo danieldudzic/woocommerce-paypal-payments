@@ -16,6 +16,7 @@ import { useTodos } from '../../../../data/todos/hooks';
 import { useMerchantInfo } from '../../../../data/common/hooks';
 import { STORE_NAME as COMMON_STORE_NAME } from '../../../../data/common';
 import { STORE_NAME as TODOS_STORE_NAME } from '../../../../data/todos';
+import { CommonHooks, TodosHooks } from '../../../../data';
 
 import { getFeatures } from '../Components/Overview/features-config';
 
@@ -23,8 +24,16 @@ import {
 	NOTIFICATION_ERROR,
 	NOTIFICATION_SUCCESS,
 } from '../../../ReusableComponents/Icons';
+import SpinnerOverlay from '../../../ReusableComponents/SpinnerOverlay';
 
 const TabOverview = () => {
+	const { isReady: areTodosReady } = TodosHooks.useTodos();
+	const { isReady: merchantIsReady } = CommonHooks.useMerchantInfo();
+
+	if ( ! areTodosReady || ! merchantIsReady ) {
+		return <SpinnerOverlay asModal={ true } />;
+	}
+
 	return (
 		<div className="ppcp-r-tab-overview">
 			<OverviewTodos />
