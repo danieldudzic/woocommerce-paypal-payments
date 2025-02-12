@@ -38,6 +38,7 @@ use WooCommerce\PayPalCommerce\Settings\Service\OnboardingUrlManager;
 use WooCommerce\PayPalCommerce\Settings\Service\TodosEligibilityService;
 use WooCommerce\PayPalCommerce\Vendor\Psr\Container\ContainerInterface;
 use WooCommerce\PayPalCommerce\Settings\Service\DataSanitizer;
+use WooCommerce\PayPalCommerce\Settings\Service\SettingsDataManager;
 
 return array(
 	'settings.url'                                => static function ( ContainerInterface $container ) : string {
@@ -245,6 +246,19 @@ return array(
 	},
 	'settings.service.sanitizer'                  => static function ( ContainerInterface $container ) : DataSanitizer {
 		return new DataSanitizer();
+	},
+	'settings.service.data-manager'               => static function ( ContainerInterface $container ) : SettingsDataManager {
+		$models = array(
+			$container->get( 'settings.data.onboarding' ),
+			$container->get( 'settings.data.general' ),
+			$container->get( 'settings.data.styling' ),
+			$container->get( 'settings.data.payment' ),
+			$container->get( 'settings.data.settings' ),
+			$container->get( 'settings.data.todos' ),
+			$container->get( 'settings.data.definition.todos' ),
+		);
+
+		return new SettingsDataManager( $models );
 	},
 	'settings.ajax.switch_ui'                     => static function ( ContainerInterface $container ) : SwitchSettingsUiEndpoint {
 		return new SwitchSettingsUiEndpoint(
