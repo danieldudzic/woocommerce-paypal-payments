@@ -33,10 +33,9 @@ const MESSAGES = {
 };
 
 const ACTIVITIES = {
-	CONNECT_SANDBOX: 'ISU_LOGIN_SANDBOX',
-	CONNECT_PRODUCTION: 'ISU_LOGIN_PRODUCTION',
-	CONNECT_ISU: 'ISU_LOGIN',
-	CONNECT_MANUAL: 'MANUAL_LOGIN',
+	OAUTH_VERIFY: 'oauth/login',
+	API_LOGIN: 'auth/api-login',
+	API_VERIFY: 'auth/verify-login',
 };
 
 export const useHandleOnboardingButton = ( isSandbox ) => {
@@ -124,7 +123,7 @@ export const useHandleOnboardingButton = ( isSandbox ) => {
 				 * visual cue to the user that something is still processing in the background.
 				 */
 				await withActivity(
-					ACTIVITIES.CONNECT_ISU,
+					ACTIVITIES.OAUTH_VERIFY,
 					'Validating the connection details',
 					async () => {
 						await authenticateWithOAuth(
@@ -182,7 +181,7 @@ const useConnectionBase = () => {
 		},
 		handleCompleted: async () => {
 			await withActivity(
-				'auth',
+				ACTIVITIES.API_VERIFY,
 				'Verifying Authentication',
 				async () => {
 					try {
@@ -227,7 +226,7 @@ export const useDirectAuthentication = () => {
 
 	const handleDirectAuthentication = async ( connectionDetails ) => {
 		return withActivity(
-			ACTIVITIES.CONNECT_MANUAL,
+			ACTIVITIES.API_LOGIN,
 			'Connecting manually via Client ID and Secret',
 			async () => {
 				let data;
