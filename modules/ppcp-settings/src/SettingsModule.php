@@ -124,7 +124,7 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 
 		add_action(
 			'woocommerce_paypal_payments_gateway_migrate_on_update',
-			static fn () => ! get_option( SwitchSettingsUiEndpoint::OPTION_NAME_SHOULD_USE_OLD_UI )
+			static fn() => ! get_option( SwitchSettingsUiEndpoint::OPTION_NAME_SHOULD_USE_OLD_UI )
 				&& update_option( SwitchSettingsUiEndpoint::OPTION_NAME_SHOULD_USE_OLD_UI, 'yes' )
 		);
 
@@ -311,7 +311,7 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 
 		add_filter(
 			'woocommerce_paypal_payments_payment_methods',
-			function( array $payment_methods ) use ( $container ) : array {
+			function ( array $payment_methods ) use ( $container ) : array {
 				$all_payment_methods = $payment_methods;
 
 				$dcc_product_status = $container->get( 'wcgateway.helper.dcc-product-status' );
@@ -380,7 +380,7 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 			 *
 			 * @psalm-suppress MissingClosureParamType
 			 */
-			static function ( $methods ) use ( $container ): array {
+			static function ( $methods ) use ( $container ) : array {
 				if ( ! is_array( $methods ) ) {
 					return $methods;
 				}
@@ -408,7 +408,7 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 
 		add_filter(
 			'woocommerce_paypal_payments_gateway_title',
-			function( string $title, WC_Payment_Gateway $gateway ) {
+			function ( string $title, WC_Payment_Gateway $gateway ) {
 				return $gateway->get_option( 'title', $title );
 			},
 			10,
@@ -416,7 +416,7 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 		);
 		add_filter(
 			'woocommerce_paypal_payments_gateway_description',
-			function( string $description, WC_Payment_Gateway $gateway ) {
+			function ( string $description, WC_Payment_Gateway $gateway ) {
 				return $gateway->get_option( 'description', $description );
 			},
 			10,
@@ -427,7 +427,7 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 
 		add_filter(
 			'woocommerce_paypal_payments_credit_card_gateway_form_fields',
-			function( array $form_fields ) {
+			function ( array $form_fields ) {
 				$form_fields['enabled'] = array(
 					'title'       => __( 'Enable/Disable', 'woocommerce-paypal-payments' ),
 					'type'        => 'checkbox',
@@ -444,7 +444,7 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 
 		add_filter(
 			'woocommerce_paypal_payments_credit_card_gateway_title',
-			function( string $title, WC_Payment_Gateway $gateway ) {
+			function ( string $title, WC_Payment_Gateway $gateway ) {
 				return $gateway->get_option( 'title', $title );
 			},
 			10,
@@ -452,7 +452,7 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 		);
 		add_filter(
 			'woocommerce_paypal_payments_credit_card_gateway_description',
-			function( string $description, WC_Payment_Gateway $gateway ) {
+			function ( string $description, WC_Payment_Gateway $gateway ) {
 				return $gateway->get_option( 'description', $description );
 			},
 			10,
@@ -462,7 +462,7 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 		add_filter( 'woocommerce_paypal_payments_axo_gateway_should_update_enabled', '__return_false' );
 		add_filter(
 			'woocommerce_paypal_payments_axo_gateway_title',
-			function( string $title, WC_Payment_Gateway $gateway ) {
+			function ( string $title, WC_Payment_Gateway $gateway ) {
 				return $gateway->get_option( 'title', $title );
 			},
 			10,
@@ -470,7 +470,7 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 		);
 		add_filter(
 			'woocommerce_paypal_payments_axo_gateway_description',
-			function( string $description, WC_Payment_Gateway $gateway ) {
+			function ( string $description, WC_Payment_Gateway $gateway ) {
 				return $gateway->get_option( 'description', $description );
 			},
 			10,
