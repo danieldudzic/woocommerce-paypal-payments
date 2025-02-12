@@ -145,18 +145,27 @@ export const useWebhooks = () => {
 
 export const useMerchantInfo = () => {
 	const { isReady, merchant, features } = useHooks();
-	const { refreshMerchantData } = useDispatch( STORE_NAME );
+	const { refreshMerchantData, setMerchant } = useDispatch( STORE_NAME );
 
 	const verifyLoginStatus = useCallback( async () => {
 		const result = await refreshMerchantData();
 
-		if ( ! result.success ) {
+		if ( ! result.success || ! result.merchant ) {
 			throw new Error( result?.message || result?.error?.message );
 		}
 
+		const newMerchant = result.merchant;
+
 		// Verify if the server state is "connected" and we have a merchant ID.
-		return merchant?.isConnected && merchant?.id;
-	}, [ refreshMerchantData, merchant ] );
+		if ( newMerchant?.isConnected && newMerchant?.id ) {
+			// Update the verified merchant details in Redux.
+			setMerchant( newMerchant );
+
+			return true;
+		}
+
+		return false;
+	}, [ refreshMerchantData, setMerchant ] );
 
 	return {
 		isReady,
