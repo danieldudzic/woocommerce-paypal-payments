@@ -1,0 +1,13 @@
+/**
+ * Modal for disconnecting the merchant from the current PayPal account.
+ */
+.ppcp--modal-disconnect {
+	.ppcp--toggle-danger {
+		--wp-components-color-accent: #cc1818
+	}
+
+	.ppcp--action-buttons {
+		text-align: right;
+		margin-top: 32px;
+	}
+}

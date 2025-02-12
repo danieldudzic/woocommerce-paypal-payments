@@ -4,7 +4,6 @@ import { useCallback, useState } from '@wordpress/element';
 
 import { CommonHooks } from '../../../../../../data';
 import { HStack } from '../../../../../ReusableComponents/Stack';
-import { Separator } from '../../../../../ReusableComponents/Elements';
 
 const DisconnectButton = () => {
 	const [ isOpen, setIsOpen ] = useState( false );
@@ -41,6 +40,7 @@ const DisconnectButton = () => {
 
 			{ isOpen && (
 				<Modal
+					className="ppcp--modal-disconnect"
 					size="small"
 					title={ confirmationTitle }
 					onRequestClose={ handleCancel }
@@ -53,6 +53,7 @@ const DisconnectButton = () => {
 					</p>
 					<ToggleControl
 						__nextHasNoMarginBottom
+						className="ppcp--toggle-danger"
 						checked={ resetFlag }
 						onChange={ setResetFlag }
 						label={ __(
@@ -66,12 +67,11 @@ const DisconnectButton = () => {
 										'woocommerce-paypal-payments'
 								  )
 								: __(
-										'Change Paypal accounts, preserving all settings',
+										'Disconnect, but preserve all settings',
 										'woocommerce-paypal-payments'
 								  )
 						}
 					/>
-					<Separator />
 					<HStack className="ppcp--action-buttons">
 						<Button variant="tertiary" onClick={ handleCancel }>
 							{ __( 'Cancel', 'woocommerce-paypal-payments' ) }
