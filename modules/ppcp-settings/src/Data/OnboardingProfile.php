@@ -89,10 +89,10 @@ class OnboardingProfile extends AbstractDataModel {
 	/**
 	 * Sets the 'completed' flag.
 	 *
-	 * @param bool $step Whether the onboarding process has been completed.
+	 * @param bool $state Whether the onboarding process has been completed.
 	 */
-	public function set_completed( bool $step ) : void {
-		$this->data['completed'] = $step;
+	public function set_completed( bool $state ) : void {
+		$this->data['completed'] = $state;
 	}
 
 	/**
