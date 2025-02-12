@@ -122,7 +122,7 @@ return array(
 			$container->get( 'woocommerce.logger.woocommerce' )
 		);
 	},
-	'settings.rest.connect_manual'                => static function ( ContainerInterface $container ) : AuthenticationRestEndpoint {
+	'settings.rest.authentication'                => static function ( ContainerInterface $container ) : AuthenticationRestEndpoint {
 		return new AuthenticationRestEndpoint(
 			$container->get( 'settings.service.authentication_manager' ),
 		);
