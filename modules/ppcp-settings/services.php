@@ -11,6 +11,7 @@ namespace WooCommerce\PayPalCommerce\Settings;
 
 use WooCommerce\PayPalCommerce\ApiClient\Helper\Cache;
 use WooCommerce\PayPalCommerce\Settings\Ajax\SwitchSettingsUiEndpoint;
+use WooCommerce\PayPalCommerce\Settings\Data\Definition\FeaturesDefinition;
 use WooCommerce\PayPalCommerce\Settings\Data\GeneralSettings;
 use WooCommerce\PayPalCommerce\Settings\Data\OnboardingProfile;
 use WooCommerce\PayPalCommerce\Settings\Data\PaymentSettings;
@@ -21,6 +22,7 @@ use WooCommerce\PayPalCommerce\Settings\Data\Definition\TodosDefinition;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\AuthenticationRestEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\CommonRestEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\CompleteOnClickEndpoint;
+use WooCommerce\PayPalCommerce\Settings\Endpoint\FeaturesRestEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\LoginLinkRestEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\OnboardingRestEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\PayLaterMessagingEndpoint;
@@ -34,6 +36,7 @@ use WooCommerce\PayPalCommerce\Settings\Endpoint\TodosRestEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Handler\ConnectionListener;
 use WooCommerce\PayPalCommerce\Settings\Service\AuthenticationManager;
 use WooCommerce\PayPalCommerce\Settings\Service\ConnectionUrlGenerator;
+use WooCommerce\PayPalCommerce\Settings\Service\FeaturesEligibilityService;
 use WooCommerce\PayPalCommerce\Settings\Service\OnboardingUrlManager;
 use WooCommerce\PayPalCommerce\Settings\Service\TodosEligibilityService;
 use WooCommerce\PayPalCommerce\Vendor\Psr\Container\ContainerInterface;
@@ -327,6 +330,51 @@ return array(
 			true, // Configure a PayPal Subscription.
 			$capabilities['apple_pay'] && ! $gateways['apple_pay'], // Enable Apple Pay.
 			$capabilities['google_pay'] && ! $gateways['google_pay'], // Enable Google Pay.
+		);
+	},
+	'settings.rest.features'                         => static function ( ContainerInterface $container ) : FeaturesRestEndpoint {
+		return new FeaturesRestEndpoint(
+			$container->get( 'settings.data.definition.features' ),
+			$container->get( 'settings.rest.settings' )
+		);
+	},
+	'settings.data.definition.features'              => static function ( ContainerInterface $container ) : FeaturesDefinition {
+		return new FeaturesDefinition(
+			$container->get( 'settings.service.features_eligibilities' ),
+			$container->get( 'settings.data.general' )
+		);
+	},
+	'settings.service.features_eligibilities' => static function( ContainerInterface $container ): FeaturesEligibilityService {
+		$features = apply_filters(
+			'woocommerce_paypal_payments_rest_common_merchant_features',
+			array()
+		);
+
+		$payment_endpoint = $container->get('settings.rest.payment');
+		$settings = $payment_endpoint->get_details()->get_data();
+
+		// Settings status.
+		$gateways = array(
+			'card-button' => $settings['data']['ppcp-card-button-gateway']['enabled'] ?? false,
+		);
+
+		// Merchant eligibility.
+		$capabilities = array(
+			'apple_pay'   => $features['apple_pay']['enabled'] ?? false,
+			'google_pay'  => $features['google_pay']['enabled'] ?? false,
+			'acdc'        => $features['advanced_credit_and_debit_cards']['enabled'] ?? false,
+			'save_paypal' => $features['save_paypal_and_venmo']['enabled'] ?? false,
+			'apm'         => $features['alternative_payment_methods']['enabled'] ?? false,
+			'paylater'    => $features['pay_later_messaging']['enabled'] ?? false,
+		);
+
+		return new FeaturesEligibilityService(
+			$capabilities['save_paypal'], // Save PayPal and Venmo eligibility.
+			$capabilities['acdc'] && ! $gateways['card-button'], // Enable Credit and Debit Cards on your checkout. // Advanced credit and debit cards eligibility.
+			$capabilities['apm'], // Alternative payment methods eligibility.
+			$capabilities['acdc'] && ! $capabilities['google_pay'], // Google Pay eligibility.
+			$capabilities['acdc'] && ! $capabilities['apple_pay'], // Apple Pay eligibility.
+			$capabilities['paylater'], // Pay Later eligibility.
 		);
 	},
 );
