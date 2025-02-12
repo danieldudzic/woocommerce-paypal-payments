@@ -157,6 +157,7 @@ const ManualConnectionForm = () => {
 					label={ clientIdLabel }
 					value={ manualClientId }
 					onChange={ setManualClientId }
+					onConfirm={ handleManualConnect }
 					className={ classNames( {
 						'ppcp--has-error': ! clientValid,
 					} ) }
@@ -173,6 +174,7 @@ const ManualConnectionForm = () => {
 					label={ secretKeyLabel }
 					value={ manualClientSecret }
 					onChange={ setManualClientSecret }
+					onConfirm={ handleManualConnect }
 					type="password"
 				/>
 				<Button
