@@ -173,6 +173,7 @@ const useConnectionBase = () => {
 	const { createSuccessNotice, createErrorNotice } =
 		useDispatch( noticesStore );
 	const { verifyLoginStatus } = CommonHooks.useMerchantInfo();
+	const { withActivity } = CommonHooks.useBusyState();
 
 	return {
 		handleFailed: ( res, genericMessage ) => {
@@ -180,18 +181,26 @@ const useConnectionBase = () => {
 			createErrorNotice( res?.message ?? genericMessage );
 		},
 		handleCompleted: async () => {
-			try {
-				const loginSuccessful = await verifyLoginStatus();
+			await withActivity(
+				'auth',
+				'Verifying Authentication',
+				async () => {
+					try {
+						const loginSuccessful = await verifyLoginStatus();
 
-				if ( loginSuccessful ) {
-					createSuccessNotice( MESSAGES.CONNECTED );
-					await setCompleted( true );
-				} else {
-					createErrorNotice( MESSAGES.LOGIN_FAILED );
+						if ( loginSuccessful ) {
+							createSuccessNotice( MESSAGES.CONNECTED );
+							await setCompleted( true );
+						} else {
+							createErrorNotice( MESSAGES.LOGIN_FAILED );
+						}
+					} catch ( error ) {
+						createErrorNotice(
+							error.message ?? MESSAGES.LOGIN_FAILED
+						);
+					}
 				}
-			} catch ( error ) {
-				createErrorNotice( error.message ?? MESSAGES.LOGIN_FAILED );
-			}
+			);
 		},
 		createErrorNotice,
 	};
