@@ -232,7 +232,7 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 				$endpoints = array(
 					'onboarding'             => $container->get( 'settings.rest.onboarding' ),
 					'common'                 => $container->get( 'settings.rest.common' ),
-					'connect_manual'         => $container->get( 'settings.rest.connect_manual' ),
+					'connect_manual'         => $container->get( 'settings.rest.authentication' ),
 					'login_link'             => $container->get( 'settings.rest.login_link' ),
 					'webhooks'               => $container->get( 'settings.rest.webhooks' ),
 					'refresh_feature_status' => $container->get( 'settings.rest.refresh_feature_status' ),

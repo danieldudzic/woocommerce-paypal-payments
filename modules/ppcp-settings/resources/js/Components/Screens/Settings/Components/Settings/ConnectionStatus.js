@@ -59,7 +59,9 @@ const ConnectionDescription = () => {
 				'Your PayPal account connection details.',
 				'woocommerce-paypal-payments'
 			) }
-			<DisconnectButton />
+			<div className="ppcp--card-actions">
+				<DisconnectButton />
+			</div>
 		</>
 	);
 };
