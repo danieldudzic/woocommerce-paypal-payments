@@ -30,7 +30,7 @@ export const useHandleOnboardingButton = ( isSandbox ) => {
 	const { sandboxOnboardingUrl } = CommonHooks.useSandbox();
 	const { productionOnboardingUrl } = CommonHooks.useProduction();
 	const products = OnboardingHooks.useDetermineProducts();
-	const { withActivity } = CommonHooks.useBusyState();
+	const { withActivity, startActivity } = CommonHooks.useBusyState();
 	const { authenticateWithOAuth } = CommonHooks.useAuthentication();
 	const [ onboardingUrl, setOnboardingUrl ] = useState( '' );
 	const [ scriptLoaded, setScriptLoaded ] = useState( false );
@@ -110,16 +110,15 @@ export const useHandleOnboardingButton = ( isSandbox ) => {
 				 * frame before the REST endpoint returns a value. Using "withActivity" is more of a
 				 * visual cue to the user that something is still processing in the background.
 				 */
-				await withActivity(
+				startActivity(
 					ACTIVITIES.OAUTH_VERIFY,
-					'Validating the connection details',
-					async () => {
-						await authenticateWithOAuth(
-							sharedId,
-							authCode,
-							'sandbox' === environment
-						);
-					}
+					'Validating the connection details'
+				);
+
+				await authenticateWithOAuth(
+					sharedId,
+					authCode,
+					'sandbox' === environment
 				);
 			};
 
