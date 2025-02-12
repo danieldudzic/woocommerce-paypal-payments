@@ -215,6 +215,8 @@ export const useBusyState = () => {
 	);
 
 	return {
+		startActivity,
+		stopActivity,
 		withActivity, // HOC
 		isBusy, // Boolean.
 	};
