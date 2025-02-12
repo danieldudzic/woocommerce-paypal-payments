@@ -49,10 +49,10 @@ const TodoSettingsBlock = ( {
 			await selectTab( tabId, todo.action.section );
 		} else if ( todo.action.type === 'external' ) {
 			window.open( todo.action.url, '_blank' );
-			// If it has completeOnClick flag, trigger the action
-			if ( todo.action.completeOnClick === true ) {
-				await completeOnClick( todo.id );
-			}
+		}
+
+		if ( todo.action.completeOnClick === true ) {
+			await completeOnClick( todo.id );
 		}
 
 		if ( todo.action.modal ) {
@@ -63,10 +63,10 @@ const TodoSettingsBlock = ( {
 		}
 	};
 
-	// Filter out dismissed todos for display
-	const visibleTodos = todosData.filter(
-		( todo ) => ! dismissedTodos.includes( todo.id )
-	);
+	// Filter out dismissed todos for display and limit to 5.
+	const visibleTodos = todosData
+		.filter( ( todo ) => ! dismissedTodos.includes( todo.id ) )
+		.slice( 0, 5 );
 
 	return (
 		<div

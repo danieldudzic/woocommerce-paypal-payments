@@ -26,6 +26,7 @@ const defaultTransient = Object.freeze( {
 		email: '',
 		clientId: '',
 		clientSecret: '',
+		sellerType: 'unknown',
 	} ),
 
 	wooSettings: Object.freeze( {

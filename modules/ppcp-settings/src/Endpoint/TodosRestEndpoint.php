@@ -34,6 +34,17 @@ class TodosRestEndpoint extends RestEndpoint {
 	protected $rest_base = 'todos';
 
 	/**
+	 * Pay Later messaging todo IDs in priority order.
+	 *
+	 * @var array
+	 */
+	private const PAY_LATER_IDS = array(
+		'add_pay_later_messaging_product_page',
+		'add_pay_later_messaging_cart',
+		'add_pay_later_messaging_checkout',
+	);
+
+	/**
 	 * The todos model instance.
 	 *
 	 * @var TodosModel
@@ -146,9 +157,12 @@ class TodosRestEndpoint extends RestEndpoint {
 			}
 		}
 
+		$sorted_todos   = $this->sort_todos_by_priority( $todos );
+		$filtered_todos = $this->filter_pay_later_todos( $sorted_todos );
+
 		return $this->return_success(
 			array(
-				'todos'                 => $todos,
+				'todos'                 => $filtered_todos,
 				'dismissedTodos'        => $dismissed_ids,
 				'completedOnClickTodos' => $completed_onclick_ids,
 			)
@@ -230,5 +244,68 @@ class TodosRestEndpoint extends RestEndpoint {
 				__( 'Failed to reset dismissed todos.', 'woocommerce-paypal-payments' )
 			);
 		}
+	}
+
+	/**
+	 * Filters Pay Later messaging todos to show only the highest priority eligible todo.
+	 *
+	 * @param array $todos The array of todos to filter.
+	 * @return array Filtered todos with only one Pay Later messaging todo.
+	 */
+	private function filter_pay_later_todos( array $todos ): array {
+		$pay_later_todos = array_filter(
+			$todos,
+			function( $todo ) {
+				return in_array( $todo['id'], self::PAY_LATER_IDS, true );
+			}
+		);
+
+		$other_todos = array_filter(
+			$todos,
+			function( $todo ) {
+				return ! in_array( $todo['id'], self::PAY_LATER_IDS, true );
+			}
+		);
+
+		// Find the highest priority Pay Later todo that's eligible.
+		$priority_pay_later_todo = null;
+		foreach ( self::PAY_LATER_IDS as $pay_later_id ) {
+			$matching_todo = current(
+				array_filter(
+					$pay_later_todos,
+					function( $todo ) use ( $pay_later_id ) {
+						return $todo['id'] === $pay_later_id;
+					}
+				)
+			);
+
+			if ( $matching_todo ) {
+				$priority_pay_later_todo = $matching_todo;
+				break;
+			}
+		}
+
+		return $priority_pay_later_todo
+			? array_merge( $other_todos, array( $priority_pay_later_todo ) )
+			: $other_todos;
+	}
+
+	/**
+	 * Sorts todos by their priority value.
+	 *
+	 * @param array $todos Array of todos to sort.
+	 * @return array Sorted array of todos.
+	 */
+	private function sort_todos_by_priority( array $todos ): array {
+		usort(
+			$todos,
+			function( $a, $b ) {
+				$priority_a = $a['priority'] ?? 999;
+				$priority_b = $b['priority'] ?? 999;
+				return $priority_a <=> $priority_b;
+			}
+		);
+
+		return $todos;
 	}
 }
