@@ -11,6 +11,7 @@ namespace WooCommerce\PayPalCommerce\Settings\Service;
 
 use WooCommerce\PayPalCommerce\Settings\Data\AbstractDataModel;
 use WooCommerce\PayPalCommerce\Settings\Data\OnboardingProfile;
+use WooCommerce\PayPalCommerce\Settings\DTO\ConfigurationFlagsDTO;
 
 /**
  * Class SettingsDataManager
@@ -70,5 +71,17 @@ class SettingsDataManager {
 
 		// Clear any caches.
 		wp_cache_flush();
+	}
+
+	/**
+	 * Applies a default configuration to the plugin.
+	 *
+	 * @param ConfigurationFlagsDTO $flags The configuration flags.
+	 * @return void
+	 */
+	public function apply_configuration( ConfigurationFlagsDTO $flags ) : void {
+		// Onboarding stuff...
+
+		$this->onboarding_profile->set_setup_done( true );
 	}
 }
