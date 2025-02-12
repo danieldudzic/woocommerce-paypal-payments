@@ -147,7 +147,7 @@ class AuthenticationManager {
 			throw new RuntimeException( 'No client ID provided.' );
 		}
 
-		if ( false === preg_match( '/^[\w-]{80,}$/', $client_secret ) ) {
+		if ( false === preg_match( '/^A[\w-]{79}$/', $client_secret ) ) {
 			throw new RuntimeException( 'Invalid client ID provided.' );
 		}
 

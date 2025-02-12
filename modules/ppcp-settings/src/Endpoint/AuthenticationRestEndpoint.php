@@ -88,6 +88,7 @@ class AuthenticationRestEndpoint extends RestEndpoint {
 						'type'              => 'string',
 						'sanitize_callback' => 'sanitize_text_field',
 						'minLength'         => 80,
+						'maxLength'         => 80,
 					),
 					'clientSecret' => array(
 						'required'          => true,
