@@ -10,19 +10,7 @@ const PAYPAL_PARTNER_SDK_URL =
 
 const MESSAGES = {
 	CONNECTED: __( 'Connected to PayPal', 'woocommerce-paypal-payments' ),
-	POPUP_BLOCKED: __(
-		'Popup blocked. Please allow popups for this site to connect to PayPal.',
-		'woocommerce-paypal-payments'
-	),
-	SANDBOX_ERROR: __(
-		'Could not generate a Sandbox login link.',
-		'woocommerce-paypal-payments'
-	),
-	PRODUCTION_ERROR: __(
-		'Could not generate a login link.',
-		'woocommerce-paypal-payments'
-	),
-	MANUAL_ERROR: __(
+	API_ERROR: __(
 		'Could not connect to PayPal. Please make sure your Client ID and Secret Key are correct.',
 		'woocommerce-paypal-payments'
 	),
@@ -167,6 +155,7 @@ export const useHandleOnboardingButton = ( isSandbox ) => {
 	};
 };
 
+// Base connection is only used for API login (manual connection).
 const useConnectionBase = () => {
 	const { setCompleted } = OnboardingHooks.useSteps();
 	const { createSuccessNotice, createErrorNotice } =
@@ -258,7 +247,7 @@ export const useDirectAuthentication = () => {
 				if ( res.success ) {
 					await handleCompleted();
 				} else {
-					handleFailed( res, MESSAGES.MANUAL_ERROR );
+					handleFailed( res, MESSAGES.API_ERROR );
 				}
 
 				return res.success;
