@@ -10,6 +10,7 @@ declare( strict_types = 1 );
 namespace WooCommerce\PayPalCommerce\Settings\Service;
 
 use WooCommerce\PayPalCommerce\Settings\Data\AbstractDataModel;
+use WooCommerce\PayPalCommerce\Settings\Data\OnboardingProfile;
 
 /**
  * Class SettingsDataManager
@@ -20,24 +21,35 @@ use WooCommerce\PayPalCommerce\Settings\Data\AbstractDataModel;
 class SettingsDataManager {
 
 	/**
+	 * The onboarding profile data model.
+	 *
+	 * @var OnboardingProfile
+	 */
+	private OnboardingProfile $onboarding_profile;
+
+	/**
 	 * Stores a list of all AbstractDataModel instances that are managed by
 	 * this service.
 	 *
 	 * @var AbstractDataModel[]
 	 */
-	private array $models = array();
+	private array $purgeable_models = array();
 
 	/**
 	 * Constructor.
 	 *
-	 * @param array $data_models List of AbstractDataModel instances.
+	 * @param OnboardingProfile $onboarding_profile The onboarding profile model.
+	 * @param array             ...$data_models     List of additional data models to reset.
 	 */
-	public function __construct( array $data_models ) {
+	public function __construct( OnboardingProfile $onboarding_profile, ...$data_models ) {
 		foreach ( $data_models as $data_model ) {
 			if ( $data_model instanceof AbstractDataModel ) {
-				$this->models[] = $data_model;
+				$this->purgeable_models[] = $data_model;
 			}
 		}
+
+		$this->purgeable_models[] = $onboarding_profile;
+		$this->onboarding_profile = $onboarding_profile;
 	}
 
 	/**
@@ -52,7 +64,7 @@ class SettingsDataManager {
 		 */
 		do_action( 'woocommerce_paypal_payments_reset_settings' );
 
-		foreach ( $this->models as $model ) {
+		foreach ( $this->purgeable_models as $model ) {
 			$model->purge();
 		}
 
