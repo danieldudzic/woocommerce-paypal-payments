@@ -83,5 +83,6 @@ class SettingsDataManager {
 		// Onboarding stuff...
 
 		$this->onboarding_profile->set_setup_done( true );
+		$this->onboarding_profile->save();
 	}
 }

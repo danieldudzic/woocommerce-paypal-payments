@@ -36,6 +36,8 @@ use WooCommerce\PayPalCommerce\WcGateway\Gateway\OXXO\OXXO;
 use WooCommerce\PayPalCommerce\WcGateway\Gateway\PayUponInvoice\PayUponInvoiceGateway;
 use WooCommerce\PayPalCommerce\WcGateway\Helper\DCCProductStatus;
 use WooCommerce\PayPalCommerce\WcGateway\Settings\Settings;
+use WooCommerce\PayPalCommerce\Settings\Service\SettingsDataManager;
+use WooCommerce\PayPalCommerce\Settings\DTO\ConfigurationFlagsDTO;
 
 /**
  * Class SettingsModule
@@ -288,6 +290,22 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 
 				$onboarding_profile->set_completed( true );
 				$onboarding_profile->save();
+
+				// If the initial plugin configuration was not applied yet, do it now.
+				if ( ! $onboarding_profile->is_setup_done() ) {
+					$data_manager = $container->get( 'settings.service.data-manager' );
+					assert( $data_manager instanceof SettingsDataManager );
+
+					$flags = new ConfigurationFlagsDTO();
+
+					// TODO: Dummy values, use real values!
+					$flags->country_code       = 'US';
+					$flags->is_business_seller = true;
+					$flags->use_card_payments  = true;
+					$flags->use_subscriptions  = true;
+
+					$data_manager->apply_configuration( $flags );
+				}
 			}
 		);
 
