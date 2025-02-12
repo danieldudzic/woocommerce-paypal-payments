@@ -72,6 +72,7 @@ class OnboardingProfile extends AbstractDataModel {
 			'is_casual_seller'                     => null,
 			'are_optional_payment_methods_enabled' => null,
 			'products'                             => array(),
+			'setup_done'                           => false,
 		);
 	}
 
@@ -165,5 +166,23 @@ class OnboardingProfile extends AbstractDataModel {
 	 */
 	public function get_flags() : array {
 		return $this->flags;
+	}
+
+	/**
+	 * Gets the 'setup_done' flag.
+	 *
+	 * @return bool
+	 */
+	public function is_setup_done() : bool {
+		return (bool) $this->data['setup_done'];
+	}
+
+	/**
+	 * Sets the 'setup_done' flag.
+	 *
+	 * @param bool $done Whether the onboarding process has been setup_done.
+	 */
+	public function set_setup_done( bool $done ) : void {
+		$this->data['setup_done'] = $done;
 	}
 }
