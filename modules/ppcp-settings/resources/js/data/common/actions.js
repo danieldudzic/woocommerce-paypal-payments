@@ -111,6 +111,17 @@ export const setWebhooks = ( webhooks ) =>
 	setPersistent( 'webhooks', webhooks );
 
 /**
+ * Replace merchant details in the store.
+ *
+ * @param {Object} merchant - The new merchant details.
+ * @return {Action} The action.
+ */
+export const setMerchant = ( merchant ) => ( {
+	type: ACTION_TYPES.SET_MERCHANT,
+	payload: { merchant },
+} );
+
+/**
  * Reset merchant details in the store.
  *
  * @return {Action} The action.

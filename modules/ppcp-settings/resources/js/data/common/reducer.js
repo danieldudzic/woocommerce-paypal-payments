@@ -113,6 +113,10 @@ const commonReducer = createReducer( defaultTransient, defaultPersistent, {
 		features: Object.freeze( { ...defaultTransient.features } ),
 	} ),
 
+	[ ACTION_TYPES.SET_MERCHANT ]: ( state, payload ) => {
+		return changePersistent( state, { merchant: payload.merchant } );
+	},
+
 	[ ACTION_TYPES.HYDRATE ]: ( state, payload ) => {
 		const newState = changePersistent( state, payload.data );
 
