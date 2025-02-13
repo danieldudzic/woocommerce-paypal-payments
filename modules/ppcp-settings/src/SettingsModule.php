@@ -291,21 +291,19 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 				$onboarding_profile->set_completed( true );
 				$onboarding_profile->save();
 
-				// If the initial plugin configuration was not applied yet, do it now.
-				if ( ! $onboarding_profile->is_setup_done() ) {
-					$data_manager = $container->get( 'settings.service.data-manager' );
-					assert( $data_manager instanceof SettingsDataManager );
+				// Try to apply a default configuration for the current store.
+				$data_manager = $container->get( 'settings.service.data-manager' );
+				assert( $data_manager instanceof SettingsDataManager );
 
-					$flags = new ConfigurationFlagsDTO();
+				$flags = new ConfigurationFlagsDTO();
 
-					// TODO: Dummy values, use real values!
-					$flags->country_code       = 'US';
-					$flags->is_business_seller = true;
-					$flags->use_card_payments  = true;
-					$flags->use_subscriptions  = true;
+				// TODO: Dummy values, use real values!
+				$flags->country_code       = 'US';
+				$flags->is_business_seller = true;
+				$flags->use_card_payments  = true;
+				$flags->use_subscriptions  = true;
 
-					$data_manager->apply_configuration( $flags );
-				}
+				$data_manager->set_defaults_for_new_merchant( $flags );
 			}
 		);
 

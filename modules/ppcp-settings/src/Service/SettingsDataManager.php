@@ -74,15 +74,37 @@ class SettingsDataManager {
 	}
 
 	/**
-	 * Applies a default configuration to the plugin.
+	 * Applies a default configuration to the plugin for a new merchant.
+	 *
+	 * This method checks the onboarding "setup_done" flag to determine if
+	 * the defaults should be applied. At the end of this method, the
+	 * "setup_done" flag is set, so future calls to the method have no effect.
 	 *
 	 * @param ConfigurationFlagsDTO $flags The configuration flags.
 	 * @return void
 	 */
-	public function apply_configuration( ConfigurationFlagsDTO $flags ) : void {
-		// Onboarding stuff...
+	public function set_defaults_for_new_merchant( ConfigurationFlagsDTO $flags ) : void {
+		if ( $this->onboarding_profile->is_setup_done() ) {
+			return;
+		}
+
+		$this->apply_configuration( $flags );
 
 		$this->onboarding_profile->set_setup_done( true );
 		$this->onboarding_profile->save();
+	}
+
+	/**
+	 * Applies a default configuration to the plugin, without any condition.
+	 *
+	 * @param ConfigurationFlagsDTO $flags The configuration flags.
+	 * @return void
+	 */
+	protected function apply_configuration( ConfigurationFlagsDTO $flags ) : void {
+		// Apply defaults for the "Payment Methods" tab.
+
+		// Apply defaults for the "Settings" tab.
+
+		// Assign defaults for the "Styling" tab.
 	}
 }
