@@ -159,6 +159,12 @@ return array(
 				)
 			),
 			new SettingsMap(
+				$container->get( 'settings.data.settings' ),
+				array(
+					'disable_cards' => 'disabled_cards',
+				)
+			),
+			new SettingsMap(
 				$container->get( 'settings.data.styling' ),
 				/**
 				 * The `StylingSettings` class stores settings as `LocationStylingDTO` objects.
