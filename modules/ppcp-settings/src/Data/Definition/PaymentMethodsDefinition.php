@@ -92,17 +92,21 @@ class PaymentMethodsDefinition {
 	private function define_common_fields( string $gateway_id, string $title, string $description, string $icon ) : array {
 		$gateway = $this->wc_gateways[ $gateway_id ] ?? null;
 
+		$gateway_title       = $gateway ? $gateway->get_title() : $title;
+		$gateway_description = $gateway ? $gateway->get_description() : $description;
+
 		return array(
 			'id'              => $gateway_id,
-			'title'           => $title,
-			'description'     => $description,
+			'enabled'         => wc_string_to_bool( $gateway ? $gateway->enabled : '' ),
+			'title'           => str_replace( '&amp;', '&', $gateway_title ),
+			'description'     => $gateway_description,
 			'icon'            => $icon,
 			'itemTitle'       => $title,
 			'itemDescription' => $description,
 			'fields'          => array(
 				'checkoutPageTitle'       => array(
 					'type'    => 'text',
-					'default' => $gateway ? $gateway->get_title() : '',
+					'default' => $gateway_title,
 					'label'   => __( 'Checkout page title', 'woocommerce-paypal-payments' ),
 				),
 				'checkoutPageDescription' => array(
