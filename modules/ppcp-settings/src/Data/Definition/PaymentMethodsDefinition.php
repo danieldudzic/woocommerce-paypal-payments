@@ -97,7 +97,7 @@ class PaymentMethodsDefinition {
 
 		return array(
 			'id'              => $gateway_id,
-			'enabled'         => wc_string_to_bool( $gateway ? $gateway->enabled : '' ),
+			'enabled'         => $this->settings->is_method_enabled( $gateway_id ),
 			'title'           => str_replace( '&amp;', '&', $gateway_title ),
 			'description'     => $gateway_description,
 			'icon'            => $icon,

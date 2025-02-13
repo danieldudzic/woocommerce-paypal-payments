@@ -9,6 +9,8 @@ declare( strict_types = 1 );
 
 namespace WooCommerce\PayPalCommerce\Settings\Data;
 
+use WC_Payment_Gateway;
+
 /**
  * Class PaymentSettings
  */
@@ -22,11 +24,18 @@ class PaymentSettings extends AbstractDataModel {
 	protected const OPTION_KEY = 'woocommerce-ppcp-data-payment';
 
 	/**
+	 * List of WC_Payment_Gateway instances that need to be saved.
+	 *
+	 * @var WC_Payment_Gateway[]
+	 */
+	private array $unsaved_gateways = array();
+
+	/**
 	 * Get default values for the model.
 	 *
 	 * @return array
 	 */
-	protected function get_defaults(): array {
+	protected function get_defaults() : array {
 		return array(
 			'paypal_show_logo'           => false,
 			'three_d_secure'             => 'no-3d-secure',
@@ -38,11 +47,78 @@ class PaymentSettings extends AbstractDataModel {
 	}
 
 	/**
+	 * Saves the model data to WordPress options.
+	 */
+	public function save() : void {
+		parent::save();
+
+		foreach ( $this->unsaved_gateways as $gateway_id => $gateway ) {
+			update_option( $gateway->get_option_key(), $gateway->settings );
+		}
+
+		$this->unsaved_gateways = array();
+	}
+
+	/**
+	 * Enables or disables the defined payment method, if it exists.
+	 *
+	 * @param string $method_id  ID of the payment method.
+	 * @param bool   $is_enabled Whether to enable the method.
+	 */
+	public function toggle_method_state( string $method_id, bool $is_enabled ) : void {
+		switch ( $method_id ) {
+			case 'venmo':
+				$this->set_venmo_enabled( $is_enabled );
+				break;
+
+			case 'pay-later':
+				$this->set_paylater_enabled( $is_enabled );
+				break;
+
+			default:
+				$gateway = WC()->payment_gateways()->payment_gateways()[ $method_id ] ?? null;
+
+				if ( $gateway ) {
+					$gateway->enabled = wc_bool_to_string( $is_enabled );
+
+					$this->unsaved_gateways[ $gateway->id ] = $gateway;
+				}
+		}
+	}
+
+	/**
+	 * Checks, if the provided payment method is enabled.
+	 *
+	 * @param string $method_id ID of the payment method.
+	 * @return bool True, if the method is enabled. False if it's disabled or not existing.
+	 */
+	public function is_method_enabled( string $method_id ) : bool {
+		switch ( $method_id ) {
+			case 'venmo':
+				$this->get_venmo_enabled();
+				break;
+
+			case 'pay-later':
+				$this->get_paylater_enabled();
+				break;
+
+			default:
+				$gateway = WC()->payment_gateways()->payment_gateways()[ $method_id ] ?? null;
+
+				if ( $gateway ) {
+					return wc_string_to_bool( $gateway->enabled );
+				}
+		}
+
+		return false;
+	}
+
+	/**
 	 * Get PayPal show logo.
 	 *
 	 * @return bool
 	 */
-	public function get_paypal_show_logo(): bool {
+	public function get_paypal_show_logo() : bool {
 		return (bool) $this->data['paypal_show_logo'];
 	}
 
@@ -51,7 +127,7 @@ class PaymentSettings extends AbstractDataModel {
 	 *
 	 * @return string
 	 */
-	public function get_three_d_secure(): string {
+	public function get_three_d_secure() : string {
 		return $this->data['three_d_secure'];
 	}
 
@@ -60,7 +136,7 @@ class PaymentSettings extends AbstractDataModel {
 	 *
 	 * @return bool
 	 */
-	public function get_fastlane_cardholder_name(): bool {
+	public function get_fastlane_cardholder_name() : bool {
 		return (bool) $this->data['fastlane_cardholder_name'];
 	}
 
@@ -69,7 +145,7 @@ class PaymentSettings extends AbstractDataModel {
 	 *
 	 * @return bool
 	 */
-	public function get_fastlane_display_watermark(): bool {
+	public function get_fastlane_display_watermark() : bool {
 		return (bool) $this->data['fastlane_display_watermark'];
 	}
 
@@ -78,7 +154,7 @@ class PaymentSettings extends AbstractDataModel {
 	 *
 	 * @return bool
 	 */
-	public function get_venmo_enabled(): bool {
+	public function get_venmo_enabled() : bool {
 		return (bool) $this->data['venmo_enabled'];
 	}
 
@@ -87,7 +163,7 @@ class PaymentSettings extends AbstractDataModel {
 	 *
 	 * @return bool
 	 */
-	public function get_paylater_enabled(): bool {
+	public function get_paylater_enabled() : bool {
 		return (bool) $this->data['paylater_enabled'];
 	}
 
@@ -97,7 +173,7 @@ class PaymentSettings extends AbstractDataModel {
 	 * @param bool $value The value.
 	 * @return void
 	 */
-	public function set_paypal_show_logo( bool $value ): void {
+	public function set_paypal_show_logo( bool $value ) : void {
 		$this->data['paypal_show_logo'] = $value;
 	}
 
@@ -107,7 +183,7 @@ class PaymentSettings extends AbstractDataModel {
 	 * @param string $value The value.
 	 * @return void
 	 */
-	public function set_three_d_secure( string $value ): void {
+	public function set_three_d_secure( string $value ) : void {
 		$this->data['three_d_secure'] = $value;
 	}
 
@@ -117,7 +193,7 @@ class PaymentSettings extends AbstractDataModel {
 	 * @param bool $value The value.
 	 * @return void
 	 */
-	public function set_fastlane_cardholder_name( bool $value ): void {
+	public function set_fastlane_cardholder_name( bool $value ) : void {
 		$this->data['fastlane_cardholder_name'] = $value;
 	}
 
@@ -127,7 +203,7 @@ class PaymentSettings extends AbstractDataModel {
 	 * @param bool $value The value.
 	 * @return void
 	 */
-	public function set_fastlane_display_watermark( bool $value ): void {
+	public function set_fastlane_display_watermark( bool $value ) : void {
 		$this->data['fastlane_display_watermark'] = $value;
 	}
 
@@ -137,7 +213,7 @@ class PaymentSettings extends AbstractDataModel {
 	 * @param bool $value The value.
 	 * @return void
 	 */
-	public function set_venmo_enabled( bool $value ): void {
+	public function set_venmo_enabled( bool $value ) : void {
 		$this->data['venmo_enabled'] = $value;
 	}
 
@@ -147,7 +223,7 @@ class PaymentSettings extends AbstractDataModel {
 	 * @param bool $value The value.
 	 * @return void
 	 */
-	public function set_paylater_enabled( bool $value ): void {
+	public function set_paylater_enabled( bool $value ) : void {
 		$this->data['paylater_enabled'] = $value;
 	}
 }
