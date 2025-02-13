@@ -19,6 +19,7 @@ use WooCommerce\PayPalCommerce\WcGateway\Gateway\PayPalGateway;
 use WooCommerce\PayPalCommerce\Settings\Data\StylingSettings;
 use WooCommerce\PayPalCommerce\Settings\Data\GeneralSettings;
 use WooCommerce\PayPalCommerce\Settings\Data\SettingsModel;
+use WooCommerce\PayPalCommerce\Settings\Data\PaymentSettings;
 
 /**
  * Class SettingsDataManager
@@ -50,6 +51,13 @@ class SettingsDataManager {
 	private StylingSettings $styling_settings;
 
 	/**
+	 * Model for handling payment methods.
+	 *
+	 * @var PaymentSettings
+	 */
+	private PaymentSettings $payment_methods;
+
+	/**
 	 * Stores a list of all AbstractDataModel instances that are managed by
 	 * this service.
 	 *
@@ -64,6 +72,7 @@ class SettingsDataManager {
 	 * @param GeneralSettings   $general_settings   The general settings model.
 	 * @param SettingsModel     $payment_settings   The settings model.
 	 * @param StylingSettings   $styling_settings   The styling settings model.
+	 * @param PaymentSettings   $payment_methods    The payment settings model.
 	 * @param array             ...$data_models     List of additional data models to reset.
 	 */
 	public function __construct(
@@ -71,6 +80,7 @@ class SettingsDataManager {
 		GeneralSettings $general_settings,
 		SettingsModel $payment_settings,
 		StylingSettings $styling_settings,
+		PaymentSettings $payment_methods,
 		...$data_models
 	) {
 		foreach ( $data_models as $data_model ) {
@@ -90,10 +100,12 @@ class SettingsDataManager {
 		$this->models_to_reset[] = $general_settings;
 		$this->models_to_reset[] = $payment_settings;
 		$this->models_to_reset[] = $styling_settings;
+		$this->models_to_reset[] = $payment_methods;
 
 		$this->onboarding_profile = $onboarding_profile;
 		$this->payment_settings   = $payment_settings;
 		$this->styling_settings   = $styling_settings;
+		$this->payment_methods    = $payment_methods;
 	}
 
 	/**
@@ -145,12 +157,26 @@ class SettingsDataManager {
 	 */
 	protected function apply_configuration( ConfigurationFlagsDTO $flags ) : void {
 		// Apply defaults for the "Payment Methods" tab.
+		$this->toggle_payment_gateways( $flags );
 
 		// Apply defaults for the "Settings" tab.
 		$this->apply_payment_settings( $flags );
 
 		// Assign defaults for the "Styling" tab.
 		$this->apply_location_styles( $flags );
+	}
+
+	/**
+	 * Enables or disables payment gateways depending on the provided
+	 * configuration flags.
+	 *
+	 * @param ConfigurationFlagsDTO $flags Shop configuration flags.
+	 * @return void
+	 */
+	protected function toggle_payment_gateways( ConfigurationFlagsDTO $flags ) : void {
+		// Always enable Venmo and Pay Later.
+		$this->payment_methods->set_venmo_enabled( true );
+		$this->payment_methods->set_paylater_enabled( true );
 	}
 
 	/**
