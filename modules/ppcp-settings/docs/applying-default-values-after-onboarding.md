@@ -31,15 +31,28 @@ initialize the plugin's configuration, before marking the `setup_done` flag as c
 
 ### Payment Methods
 
+By default, all payment methods are turned off after onboarding, unless the conditions specified in
+the following table are met.
 
+| Payment Method | Country | Seller Type | Subscriptions | Cards | Notes                         |
+|----------------|---------|-------------|---------------|-------|-------------------------------|
+| Venmo          | US      | *any*       | *any*         | *any* | Always                        |
+| Pay Later      | US      | *any*       | *any*         | *any* | Always                        |
+| ACDC           | US      | Business    | *any*         | ✅     | Greyed out for Casual Sellers |
+| BCDC           | US      | *any*       | *any*         | ✅     |                               |
+| Apple Pay      | US      | Business    | *any*         | ✅     | Based on feature eligibility  |
+| Google Pay     | US      | Business    | *any*         | ✅     | Based on feature eligibility  |
+| All APMs       | US      | Business    | *any*         | ✅     | Based on feature eligibility  |
 
 ### Settings
 
-| Feature                     | Country | Seller-Type | Subscriptions | Cards | 
-|-----------------------------|---------|-------------|---------------|-------|
-| Pay Now Experience          | US      | _any_       | _any_         | _any_ |
-| Save PayPal and Venmo       | US      | Business    | ✅             | _any_ |
-| Save Credit and Debit Cards | US      | Business    | ✅             | ✅     |
+| Feature                     | Country | Seller-Type | Subscriptions | Cards | Notes                      |
+|-----------------------------|---------|-------------|---------------|-------|----------------------------|
+| Pay Now Experience          | US      | _any_       | _any_         | _any_ |                            |
+| Save PayPal and Venmo       | US      | Business    | ✅             | _any_ |                            |
+| Save Credit and Debit Cards | US      | Business    | ✅             | ✅     | Requires ACDC eligibility* |
+
+- `*` If merchant has no ACDC eligibility, the setting should be disabled (not toggleable).
 
 ### Styling
 
