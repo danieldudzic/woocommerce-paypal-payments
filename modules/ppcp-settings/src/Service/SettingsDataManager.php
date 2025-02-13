@@ -34,7 +34,7 @@ class SettingsDataManager {
 	 *
 	 * @var AbstractDataModel[]
 	 */
-	private array $purgeable_models = array();
+	private array $models_to_reset = array();
 
 	/**
 	 * Constructor.
@@ -44,12 +44,20 @@ class SettingsDataManager {
 	 */
 	public function __construct( OnboardingProfile $onboarding_profile, ...$data_models ) {
 		foreach ( $data_models as $data_model ) {
+			/**
+			 * An instance extracted from the spread operator. We only process
+			 * AbstractDataModel instances.
+			 *
+			 * @var mixed|AbstractDataModel $data_model
+			 */
+
 			if ( $data_model instanceof AbstractDataModel ) {
-				$this->purgeable_models[] = $data_model;
+				$this->models_to_reset[] = $data_model;
 			}
 		}
 
-		$this->purgeable_models[] = $onboarding_profile;
+		$this->models_to_reset[] = $onboarding_profile;
+
 		$this->onboarding_profile = $onboarding_profile;
 	}
 
@@ -65,7 +73,7 @@ class SettingsDataManager {
 		 */
 		do_action( 'woocommerce_paypal_payments_reset_settings' );
 
-		foreach ( $this->purgeable_models as $model ) {
+		foreach ( $this->models_to_reset as $model ) {
 			$model->purge();
 		}
 
