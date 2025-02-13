@@ -21,7 +21,7 @@ const Accordion = ( {
 	children = null,
 	className = '',
 } ) => {
-	const { isOpen, toggleOpen } = useToggleState( { id, initiallyOpen } );
+	const { isOpen, toggleOpen } = useToggleState( id, initiallyOpen );
 	const wrapperClasses = classNames( 'ppcp-r-accordion', className, {
 		'ppcp--is-open': isOpen,
 	} );
