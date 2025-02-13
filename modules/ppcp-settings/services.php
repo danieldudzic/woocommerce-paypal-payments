@@ -109,7 +109,10 @@ return array(
 		return new CommonRestEndpoint( $container->get( 'settings.data.general' ) );
 	},
 	'settings.rest.payment'                       => static function ( ContainerInterface $container ) : PaymentRestEndpoint {
-		return new PaymentRestEndpoint( $container->get( 'settings.data.payment' ) );
+		return new PaymentRestEndpoint(
+			$container->get( 'settings.data.payment' ),
+			$container->get( 'settings.data.definition.methods' )
+		);
 	},
 	'settings.rest.styling'                       => static function ( ContainerInterface $container ) : StylingRestEndpoint {
 		return new StylingRestEndpoint(
