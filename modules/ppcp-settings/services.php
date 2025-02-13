@@ -39,6 +39,7 @@ use WooCommerce\PayPalCommerce\Settings\Service\TodosEligibilityService;
 use WooCommerce\PayPalCommerce\Vendor\Psr\Container\ContainerInterface;
 use WooCommerce\PayPalCommerce\Settings\Service\DataSanitizer;
 use WooCommerce\PayPalCommerce\Settings\Service\SettingsDataManager;
+use WooCommerce\PayPalCommerce\Settings\Data\Definition\PaymentMethodsDefinition;
 
 return array(
 	'settings.url'                                => static function ( ContainerInterface $container ) : string {
@@ -280,6 +281,11 @@ return array(
 		return new TodosDefinition(
 			$container->get( 'settings.service.todos_eligibilities' ),
 			$container->get( 'settings.data.general' )
+		);
+	},
+	'settings.data.definition.methods'            => static function ( ContainerInterface $container ) : PaymentMethodsDefinition {
+		return new PaymentMethodsDefinition(
+			$container->get( 'settings.data.payment' ),
 		);
 	},
 	'settings.service.todos_eligibilities'        => static function ( ContainerInterface $container ) : TodosEligibilityService {
