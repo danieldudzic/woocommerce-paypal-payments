@@ -12,6 +12,13 @@ namespace WooCommerce\PayPalCommerce\Settings\Service;
 use WooCommerce\PayPalCommerce\Settings\Data\AbstractDataModel;
 use WooCommerce\PayPalCommerce\Settings\Data\OnboardingProfile;
 use WooCommerce\PayPalCommerce\Settings\DTO\ConfigurationFlagsDTO;
+use WooCommerce\PayPalCommerce\Settings\DTO\LocationStylingDTO;
+use WooCommerce\PayPalCommerce\Googlepay\GooglePayGateway;
+use WooCommerce\PayPalCommerce\Applepay\ApplePayGateway;
+use WooCommerce\PayPalCommerce\WcGateway\Gateway\PayPalGateway;
+use WooCommerce\PayPalCommerce\Settings\Data\StylingSettings;
+use WooCommerce\PayPalCommerce\Settings\Data\GeneralSettings;
+use WooCommerce\PayPalCommerce\Settings\Data\SettingsModel;
 
 /**
  * Class SettingsDataManager
@@ -29,6 +36,13 @@ class SettingsDataManager {
 	private OnboardingProfile $onboarding_profile;
 
 	/**
+	 * Data model that handles button styling on the front end.
+	 *
+	 * @var StylingSettings
+	 */
+	private StylingSettings $styling_settings;
+
+	/**
 	 * Stores a list of all AbstractDataModel instances that are managed by
 	 * this service.
 	 *
@@ -40,9 +54,18 @@ class SettingsDataManager {
 	 * Constructor.
 	 *
 	 * @param OnboardingProfile $onboarding_profile The onboarding profile model.
+	 * @param GeneralSettings   $general_settings   The general settings model.
+	 * @param SettingsModel     $settings_model     The settings model.
+	 * @param StylingSettings   $styling_settings   The styling settings model.
 	 * @param array             ...$data_models     List of additional data models to reset.
 	 */
-	public function __construct( OnboardingProfile $onboarding_profile, ...$data_models ) {
+	public function __construct(
+		OnboardingProfile $onboarding_profile,
+		GeneralSettings $general_settings,
+		SettingsModel $settings_model,
+		StylingSettings $styling_settings,
+		...$data_models
+	) {
 		foreach ( $data_models as $data_model ) {
 			/**
 			 * An instance extracted from the spread operator. We only process
@@ -57,8 +80,12 @@ class SettingsDataManager {
 		}
 
 		$this->models_to_reset[] = $onboarding_profile;
+		$this->models_to_reset[] = $general_settings;
+		$this->models_to_reset[] = $settings_model;
+		$this->models_to_reset[] = $styling_settings;
 
 		$this->onboarding_profile = $onboarding_profile;
+		$this->styling_settings   = $styling_settings;
 	}
 
 	/**
@@ -114,5 +141,47 @@ class SettingsDataManager {
 		// Apply defaults for the "Settings" tab.
 
 		// Assign defaults for the "Styling" tab.
+		$location_styles = $this->get_location_styles( $flags );
+		$this->styling_settings->from_array( $location_styles );
+		$this->styling_settings->save();
+	}
+
+	/**
+	 * Builds an array of styling details that should be applied for the shop.
+	 *
+	 * @param ConfigurationFlagsDTO $flags Shop configuration flags.
+	 * @return LocationStylingDTO[] A set of styling details.
+	 */
+	protected function get_location_styles( ConfigurationFlagsDTO $flags ) : array {
+		$methods_full = array(
+			PayPalGateway::ID,
+			'venmo',
+			'pay-later',
+			ApplePayGateway::ID,
+			GooglePayGateway::ID,
+		);
+
+		$methods_own = array(
+			PayPalGateway::ID,
+			'venmo',
+			'pay-later',
+		);
+
+		return array(
+			// Cart: Enabled, display PayPal, Venmo, Pay Later, Google Pay, Apple Pay.
+			'cart'             => new LocationStylingDTO( 'cart', true, $methods_full ),
+
+			// Classic Checkout: Display PayPal, Venmo, Pay Later, Google Pay, Apple Pay.
+			'classic_checkout' => new LocationStylingDTO( 'classic_checkout', true, $methods_full ),
+
+			// Express Checkout: Display PayPal, Venmo, Pay Later, Google Pay, Apple Pay.
+			'express_checkout' => new LocationStylingDTO( 'express_checkout', true, $methods_full ),
+
+			// Mini Cart: Display PayPal, Venmo, Pay Later, Google Pay, Apple Pay.
+			'mini_cart'        => new LocationStylingDTO( 'mini_cart', true, $methods_full ),
+
+			// Product Page: Display PayPal, Venmo, Pay Later.
+			'product'          => new LocationStylingDTO( 'product', true, $methods_own ),
+		);
 	}
 }
