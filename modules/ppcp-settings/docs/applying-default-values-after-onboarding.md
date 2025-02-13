@@ -29,6 +29,20 @@ initialize the plugin's configuration, before marking the `setup_done` flag as c
 
 ## Default Settings Matrix
 
+### Decision Flags
+
+- **Country**: The merchant country.
+	- According to PayPal settings, not the WooCommerce country
+	- Test case: Set Woo country to Germany and sign in with a US merchant account; this should
+	  trigger the "Country: US" branches below.
+- **Seller Type**: Business or Casual.
+	- According to PayPal, not the onboarding choice
+	- Test case: Choose "Personal" during onboarding but log in with a business account; this should
+	  trigger the "Account: Business" branches below.
+- **Subscriptions**: An onboarding choice on the "Products" screen.
+- **Cards**: An onboarding choice, on the "Checkout Options" screen.
+	- Refers to the first option on the checkout options screen ("Custom Card Fields", etc.)
+
 ### Payment Methods
 
 By default, all payment methods are turned off after onboarding, unless the conditions specified in
