@@ -150,6 +150,7 @@ return array(
 				'CZK', // Czech Koruna
 				'DKK', // Danish Krone
 				'EUR', // Euro
+				'HKD', // Hong Kong Dollar
 				'GBP', // British Pound Sterling
 				'HUF', // Hungarian Forint
 				'ILS', // Israeli New Shekel
@@ -159,6 +160,7 @@ return array(
 				'NZD', // New Zealand Dollar
 				'PHP', // Philippine Peso
 				'PLN', // Polish Zloty
+				'SGD', // Singapur-Dollar
 				'SEK', // Swedish Krona
 				'THB', // Thai Baht
 				'TWD', // New Taiwan Dollar
