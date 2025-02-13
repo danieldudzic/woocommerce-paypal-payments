@@ -11,7 +11,16 @@ const determineInitialState = ( id, initiallyOpen ) => {
 	return checkIfCurrentTab( id );
 };
 
-export function useAccordionState( { id = '', initiallyOpen = null } ) {
+/**
+ * Allows managing a toggle-able component, such as an accordion or a modal dialog.
+ *
+ * @param {Object}       props
+ * @param {string}       props.id            - Optional, if provided, the toggle can be opened via the URL.
+ * @param {null|boolean} props.initiallyOpen - Optional. If provided, it defines the initial open state.
+ *                                           If omitted, the initial open state is determined by using the "id" logic (inspecting the URL).
+ * @return {{isOpen: unknown, toggleOpen: (function(*): boolean)}} Hook object.
+ */
+export function useToggleState( { id = '', initiallyOpen = null } ) {
 	const [ isOpen, setIsOpen ] = useState(
 		determineInitialState( id, initiallyOpen )
 	);
