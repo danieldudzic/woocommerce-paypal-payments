@@ -78,7 +78,7 @@ const DisconnectButton = () => {
 						</Button>
 						<Button
 							variant="primary"
-							isDestructive={ true }
+							isDestructive={ resetFlag }
 							onClick={ handleConfirm }
 						>
 							{ __(
