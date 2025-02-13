@@ -36,6 +36,13 @@ class SettingsDataManager {
 	private OnboardingProfile $onboarding_profile;
 
 	/**
+	 * Payment settings model.
+	 *
+	 * @var SettingsModel
+	 */
+	private SettingsModel $payment_settings;
+
+	/**
 	 * Data model that handles button styling on the front end.
 	 *
 	 * @var StylingSettings
@@ -55,14 +62,14 @@ class SettingsDataManager {
 	 *
 	 * @param OnboardingProfile $onboarding_profile The onboarding profile model.
 	 * @param GeneralSettings   $general_settings   The general settings model.
-	 * @param SettingsModel     $settings_model     The settings model.
+	 * @param SettingsModel     $payment_settings   The settings model.
 	 * @param StylingSettings   $styling_settings   The styling settings model.
 	 * @param array             ...$data_models     List of additional data models to reset.
 	 */
 	public function __construct(
 		OnboardingProfile $onboarding_profile,
 		GeneralSettings $general_settings,
-		SettingsModel $settings_model,
+		SettingsModel $payment_settings,
 		StylingSettings $styling_settings,
 		...$data_models
 	) {
@@ -81,10 +88,11 @@ class SettingsDataManager {
 
 		$this->models_to_reset[] = $onboarding_profile;
 		$this->models_to_reset[] = $general_settings;
-		$this->models_to_reset[] = $settings_model;
+		$this->models_to_reset[] = $payment_settings;
 		$this->models_to_reset[] = $styling_settings;
 
 		$this->onboarding_profile = $onboarding_profile;
+		$this->payment_settings   = $payment_settings;
 		$this->styling_settings   = $styling_settings;
 	}
 
@@ -139,9 +147,34 @@ class SettingsDataManager {
 		// Apply defaults for the "Payment Methods" tab.
 
 		// Apply defaults for the "Settings" tab.
+		$this->apply_payment_settings( $flags );
 
 		// Assign defaults for the "Styling" tab.
 		$this->apply_location_styles( $flags );
+	}
+
+	/**
+	 * Applies the default payment settings that are relevant for the provided
+	 * configuration flags.
+	 *
+	 * @param ConfigurationFlagsDTO $flags Shop configuration flags.
+	 * @return void
+	 */
+	protected function apply_payment_settings( ConfigurationFlagsDTO $flags ) : void {
+		// Enable Pay-Now experience for all merchants.
+		$this->payment_settings->set_enable_pay_now( true );
+
+		if ( $flags->is_business_seller && $flags->use_subscriptions ) {
+			$this->payment_settings->set_save_paypal_and_venmo( true );
+
+			if ( $flags->use_card_payments ) {
+				$this->payment_settings->set_save_card_details( true );
+			} else {
+				$this->payment_settings->set_save_card_details( false );
+			}
+		}
+
+		$this->payment_settings->save();
 	}
 
 	/**
