@@ -174,9 +174,21 @@ class SettingsDataManager {
 	 * @return void
 	 */
 	protected function toggle_payment_gateways( ConfigurationFlagsDTO $flags ) : void {
+		/*
+		TODO: Implement those conditions:
+
+		| Payment Method | Country | Seller Type | Subscriptions | Cards | Notes                         |
+		|----------------|---------|-------------|---------------|-------|-------------------------------|
+		| ACDC           | US      | Business    | *any*         | ✅     | Greyed out for Casual Sellers |
+		| BCDC           | US      | *any*       | *any*         | ✅     |                               |
+		| Apple Pay      | US      | Business    | *any*         | ✅     | Based on feature eligibility  |
+		| Google Pay     | US      | Business    | *any*         | ✅     | Based on feature eligibility  |
+		| All APMs       | US      | Business    | *any*         | ✅     | Based on feature eligibility  |
+		*/
+
 		// Always enable Venmo and Pay Later.
-		$this->payment_methods->set_venmo_enabled( true );
-		$this->payment_methods->set_paylater_enabled( true );
+		$this->payment_methods->toggle_method_state( 'venmo', true );
+		$this->payment_methods->toggle_method_state( 'pay-later', true );
 	}
 
 	/**
