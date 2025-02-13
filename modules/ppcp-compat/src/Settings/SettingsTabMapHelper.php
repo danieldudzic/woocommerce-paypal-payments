@@ -39,7 +39,7 @@ class SettingsTabMapHelper {
 	/**
 	 * Retrieves the value of a mapped key from the new settings.
 	 *
-	 * @param string $old_key                             The key from the legacy settings.
+	 * @param string                      $old_key The key from the legacy settings.
 	 * @param array<string, scalar|array> $settings_model The new settings model data as an array.
 	 * @return mixed The value of the mapped setting, (null if not found).
 	 */
