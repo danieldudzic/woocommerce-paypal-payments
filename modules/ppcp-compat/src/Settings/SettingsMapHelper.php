@@ -10,6 +10,7 @@ declare( strict_types = 1 );
 namespace WooCommerce\PayPalCommerce\Compat\Settings;
 
 use RuntimeException;
+use WooCommerce\PayPalCommerce\Settings\Data\SettingsModel;
 use WooCommerce\PayPalCommerce\Settings\Data\StylingSettings;
 
 /**
@@ -50,16 +51,29 @@ class SettingsMapHelper {
 	protected StylingSettingsMapHelper $styling_settings_map_helper;
 
 	/**
+	 * A helper for mapping the old/new settings tab settings.
+	 *
+	 * @var SettingsTabMapHelper
+	 */
+	protected SettingsTabMapHelper $settings_tab_map_helper;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param SettingsMap[]            $settings_map A list of settings maps containing key definitions.
 	 * @param StylingSettingsMapHelper $styling_settings_map_helper A helper for mapping the old/new styling settings.
+	 * @param SettingsTabMapHelper     $settings_tab_map_helper A helper for mapping the old/new settings tab settings.
 	 * @throws RuntimeException When an old key has multiple mappings.
 	 */
-	public function __construct( array $settings_map, StylingSettingsMapHelper $styling_settings_map_helper ) {
+	public function __construct(
+		array $settings_map,
+		StylingSettingsMapHelper $styling_settings_map_helper,
+		SettingsTabMapHelper $settings_tab_map_helper
+	) {
 		$this->validate_settings_map( $settings_map );
 		$this->settings_map                = $settings_map;
 		$this->styling_settings_map_helper = $styling_settings_map_helper;
+		$this->settings_tab_map_helper     = $settings_tab_map_helper;
 	}
 
 	/**
@@ -135,6 +149,10 @@ class SettingsMapHelper {
 		switch ( true ) {
 			case $model instanceof StylingSettings:
 				return $this->styling_settings_map_helper->mapped_value( $old_key, $this->model_cache[ $model_id ] );
+
+			case $model instanceof SettingsModel:
+				return $this->settings_tab_map_helper->mapped_value( $old_key, $this->model_cache[ $model_id ] );
+
 			default:
 				return $this->model_cache[ $model_id ][ $new_key ] ?? null;
 		}
