@@ -7,16 +7,11 @@ const SectionPaymentMethods = ( { location } ) => {
 	const { paymentMethods, setPaymentMethods, choices } =
 		StylingHooks.usePaymentMethodProps( location );
 
-	const methods = PaymentHooks.usePaymentMethods();
-	const methodIds = [];
-	methods.all.forEach( ( method ) => {
-		if ( method.enabled === true ) {
-			methodIds.push( method.id );
-		}
-	} );
+	const { all: allMethods } = PaymentHooks.usePaymentMethods();
 
 	const filteredChoices = choices.filter( ( choice ) => {
-		return methodIds.includes( choice.paymentMethod );
+		const methodConfig = allMethods.find( ( i ) => i.id === choice.value );
+		return methodConfig?.enabled;
 	} );
 
 	return (
