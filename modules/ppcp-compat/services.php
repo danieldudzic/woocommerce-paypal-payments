@@ -161,7 +161,9 @@ return array(
 			new SettingsMap(
 				$container->get( 'settings.data.settings' ),
 				array(
-					'disable_cards' => 'disabled_cards',
+					'disable_cards'   => 'disabled_cards',
+					'brand_name'      => 'brand_name',
+					'soft_descriptor' => 'soft_descriptor',
 				)
 			),
 			new SettingsMap(
