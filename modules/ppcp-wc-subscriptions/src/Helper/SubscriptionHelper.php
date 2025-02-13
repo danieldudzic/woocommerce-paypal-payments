@@ -296,7 +296,7 @@ class SubscriptionHelper {
 		// Sort orders by oder ID descending.
 		rsort( $orders );
 		$current_order = wc_get_order( array_shift( $orders ) );
-		if ( ! $current_order ) {
+		if ( ! $current_order instanceof WC_Order ) {
 			return '';
 		}
 
