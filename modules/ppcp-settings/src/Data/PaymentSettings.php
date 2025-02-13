@@ -76,7 +76,7 @@ class PaymentSettings extends AbstractDataModel {
 				break;
 
 			default:
-				$gateway = WC()->payment_gateways()->payment_gateways()[ $method_id ] ?? null;
+				$gateway = $this->get_gateway( $method_id );
 
 				if ( $gateway ) {
 					$gateway->enabled = wc_bool_to_string( $is_enabled );
@@ -103,7 +103,7 @@ class PaymentSettings extends AbstractDataModel {
 				break;
 
 			default:
-				$gateway = WC()->payment_gateways()->payment_gateways()[ $method_id ] ?? null;
+				$gateway = $this->get_gateway( $method_id );
 
 				if ( $gateway ) {
 					return wc_string_to_bool( $gateway->enabled );
@@ -225,5 +225,21 @@ class PaymentSettings extends AbstractDataModel {
 	 */
 	public function set_paylater_enabled( bool $value ) : void {
 		$this->data['paylater_enabled'] = $value;
+	}
+
+	/**
+	 * Get the gateway object for the given method ID.
+	 *
+	 * @param string $method_id ID of the payment method.
+	 * @return WC_Payment_Gateway|null
+	 */
+	private function get_gateway( string $method_id ) : ?WC_Payment_Gateway {
+		if ( isset( $this->unsaved_gateways[ $method_id ] ) ) {
+			return $this->unsaved_gateways[ $method_id ];
+		}
+
+		$gateways = WC()->payment_gateways()->payment_gateways();
+
+		return isset( $gateways[ $method_id ] ) ? $gateways[ $method_id ] : null;
 	}
 }
