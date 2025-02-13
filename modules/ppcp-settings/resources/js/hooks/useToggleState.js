@@ -1,4 +1,4 @@
-import { useEffect, useState } from '@wordpress/element';
+import { useCallback, useEffect, useState } from '@wordpress/element';
 
 const checkIfCurrentTab = ( id ) => {
 	return id && window.location.hash === `#${ id }`;
@@ -38,11 +38,14 @@ export function useToggleState( { id = '', initiallyOpen = null } ) {
 		};
 	}, [ id ] );
 
-	const toggleOpen = ( ev ) => {
-		setIsOpen( ! isOpen );
-		ev?.preventDefault();
-		return false;
-	};
+	const toggleOpen = useCallback(
+		( ev ) => {
+			setIsOpen( ! isOpen );
+			ev?.preventDefault();
+			return false;
+		},
+		[ isOpen ]
+	);
 
 	return { isOpen, toggleOpen };
 }
