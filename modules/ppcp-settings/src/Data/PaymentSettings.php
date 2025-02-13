@@ -52,7 +52,11 @@ class PaymentSettings extends AbstractDataModel {
 	public function save() : void {
 		parent::save();
 
-		foreach ( $this->unsaved_gateways as $gateway_id => $gateway ) {
+		foreach ( $this->unsaved_gateways as $gateway ) {
+			$gateway->settings['enabled']     = $gateway->enabled;
+			$gateway->settings['title']       = $gateway->title;
+			$gateway->settings['description'] = $gateway->description;
+
 			update_option( $gateway->get_option_key(), $gateway->settings );
 		}
 
@@ -81,7 +85,7 @@ class PaymentSettings extends AbstractDataModel {
 				if ( $gateway ) {
 					$gateway->enabled = wc_bool_to_string( $is_enabled );
 
-					$this->unsaved_gateways[ $gateway->id ] = $gateway;
+					$this->modified_gateway( $gateway );
 				}
 		}
 	}
@@ -111,6 +115,40 @@ class PaymentSettings extends AbstractDataModel {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Updates the payment method title.
+	 *
+	 * @param string $method_id ID of the payment method.
+	 * @param string $title     The new title.
+	 * @return void
+	 */
+	public function set_method_title( string $method_id, string $title ) : void {
+		$gateway = $this->get_gateway( $method_id );
+
+		if ( $gateway ) {
+			$gateway->title = $title;
+
+			$this->modified_gateway( $gateway );
+		}
+	}
+
+	/**
+	 * Updates the payment method description.
+	 *
+	 * @param string $method_id   ID of the payment method.
+	 * @param string $description The new description.
+	 * @return void
+	 */
+	public function set_method_description( string $method_id, string $description ) : void {
+		$gateway = $this->get_gateway( $method_id );
+
+		if ( $gateway ) {
+			$gateway->description = $description;
+
+			$this->modified_gateway( $gateway );
+		}
 	}
 
 	/**
@@ -240,6 +278,23 @@ class PaymentSettings extends AbstractDataModel {
 
 		$gateways = WC()->payment_gateways()->payment_gateways();
 
-		return isset( $gateways[ $method_id ] ) ? $gateways[ $method_id ] : null;
+		if ( ! isset( $gateways[ $method_id ] ) ) {
+			return null;
+		}
+
+		$gateway = $gateways[ $method_id ];
+		$gateway->init_form_fields();
+
+		return $gateway;
+	}
+
+	/**
+	 * Store the gateway object for later saving.
+	 *
+	 * @param WC_Payment_Gateway $gateway The gateway object.
+	 * @return void
+	 */
+	private function modified_gateway( WC_Payment_Gateway $gateway ) : void {
+		$this->unsaved_gateways[ $gateway->id ] = $gateway;
 	}
 }
