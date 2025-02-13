@@ -62,7 +62,7 @@ class SettingsTabMapHelper {
 	 * @return 'extra_line'|'ditch'|null The mapped mismatch_behavior value.
 	 */
 	protected function mapped_mismatch_behavior_value( array $settings_model ): ?string {
-		$subtotal_adjustment = $settings_model[ 'subtotal_adjustment' ] ?? false;
+		$subtotal_adjustment = $settings_model['subtotal_adjustment'] ?? false;
 
 		if ( ! $subtotal_adjustment ) {
 			return null;
