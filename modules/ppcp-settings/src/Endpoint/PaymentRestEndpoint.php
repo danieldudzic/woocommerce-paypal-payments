@@ -710,10 +710,10 @@ class PaymentRestEndpoint extends RestEndpoint {
 			if ( ! isset( $all_gateways[ $key ] ) && isset( $request_data[ $key ] ) ) {
 				switch ( $key ) {
 					case 'venmo':
-						$this->settings->set_venmo_enabled( $request_data[ $key ]['enabled'] );
+						$this->settings->set_venmo_enabled( $request_data[ $key ]['enabled'] ?? false );
 						break;
 					case 'pay-later':
-						$this->settings->set_paylater_enabled( $request_data[ $key ]['enabled'] );
+						$this->settings->set_paylater_enabled( $request_data[ $key ]['enabled'] ?? false );
 						break;
 				}
 
