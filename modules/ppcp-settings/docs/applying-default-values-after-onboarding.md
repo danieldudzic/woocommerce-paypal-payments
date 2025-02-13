@@ -70,7 +70,7 @@ the following table are met.
 
 ### Styling
 
-All US merchants use the same settings, regardless of any onboarding choices.
+All US merchants use the same settings, regardless of onboarding choices.
 
 | Button Location  | Enabled | Displayed Payment Methods                       |
 |------------------|---------|-------------------------------------------------|
@@ -79,3 +79,16 @@ All US merchants use the same settings, regardless of any onboarding choices.
 | Express Checkout | ✅       | PayPal, Venmo, Pay Later, Google Pay, Apple Pay |
 | Mini Cart        | ✅       | PayPal, Venmo, Pay Later, Google Pay, Apple Pay |
 | Product Page     | ✅       | PayPal, Venmo, Pay Later                        |
+
+### Pay Later Messaging
+
+All US merchants use the same settings, regardless of onboarding choices.
+
+| Location          | Enabled |
+|-------------------|---------|
+| Product           | ✅       |
+| Cart              | ✅       |
+| Checkout          | ✅       |
+| Home              | ❌       |
+| Shop              | ❌       |
+| WooCommerce Block | ❌       |
