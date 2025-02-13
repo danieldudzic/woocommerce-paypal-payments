@@ -141,18 +141,16 @@ class SettingsDataManager {
 		// Apply defaults for the "Settings" tab.
 
 		// Assign defaults for the "Styling" tab.
-		$location_styles = $this->get_location_styles( $flags );
-		$this->styling_settings->from_array( $location_styles );
-		$this->styling_settings->save();
+		$this->apply_location_styles( $flags );
 	}
 
 	/**
-	 * Builds an array of styling details that should be applied for the shop.
+	 * Applies the default styling details for the shop.
 	 *
 	 * @param ConfigurationFlagsDTO $flags Shop configuration flags.
-	 * @return LocationStylingDTO[] A set of styling details.
+	 * @return void
 	 */
-	protected function get_location_styles( ConfigurationFlagsDTO $flags ) : array {
+	protected function apply_location_styles( ConfigurationFlagsDTO $flags ) : void {
 		$methods_full = array(
 			PayPalGateway::ID,
 			'venmo',
@@ -167,21 +165,25 @@ class SettingsDataManager {
 			'pay-later',
 		);
 
-		return array(
-			// Cart: Enabled, display PayPal, Venmo, Pay Later, Google Pay, Apple Pay.
+		/**
+		 * Initialize the styling options using the defaults.
+		 *
+		 * - Cart: Enabled, display PayPal, Venmo, Pay Later, Google Pay, Apple Pay.
+		 * - Classic Checkout: Display PayPal, Venmo, Pay Later, Google Pay, Apple Pay.
+		 * - Express Checkout: Display PayPal, Venmo, Pay Later, Google Pay, Apple Pay.
+		 * - Mini Cart: Display PayPal, Venmo, Pay Later, Google Pay, Apple Pay.
+		 * - Product Page: Display PayPal, Venmo, Pay Later.
+		 */
+		$location_styles = array(
 			'cart'             => new LocationStylingDTO( 'cart', true, $methods_full ),
-
-			// Classic Checkout: Display PayPal, Venmo, Pay Later, Google Pay, Apple Pay.
 			'classic_checkout' => new LocationStylingDTO( 'classic_checkout', true, $methods_full ),
-
-			// Express Checkout: Display PayPal, Venmo, Pay Later, Google Pay, Apple Pay.
 			'express_checkout' => new LocationStylingDTO( 'express_checkout', true, $methods_full ),
-
-			// Mini Cart: Display PayPal, Venmo, Pay Later, Google Pay, Apple Pay.
 			'mini_cart'        => new LocationStylingDTO( 'mini_cart', true, $methods_full ),
-
-			// Product Page: Display PayPal, Venmo, Pay Later.
 			'product'          => new LocationStylingDTO( 'product', true, $methods_own ),
 		);
+
+		// Apply the settings and persist them to the DB. All merchants use the same options.
+		$this->styling_settings->from_array( $location_styles );
+		$this->styling_settings->save();
 	}
 }
