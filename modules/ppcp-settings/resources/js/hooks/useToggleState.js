@@ -46,5 +46,5 @@ export function useToggleState( id = '', initiallyOpen = null ) {
 		[ isOpen ]
 	);
 
-	return { isOpen, toggleOpen };
+	return { isOpen, setIsOpen, toggleOpen };
 }
