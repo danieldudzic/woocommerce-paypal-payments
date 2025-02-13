@@ -557,10 +557,10 @@ class RenewalHandler {
 					'previous_transaction_reference' => $transaction,
 				);
 			} else {
-				$this->logger->warning( sprintf( 'Previous transaction not found for subscription %s', $subscription->get_id() ) );
+				$this->logger->debug( sprintf( 'Previous transaction not found for subscription %s', $subscription->get_id() ) );
 			}
 		} else {
-			$this->logger->warning( sprintf( 'Subscription not found for renewal order %s', $wc_order->get_id() ) );
+			$this->logger->debug( sprintf( 'Subscription not found for renewal order %s', $wc_order->get_id() ) );
 		}
 
 		return new PaymentSource(
