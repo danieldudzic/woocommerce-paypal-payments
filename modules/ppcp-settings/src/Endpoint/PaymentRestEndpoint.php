@@ -147,40 +147,18 @@ class PaymentRestEndpoint extends RestEndpoint {
 	 * @return WP_REST_Response The current payment methods details.
 	 */
 	public function get_details() : WP_REST_Response {
-		$all_gateways     = WC()->payment_gateways->payment_gateways();
 		$gateway_settings = array();
 		$all_methods      = $this->gateways();
 
 		foreach ( $all_methods as $key => $method ) {
-			// Here we handle the payment methods that are listed on the page but not registered as WooCommerce Payment gateways.
-			if ( ! isset( $all_gateways[ $key ] ) ) {
-				$gateway_settings[ $key ] = array(
-					'id'              => $method['id'] ?? '',
-					'title'           => $method['title'] ?? '',
-					'description'     => $method['description'] ?? '',
-					'enabled'         => $method['enabled'] ?? false,
-					'icon'            => $method['icon'] ?? '',
-					'itemTitle'       => $method['itemTitle'] ?? '',
-					'itemDescription' => $method['itemDescription'] ?? '',
-				);
-
-				if ( isset( $method['fields'] ) ) {
-					$gateway_settings[ $key ]['fields'] = $method['fields'];
-				}
-
-				continue;
-			}
-
-			$gateway = $all_gateways[ $key ];
-
 			$gateway_settings[ $key ] = array(
-				'enabled'         => 'yes' === $gateway->enabled,
-				'title'           => str_replace( '&amp;', '&', $gateway->get_title() ),
-				'description'     => $gateway->get_description(),
-				'id'              => $method['id'] ?? $key,
-				'icon'            => $method['icon'] ?? '',
-				'itemTitle'       => $method['itemTitle'] ?? '',
-				'itemDescription' => $method['itemDescription'] ?? '',
+				'id'              => $method['id'],
+				'title'           => $method['title'],
+				'description'     => $method['description'],
+				'enabled'         => $method['enabled'],
+				'icon'            => $method['icon'],
+				'itemTitle'       => $method['itemTitle'],
+				'itemDescription' => $method['itemDescription'],
 			);
 
 			if ( isset( $method['fields'] ) ) {
@@ -204,52 +182,26 @@ class PaymentRestEndpoint extends RestEndpoint {
 	 * @return WP_REST_Response The updated payment methods details.
 	 */
 	public function update_details( WP_REST_Request $request ) : WP_REST_Response {
-		$all_gateways = WC()->payment_gateways->payment_gateways();
 		$request_data = $request->get_params();
 		$all_methods  = $this->gateways();
 
 		foreach ( $all_methods as $key => $value ) {
-			// Here we handle the payment methods that are listed on the page but not registered as WooCommerce Payment gateways.
-			if ( ! isset( $all_gateways[ $key ] ) && isset( $request_data[ $key ] ) ) {
-				switch ( $key ) {
-					case 'venmo':
-						$this->settings->set_venmo_enabled( $request_data[ $key ]['enabled'] );
-						break;
-					case 'pay-later':
-						$this->settings->set_paylater_enabled( $request_data[ $key ]['enabled'] );
-						break;
-				}
-
-				continue;
-			}
-
-			// Check if the REST body contains details for this gateway.
-			if ( ! isset( $request_data[ $key ] ) || ! isset( $all_gateways[ $key ] ) ) {
-				continue;
-			}
-
-			$gateway  = $all_gateways[ $key ];
 			$new_data = $request_data[ $key ];
-			$gateway->init_form_fields();
-			$settings = $gateway->settings;
+			if ( ! $new_data ) {
+				continue;
+			}
 
 			if ( isset( $new_data['enabled'] ) ) {
-				$settings['enabled'] = wc_bool_to_string( $new_data['enabled'] );
-				$gateway->enabled    = $settings['enabled'];
+				$this->settings->toggle_method_state( $key, $new_data['enabled'] );
 			}
 
 			if ( isset( $new_data['title'] ) ) {
-				$settings['title'] = sanitize_text_field( $new_data['title'] );
-				$gateway->title    = $settings['title'];
+				$this->settings->set_method_title( $key, sanitize_text_field( $new_data['title'] ) );
 			}
 
 			if ( isset( $new_data['description'] ) ) {
-				$settings['description'] = wp_kses_post( $new_data['description'] );
-				$gateway->description    = $settings['description'];
+				$this->settings->set_method_description( $key, wp_kses_post( $new_data['description'] ) );
 			}
-
-			$gateway->settings = $settings;
-			update_option( $gateway->get_option_key(), $settings );
 		}
 
 		$wp_data = $this->sanitize_for_wordpress(
