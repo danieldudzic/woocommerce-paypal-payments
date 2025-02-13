@@ -3,10 +3,11 @@ import { Button, Modal, ToggleControl } from '@wordpress/components';
 import { useCallback, useState } from '@wordpress/element';
 
 import { CommonHooks } from '../../../../../../data';
+import { useToggleState } from '../../../../../../hooks/useToggleState';
 import { HStack } from '../../../../../ReusableComponents/Stack';
 
 const DisconnectButton = () => {
-	const [ isOpen, setIsOpen ] = useState( false );
+	const { isOpen, setIsOpen } = useToggleState( 'disconnect-merchant' );
 	const [ resetFlag, setResetFlag ] = useState( false );
 	const { disconnectMerchant } = CommonHooks.useDisconnectMerchant();
 
