@@ -12,6 +12,7 @@ namespace WooCommerce\PayPalCommerce\Compat;
 use WooCommerce\PayPalCommerce\Compat\Assets\CompatAssets;
 use WooCommerce\PayPalCommerce\Compat\Settings\SettingsMap;
 use WooCommerce\PayPalCommerce\Compat\Settings\SettingsMapHelper;
+use WooCommerce\PayPalCommerce\Compat\Settings\SettingsTabMapHelper;
 use WooCommerce\PayPalCommerce\Compat\Settings\StylingSettingsMapHelper;
 use WooCommerce\PayPalCommerce\Vendor\Psr\Container\ContainerInterface;
 
@@ -133,6 +134,9 @@ return array(
 		$styling_settings_map_helper = $container->get( 'compat.settings.styling_map_helper' );
 		assert( $styling_settings_map_helper instanceof StylingSettingsMapHelper );
 
+		$settings_tab_map_helper = $container->get( 'compat.settings.settings_tab_map_helper' );
+		assert( $settings_tab_map_helper instanceof SettingsTabMapHelper );
+
 		return array(
 			new SettingsMap(
 				$container->get( 'settings.data.general' ),
@@ -160,11 +164,7 @@ return array(
 			),
 			new SettingsMap(
 				$container->get( 'settings.data.settings' ),
-				array(
-					'disable_cards'   => 'disabled_cards',
-					'brand_name'      => 'brand_name',
-					'soft_descriptor' => 'soft_descriptor',
-				)
+				$settings_tab_map_helper->map()
 			),
 			new SettingsMap(
 				$container->get( 'settings.data.styling' ),
@@ -185,10 +185,14 @@ return array(
 	'compat.settings.settings_map_helper'            => static function( ContainerInterface $container ) : SettingsMapHelper {
 		return new SettingsMapHelper(
 			$container->get( 'compat.setting.new-to-old-map' ),
-			$container->get( 'compat.settings.styling_map_helper' )
+			$container->get( 'compat.settings.styling_map_helper' ),
+			$container->get( 'compat.settings.settings_tab_map_helper' )
 		);
 	},
 	'compat.settings.styling_map_helper'             => static function() : StylingSettingsMapHelper {
 		return new StylingSettingsMapHelper();
+	},
+	'compat.settings.settings_tab_map_helper'        => static function() : SettingsTabMapHelper {
+		return new SettingsTabMapHelper();
 	},
 );
