@@ -302,7 +302,7 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 
 				$flags = new ConfigurationFlagsDTO();
 
-				// TODO: Dummy values, use real values!
+				// TODO: Get the merchant country from PayPal here!
 				$flags->country_code       = 'US';
 				$flags->is_business_seller = $general_settings->is_business_seller();
 				$flags->use_card_payments  = $onboarding_profile->get_accept_card_payments();
