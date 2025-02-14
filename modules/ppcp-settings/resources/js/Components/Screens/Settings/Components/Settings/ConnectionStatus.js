@@ -21,7 +21,7 @@ const ConnectionStatus = () => {
 			title={ __( 'Connection status', 'woocommerce-paypal-payments' ) }
 			description={ <ConnectionDescription /> }
 		>
-			<SettingsBlock>
+			<SettingsBlock className="ppcp--pull-right">
 				<ControlStaticValue
 					value={
 						<ConnectionStatusBadge
@@ -33,6 +33,7 @@ const ConnectionStatus = () => {
 			</SettingsBlock>
 			<SettingsBlock
 				title={ __( 'Merchant ID', 'woocommerce-paypal-payments' ) }
+				className="ppcp--no-gap"
 			>
 				<ControlStaticValue value={ merchant.id } />
 			</SettingsBlock>
