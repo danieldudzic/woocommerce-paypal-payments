@@ -39,6 +39,7 @@ export const setCompletedTodos = ( completedTodos ) => ( {
 
 // Thunks
 
+// TODO: Possibly, this should be a resolver?
 export function fetchTodos() {
 	return async () => {
 		const response = await apiFetch( { path: REST_PATH } );
@@ -46,13 +47,31 @@ export function fetchTodos() {
 	};
 }
 
+/**
+ * Thunk action creator. Triggers the persistence of store data to the server.
+ *
+ * @return {Function} The thunk function.
+ */
 export function persist() {
 	return async ( { select } ) => {
-		return await apiFetch( {
+		await apiFetch( {
 			path: REST_PERSIST_PATH,
 			method: 'POST',
 			data: select.persistentData(),
 		} );
+	};
+}
+
+/**
+ * Thunk action creator. Forces a data refresh from the REST API, replacing the current Redux values.
+ *
+ * @return {Function} The thunk function.
+ */
+export function refresh() {
+	return ( { dispatch, select } ) => {
+		dispatch.invalidateResolutionForStore();
+
+		select.persistentData();
 	};
 }
 

@@ -28,6 +28,19 @@ export function persist() {
 }
 
 /**
+ * Thunk action creator. Forces a data refresh from the REST API, replacing the current Redux values.
+ *
+ * @return {Function} The thunk function.
+ */
+export function refresh() {
+	return ( { dispatch, select } ) => {
+		dispatch.invalidateResolutionForStore();
+
+		select.persistentData();
+	};
+}
+
+/**
  * Side effect. Fetches the ISU-login URL for a sandbox account.
  *
  * @return {Function} The thunk function.

@@ -102,7 +102,7 @@ export function persist() {
  */
 export function refresh() {
 	return ( { dispatch, select } ) => {
-		dispatch.invalidateResolutionForStoreSelector( 'persistentData' );
+		dispatch.invalidateResolutionForStore();
 
 		select.persistentData();
 	};
