@@ -102,11 +102,12 @@ const useHooks = () => {
 
 export const useStore = () => {
 	const { useTransient, dispatch } = useStoreData();
-	const { persist, setPersistent, changePaymentSettings } = dispatch;
+	const { persist, refresh, setPersistent, changePaymentSettings } = dispatch;
 	const [ isReady ] = useTransient( 'isReady' );
 
 	return {
 		persist,
+		refresh,
 		setPersistent,
 		changePaymentSettings,
 		isReady,
