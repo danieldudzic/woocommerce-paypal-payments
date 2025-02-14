@@ -39,6 +39,7 @@ use WooCommerce\PayPalCommerce\WcGateway\Settings\Settings;
 use WooCommerce\PayPalCommerce\Settings\Service\SettingsDataManager;
 use WooCommerce\PayPalCommerce\Settings\DTO\ConfigurationFlagsDTO;
 use WooCommerce\PayPalCommerce\Settings\Enum\ProductChoicesEnum;
+use WooCommerce\PayPalCommerce\Settings\Data\GeneralSettings;
 
 /**
  * Class SettingsModule
@@ -296,11 +297,14 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 				$data_manager = $container->get( 'settings.service.data-manager' );
 				assert( $data_manager instanceof SettingsDataManager );
 
+				$general_settings = $container->get( 'settings.data.general' );
+				assert( $general_settings instanceof GeneralSettings );
+
 				$flags = new ConfigurationFlagsDTO();
 
 				// TODO: Dummy values, use real values!
 				$flags->country_code       = 'US';
-				$flags->is_business_seller = true;
+				$flags->is_business_seller = $general_settings->is_business_seller();
 				$flags->use_card_payments  = $onboarding_profile->get_accept_card_payments();
 				$flags->use_subscriptions  = in_array( ProductChoicesEnum::SUBSCRIPTIONS, $onboarding_profile->get_products(), true );
 
