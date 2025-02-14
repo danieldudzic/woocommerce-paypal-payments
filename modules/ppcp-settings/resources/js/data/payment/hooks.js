@@ -37,7 +37,21 @@ const useStoreData = () => {
 	);
 };
 
-const useHooks = () => {
+export const useStore = () => {
+	const { useTransient, dispatch } = useStoreData();
+	const { persist, refresh, setPersistent, changePaymentSettings } = dispatch;
+	const [ isReady ] = useTransient( 'isReady' );
+
+	return {
+		persist,
+		refresh,
+		setPersistent,
+		changePaymentSettings,
+		isReady,
+	};
+};
+
+export const usePaymentMethods = () => {
 	const { usePersistent } = useStoreData();
 
 	// PayPal checkout.
@@ -63,83 +77,6 @@ const useHooks = () => {
 	const [ multibanco ] = usePersistent( 'ppcp-multibanco' );
 	const [ pui ] = usePersistent( 'ppcp-pay-upon-invoice-gateway' );
 	const [ oxxo ] = usePersistent( 'ppcp-oxxo-gateway' );
-
-	// Custom modal data.
-	const [ paypalShowLogo ] = usePersistent( 'paypalShowLogo' );
-	const [ threeDSecure ] = usePersistent( 'threeDSecure' );
-	const [ fastlaneCardholderName ] = usePersistent(
-		'fastlaneCardholderName'
-	);
-	const [ fastlaneDisplayWatermark ] = usePersistent(
-		'fastlaneDisplayWatermark'
-	);
-
-	return {
-		paypal,
-		venmo,
-		payLater,
-		creditCard,
-		advancedCreditCard,
-		fastlane,
-		applePay,
-		googlePay,
-		bancontact,
-		blik,
-		eps,
-		ideal,
-		mybank,
-		p24,
-		trustly,
-		multibanco,
-		pui,
-		oxxo,
-		paypalShowLogo,
-		threeDSecure,
-		fastlaneCardholderName,
-		fastlaneDisplayWatermark,
-	};
-};
-
-export const useStore = () => {
-	const { useTransient, dispatch } = useStoreData();
-	const { persist, refresh, setPersistent, changePaymentSettings } = dispatch;
-	const [ isReady ] = useTransient( 'isReady' );
-
-	return {
-		persist,
-		refresh,
-		setPersistent,
-		changePaymentSettings,
-		isReady,
-	};
-};
-
-export const usePaymentMethods = () => {
-	const {
-		// PayPal Checkout.
-		paypal,
-		venmo,
-		payLater,
-		creditCard,
-
-		// Online card payments.
-		advancedCreditCard,
-		fastlane,
-		applePay,
-		googlePay,
-
-		// Local APMs.
-		bancontact,
-		blik,
-		eps,
-		ideal,
-		mybank,
-		p24,
-		trustly,
-		multibanco,
-		pui,
-		oxxo,
-	} = useHooks();
 
 	const payPalCheckout = [ paypal, venmo, payLater, creditCard ];
 	const onlineCardPayments = [
@@ -190,12 +127,16 @@ export const usePaymentMethods = () => {
 };
 
 export const usePaymentMethodsModal = () => {
-	const {
-		paypalShowLogo,
-		threeDSecure,
-		fastlaneCardholderName,
-		fastlaneDisplayWatermark,
-	} = useHooks();
+	const { usePersistent } = useStoreData();
+
+	const [ paypalShowLogo ] = usePersistent( 'paypalShowLogo' );
+	const [ threeDSecure ] = usePersistent( 'threeDSecure' );
+	const [ fastlaneCardholderName ] = usePersistent(
+		'fastlaneCardholderName'
+	);
+	const [ fastlaneDisplayWatermark ] = usePersistent(
+		'fastlaneDisplayWatermark'
+	);
 
 	return {
 		paypalShowLogo,
