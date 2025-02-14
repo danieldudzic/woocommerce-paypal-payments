@@ -20,6 +20,8 @@ use WooCommerce\PayPalCommerce\Settings\Data\StylingSettings;
 use WooCommerce\PayPalCommerce\Settings\Data\GeneralSettings;
 use WooCommerce\PayPalCommerce\Settings\Data\SettingsModel;
 use WooCommerce\PayPalCommerce\Settings\Data\PaymentSettings;
+use WooCommerce\PayPalCommerce\WcGateway\Gateway\CreditCardGateway;
+use WooCommerce\PayPalCommerce\WcGateway\Gateway\CardButtonGateway;
 
 /**
  * Class SettingsDataManager
@@ -189,6 +191,21 @@ class SettingsDataManager {
 		// Always enable Venmo and Pay Later.
 		$this->payment_methods->toggle_method_state( 'venmo', true );
 		$this->payment_methods->toggle_method_state( 'pay-later', true );
+
+		// Use BCDC for casual sellers.
+		$this->payment_methods->toggle_method_state(
+			CardButtonGateway::ID,
+			! $flags->is_business_seller && $flags->use_card_payments
+		);
+
+		// Enable ACDC for business sellers.
+		$this->payment_methods->toggle_method_state(
+			CreditCardGateway::ID,
+			$flags->is_business_seller && $flags->use_card_payments
+		);
+
+		$this->payment_methods->toggle_method_state( ApplePayGateway::ID, $flags->is_business_seller );
+		$this->payment_methods->toggle_method_state( GooglePayGateway::ID, $flags->is_business_seller );
 	}
 
 	/**
