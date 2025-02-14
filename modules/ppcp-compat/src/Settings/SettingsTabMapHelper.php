@@ -36,6 +36,7 @@ class SettingsTabMapHelper {
 			'payee_preferred'            => 'instant_payments_only',
 			'subtotal_mismatch_behavior' => 'subtotal_adjustment',
 			'landing_page'               => 'landing_page',
+			'smart_button_language'      => 'button_language',
 		);
 	}
 
