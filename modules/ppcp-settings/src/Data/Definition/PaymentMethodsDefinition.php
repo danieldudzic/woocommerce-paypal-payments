@@ -83,17 +83,41 @@ class PaymentMethodsDefinition {
 	 * Returns a new payment method configuration array that contains all
 	 * common attributes which must be present in every method definition.
 	 *
-	 * @param string $gateway_id  The payment method ID.
-	 * @param string $title       Admin-side payment method title.
-	 * @param string $description Admin-side info about the payment method.
-	 * @param string $icon        Admin-side icon of the payment method.
+	 * @param string $gateway_id   The payment method ID.
+	 * @param string $title        Admin-side payment method title.
+	 * @param string $description  Admin-side info about the payment method.
+	 * @param string $icon         Admin-side icon of the payment method.
+	 * @param array  $extra_fields Optional. Additional fields to display in the edit modal.
 	 * @return array Payment method definition.
 	 */
-	private function define_common_fields( string $gateway_id, string $title, string $description, string $icon ) : array {
+	private function define_common_fields(
+		string $gateway_id,
+		string $title,
+		string $description,
+		string $icon,
+		array $extra_fields = array()
+	) : array {
 		$gateway = $this->wc_gateways[ $gateway_id ] ?? null;
 
 		$gateway_title       = $gateway ? $gateway->get_title() : $title;
 		$gateway_description = $gateway ? $gateway->get_description() : $description;
+
+		$fields = array(
+			'checkoutPageTitle'       => array(
+				'type'    => 'text',
+				'default' => $gateway_title,
+				'label'   => __( 'Checkout page title', 'woocommerce-paypal-payments' ),
+			),
+			'checkoutPageDescription' => array(
+				'type'    => 'text',
+				'default' => $gateway ? $gateway->get_description() : '',
+				'label'   => __( 'Checkout page description', 'woocommerce-paypal-payments' ),
+			),
+		);
+
+		if ( $extra_fields ) {
+			$fields = array_merge( $fields, $extra_fields );
+		}
 
 		return array(
 			'id'              => $gateway_id,
@@ -103,18 +127,7 @@ class PaymentMethodsDefinition {
 			'icon'            => $icon,
 			'itemTitle'       => $title,
 			'itemDescription' => $description,
-			'fields'          => array(
-				'checkoutPageTitle'       => array(
-					'type'    => 'text',
-					'default' => $gateway_title,
-					'label'   => __( 'Checkout page title', 'woocommerce-paypal-payments' ),
-				),
-				'checkoutPageDescription' => array(
-					'type'    => 'text',
-					'default' => $gateway ? $gateway->get_description() : '',
-					'label'   => __( 'Checkout page description', 'woocommerce-paypal-payments' ),
-				),
-			),
+			'fields'          => $fields,
 		);
 	}
 
@@ -269,25 +282,19 @@ class PaymentMethodsDefinition {
 	 * @return array Payment method definition.
 	 */
 	private function define_paypal() : array {
-		$gateway = $this->define_common_fields(
+		return $this->define_common_fields(
 			PayPalGateway::ID,
 			__( 'PayPal', 'woocommerce-paypal-payments' ),
 			__( 'Our all-in-one checkout solution lets you offer PayPal, Venmo, Pay Later options, and more to help maximize conversion.', 'woocommerce-paypal-payments' ),
 			'payment-method-paypal',
-		);
-
-		$gateway['fields'] = array_merge(
-			$gateway['fields'],
 			array(
 				'paypalShowLogo' => array(
 					'type'    => 'toggle',
 					'default' => $this->settings->get_paypal_show_logo(),
 					'label'   => __( 'Show logo', 'woocommerce-paypal-payments' ),
 				),
-			),
+			)
 		);
-
-		return $gateway;
 	}
 
 	/**
@@ -306,7 +313,6 @@ class PaymentMethodsDefinition {
 			'payment-method-venmo',
 		);
 
-		$gateway['enabled'] = $this->settings->get_venmo_enabled();
 		unset( $gateway['fields'] );
 
 		return $gateway;
@@ -328,7 +334,6 @@ class PaymentMethodsDefinition {
 			'payment-method-paypal',
 		);
 
-		$gateway['enabled'] = $this->settings->get_paylater_enabled();
 		unset( $gateway['fields'] );
 
 		return $gateway;
@@ -354,15 +359,11 @@ class PaymentMethodsDefinition {
 	 * @return array Payment method definition.
 	 */
 	private function define_advanced_cards() : array {
-		$gateway = $this->define_common_fields(
+		return $this->define_common_fields(
 			CreditCardGateway::ID,
 			__( 'Advanced Credit and Debit Card Payments', 'woocommerce-paypal-payments' ),
 			__( "Present custom credit and debit card fields to your payers so they can pay with credit and debit cards using your site's branding.", 'woocommerce-paypal-payments' ),
 			'payment-method-advanced-cards',
-		);
-
-		$gateway['fields'] = array_merge(
-			$gateway['fields'],
 			array(
 				'threeDSecure' => array(
 					'type'        => 'radio',
@@ -398,8 +399,6 @@ class PaymentMethodsDefinition {
 				),
 			),
 		);
-
-		return $gateway;
 	}
 
 	/**
@@ -408,15 +407,11 @@ class PaymentMethodsDefinition {
 	 * @return array Payment method definition.
 	 */
 	private function define_axo() : array {
-		$gateway = $this->define_common_fields(
+		return $this->define_common_fields(
 			AxoGateway::ID,
 			__( 'Fastlane by PayPal', 'woocommerce-paypal-payments' ),
 			__( "Tap into the scale and trust of PayPal's customer network to recognize shoppers and make guest checkout more seamless than ever.", 'woocommerce-paypal-payments' ),
-			'payment-method-fastlane'
-		);
-
-		$gateway['fields'] = array_merge(
-			$gateway['fields'],
+			'payment-method-fastlane',
 			array(
 				'fastlaneCardholderName'   => array(
 					'type'    => 'toggle',
@@ -436,8 +431,6 @@ class PaymentMethodsDefinition {
 				),
 			),
 		);
-
-		return $gateway;
 	}
 
 	/**
