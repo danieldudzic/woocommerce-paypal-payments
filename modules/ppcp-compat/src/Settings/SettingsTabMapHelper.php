@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace WooCommerce\PayPalCommerce\Compat\Settings;
 
+use WooCommerce\PayPalCommerce\ApiClient\Entity\ApplicationContext;
 use WooCommerce\PayPalCommerce\ApiClient\Helper\PurchaseUnitSanitizer;
 use WooCommerce\PayPalCommerce\Button\Helper\ContextTrait;
 
@@ -32,7 +33,9 @@ class SettingsTabMapHelper {
 			'disable_cards'              => 'disabled_cards',
 			'brand_name'                 => 'brand_name',
 			'soft_descriptor'            => 'soft_descriptor',
+			'payee_preferred'            => 'instant_payments_only',
 			'subtotal_mismatch_behavior' => 'subtotal_adjustment',
+			'landing_page'               => 'landing_page',
 		);
 	}
 
@@ -50,16 +53,19 @@ class SettingsTabMapHelper {
 			case 'subtotal_mismatch_behavior':
 				return $this->mapped_mismatch_behavior_value( $settings_model );
 
+			case 'landing_page':
+				return $this->mapped_landing_page_value( $settings_model );
+
 			default:
 				return $settings_model[ $new_key ] ?? null;
 		}
 	}
 
 	/**
-	 * Retrieves the mapped mismatch_behavior value from the new settings.
+	 * Retrieves the mapped value for the 'mismatch_behavior' from the new settings.
 	 *
 	 * @param array<string, scalar|array> $settings_model The new settings model data as an array.
-	 * @return 'extra_line'|'ditch'|null The mapped mismatch_behavior value.
+	 * @return 'extra_line'|'ditch'|null The mapped 'mismatch_behavior' setting value.
 	 */
 	protected function mapped_mismatch_behavior_value( array $settings_model ): ?string {
 		$subtotal_adjustment = $settings_model['subtotal_adjustment'] ?? false;
@@ -69,5 +75,26 @@ class SettingsTabMapHelper {
 		}
 
 		return $subtotal_adjustment === 'correction' ? PurchaseUnitSanitizer::MODE_EXTRA_LINE : PurchaseUnitSanitizer::MODE_DITCH;
+	}
+
+	/**
+	 * Retrieves the mapped value for the 'landing_page' from the new settings.
+	 *
+	 * @param array<string, scalar|array> $settings_model The new settings model data as an array.
+	 * @return 'LOGIN'|'BILLING'|'NO_PREFERENCE'|null The mapped 'landing_page' setting value.
+	 */
+	protected function mapped_landing_page_value( array $settings_model ): ?string {
+		$landing_page = $settings_model['landing_page'] ?? false;
+
+		if ( ! $landing_page ) {
+			return null;
+		}
+
+		return $landing_page === 'login'
+			? ApplicationContext::LANDING_PAGE_LOGIN
+			: ( $landing_page === 'guest_checkout'
+				? ApplicationContext::LANDING_PAGE_BILLING
+				: ApplicationContext::LANDING_PAGE_NO_PREFERENCE
+			);
 	}
 }
