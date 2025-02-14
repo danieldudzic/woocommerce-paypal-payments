@@ -68,6 +68,14 @@ class SettingsDataManager {
 	private PaymentSettings $payment_methods;
 
 	/**
+	 * Data accessors for pay later messaging settings.
+	 *
+	 * @var array
+	 * @todo This should be a proper class!
+	 */
+	private array $paylater_messaging;
+
+	/**
 	 * Stores a list of all AbstractDataModel instances that are managed by
 	 * this service.
 	 *
@@ -84,6 +92,7 @@ class SettingsDataManager {
 	 * @param SettingsModel            $payment_settings   The settings model.
 	 * @param StylingSettings          $styling_settings   The styling settings model.
 	 * @param PaymentSettings          $payment_methods    The payment settings model.
+	 * @param array                    $paylater_messaging Paylater Messaging accessor.
 	 * @param array                    ...$data_models     List of additional data models to reset.
 	 */
 	public function __construct(
@@ -93,6 +102,7 @@ class SettingsDataManager {
 		SettingsModel $payment_settings,
 		StylingSettings $styling_settings,
 		PaymentSettings $payment_methods,
+		array $paylater_messaging, // TODO should be migrated to an AbstractDataModel.
 		...$data_models
 	) {
 		foreach ( $data_models as $data_model ) {
@@ -119,6 +129,7 @@ class SettingsDataManager {
 		$this->payment_settings   = $payment_settings;
 		$this->styling_settings   = $styling_settings;
 		$this->payment_methods    = $payment_methods;
+		$this->paylater_messaging = $paylater_messaging;
 	}
 
 	/**
@@ -177,6 +188,9 @@ class SettingsDataManager {
 
 		// Assign defaults for the "Styling" tab.
 		$this->apply_location_styles( $flags );
+
+		// Assign defaults for the "Pay Later Messaging" tab.
+		$this->apply_pay_later_messaging( $flags );
 	}
 
 	/**
@@ -289,5 +303,27 @@ class SettingsDataManager {
 		// Apply the settings and persist them to the DB. All merchants use the same options.
 		$this->styling_settings->from_array( $location_styles );
 		$this->styling_settings->save();
+	}
+
+	/**
+	 * Applies the default pay later messaging details for the shop.
+	 *
+	 * @param ConfigurationFlagsDTO $flags Shop configuration flags.
+	 * @return void
+	 */
+	protected function apply_pay_later_messaging( ConfigurationFlagsDTO $flags ) : void {
+		$config = $this->paylater_messaging['read'];
+
+		$config['cart']['status']     = 'enabled';
+		$config['checkout']['status'] = 'enabled';
+		$config['product']['status']  = 'enabled';
+		$config['shop']['status']     = 'disabled';
+		$config['home']['status']     = 'disabled';
+
+		foreach ( $config['custom_placement'] as $key => $placement ) {
+			$config['custom_placement'][ $key ]['status'] = 'disabled';
+		}
+
+		$this->paylater_messaging['save']->save_config( $config );
 	}
 }

@@ -282,6 +282,7 @@ return array(
 			$container->get( 'settings.data.settings' ),
 			$container->get( 'settings.data.styling' ),
 			$container->get( 'settings.data.payment' ),
+			$container->get( 'settings.data.paylater-messaging' ),
 			$container->get( 'settings.data.todos' ),
 		);
 	},
