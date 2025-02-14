@@ -38,6 +38,7 @@ use WooCommerce\PayPalCommerce\WcGateway\Helper\DCCProductStatus;
 use WooCommerce\PayPalCommerce\WcGateway\Settings\Settings;
 use WooCommerce\PayPalCommerce\Settings\Service\SettingsDataManager;
 use WooCommerce\PayPalCommerce\Settings\DTO\ConfigurationFlagsDTO;
+use WooCommerce\PayPalCommerce\Settings\Enum\ProductChoicesEnum;
 
 /**
  * Class SettingsModule
@@ -301,7 +302,7 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 				$flags->country_code       = 'US';
 				$flags->is_business_seller = true;
 				$flags->use_card_payments  = $onboarding_profile->get_accept_card_payments();
-				$flags->use_subscriptions  = true;
+				$flags->use_subscriptions  = in_array( ProductChoicesEnum::SUBSCRIPTIONS, $onboarding_profile->get_products(), true );
 
 				$data_manager->set_defaults_for_new_merchant( $flags );
 			}
