@@ -133,6 +133,15 @@ class OnboardingProfile extends AbstractDataModel {
 	}
 
 	/**
+	 * Whether the merchant wants to accept card payments via the PayPal plugin.
+	 *
+	 * @return bool
+	 */
+	public function get_accept_card_payments() : bool {
+		return (bool) $this->data['accept_card_payments'];
+	}
+
+	/**
 	 * Sets the "accept card payments" flag.
 	 *
 	 * @param bool|null $accept_cards Whether to accept card payments via the PayPal plugin.

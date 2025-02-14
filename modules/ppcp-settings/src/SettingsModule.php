@@ -300,7 +300,7 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 				// TODO: Dummy values, use real values!
 				$flags->country_code       = 'US';
 				$flags->is_business_seller = true;
-				$flags->use_card_payments  = true;
+				$flags->use_card_payments  = $onboarding_profile->get_accept_card_payments();
 				$flags->use_subscriptions  = true;
 
 				$data_manager->set_defaults_for_new_merchant( $flags );
