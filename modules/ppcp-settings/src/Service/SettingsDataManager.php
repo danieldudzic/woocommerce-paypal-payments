@@ -22,6 +22,7 @@ use WooCommerce\PayPalCommerce\Settings\Data\SettingsModel;
 use WooCommerce\PayPalCommerce\Settings\Data\PaymentSettings;
 use WooCommerce\PayPalCommerce\WcGateway\Gateway\CreditCardGateway;
 use WooCommerce\PayPalCommerce\WcGateway\Gateway\CardButtonGateway;
+use WooCommerce\PayPalCommerce\Settings\Data\Definition\PaymentMethodsDefinition;
 
 /**
  * Class SettingsDataManager
@@ -30,6 +31,13 @@ use WooCommerce\PayPalCommerce\WcGateway\Gateway\CardButtonGateway;
  * This service can be expanded in the future to include other settings management operations.
  */
 class SettingsDataManager {
+
+	/**
+     * The payment methods definition, provides a list of all available payment methods.
+     *
+     * @var PaymentMethodsDefinition
+     */
+	private PaymentMethodsDefinition $methods_definition;
 
 	/**
 	 * The onboarding profile data model.
@@ -70,6 +78,7 @@ class SettingsDataManager {
 	/**
 	 * Constructor.
 	 *
+	 * @param PaymentMethodsDefinition $methods_definition Access list of all payment methods.
 	 * @param OnboardingProfile $onboarding_profile The onboarding profile model.
 	 * @param GeneralSettings   $general_settings   The general settings model.
 	 * @param SettingsModel     $payment_settings   The settings model.
@@ -78,6 +87,7 @@ class SettingsDataManager {
 	 * @param array             ...$data_models     List of additional data models to reset.
 	 */
 	public function __construct(
+		PaymentMethodsDefinition $methods_definition,
 		OnboardingProfile $onboarding_profile,
 		GeneralSettings $general_settings,
 		SettingsModel $payment_settings,
@@ -104,6 +114,7 @@ class SettingsDataManager {
 		$this->models_to_reset[] = $styling_settings;
 		$this->models_to_reset[] = $payment_methods;
 
+		$this->methods_definition = $methods_definition;
 		$this->onboarding_profile = $onboarding_profile;
 		$this->payment_settings   = $payment_settings;
 		$this->styling_settings   = $styling_settings;
@@ -187,25 +198,41 @@ class SettingsDataManager {
 		| Google Pay     | US      | Business    | *any*         | ✅     | Based on feature eligibility  |
 		| All APMs       | US      | Business    | *any*         | ✅     | Based on feature eligibility  |
 		*/
+		// First, disable all payment methods.
+		$methods_paypal = $this->methods_definition->group_paypal_methods();
+		$methods_cards  = $this->methods_definition->group_card_methods();
+		$methods_apm    = $this->methods_definition->group_apms();
+		$all_methods    = array_merge( $methods_paypal, $methods_cards, $methods_apm );
+
+		foreach ( $all_methods as $method ) {
+			$this->payment_methods->toggle_method_state( $method['id'], false );
+		}
 
 		// Always enable Venmo and Pay Later.
 		$this->payment_methods->toggle_method_state( 'venmo', true );
 		$this->payment_methods->toggle_method_state( 'pay-later', true );
 
+		if ( $flags->is_business_seller && $flags->use_card_payments ) {
 		// Use BCDC for casual sellers.
-		$this->payment_methods->toggle_method_state(
-			CardButtonGateway::ID,
-			! $flags->is_business_seller && $flags->use_card_payments
-		);
+			$this->payment_methods->toggle_method_state( CardButtonGateway::ID, true );
+		}
 
+		if ( $flags->is_business_seller ) {
+			if ( $flags->use_card_payments ) {
 		// Enable ACDC for business sellers.
-		$this->payment_methods->toggle_method_state(
-			CreditCardGateway::ID,
-			$flags->is_business_seller && $flags->use_card_payments
-		);
+				$this->payment_methods->toggle_method_state( CreditCardGateway::ID, true );
+			}
 
-		$this->payment_methods->toggle_method_state( ApplePayGateway::ID, $flags->is_business_seller );
-		$this->payment_methods->toggle_method_state( GooglePayGateway::ID, $flags->is_business_seller );
+			$this->payment_methods->toggle_method_state( ApplePayGateway::ID, true );
+			$this->payment_methods->toggle_method_state( GooglePayGateway::ID, true );
+
+			// Enable all APM methods.
+			foreach ( $methods_apm as $method ) {
+				$this->payment_methods->toggle_method_state( $method['id'], true );
+			}
+		}
+
+		$this->payment_methods->save();
 	}
 
 	/**

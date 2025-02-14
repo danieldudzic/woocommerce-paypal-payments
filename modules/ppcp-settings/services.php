@@ -254,6 +254,7 @@ return array(
 	},
 	'settings.service.data-manager'               => static function ( ContainerInterface $container ) : SettingsDataManager {
 		return new SettingsDataManager(
+			$container->get( 'settings.data.definition.methods' ),
 			$container->get( 'settings.data.onboarding' ),
 			$container->get( 'settings.data.general' ),
 			$container->get( 'settings.data.settings' ),
