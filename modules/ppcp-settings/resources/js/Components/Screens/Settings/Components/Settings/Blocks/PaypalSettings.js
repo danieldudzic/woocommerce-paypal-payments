@@ -142,10 +142,10 @@ const PaypalSettings = () => {
 };
 
 const languagesExample = [
-	{ value: 'en', label: 'English' },
-	{ value: 'de', label: 'German' },
-	{ value: 'es', label: 'Spanish' },
-	{ value: 'it', label: 'Italian' },
+	{ value: 'en_US', label: 'English' },
+	{ value: 'de_DE', label: 'German' },
+	{ value: 'es_ES', label: 'Spanish' },
+	{ value: 'it_IT', label: 'Italian' },
 ];
 
 const subtotalAdjustmentChoices = [
