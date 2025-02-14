@@ -9,9 +9,9 @@ declare( strict_types = 1 );
 
 namespace WooCommerce\PayPalCommerce\WcGateway\Settings;
 
-use WooCommerce\PayPalCommerce\Compat\SettingsMapHelper;
-use WooCommerce\PayPalCommerce\WcGateway\Exception\NotFoundException;
+use WooCommerce\PayPalCommerce\Compat\Settings\SettingsMapHelper;
 use WooCommerce\PayPalCommerce\Vendor\Psr\Container\ContainerInterface;
+use WooCommerce\PayPalCommerce\WcGateway\Exception\NotFoundException;
 
 /**
  * Class Settings

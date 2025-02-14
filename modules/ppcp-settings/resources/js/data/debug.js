@@ -56,7 +56,7 @@ export const addDebugTools = ( context, modules ) => {
 		if ( isConnected ) {
 			// Make sure the Onboarding wizard is "completed".
 			const onboarding = wp.data.dispatch( OnboardingStoreName );
-			onboarding.setCompleted( true );
+			onboarding.setPersistent( 'completed', true );
 			onboarding.persist();
 
 			// Reset all stores, except for the onboarding store.
@@ -102,7 +102,7 @@ export const addDebugTools = ( context, modules ) => {
 	debugApi.onboardingMode = ( state ) => {
 		const onboarding = wp.data.dispatch( OnboardingStoreName );
 
-		onboarding.setCompleted( ! state );
+		onboarding.setPersistent( 'completed', ! state );
 		onboarding.persist();
 	};
 

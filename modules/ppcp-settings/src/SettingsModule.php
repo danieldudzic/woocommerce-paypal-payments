@@ -9,6 +9,7 @@ declare( strict_types = 1 );
 
 namespace WooCommerce\PayPalCommerce\Settings;
 
+use WC_Payment_Gateway;
 use WooCommerce\PayPalCommerce\ApiClient\Helper\DccApplies;
 use WooCommerce\PayPalCommerce\Applepay\Assets\AppleProductStatus;
 use WooCommerce\PayPalCommerce\Googlepay\Helper\ApmProductStatus;
@@ -22,6 +23,7 @@ use WooCommerce\PayPalCommerce\LocalAlternativePaymentMethods\P24Gateway;
 use WooCommerce\PayPalCommerce\LocalAlternativePaymentMethods\TrustlyGateway;
 use WooCommerce\PayPalCommerce\Settings\Ajax\SwitchSettingsUiEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Data\OnboardingProfile;
+use WooCommerce\PayPalCommerce\Settings\Data\TodosModel;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\RestEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Handler\ConnectionListener;
 use WooCommerce\PayPalCommerce\Vendor\Inpsyde\Modularity\Module\ExecutableModule;
@@ -34,6 +36,10 @@ use WooCommerce\PayPalCommerce\WcGateway\Gateway\OXXO\OXXO;
 use WooCommerce\PayPalCommerce\WcGateway\Gateway\PayUponInvoice\PayUponInvoiceGateway;
 use WooCommerce\PayPalCommerce\WcGateway\Helper\DCCProductStatus;
 use WooCommerce\PayPalCommerce\WcGateway\Settings\Settings;
+use WooCommerce\PayPalCommerce\Settings\Service\SettingsDataManager;
+use WooCommerce\PayPalCommerce\Settings\DTO\ConfigurationFlagsDTO;
+use WooCommerce\PayPalCommerce\Settings\Enum\ProductChoicesEnum;
+use WooCommerce\PayPalCommerce\Settings\Data\GeneralSettings;
 
 /**
  * Class SettingsModule
@@ -120,7 +126,7 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 
 		add_action(
 			'woocommerce_paypal_payments_gateway_migrate_on_update',
-			static fn () => ! get_option( SwitchSettingsUiEndpoint::OPTION_NAME_SHOULD_USE_OLD_UI )
+			static fn() => ! get_option( SwitchSettingsUiEndpoint::OPTION_NAME_SHOULD_USE_OLD_UI )
 				&& update_option( SwitchSettingsUiEndpoint::OPTION_NAME_SHOULD_USE_OLD_UI, 'yes' )
 		);
 
@@ -230,7 +236,7 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 				$endpoints = array(
 					'onboarding'             => $container->get( 'settings.rest.onboarding' ),
 					'common'                 => $container->get( 'settings.rest.common' ),
-					'connect_manual'         => $container->get( 'settings.rest.connect_manual' ),
+					'connect_manual'         => $container->get( 'settings.rest.authentication' ),
 					'login_link'             => $container->get( 'settings.rest.login_link' ),
 					'webhooks'               => $container->get( 'settings.rest.webhooks' ),
 					'refresh_feature_status' => $container->get( 'settings.rest.refresh_feature_status' ),
@@ -238,6 +244,7 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 					'settings'               => $container->get( 'settings.rest.settings' ),
 					'styling'                => $container->get( 'settings.rest.styling' ),
 					'todos'                  => $container->get( 'settings.rest.todos' ),
+					'pay_later_messaging'    => $container->get( 'settings.rest.pay_later_messaging' ),
 				);
 
 				foreach ( $endpoints as $endpoint ) {
@@ -261,12 +268,19 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 		add_action(
 			'woocommerce_paypal_payments_merchant_disconnected',
 			static function () use ( $container ) : void {
+				// Reset onboarding profile.
 				$onboarding_profile = $container->get( 'settings.data.onboarding' );
 				assert( $onboarding_profile instanceof OnboardingProfile );
 
 				$onboarding_profile->set_completed( false );
 				$onboarding_profile->set_step( 0 );
 				$onboarding_profile->save();
+
+				// Reset dismissed and completed on click todos.
+				$todos = $container->get( 'settings.data.todos' );
+				assert( $todos instanceof TodosModel );
+				$todos->reset_dismissed_todos();
+				$todos->reset_completed_onclick_todos();
 			}
 		);
 
@@ -278,12 +292,29 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 
 				$onboarding_profile->set_completed( true );
 				$onboarding_profile->save();
+
+				// Try to apply a default configuration for the current store.
+				$data_manager = $container->get( 'settings.service.data-manager' );
+				assert( $data_manager instanceof SettingsDataManager );
+
+				$general_settings = $container->get( 'settings.data.general' );
+				assert( $general_settings instanceof GeneralSettings );
+
+				$flags = new ConfigurationFlagsDTO();
+
+				// TODO: Get the merchant country from PayPal here!
+				$flags->country_code       = 'US';
+				$flags->is_business_seller = $general_settings->is_business_seller();
+				$flags->use_card_payments  = $onboarding_profile->get_accept_card_payments();
+				$flags->use_subscriptions  = in_array( ProductChoicesEnum::SUBSCRIPTIONS, $onboarding_profile->get_products(), true );
+
+				$data_manager->set_defaults_for_new_merchant( $flags );
 			}
 		);
 
 		add_filter(
 			'woocommerce_paypal_payments_payment_methods',
-			function( array $payment_methods ) use ( $container ) : array {
+			function ( array $payment_methods ) use ( $container ) : array {
 				$all_payment_methods = $payment_methods;
 
 				$dcc_product_status = $container->get( 'wcgateway.helper.dcc-product-status' );
@@ -298,8 +329,9 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 				$dcc_applies = $container->get( 'api.helpers.dccapplies' );
 				assert( $dcc_applies instanceof DCCApplies );
 
-				// Unset BCDC if merchant is eligible for ACDC.
-				if ( $dcc_product_status->dcc_is_active() && ! $container->get( 'wcgateway.settings.allow_card_button_gateway' ) ) {
+				// Unset BCDC if merchant is eligible for ACDC and country is eligible for card fields.
+				$card_fields_eligible = $container->get( 'card-fields.eligible' );
+				if ( $dcc_product_status->is_active() && $card_fields_eligible ) {
 					unset( $payment_methods[ CardButtonGateway::ID ] );
 				}
 
@@ -319,7 +351,7 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 				}
 
 				// Unset Fastlane if store location is not United States or merchant is not eligible for ACDC.
-				if ( $container->get( 'api.shop.country' ) !== 'US' || ! $dcc_product_status->dcc_is_active() ) {
+				if ( $container->get( 'api.shop.country' ) !== 'US' || ! $dcc_product_status->is_active() ) {
 					unset( $payment_methods['ppcp-axo-gateway'] );
 				}
 
@@ -342,6 +374,110 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 
 				return $payment_methods;
 			}
+		);
+
+		add_filter(
+			'woocommerce_payment_gateways',
+			/**
+			 * Param types removed to avoid third-party issues.
+			 *
+			 * @psalm-suppress MissingClosureParamType
+			 */
+			static function ( $methods ) use ( $container ) : array {
+				if ( ! is_array( $methods ) ) {
+					return $methods;
+				}
+
+				$card_button_gateway = $container->get( 'wcgateway.card-button-gateway' );
+				assert( $card_button_gateway instanceof CardButtonGateway );
+
+				$googlepay_gateway = $container->get( 'googlepay.wc-gateway' );
+				assert( $googlepay_gateway instanceof WC_Payment_Gateway );
+
+				$applepay_gateway = $container->get( 'applepay.wc-gateway' );
+				assert( $applepay_gateway instanceof WC_Payment_Gateway );
+
+				$axo_gateway = $container->get( 'axo.gateway' );
+				assert( $axo_gateway instanceof WC_Payment_Gateway );
+
+				$methods[] = $card_button_gateway;
+				$methods[] = $googlepay_gateway;
+				$methods[] = $applepay_gateway;
+				$methods[] = $axo_gateway;
+
+				return $methods;
+			}
+		);
+
+		add_filter(
+			'woocommerce_paypal_payments_gateway_title',
+			function ( string $title, WC_Payment_Gateway $gateway ) {
+				return $gateway->get_option( 'title', $title );
+			},
+			10,
+			2
+		);
+		add_filter(
+			'woocommerce_paypal_payments_gateway_description',
+			function ( string $description, WC_Payment_Gateway $gateway ) {
+				return $gateway->get_option( 'description', $description );
+			},
+			10,
+			2
+		);
+
+		add_filter( 'woocommerce_paypal_payments_card_button_gateway_should_register_gateway', '__return_true' );
+
+		add_filter(
+			'woocommerce_paypal_payments_credit_card_gateway_form_fields',
+			function ( array $form_fields ) {
+				$form_fields['enabled'] = array(
+					'title'       => __( 'Enable/Disable', 'woocommerce-paypal-payments' ),
+					'type'        => 'checkbox',
+					'desc_tip'    => true,
+					'description' => __( 'Once enabled, the Credit Card option will show up in the checkout.', 'woocommerce-paypal-payments' ),
+					'label'       => __( 'Enable Advanced Card Processing', 'woocommerce-paypal-payments' ),
+					'default'     => 'no',
+				);
+
+				return $form_fields;
+			}
+		);
+		add_filter( 'woocommerce_paypal_payments_credit_card_gateway_should_update_enabled', '__return_false' );
+
+		add_filter(
+			'woocommerce_paypal_payments_credit_card_gateway_title',
+			function ( string $title, WC_Payment_Gateway $gateway ) {
+				return $gateway->get_option( 'title', $title );
+			},
+			10,
+			2
+		);
+		add_filter(
+			'woocommerce_paypal_payments_credit_card_gateway_description',
+			function ( string $description, WC_Payment_Gateway $gateway ) {
+				return $gateway->get_option( 'description', $description );
+			},
+			10,
+			2
+		);
+
+		add_filter( 'woocommerce_paypal_payments_axo_gateway_should_update_enabled', '__return_false' );
+		add_filter(
+			'woocommerce_paypal_payments_axo_gateway_title',
+			function ( string $title, WC_Payment_Gateway $gateway ) {
+				return $gateway->get_option( 'title', $title );
+			},
+			10,
+			2
+		);
+		add_filter(
+			'woocommerce_paypal_payments_axo_gateway_description',
+			function ( string $description, WC_Payment_Gateway $gateway ) {
+				return $gateway->get_option( 'description', $description );
+			},
+			10,
+			2
 		);
 
 		return true;

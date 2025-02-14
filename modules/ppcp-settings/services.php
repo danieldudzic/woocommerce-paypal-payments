@@ -17,12 +17,16 @@ use WooCommerce\PayPalCommerce\Settings\Data\PaymentSettings;
 use WooCommerce\PayPalCommerce\Settings\Data\SettingsModel;
 use WooCommerce\PayPalCommerce\Settings\Data\StylingSettings;
 use WooCommerce\PayPalCommerce\Settings\Data\TodosModel;
+use WooCommerce\PayPalCommerce\Settings\Data\Definition\TodosDefinition;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\AuthenticationRestEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\CommonRestEndpoint;
+use WooCommerce\PayPalCommerce\Settings\Endpoint\CompleteOnClickEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\LoginLinkRestEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\OnboardingRestEndpoint;
+use WooCommerce\PayPalCommerce\Settings\Endpoint\PayLaterMessagingEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\PaymentRestEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\RefreshFeatureStatusEndpoint;
+use WooCommerce\PayPalCommerce\Settings\Endpoint\ResetDismissedTodosEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\WebhookSettingsEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\SettingsRestEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\StylingRestEndpoint;
@@ -31,8 +35,14 @@ use WooCommerce\PayPalCommerce\Settings\Handler\ConnectionListener;
 use WooCommerce\PayPalCommerce\Settings\Service\AuthenticationManager;
 use WooCommerce\PayPalCommerce\Settings\Service\ConnectionUrlGenerator;
 use WooCommerce\PayPalCommerce\Settings\Service\OnboardingUrlManager;
+use WooCommerce\PayPalCommerce\Settings\Service\TodosEligibilityService;
 use WooCommerce\PayPalCommerce\Vendor\Psr\Container\ContainerInterface;
 use WooCommerce\PayPalCommerce\Settings\Service\DataSanitizer;
+use WooCommerce\PayPalCommerce\Settings\Service\SettingsDataManager;
+use WooCommerce\PayPalCommerce\Settings\Data\Definition\PaymentMethodsDefinition;
+use WooCommerce\PayPalCommerce\PayLaterConfigurator\Factory\ConfigFactory;
+use WooCommerce\PayPalCommerce\WcGateway\Settings\Settings;
+use WooCommerce\PayPalCommerce\PayLaterConfigurator\Endpoint\SaveConfig;
 
 return array(
 	'settings.url'                                => static function ( ContainerInterface $container ) : string {
@@ -86,6 +96,34 @@ return array(
 			$container->get( 'settings.service.sanitizer' )
 		);
 	},
+	'settings.data.paylater-messaging'            => static function ( ContainerInterface $container ) : array {
+		// TODO: Create an AbstractDataModel wrapper for this configuration!
+
+		$config_factors = $container->get( 'paylater-configurator.factory.config' );
+		assert( $config_factors instanceof ConfigFactory );
+
+		$save_config = $container->get( 'paylater-configurator.endpoint.save-config' );
+		assert( $save_config instanceof SaveConfig );
+
+		$settings = $container->get( 'wcgateway.settings' );
+		assert( $settings instanceof Settings );
+
+		$pay_later_config = $config_factors->from_settings( $settings );
+
+		return array(
+			'read' => $pay_later_config,
+			'save' => $save_config,
+		);
+	},
+	/**
+	 * Checks if valid merchant connection details are stored in the DB.
+	 */
+	'settings.flag.is-connected'                  => static function ( ContainerInterface $container ) : bool {
+		$data = $container->get( 'settings.data.general' );
+		assert( $data instanceof GeneralSettings );
+
+		return $data->is_merchant_connected();
+	},
 	'settings.rest.onboarding'                    => static function ( ContainerInterface $container ) : OnboardingRestEndpoint {
 		return new OnboardingRestEndpoint( $container->get( 'settings.data.onboarding' ) );
 	},
@@ -93,7 +131,10 @@ return array(
 		return new CommonRestEndpoint( $container->get( 'settings.data.general' ) );
 	},
 	'settings.rest.payment'                       => static function ( ContainerInterface $container ) : PaymentRestEndpoint {
-		return new PaymentRestEndpoint( $container->get( 'settings.data.payment' ) );
+		return new PaymentRestEndpoint(
+			$container->get( 'settings.data.payment' ),
+			$container->get( 'settings.data.definition.methods' )
+		);
 	},
 	'settings.rest.styling'                       => static function ( ContainerInterface $container ) : StylingRestEndpoint {
 		return new StylingRestEndpoint(
@@ -108,9 +149,10 @@ return array(
 			$container->get( 'woocommerce.logger.woocommerce' )
 		);
 	},
-	'settings.rest.connect_manual'                => static function ( ContainerInterface $container ) : AuthenticationRestEndpoint {
+	'settings.rest.authentication'                => static function ( ContainerInterface $container ) : AuthenticationRestEndpoint {
 		return new AuthenticationRestEndpoint(
 			$container->get( 'settings.service.authentication_manager' ),
+			$container->get( 'settings.service.data-manager' )
 		);
 	},
 	'settings.rest.login_link'                    => static function ( ContainerInterface $container ) : LoginLinkRestEndpoint {
@@ -123,6 +165,12 @@ return array(
 			$container->get( 'api.endpoint.webhook' ),
 			$container->get( 'webhook.registrar' ),
 			$container->get( 'webhook.status.simulation' )
+		);
+	},
+	'settings.rest.pay_later_messaging'           => static function ( ContainerInterface $container ) : PayLaterMessagingEndpoint {
+		return new PayLaterMessagingEndpoint(
+			$container->get( 'wcgateway.settings' ),
+			$container->get( 'paylater-configurator.endpoint.save-config' )
 		);
 	},
 	'settings.rest.settings'                      => static function ( ContainerInterface $container ) : SettingsRestEndpoint {
@@ -226,6 +274,18 @@ return array(
 	'settings.service.sanitizer'                  => static function ( ContainerInterface $container ) : DataSanitizer {
 		return new DataSanitizer();
 	},
+	'settings.service.data-manager'               => static function ( ContainerInterface $container ) : SettingsDataManager {
+		return new SettingsDataManager(
+			$container->get( 'settings.data.definition.methods' ),
+			$container->get( 'settings.data.onboarding' ),
+			$container->get( 'settings.data.general' ),
+			$container->get( 'settings.data.settings' ),
+			$container->get( 'settings.data.styling' ),
+			$container->get( 'settings.data.payment' ),
+			$container->get( 'settings.data.paylater-messaging' ),
+			$container->get( 'settings.data.todos' ),
+		);
+	},
 	'settings.ajax.switch_ui'                     => static function ( ContainerInterface $container ) : SwitchSettingsUiEndpoint {
 		return new SwitchSettingsUiEndpoint(
 			$container->get( 'woocommerce.logger.woocommerce' ),
@@ -237,9 +297,81 @@ return array(
 	'settings.rest.todos'                         => static function ( ContainerInterface $container ) : TodosRestEndpoint {
 		return new TodosRestEndpoint(
 			$container->get( 'settings.data.todos' ),
+			$container->get( 'settings.data.definition.todos' ),
+			$container->get( 'settings.rest.settings' )
 		);
 	},
 	'settings.data.todos'                         => static function ( ContainerInterface $container ) : TodosModel {
 		return new TodosModel();
+	},
+	'settings.data.definition.todos'              => static function ( ContainerInterface $container ) : TodosDefinition {
+		return new TodosDefinition(
+			$container->get( 'settings.service.todos_eligibilities' ),
+			$container->get( 'settings.data.general' )
+		);
+	},
+	'settings.data.definition.methods'            => static function ( ContainerInterface $container ) : PaymentMethodsDefinition {
+		return new PaymentMethodsDefinition(
+			$container->get( 'settings.data.payment' ),
+		);
+	},
+	'settings.service.todos_eligibilities'        => static function ( ContainerInterface $container ) : TodosEligibilityService {
+		$features = apply_filters(
+			'woocommerce_paypal_payments_rest_common_merchant_features',
+			array()
+		);
+
+		$payment_endpoint = $container->get( 'settings.rest.payment' );
+		$settings         = $payment_endpoint->get_details()->get_data();
+
+		$pay_later_endpoint = $container->get( 'settings.rest.pay_later_messaging' );
+		$pay_later_settings = $pay_later_endpoint->get_details()->get_data();
+		$pay_later_statuses = array(
+			'cart'             => $pay_later_settings['data']['cart']['status'] === 'enabled',
+			'checkout'         => $pay_later_settings['data']['checkout']['status'] === 'enabled',
+			'product'          => $pay_later_settings['data']['product']['status'] === 'enabled',
+			'shop'             => $pay_later_settings['data']['shop']['status'] === 'enabled',
+			'home'             => $pay_later_settings['data']['home']['status'] === 'enabled',
+			'custom_placement' => ! empty( $pay_later_settings['data']['custom_placement'] ) &&
+				$pay_later_settings['data']['custom_placement'][0]['status'] === 'enabled',
+		);
+
+		// Settings status.
+		$gateways = array(
+			'apple_pay'   => $settings['data']['ppcp-applepay']['enabled'] ?? false,
+			'google_pay'  => $settings['data']['ppcp-googlepay']['enabled'] ?? false,
+			'axo'         => $settings['data']['ppcp-axo-gateway']['enabled'] ?? false,
+			'card-button' => $settings['data']['ppcp-card-button-gateway']['enabled'] ?? false,
+		);
+
+		// Merchant eligibility.
+		$capabilities = array(
+			'apple_pay'   => $features['apple_pay']['enabled'] ?? false,
+			'google_pay'  => $features['google_pay']['enabled'] ?? false,
+			'acdc'        => $features['advanced_credit_and_debit_cards']['enabled'] ?? false,
+			'save_paypal' => $features['save_paypal_and_venmo']['enabled'] ?? false,
+			'apm'         => $features['alternative_payment_methods']['enabled'] ?? false,
+			'paylater'    => $features['pay_later_messaging']['enabled'] ?? false,
+		);
+
+		$is_pay_later_messaging_enabled_for_any_location = ! array_filter( $pay_later_statuses );
+
+		return new TodosEligibilityService(
+			$capabilities['acdc'] && ! $gateways['axo'],                                              // Enable Fastlane.
+			$capabilities['acdc'] && ! $gateways['card-button'],                                      // Enable Credit and Debit Cards on your checkout.
+			$is_pay_later_messaging_enabled_for_any_location,                                         // Enable Pay Later messaging.
+			! $is_pay_later_messaging_enabled_for_any_location && ! $pay_later_statuses['product'],   // Add Pay Later messaging (Product page).
+			! $is_pay_later_messaging_enabled_for_any_location && ! $pay_later_statuses['cart'],      // Add Pay Later messaging (Cart).
+			! $is_pay_later_messaging_enabled_for_any_location && ! $pay_later_statuses['checkout'],  // Add Pay Later messaging (Checkout).
+			true,                                                                                     // Configure a PayPal Subscription.
+			true,                                                                                     // Add PayPal buttons.
+			true,                                                                                     // Register Domain for Apple Pay.
+			$capabilities['acdc'] && ! ( $capabilities['apple_pay'] && $capabilities['google_pay'] ), // Add digital wallets to your account.
+			$capabilities['acdc'] && ! $capabilities['apple_pay'],                                    // Add Apple Pay to your account.
+			$capabilities['acdc'] && ! $capabilities['google_pay'],                                   // Add Google Pay to your account.
+			true,                                                                                     // Configure a PayPal Subscription.
+			$capabilities['apple_pay'] && ! $gateways['apple_pay'],                                   // Enable Apple Pay.
+			$capabilities['google_pay'] && ! $gateways['google_pay'], // Enable Google Pay.
+		);
 	},
 );

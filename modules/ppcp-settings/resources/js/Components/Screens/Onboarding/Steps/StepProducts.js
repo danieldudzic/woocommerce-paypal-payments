@@ -10,6 +10,7 @@ const StepProducts = () => {
 	const { canUseSubscriptions } = OnboardingHooks.useFlags();
 	const [ optionState, setOptionState ] = useState( null );
 	const [ productChoices, setProductChoices ] = useState( [] );
+	const { isCasualSeller } = OnboardingHooks.useBusiness();
 
 	useEffect( () => {
 		const initChoices = () => {
@@ -48,7 +49,36 @@ const StepProducts = () => {
 
 		setProducts( getNewValue() );
 	};
-
+	const productChoicesFull = [
+		{
+			value: PRODUCT_TYPES.VIRTUAL,
+			title: __( 'Virtual', 'woocommerce-paypal-payments' ),
+			description: __(
+				'Items do not require shipping.',
+				'woocommerce-paypal-payments'
+			),
+			contents: <DetailsVirtual />,
+		},
+		{
+			value: PRODUCT_TYPES.PHYSICAL,
+			title: __( 'Physical Goods', 'woocommerce-paypal-payments' ),
+			description: __(
+				'Items require shipping.',
+				'woocommerce-paypal-payments'
+			),
+			contents: <DetailsPhysical />,
+		},
+		{
+			value: PRODUCT_TYPES.SUBSCRIPTIONS,
+			title: __( 'Subscriptions', 'woocommerce-paypal-payments' ),
+			description: __(
+				'Recurring payments for either physical goods or services.',
+				'woocommerce-paypal-payments'
+			),
+			isDisabled: isCasualSeller,
+			contents: <DetailsSubscriptions showNotice={ isCasualSeller } />,
+		},
+	];
 	return (
 		<div className="ppcp-r-page-products">
 			<OnboardingHeader
@@ -87,41 +117,21 @@ const DetailsPhysical = () => (
 	</ul>
 );
 
-const DetailsSubscriptions = () => (
-	<a
-		target="__blank"
-		href="https://woocommerce.com/document/woocommerce-paypal-payments/#subscriptions-faq"
-	>
-		{ __( 'WooCommerce Subscriptions', 'woocommerce-paypal-payments' ) }
-	</a>
+const DetailsSubscriptions = ( { showNotice } ) => (
+	<>
+		<a
+			target="__blank"
+			href="https://woocommerce.com/document/woocommerce-paypal-payments/#subscriptions-faq"
+		>
+			{ __( 'WooCommerce Subscriptions', 'woocommerce-paypal-payments' ) }
+		</a>
+		{ showNotice && (
+			<p>
+				{ __(
+					'* Business account is required for subscriptions.',
+					'woocommerce-paypal-payments'
+				) }
+			</p>
+		) }
+	</>
 );
-
-const productChoicesFull = [
-	{
-		value: PRODUCT_TYPES.VIRTUAL,
-		title: __( 'Virtual', 'woocommerce-paypal-payments' ),
-		description: __(
-			'Items do not require shipping.',
-			'woocommerce-paypal-payments'
-		),
-		contents: <DetailsVirtual />,
-	},
-	{
-		value: PRODUCT_TYPES.PHYSICAL,
-		title: __( 'Physical Goods', 'woocommerce-paypal-payments' ),
-		description: __(
-			'Items require shipping.',
-			'woocommerce-paypal-payments'
-		),
-		contents: <DetailsPhysical />,
-	},
-	{
-		value: PRODUCT_TYPES.SUBSCRIPTIONS,
-		title: __( 'Subscriptions', 'woocommerce-paypal-payments' ),
-		description: __(
-			'Recurring payments for either physical goods or services.',
-			'woocommerce-paypal-payments'
-		),
-		contents: <DetailsSubscriptions />,
-	},
-];

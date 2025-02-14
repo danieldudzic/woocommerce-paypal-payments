@@ -6,6 +6,7 @@ import SpinnerOverlay from './ReusableComponents/SpinnerOverlay';
 import SendOnlyMessage from './Screens/SendOnlyMessage';
 import OnboardingScreen from './Screens/Onboarding';
 import SettingsScreen from './Screens/Settings';
+import { getQuery } from '../utils/navigation';
 
 const SettingsApp = () => {
 	const { isReady: onboardingIsReady, completed: onboardingCompleted } =
@@ -31,11 +32,13 @@ const SettingsApp = () => {
 		loading: ! onboardingIsReady,
 	} );
 
-	const [ activePanel, setActivePanel ] = useState( 'overview' );
+	const [ activePanel, setActivePanel ] = useState(
+		getQuery().panel || 'overview'
+	);
 
 	const Content = useMemo( () => {
 		if ( ! onboardingIsReady || ! merchantIsReady ) {
-			return <SpinnerOverlay />;
+			return <SpinnerOverlay asModal={ true } />;
 		}
 
 		if ( isSendOnlyCountry ) {

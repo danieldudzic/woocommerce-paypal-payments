@@ -7,7 +7,15 @@
  * @file
  */
 
+import apiFetch from '@wordpress/api-fetch';
+
 import ACTION_TYPES from './action-types';
+import {
+	REST_COMPLETE_ONCLICK_PATH,
+	REST_PATH,
+	REST_PERSIST_PATH,
+	REST_RESET_DISMISSED_TODOS_PATH,
+} from './constants';
 
 export const setIsReady = ( isReady ) => ( {
 	type: ACTION_TYPES.SET_TRANSIENT,
@@ -19,6 +27,80 @@ export const setTodos = ( todos ) => ( {
 	payload: todos,
 } );
 
-export const fetchTodos = function* () {
-	yield { type: ACTION_TYPES.DO_FETCH_TODOS };
-};
+export const setDismissedTodos = ( dismissedTodos ) => ( {
+	type: ACTION_TYPES.SET_DISMISSED_TODOS,
+	payload: dismissedTodos,
+} );
+
+export const setCompletedTodos = ( completedTodos ) => ( {
+	type: ACTION_TYPES.SET_COMPLETED_TODOS,
+	payload: completedTodos,
+} );
+
+// Thunks
+
+export function fetchTodos() {
+	return async () => {
+		const response = await apiFetch( { path: REST_PATH } );
+		return response?.data || [];
+	};
+}
+
+export function persist() {
+	return async ( { select } ) => {
+		return await apiFetch( {
+			path: REST_PERSIST_PATH,
+			method: 'POST',
+			data: select.persistentData(),
+		} );
+	};
+}
+
+export function resetDismissedTodos() {
+	return async ( { dispatch } ) => {
+		try {
+			const result = await apiFetch( {
+				path: REST_RESET_DISMISSED_TODOS_PATH,
+				method: 'POST',
+			} );
+
+			if ( result && result.success ) {
+				await dispatch.setDismissedTodos( [] );
+			}
+
+			return result;
+		} catch ( e ) {
+			return {
+				success: false,
+				error: e,
+				message: e.message,
+			};
+		}
+	};
+}
+
+export function completeOnClick( todoId ) {
+	return async ( { select, dispatch } ) => {
+		try {
+			const result = await apiFetch( {
+				path: REST_COMPLETE_ONCLICK_PATH,
+				method: 'POST',
+				data: { todoId },
+			} );
+
+			if ( result?.success ) {
+				// Set transient completed state for visual feedback
+				const completed = await select.getCompletedTodos();
+				await dispatch.setCompletedTodos( [ ...completed, todoId ] );
+			}
+
+			return result;
+		} catch ( e ) {
+			return {
+				success: false,
+				error: e,
+				message: e.message,
+			};
+		}
+	};
+}
