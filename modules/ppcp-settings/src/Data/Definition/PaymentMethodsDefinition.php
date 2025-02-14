@@ -73,7 +73,7 @@ class PaymentMethodsDefinition {
 
 		$result = array();
 		foreach ( $all_methods as $method ) {
-			$result[ $method['id'] ] = $this->define_common_fields(
+			$result[ $method['id'] ] = $this->build_method_definition(
 				$method['id'],
 				$method['title'],
 				$method['description'],
@@ -89,43 +89,27 @@ class PaymentMethodsDefinition {
 	 * Returns a new payment method configuration array that contains all
 	 * common attributes which must be present in every method definition.
 	 *
-	 * @param string $gateway_id   The payment method ID.
-	 * @param string $title        Admin-side payment method title.
-	 * @param string $description  Admin-side info about the payment method.
-	 * @param string $icon         Admin-side icon of the payment method.
-	 * @param array  $extra_fields Optional. Additional fields to display in the edit modal.
+	 * @param string      $gateway_id  The payment method ID.
+	 * @param string      $title       Admin-side payment method title.
+	 * @param string      $description Admin-side info about the payment method.
+	 * @param string      $icon        Admin-side icon of the payment method.
+	 * @param array|false $fields      Optional. Additional fields to display in the edit modal.
+	 *                                 Setting this to false omits all fields.
 	 * @return array Payment method definition.
 	 */
-	private function define_common_fields(
+	private function build_method_definition(
 		string $gateway_id,
 		string $title,
 		string $description,
 		string $icon,
-		array $extra_fields = array()
+		$fields = array()
 	) : array {
 		$gateway = $this->wc_gateways[ $gateway_id ] ?? null;
 
 		$gateway_title       = $gateway ? $gateway->get_title() : $title;
 		$gateway_description = $gateway ? $gateway->get_description() : $description;
 
-		$fields = array(
-			'checkoutPageTitle'       => array(
-				'type'    => 'text',
-				'default' => $gateway_title,
-				'label'   => __( 'Checkout page title', 'woocommerce-paypal-payments' ),
-			),
-			'checkoutPageDescription' => array(
-				'type'    => 'text',
-				'default' => $gateway ? $gateway->get_description() : '',
-				'label'   => __( 'Checkout page description', 'woocommerce-paypal-payments' ),
-			),
-		);
-
-		if ( $extra_fields ) {
-			$fields = array_merge( $fields, $extra_fields );
-		}
-
-		return array(
+		$config = array(
 			'id'              => $gateway_id,
 			'enabled'         => $this->settings->is_method_enabled( $gateway_id ),
 			'title'           => str_replace( '&amp;', '&', $gateway_title ),
@@ -133,8 +117,27 @@ class PaymentMethodsDefinition {
 			'icon'            => $icon,
 			'itemTitle'       => $title,
 			'itemDescription' => $description,
-			'fields'          => $fields,
 		);
+
+		if ( is_array( $fields ) ) {
+			$config['fields'] = array_merge(
+				array(
+					'checkoutPageTitle'       => array(
+						'type'    => 'text',
+						'default' => $gateway_title,
+						'label'   => __( 'Checkout page title', 'woocommerce-paypal-payments' ),
+					),
+					'checkoutPageDescription' => array(
+						'type'    => 'text',
+						'default' => $gateway ? $gateway->get_description() : '',
+						'label'   => __( 'Checkout page description', 'woocommerce-paypal-payments' ),
+					),
+				),
+				$fields
+			);
+		}
+
+		return $config;
 	}
 
 	// Payment method groups.
@@ -167,6 +170,7 @@ class PaymentMethodsDefinition {
 					'woocommerce-paypal-payments'
 				),
 				'icon'        => 'payment-method-venmo',
+				'fields'      => false,
 			),
 			array(
 				'id'          => 'pay-later',
@@ -176,6 +180,7 @@ class PaymentMethodsDefinition {
 					'woocommerce-paypal-payments'
 				),
 				'icon'        => 'payment-method-paypal',
+				'fields'      => false,
 			),
 			array(
 				'id'          => CardButtonGateway::ID,
