@@ -39,6 +39,10 @@ use WooCommerce\PayPalCommerce\Settings\Service\TodosEligibilityService;
 use WooCommerce\PayPalCommerce\Vendor\Psr\Container\ContainerInterface;
 use WooCommerce\PayPalCommerce\Settings\Service\DataSanitizer;
 use WooCommerce\PayPalCommerce\Settings\Service\SettingsDataManager;
+use WooCommerce\PayPalCommerce\Settings\Data\Definition\PaymentMethodsDefinition;
+use WooCommerce\PayPalCommerce\PayLaterConfigurator\Factory\ConfigFactory;
+use WooCommerce\PayPalCommerce\WcGateway\Settings\Settings;
+use WooCommerce\PayPalCommerce\PayLaterConfigurator\Endpoint\SaveConfig;
 
 return array(
 	'settings.url'                                => static function ( ContainerInterface $container ) : string {
@@ -92,6 +96,25 @@ return array(
 			$container->get( 'settings.service.sanitizer' )
 		);
 	},
+	'settings.data.paylater-messaging'            => static function ( ContainerInterface $container ) : array {
+		// TODO: Create an AbstractDataModel wrapper for this configuration!
+
+		$config_factors = $container->get( 'paylater-configurator.factory.config' );
+		assert( $config_factors instanceof ConfigFactory );
+
+		$save_config = $container->get( 'paylater-configurator.endpoint.save-config' );
+		assert( $save_config instanceof SaveConfig );
+
+		$settings = $container->get( 'wcgateway.settings' );
+		assert( $settings instanceof Settings );
+
+		$pay_later_config = $config_factors->from_settings( $settings );
+
+		return array(
+			'read' => $pay_later_config,
+			'save' => $save_config,
+		);
+	},
 	/**
 	 * Checks if valid merchant connection details are stored in the DB.
 	 */
@@ -108,7 +131,10 @@ return array(
 		return new CommonRestEndpoint( $container->get( 'settings.data.general' ) );
 	},
 	'settings.rest.payment'                       => static function ( ContainerInterface $container ) : PaymentRestEndpoint {
-		return new PaymentRestEndpoint( $container->get( 'settings.data.payment' ) );
+		return new PaymentRestEndpoint(
+			$container->get( 'settings.data.payment' ),
+			$container->get( 'settings.data.definition.methods' )
+		);
 	},
 	'settings.rest.styling'                       => static function ( ContainerInterface $container ) : StylingRestEndpoint {
 		return new StylingRestEndpoint(
@@ -249,17 +275,16 @@ return array(
 		return new DataSanitizer();
 	},
 	'settings.service.data-manager'               => static function ( ContainerInterface $container ) : SettingsDataManager {
-		$models = array(
+		return new SettingsDataManager(
+			$container->get( 'settings.data.definition.methods' ),
 			$container->get( 'settings.data.onboarding' ),
 			$container->get( 'settings.data.general' ),
+			$container->get( 'settings.data.settings' ),
 			$container->get( 'settings.data.styling' ),
 			$container->get( 'settings.data.payment' ),
-			$container->get( 'settings.data.settings' ),
+			$container->get( 'settings.data.paylater-messaging' ),
 			$container->get( 'settings.data.todos' ),
-			$container->get( 'settings.data.definition.todos' ),
 		);
-
-		return new SettingsDataManager( $models );
 	},
 	'settings.ajax.switch_ui'                     => static function ( ContainerInterface $container ) : SwitchSettingsUiEndpoint {
 		return new SwitchSettingsUiEndpoint(
@@ -283,6 +308,11 @@ return array(
 		return new TodosDefinition(
 			$container->get( 'settings.service.todos_eligibilities' ),
 			$container->get( 'settings.data.general' )
+		);
+	},
+	'settings.data.definition.methods'            => static function ( ContainerInterface $container ) : PaymentMethodsDefinition {
+		return new PaymentMethodsDefinition(
+			$container->get( 'settings.data.payment' ),
 		);
 	},
 	'settings.service.todos_eligibilities'        => static function ( ContainerInterface $container ) : TodosEligibilityService {
