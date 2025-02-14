@@ -33,10 +33,10 @@ use WooCommerce\PayPalCommerce\Settings\Data\Definition\PaymentMethodsDefinition
 class SettingsDataManager {
 
 	/**
-     * The payment methods definition, provides a list of all available payment methods.
-     *
-     * @var PaymentMethodsDefinition
-     */
+	 * The payment methods definition, provides a list of all available payment methods.
+	 *
+	 * @var PaymentMethodsDefinition
+	 */
 	private PaymentMethodsDefinition $methods_definition;
 
 	/**
@@ -79,12 +79,12 @@ class SettingsDataManager {
 	 * Constructor.
 	 *
 	 * @param PaymentMethodsDefinition $methods_definition Access list of all payment methods.
-	 * @param OnboardingProfile $onboarding_profile The onboarding profile model.
-	 * @param GeneralSettings   $general_settings   The general settings model.
-	 * @param SettingsModel     $payment_settings   The settings model.
-	 * @param StylingSettings   $styling_settings   The styling settings model.
-	 * @param PaymentSettings   $payment_methods    The payment settings model.
-	 * @param array             ...$data_models     List of additional data models to reset.
+	 * @param OnboardingProfile        $onboarding_profile The onboarding profile model.
+	 * @param GeneralSettings          $general_settings   The general settings model.
+	 * @param SettingsModel            $payment_settings   The settings model.
+	 * @param StylingSettings          $styling_settings   The styling settings model.
+	 * @param PaymentSettings          $payment_methods    The payment settings model.
+	 * @param array                    ...$data_models     List of additional data models to reset.
 	 */
 	public function __construct(
 		PaymentMethodsDefinition $methods_definition,
@@ -187,17 +187,6 @@ class SettingsDataManager {
 	 * @return void
 	 */
 	protected function toggle_payment_gateways( ConfigurationFlagsDTO $flags ) : void {
-		/*
-		TODO: Implement those conditions:
-
-		| Payment Method | Country | Seller Type | Subscriptions | Cards | Notes                         |
-		|----------------|---------|-------------|---------------|-------|-------------------------------|
-		| ACDC           | US      | Business    | *any*         | ✅     | Greyed out for Casual Sellers |
-		| BCDC           | US      | *any*       | *any*         | ✅     |                               |
-		| Apple Pay      | US      | Business    | *any*         | ✅     | Based on feature eligibility  |
-		| Google Pay     | US      | Business    | *any*         | ✅     | Based on feature eligibility  |
-		| All APMs       | US      | Business    | *any*         | ✅     | Based on feature eligibility  |
-		*/
 		// First, disable all payment methods.
 		$methods_paypal = $this->methods_definition->group_paypal_methods();
 		$methods_cards  = $this->methods_definition->group_card_methods();
@@ -213,13 +202,13 @@ class SettingsDataManager {
 		$this->payment_methods->toggle_method_state( 'pay-later', true );
 
 		if ( $flags->is_business_seller && $flags->use_card_payments ) {
-		// Use BCDC for casual sellers.
+			// Use BCDC for casual sellers.
 			$this->payment_methods->toggle_method_state( CardButtonGateway::ID, true );
 		}
 
 		if ( $flags->is_business_seller ) {
 			if ( $flags->use_card_payments ) {
-		// Enable ACDC for business sellers.
+				// Enable ACDC for business sellers.
 				$this->payment_methods->toggle_method_state( CreditCardGateway::ID, true );
 			}
 
