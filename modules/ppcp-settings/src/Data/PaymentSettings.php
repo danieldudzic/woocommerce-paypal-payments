@@ -99,12 +99,10 @@ class PaymentSettings extends AbstractDataModel {
 	public function is_method_enabled( string $method_id ) : bool {
 		switch ( $method_id ) {
 			case 'venmo':
-				$this->get_venmo_enabled();
-				break;
+				return $this->get_venmo_enabled();
 
 			case 'pay-later':
-				$this->get_paylater_enabled();
-				break;
+				return $this->get_paylater_enabled();
 
 			default:
 				$gateway = $this->get_gateway( $method_id );
@@ -112,9 +110,9 @@ class PaymentSettings extends AbstractDataModel {
 				if ( $gateway ) {
 					return wc_string_to_bool( $gateway->enabled );
 				}
-		}
 
-		return false;
+				return false;
+		}
 	}
 
 	/**
