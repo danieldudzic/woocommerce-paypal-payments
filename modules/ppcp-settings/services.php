@@ -40,6 +40,9 @@ use WooCommerce\PayPalCommerce\Vendor\Psr\Container\ContainerInterface;
 use WooCommerce\PayPalCommerce\Settings\Service\DataSanitizer;
 use WooCommerce\PayPalCommerce\Settings\Service\SettingsDataManager;
 use WooCommerce\PayPalCommerce\Settings\Data\Definition\PaymentMethodsDefinition;
+use WooCommerce\PayPalCommerce\PayLaterConfigurator\Factory\ConfigFactory;
+use WooCommerce\PayPalCommerce\WcGateway\Settings\Settings;
+use WooCommerce\PayPalCommerce\PayLaterConfigurator\Endpoint\SaveConfig;
 
 return array(
 	'settings.url'                                => static function ( ContainerInterface $container ) : string {
@@ -91,6 +94,25 @@ return array(
 	'settings.data.settings'                      => static function ( ContainerInterface $container ) : SettingsModel {
 		return new SettingsModel(
 			$container->get( 'settings.service.sanitizer' )
+		);
+	},
+	'settings.data.paylater-messaging'            => static function ( ContainerInterface $container ) : array {
+		// TODO: Create an AbstractDataModel wrapper for this configuration!
+
+		$config_factors = $container->get( 'paylater-configurator.factory.config' );
+		assert( $config_factors instanceof ConfigFactory );
+
+		$save_config = $container->get( 'paylater-configurator.endpoint.save-config' );
+		assert( $save_config instanceof SaveConfig );
+
+		$settings = $container->get( 'wcgateway.settings' );
+		assert( $settings instanceof Settings );
+
+		$pay_later_config = $config_factors->from_settings( $settings );
+
+		return array(
+			'read' => $pay_later_config,
+			'save' => $save_config,
 		);
 	},
 	/**
