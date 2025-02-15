@@ -40,11 +40,12 @@ class StylingSettingsMapHelper {
 	public function map(): array {
 
 		$mapped_settings = array(
-			'smart_button_locations'     => '',
-			'pay_later_button_locations' => '',
-			'disable_funding'            => '',
-			'googlepay_button_enabled'   => '',
-			'applepay_button_enabled'    => '',
+			'smart_button_locations'                   => '',
+			'pay_later_button_locations'               => '',
+			'disable_funding'                          => '',
+			'googlepay_button_enabled'                 => '',
+			'applepay_button_enabled'                  => '',
+			'smart_button_enable_styling_per_location' => '',
 		);
 
 		foreach ( $this->locations_map() as $old_location_name => $new_location_name ) {
@@ -69,6 +70,9 @@ class StylingSettingsMapHelper {
 		switch ( $old_key ) {
 			case 'smart_button_locations':
 				return $this->mapped_smart_button_locations_value( $styling_models );
+
+			case 'smart_button_enable_styling_per_location':
+				return true;
 
 			case 'pay_later_button_locations':
 				return $this->mapped_pay_later_button_locations_value( $styling_models );
