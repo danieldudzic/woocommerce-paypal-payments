@@ -37,7 +37,8 @@ class SettingsTabMapHelper {
 			'subtotal_mismatch_behavior' => 'subtotal_adjustment',
 			'landing_page'               => 'landing_page',
 			'smart_button_language'      => 'button_language',
-			'prefix'      				 => 'invoice_prefix',
+			'prefix'                     => 'invoice_prefix',
+			'intent'                     => '',
 		);
 	}
 
@@ -57,6 +58,9 @@ class SettingsTabMapHelper {
 
 			case 'landing_page':
 				return $this->mapped_landing_page_value( $settings_model );
+
+			case 'intent':
+				return $this->mapped_intent_value( $settings_model );
 
 			default:
 				return $settings_model[ $new_key ] ?? null;
@@ -98,5 +102,22 @@ class SettingsTabMapHelper {
 				? ApplicationContext::LANDING_PAGE_BILLING
 				: ApplicationContext::LANDING_PAGE_NO_PREFERENCE
 			);
+	}
+
+	/**
+	 * Retrieves the mapped value for the order intent from the new settings.
+	 *
+	 * @param array<string, scalar|array> $settings_model The new settings model data as an array.
+	 * @return 'AUTHORIZE'|'CAPTURE'|null The mapped 'intent' setting value.
+	 */
+	protected function mapped_intent_value( array $settings_model ): ?string {
+		$authorize_only         = $settings_model['authorize_only'] ?? null;
+		$capture_virtual_orders = $settings_model['capture_virtual_orders'] ?? null;
+
+		if ( is_null( $authorize_only ) && is_null( $capture_virtual_orders ) ) {
+			return null;
+		}
+
+		return $authorize_only ? 'AUTHORIZE' : 'CAPTURE';
 	}
 }
