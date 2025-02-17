@@ -39,7 +39,7 @@ class SettingsTabMapHelper {
 			'smart_button_language'      => 'button_language',
 			'prefix'                     => 'invoice_prefix',
 			'intent'                     => '',
-			'vault_enabled'              => 'save_paypal_and_venmo',
+			'vault_enabled_dcc'          => 'save_card_details',
 		);
 	}
 
