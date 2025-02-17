@@ -1489,7 +1489,7 @@ return array(
 			$container->get( 'woocommerce.logger.woocommerce' ),
 			$container->get( 'wcgateway.pay-upon-invoice-helper' ),
 			$container->get( 'wcgateway.checkout-helper' ),
-			$container->get( 'onboarding.state' ),
+			$container->get( 'settings.flag.is-connected' ),
 			$container->get( 'wcgateway.processor.refunds' ),
 			$container->get( 'wcgateway.url' )
 		);
