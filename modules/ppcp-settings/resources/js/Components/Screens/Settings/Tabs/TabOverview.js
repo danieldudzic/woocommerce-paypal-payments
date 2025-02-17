@@ -31,10 +31,6 @@ const TabOverview = () => {
 	const { isReady: areTodosReady } = TodosHooks.useStore();
 	const { isReady: merchantIsReady } = CommonHooks.useStore();
 
-	// TODO: Workaround before we implement the standard "persistentData" resolver.
-	//       Calling this hook ensures that todos are loaded from the REST API at this point.
-	const {} = TodosHooks.useTodos();
-
 	if ( ! areTodosReady || ! merchantIsReady ) {
 		return <SpinnerOverlay asModal={ true } />;
 	}

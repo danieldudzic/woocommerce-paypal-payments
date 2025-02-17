@@ -20,6 +20,7 @@ import {
 	STYLING_PAYMENT_METHODS,
 	STYLING_SHAPES,
 } from './configuration';
+import { persistentData } from './selectors';
 
 /**
  * Single source of truth for access Redux details.
@@ -92,9 +93,14 @@ const useHooks = () => {
 };
 
 export const useStore = () => {
-	const { dispatch, useTransient } = useStoreData();
+	const { select, dispatch, useTransient } = useStoreData();
 	const { persist, refresh } = dispatch;
 	const [ isReady ] = useTransient( 'isReady' );
+
+	// Load persistent data from REST if not done yet.
+	if ( ! isReady ) {
+		select.persistentData();
+	}
 
 	return { persist, refresh, isReady };
 };

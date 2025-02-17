@@ -38,9 +38,14 @@ const useStoreData = () => {
 };
 
 export const useStore = () => {
-	const { useTransient, dispatch } = useStoreData();
+	const { select, useTransient, dispatch } = useStoreData();
 	const { persist, refresh, setPersistent, changePaymentSettings } = dispatch;
 	const [ isReady ] = useTransient( 'isReady' );
+
+	// Load persistent data from REST if not done yet.
+	if ( ! isReady ) {
+		select.persistentData();
+	}
 
 	return {
 		persist,
