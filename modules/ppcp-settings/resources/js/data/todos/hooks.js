@@ -36,26 +36,14 @@ const useStoreData = () => {
 	);
 };
 
-const ensureArray = ( value ) => {
-	if ( ! value ) {
-		return [];
-	}
-	return Array.isArray( value ) ? value : Object.values( value );
-};
-
 const useHooks = () => {
-	const { dispatch } = useStoreData();
+	const { dispatch, select } = useStoreData();
 	const { fetchTodos, setDismissedTodos, setCompletedTodos } = dispatch;
 
 	// Get todos data from store
-	const { todos, dismissedTodos, completedTodos } = useSelect( ( select ) => {
-		const store = select( STORE_NAME );
-		return {
-			todos: ensureArray( store.getTodos() ),
-			dismissedTodos: ensureArray( store.getDismissedTodos() ),
-			completedTodos: ensureArray( store.getCompletedTodos() ),
-		};
-	}, [] );
+	const todos = select.getTodos();
+	const dismissedTodos = select.getDismissedTodos();
+	const completedTodos = select.getCompletedTodos();
 
 	const dismissedSet = new Set( dismissedTodos );
 
