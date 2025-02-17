@@ -87,34 +87,21 @@ use WooCommerce\PayPalCommerce\WcGateway\Helper\DCCGatewayConfiguration;
 
 return array(
 	'wcgateway.paypal-gateway'                             => static function ( ContainerInterface $container ): PayPalGateway {
-		$order_processor     = $container->get( 'wcgateway.order-processor' );
-		$settings_renderer   = $container->get( 'wcgateway.settings.render' );
-		$funding_source_renderer   = $container->get( 'wcgateway.funding-source.renderer' );
-		$settings            = $container->get( 'wcgateway.settings' );
-		$session_handler     = $container->get( 'session.handler' );
-		$refund_processor    = $container->get( 'wcgateway.processor.refunds' );
-		$transaction_url_provider = $container->get( 'wcgateway.transaction-url-provider' );
-		$subscription_helper = $container->get( 'wc-subscriptions.helper' );
-		$page_id             = $container->get( 'wcgateway.current-ppcp-settings-page-id' );
-		$payment_token_repository = $container->get( 'vaulting.repository.payment-token' );
-		$environment         = $container->get( 'onboarding.environment' );
-		$logger              = $container->get( 'woocommerce.logger.woocommerce' );
-		$api_shop_country = $container->get( 'api.shop.country' );
 		return new PayPalGateway(
-			$settings_renderer,
-			$funding_source_renderer,
-			$order_processor,
-			$settings,
-			$session_handler,
-			$refund_processor,
+			$container->get( 'wcgateway.settings.render' ),
+			$container->get( 'wcgateway.funding-source.renderer' ),
+			$container->get( 'wcgateway.order-processor' ),
+			$container->get( 'wcgateway.settings' ),
+			$container->get( 'session.handler' ),
+			$container->get( 'wcgateway.processor.refunds' ),
 			$container->get( 'settings.flag.is-connected' ),
-			$transaction_url_provider,
-			$subscription_helper,
-			$page_id,
-			$environment,
-			$payment_token_repository,
-			$logger,
-			$api_shop_country,
+			$container->get( 'wcgateway.transaction-url-provider' ),
+			$container->get( 'wc-subscriptions.helper' ),
+			$container->get( 'wcgateway.current-ppcp-settings-page-id' ),
+			$container->get( 'onboarding.environment' ),
+			$container->get( 'vaulting.repository.payment-token' ),
+			$container->get( 'woocommerce.logger.woocommerce' ),
+			$container->get( 'api.shop.country' ),
 			$container->get( 'api.endpoint.order' ),
 			$container->get( 'api.factory.paypal-checkout-url' ),
 			$container->get( 'wcgateway.place-order-button-text' ),
