@@ -607,16 +607,14 @@ class WCGatewayModule implements ServiceModule, ExtendingModule, ExecutableModul
 
 				$methods[] = $paypal_gateway;
 
-				$onboarding_state = $container->get( 'onboarding.state' );
-				assert( $onboarding_state instanceof State );
-
 				$settings = $container->get( 'wcgateway.settings' );
 				assert( $settings instanceof ContainerInterface );
 
 				$is_our_page           = $container->get( 'wcgateway.is-ppcp-settings-page' );
 				$is_gateways_list_page = $container->get( 'wcgateway.is-wc-gateways-list-page' );
+				$is_connected          = $container->get( 'settings.flag.is-connected' );
 
-				if ( $onboarding_state->current_state() !== State::STATE_ONBOARDED ) {
+				if ( ! $is_connected ) {
 					return $methods;
 				}
 
