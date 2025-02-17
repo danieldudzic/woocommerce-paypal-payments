@@ -11,8 +11,8 @@ import { getQuery } from '../utils/navigation';
 const SettingsApp = () => {
 	const { isReady: onboardingIsReady, completed: onboardingCompleted } =
 		OnboardingHooks.useSteps();
+	const { isReady: merchantIsReady } = CommonHooks.useStore();
 	const {
-		isReady: merchantIsReady,
 		merchant: { isSendOnlyCountry },
 	} = CommonHooks.useMerchantInfo();
 

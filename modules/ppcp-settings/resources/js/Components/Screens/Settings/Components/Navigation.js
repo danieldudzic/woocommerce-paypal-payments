@@ -3,7 +3,7 @@ import { __ } from '@wordpress/i18n';
 import { useCallback, useEffect, useRef, useState } from '@wordpress/element';
 
 import TopNavigation from '../../../ReusableComponents/TopNavigation';
-import { useSaveSettings } from '../../../../hooks/useSaveSettings';
+import { useStoreManager } from '../../../../hooks/useStoreManager';
 import { CommonHooks } from '../../../../data';
 import TabBar from '../../../ReusableComponents/TabBar';
 import classNames from 'classnames';
@@ -20,7 +20,7 @@ const SettingsNavigation = ( {
 	activePanel,
 	setActivePanel,
 } ) => {
-	const { persistAll } = useSaveSettings();
+	const { persistAll } = useStoreManager();
 
 	const title = __( 'PayPal Payments', 'woocommerce-paypal-payments' );
 
