@@ -26,7 +26,7 @@ export const addDebugTools = ( context, modules ) => {
 	const debugApi = ( window.ppcpDebugger = window.ppcpDebugger || {} );
 
 	// Dump the current state of all our Redux stores.
-	debugApi.dumpStore = async () => {
+	debugApi.dumpStore = async ( cbFilter = null ) => {
 		/* eslint-disable no-console */
 		if ( ! console?.groupCollapsed ) {
 			console.error( 'console.groupCollapsed is not supported.' );
@@ -39,11 +39,19 @@ export const addDebugTools = ( context, modules ) => {
 			console.group( `[STORE] ${ storeSelector }` );
 
 			const dumpStore = ( selector ) => {
-				const contents = wp.data.select( storeName )[ selector ]();
+				let contents = wp.data.select( storeName )[ selector ]();
 
-				console.groupCollapsed( `.${ selector }()` );
-				console.table( contents );
-				console.groupEnd();
+				if ( cbFilter ) {
+					contents = cbFilter( contents, selector, storeName );
+
+					if ( undefined !== contents && null !== contents ) {
+						console.log( `.${ selector }() [filtered]`, contents );
+					}
+				} else {
+					console.groupCollapsed( `.${ selector }()` );
+					console.table( contents );
+					console.groupEnd();
+				}
 			};
 
 			Object.keys( module.selectors ).forEach( dumpStore );
