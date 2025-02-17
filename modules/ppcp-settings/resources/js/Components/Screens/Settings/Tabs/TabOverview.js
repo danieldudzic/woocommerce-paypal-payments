@@ -12,11 +12,12 @@ import {
 import { Content, ContentWrapper } from '../../../ReusableComponents/Elements';
 import SettingsCard from '../../../ReusableComponents/SettingsCard';
 import { TITLE_BADGE_POSITIVE } from '../../../ReusableComponents/TitleBadge';
-import { useTodos } from '../../../../data/todos/hooks';
-import { useMerchantInfo } from '../../../../data/common/hooks';
-import { STORE_NAME as COMMON_STORE_NAME } from '../../../../data/common';
-import { STORE_NAME as TODOS_STORE_NAME } from '../../../../data/todos';
-import { CommonHooks, TodosHooks } from '../../../../data';
+import {
+	CommonStoreName,
+	TodosStoreName,
+	CommonHooks,
+	TodosHooks,
+} from '../../../../data';
 
 import { getFeatures } from '../Components/Overview/features-config';
 
@@ -27,8 +28,8 @@ import {
 import SpinnerOverlay from '../../../ReusableComponents/SpinnerOverlay';
 
 const TabOverview = () => {
-	const { isReady: areTodosReady } = TodosHooks.useTodos();
-	const { isReady: merchantIsReady } = CommonHooks.useMerchantInfo();
+	const { isReady: areTodosReady } = TodosHooks.useStore();
+	const { isReady: merchantIsReady } = CommonHooks.useStore();
 
 	if ( ! areTodosReady || ! merchantIsReady ) {
 		return <SpinnerOverlay asModal={ true } />;
@@ -47,11 +48,12 @@ export default TabOverview;
 
 const OverviewTodos = () => {
 	const [ isResetting, setIsResetting ] = useState( false );
-	const { todos, isReady: areTodosReady, dismissTodo } = useTodos();
+	const { todos, dismissTodo } = TodosHooks.useTodos();
+	const { isReady: areTodosReady } = TodosHooks.useStore();
 	const { setActiveModal, setActiveHighlight } =
-		useDispatch( COMMON_STORE_NAME );
+		useDispatch( CommonStoreName );
 	const { resetDismissedTodos, setDismissedTodos } =
-		useDispatch( TODOS_STORE_NAME );
+		useDispatch( TodosStoreName );
 	const { createSuccessNotice } = useDispatch( noticesStore );
 
 	const showTodos = areTodosReady && todos.length > 0;
@@ -118,9 +120,10 @@ const OverviewTodos = () => {
 
 const OverviewFeatures = () => {
 	const [ isRefreshing, setIsRefreshing ] = useState( false );
-	const { merchant, features: merchantFeatures } = useMerchantInfo();
+	const { merchant, features: merchantFeatures } =
+		CommonHooks.useMerchantInfo();
 	const { refreshFeatureStatuses, setActiveModal } =
-		useDispatch( COMMON_STORE_NAME );
+		useDispatch( CommonStoreName );
 	const { createSuccessNotice, createErrorNotice } =
 		useDispatch( noticesStore );
 
