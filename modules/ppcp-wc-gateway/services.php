@@ -510,7 +510,7 @@ return array(
 	'wcgateway.settings.render'                            => static function ( ContainerInterface $container ): SettingsRenderer {
 		return new SettingsRenderer(
 			$container->get( 'wcgateway.settings' ),
-			$container->get( 'onboarding.state' ),
+			$container->get( 'onboarding.state' ), // Correct.
 			$container->get( 'wcgateway.settings.fields' ),
 			$container->get( 'api.helpers.dccapplies' ),
 			$container->get( 'button.helper.messages-apply' ),
@@ -526,7 +526,7 @@ return array(
 			$container->get( 'wcgateway.settings.fields' ),
 			$container->get( 'webhook.registrar' ),
 			$container->get( 'api.paypal-bearer-cache' ),
-			$container->get( 'onboarding.state' ),
+			$container->get( 'onboarding.state' ), // Correct.
 			$container->get( 'api.bearer' ),
 			$container->get( 'wcgateway.current-ppcp-settings-page-id' ),
 			$container->get( 'onboarding.signup-link-cache' ),
@@ -669,6 +669,8 @@ return array(
 		if ( ! $should_render_settings ) {
 			return array();
 		}
+
+		// Legacy settings service, correct use of `State` class.
 
 		$state = $container->get( 'onboarding.state' );
 		assert( $state instanceof State );
