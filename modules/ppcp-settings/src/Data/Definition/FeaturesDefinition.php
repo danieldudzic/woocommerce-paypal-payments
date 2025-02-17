@@ -58,6 +58,17 @@ class FeaturesDefinition
 	public function get(): array
 	{
 		$eligibility_checks = $this->eligibilities->get_eligibility_checks();
+		$paylaterCountries = [
+			'UK',
+			'ES',
+			'IT',
+			'FR',
+			'US',
+			'DE',
+			'AU',
+		];
+		$storeCountry = $this->settings->get_woo_settings()['country'];
+		$countryLocation = in_array($storeCountry, $paylaterCountries) ? strtolower($storeCountry) : 'us';
 
 		return array(
 			'save_paypal_and_venmo' => array(
@@ -220,13 +231,13 @@ class FeaturesDefinition
 					),
 				),
 			),
-			'pay_later_messaging' => array(
+			'pay_later' => array(
 				'title' => __('Pay Later Messaging', 'woocommerce-paypal-payments'),
 				'description' => __(
 					'Let customers know they can buy now and pay later with PayPal. Adding this messaging can boost conversion rates and increase cart sizes by 39%¹, with no extra cost to you—plus, you get paid up front.',
 					'woocommerce-paypal-payments'
 				),
-				'isEligible' => $eligibility_checks['pay_later_messaging'],
+				'isEligible' => $eligibility_checks['pay_later'],
 				'buttons' => array(
 					array(
 						'type' => 'secondary',
@@ -238,7 +249,7 @@ class FeaturesDefinition
 					array(
 						'type' => 'tertiary',
 						'text' => __('Learn more', 'woocommerce-paypal-payments'),
-						'url' => 'https://www.paypal.com/${countryLocation}/business/accept-payments/checkout/installments',
+						'url' => "https://www.paypal.com/$countryLocation/business/accept-payments/checkout/installments",
 						'class' => 'small-button',
 					),
 				),
