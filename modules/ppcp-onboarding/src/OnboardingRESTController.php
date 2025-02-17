@@ -136,6 +136,8 @@ class OnboardingRESTController {
 		$environment = $this->container->get( 'onboarding.environment' );
 		$state       = $this->container->get( 'onboarding.state' );
 
+		// Legacy onboarding module; using `State::STATE_ONBOARDED` checks is valid here.
+
 		return array(
 			'environment' => $environment->current_environment(),
 			'onboarded'   => ( $state->current_state() >= State::STATE_ONBOARDED ),
