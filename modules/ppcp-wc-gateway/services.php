@@ -335,17 +335,12 @@ return array(
 		);
 	},
 	'wcgateway.notice.currency-unsupported'                => static function ( ContainerInterface $container ): UnsupportedCurrencyAdminNotice {
-		$state                    = $container->get( 'onboarding.state' );
-		$shop_currency            = $container->get( 'api.shop.currency.getter' );
-		$supported_currencies     = $container->get( 'api.supported-currencies' );
-		$is_wc_gateways_list_page = $container->get( 'wcgateway.is-wc-gateways-list-page' );
-		$is_ppcp_settings_page    = $container->get( 'wcgateway.is-ppcp-settings-page' );
 		return new UnsupportedCurrencyAdminNotice(
-			$state,
-			$shop_currency,
-			$supported_currencies,
-			$is_wc_gateways_list_page,
-			$is_ppcp_settings_page
+			$container->get( 'settings.flag.is-connected' ),
+			$container->get( 'api.shop.currency.getter' ),
+			$container->get( 'api.supported-currencies' ),
+			$container->get( 'wcgateway.is-wc-gateways-list-page' ),
+			$container->get( 'wcgateway.is-ppcp-settings-page' )
 		);
 	},
 	'wcgateway.notice.dcc-without-paypal'                  => static function ( ContainerInterface $container ): GatewayWithoutPayPalAdminNotice {
