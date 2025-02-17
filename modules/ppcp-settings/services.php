@@ -378,25 +378,25 @@ return array(
 			$capabilities['google_pay'] && ! $gateways['google_pay'], // Enable Google Pay.
 		);
 	},
-	'settings.rest.features'                         => static function ( ContainerInterface $container ) : FeaturesRestEndpoint {
+	'settings.rest.features'                      => static function ( ContainerInterface $container ) : FeaturesRestEndpoint {
 		return new FeaturesRestEndpoint(
 			$container->get( 'settings.data.definition.features' ),
 			$container->get( 'settings.rest.settings' )
 		);
 	},
-	'settings.data.definition.features'              => static function ( ContainerInterface $container ) : FeaturesDefinition {
+	'settings.data.definition.features'           => static function ( ContainerInterface $container ) : FeaturesDefinition {
 		return new FeaturesDefinition(
 			$container->get( 'settings.service.features_eligibilities' ),
 			$container->get( 'settings.data.general' )
 		);
 	},
-	'settings.service.features_eligibilities' => static function( ContainerInterface $container ): FeaturesEligibilityService {
+	'settings.service.features_eligibilities'     => static function( ContainerInterface $container ): FeaturesEligibilityService {
 		$features = apply_filters(
 			'woocommerce_paypal_payments_rest_common_merchant_features',
 			array()
 		);
 
-		$payment_endpoint = $container->get('settings.rest.payment');
+		$payment_endpoint = $container->get( 'settings.rest.payment' );
 		$settings = $payment_endpoint->get_details()->get_data();
 
 		// Settings status.

@@ -20,13 +20,6 @@ import { dispatch } from '@wordpress/data';
  */
 
 /**
- * Special. Resets all values in the store to initial defaults.
- *
- * @return {Action} The action.
- */
-export const reset = () => ( { type: ACTION_TYPES.RESET } );
-
-/**
  * Persistent. Set the full store details during app initialization.
  *
  * @param {{data: {}, flags?: {}}} payload

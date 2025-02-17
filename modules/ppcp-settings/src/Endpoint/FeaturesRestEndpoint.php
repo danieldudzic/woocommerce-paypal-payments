@@ -48,8 +48,8 @@ class FeaturesRestEndpoint extends RestEndpoint {
 	/**
 	 * FeaturesRestEndpoint constructor.
 	 *
-	 * @param FeaturesDefinition      $features_definition The features definition instance.
-	 * @param SettingsRestEndpoint    $settings The settings endpoint instance.
+	 * @param FeaturesDefinition   $features_definition The features definition instance.
+	 * @param SettingsRestEndpoint $settings The settings endpoint instance.
 	 */
 	public function __construct(
 		FeaturesDefinition $features_definition,

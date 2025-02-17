@@ -5,7 +5,7 @@ import {
 	SettingsStoreName,
 	StylingStoreName,
 	TodosStoreName,
-    FeaturesStoreName,
+	FeaturesStoreName,
 } from './index';
 
 export const addDebugTools = ( context, modules ) => {

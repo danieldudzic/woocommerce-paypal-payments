@@ -10,6 +10,6 @@ export default {
 
 	// Persistent data
 	SET_PERSISTENT: 'ppcp/features/SET_PERSISTENT',
-	RESET: 'ppcp/features/RESET',
+
 	HYDRATE: 'ppcp/features/HYDRATE',
 };
