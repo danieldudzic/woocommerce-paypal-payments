@@ -79,7 +79,7 @@ class FeaturesDefinition
 					array(
 						'type' => 'secondary',
 						'text' => __('Configure', 'woocommerce-paypal-payments'),
-						'onClick' => 'selectTab(TAB_IDS.SETTINGS, \'ppcp--save-payment-methods\');',
+						'onClick' => 'save_paypal_and_venmo',
 						'showWhen' => 'enabled',
 						'class' => 'small-button',
 					),
@@ -109,7 +109,7 @@ class FeaturesDefinition
 					array(
 						'type' => 'secondary',
 						'text' => __('Configure', 'woocommerce-paypal-payments'),
-						'onClick' => 'selectTab(TAB_IDS.PAYMENT_METHODS, \'ppcp-card-payments-card\').then(() => { setActiveModal(\'ppcp-credit-card-gateway\'); });',
+						'onClick' => 'advanced_credit_and_debit_cards',
 						'showWhen' => 'enabled',
 						'class' => 'small-button',
 					),
@@ -139,7 +139,7 @@ class FeaturesDefinition
 					array(
 						'type' => 'secondary',
 						'text' => __('Configure', 'woocommerce-paypal-payments'),
-						'onClick' => 'selectTab(TAB_IDS.PAYMENT_METHODS, \'ppcp-alternative-payments-card\');',
+						'onClick' => 'alternative_payment_methods',
 						'showWhen' => 'enabled',
 						'class' => 'small-button',
 					),
@@ -166,7 +166,7 @@ class FeaturesDefinition
 					array(
 						'type' => 'secondary',
 						'text' => __('Configure', 'woocommerce-paypal-payments'),
-						'onClick' => 'selectTab(TAB_IDS.PAYMENT_METHODS, \'ppcp-card-payments-card\').then(() => { setActiveModal(\'ppcp-googlepay\'); });',
+						'onClick' => 'google_pay',
 						'showWhen' => 'enabled',
 						'class' => 'small-button',
 					),
@@ -199,7 +199,7 @@ class FeaturesDefinition
 					array(
 						'type' => 'secondary',
 						'text' => __('Configure', 'woocommerce-paypal-payments'),
-						'onClick' => 'selectTab(TAB_IDS.PAYMENT_METHODS, \'ppcp-card-payments-card\').then(() => { setActiveModal(\'ppcp-applepay\'); });',
+						'onClick' => 'apple_pay',
 						'showWhen' => 'enabled',
 						'class' => 'small-button',
 					),
@@ -242,7 +242,7 @@ class FeaturesDefinition
 					array(
 						'type' => 'secondary',
 						'text' => __('Configure', 'woocommerce-paypal-payments'),
-						'onClick' => 'selectTab(TAB_IDS.PAY_LATER_MESSAGING);',
+						'onClick' => 'pay_later',
 						'showWhen' => 'enabled',
 						'class' => 'small-button',
 					),
