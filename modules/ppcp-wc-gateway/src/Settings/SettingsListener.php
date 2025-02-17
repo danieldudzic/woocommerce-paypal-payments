@@ -214,6 +214,8 @@ class SettingsListener {
 		Cache $client_credentials_cache
 	) {
 
+		// This is a legacy settings class, it's correctly relying on the `Status` class.
+
 		$this->settings                       = $settings;
 		$this->setting_fields                 = $setting_fields;
 		$this->webhook_registrar              = $webhook_registrar;
