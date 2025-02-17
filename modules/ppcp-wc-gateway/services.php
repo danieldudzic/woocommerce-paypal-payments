@@ -508,7 +508,7 @@ return array(
 	'wcgateway.settings.sections-renderer'                 => static function ( ContainerInterface $container ): SectionsRenderer {
 		return new SectionsRenderer(
 			$container->get( 'wcgateway.current-ppcp-settings-page-id' ),
-			$container->get( 'onboarding.state' ),
+			$container->get( 'settings.flag.is-connected' ),
 			$container->get( 'wcgateway.helper.dcc-product-status' ),
 			$container->get( 'api.helpers.dccapplies' ),
 			$container->get( 'button.helper.messages-apply' ),
