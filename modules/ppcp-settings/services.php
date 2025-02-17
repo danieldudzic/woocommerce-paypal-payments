@@ -390,9 +390,6 @@ return array(
 			$container->get( 'settings.data.general' )
 		);
 	},
-	'settings.data.features'                         => static function ( ContainerInterface $container ) : FeaturesSettings {
-		return new FeaturesSettings();
-	},
 	'settings.service.features_eligibilities' => static function( ContainerInterface $container ): FeaturesEligibilityService {
 		$features = apply_filters(
 			'woocommerce_paypal_payments_rest_common_merchant_features',
