@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useRef } from '@wordpress/element';
 import { store as noticesStore } from '@wordpress/notices';
 
 import { CommonHooks, OnboardingHooks } from '../data';
+import { useStoreManager } from './useStoreManager';
 
 const PAYPAL_PARTNER_SDK_URL =
 	'https://www.paypal.com/webapps/merchantboarding/js/lib/lightbox/partner.js';
@@ -30,7 +31,7 @@ export const useHandleOnboardingButton = ( isSandbox ) => {
 	const { sandboxOnboardingUrl } = CommonHooks.useSandbox();
 	const { productionOnboardingUrl } = CommonHooks.useProduction();
 	const products = OnboardingHooks.useDetermineProducts();
-	const { withActivity, startActivity } = CommonHooks.useBusyState();
+	const { startActivity } = CommonHooks.useBusyState();
 	const { authenticateWithOAuth } = CommonHooks.useAuthentication();
 	const [ onboardingUrl, setOnboardingUrl ] = useState( '' );
 	const [ scriptLoaded, setScriptLoaded ] = useState( false );
@@ -134,7 +135,7 @@ export const useHandleOnboardingButton = ( isSandbox ) => {
 			// Ensure the onComplete handler is not removed by a PayPal init script.
 			timerRef.current = setInterval( addHandler, 250 );
 		},
-		[ authenticateWithOAuth, withActivity ]
+		[ authenticateWithOAuth, startActivity ]
 	);
 
 	const removeCompleteHandler = useCallback( () => {
@@ -161,6 +162,7 @@ const useConnectionBase = () => {
 		useDispatch( noticesStore );
 	const { verifyLoginStatus } = CommonHooks.useMerchantInfo();
 	const { withActivity } = CommonHooks.useBusyState();
+	const { refreshAll } = useStoreManager();
 
 	return {
 		handleFailed: ( res, genericMessage ) => {
@@ -178,6 +180,7 @@ const useConnectionBase = () => {
 						if ( loginSuccessful ) {
 							createSuccessNotice( MESSAGES.CONNECTED );
 							await setCompleted( true );
+							refreshAll();
 						} else {
 							createErrorNotice( MESSAGES.LOGIN_FAILED );
 						}
