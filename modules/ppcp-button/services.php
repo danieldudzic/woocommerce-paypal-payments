@@ -241,11 +241,11 @@ return array(
 		);
 	},
 	'button.helper.early-order-handler'           => static function ( ContainerInterface $container ) : EarlyOrderHandler {
-
-		$state          = $container->get( 'onboarding.state' );
-		$order_processor = $container->get( 'wcgateway.order-processor' );
-		$session_handler = $container->get( 'session.handler' );
-		return new EarlyOrderHandler( $state, $order_processor, $session_handler );
+		return new EarlyOrderHandler(
+			$container->get( 'settings.flag.is-connected' ),
+			$container->get( 'wcgateway.order-processor' ),
+			$container->get( 'session.handler' )
+		);
 	},
 	'button.endpoint.approve-order'               => static function ( ContainerInterface $container ): ApproveOrderEndpoint {
 		$request_data         = $container->get( 'button.request-data' );
