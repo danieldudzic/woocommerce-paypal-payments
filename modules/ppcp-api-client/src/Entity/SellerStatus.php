@@ -81,8 +81,12 @@ class SellerStatus {
 		return $this->capabilities;
 	}
 
+	public function country() : string {
+		return $this->country;
+	}
+
 	/**
-	 * Returns the enitity as array.
+	 * Returns the entity as array.
 	 *
 	 * @return array
 	 */
