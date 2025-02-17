@@ -221,8 +221,8 @@ return array(
 	},
 
 	'googlepay.settings.connection.status-text' => static function ( ContainerInterface $container ): string {
-		$state = $container->get( 'onboarding.state' );
-		if ( $state->current_state() < State::STATE_ONBOARDED ) {
+		$is_connected = $container->get( 'settings.flag.is-connected' );
+		if ( ! $is_connected ) {
 			return '';
 		}
 

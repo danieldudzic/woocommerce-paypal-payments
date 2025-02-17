@@ -321,10 +321,9 @@ return array(
 		$section = isset( $_GET['section'] ) ? sanitize_text_field( wp_unslash( $_GET['section'] ) ) : '';
 		$ppcp_tab = isset( $_GET[ SectionsRenderer::KEY ] ) ? sanitize_text_field( wp_unslash( $_GET[ SectionsRenderer::KEY ] ) ) : '';
 
-		$state = $container->get( 'onboarding.state' );
-		assert( $state instanceof State );
+		$is_connected = $container->get( 'settings.flag.is-connected' );
 
-		if ( ! $ppcp_tab && PayPalGateway::ID === $section && $state->current_state() !== State::STATE_ONBOARDED ) {
+		if ( ! $ppcp_tab && PayPalGateway::ID === $section && ! $is_connected ) {
 			return Settings::CONNECTION_TAB_ID;
 		}
 
@@ -1717,8 +1716,8 @@ return array(
 		return 'https://www.paypal.com/bizsignup/entry?product=ADVANCED_VAULTING';
 	},
 	'wcgateway.settings.connection.dcc-status-text'        => static function ( ContainerInterface $container ): string {
-		$state = $container->get( 'onboarding.state' );
-		if ( $state->current_state() < State::STATE_ONBOARDED ) {
+		$is_connected = $container->get( 'settings.flag.is-connected' );
+		if ( ! $is_connected ) {
 			return '';
 		}
 
@@ -1788,8 +1787,8 @@ return array(
 		);
 	},
 	'wcgateway.settings.connection.pui-status-text'        => static function ( ContainerInterface $container ): string {
-		$state = $container->get( 'onboarding.state' );
-		if ( $state->current_state() < State::STATE_ONBOARDED ) {
+		$is_connected = $container->get( 'settings.flag.is-connected' );
+		if ( ! $is_connected ) {
 			return '';
 		}
 
