@@ -122,7 +122,6 @@ return array(
 			$container->get( 'wcgateway.url' ),
 			$container->get( 'session.handler' ),
 			$container->get( 'wcgateway.processor.refunds' ),
-			$container->get( 'onboarding.state' ),
 			$container->get( 'wcgateway.transaction-url-provider' ),
 			$container->get( 'wc-subscriptions.helper' ),
 			$container->get( 'api.endpoint.payments' ),
