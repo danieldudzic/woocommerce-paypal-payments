@@ -64,6 +64,9 @@ class SettingsTabMapHelper {
 			case 'intent':
 				return $this->mapped_intent_value( $settings_model );
 
+			case 'blocks_final_review_enabled':
+				return $this->mapped_pay_now_value( $settings_model );
+
 			default:
 				return $settings_model[ $new_key ] ?? null;
 		}
@@ -121,5 +124,21 @@ class SettingsTabMapHelper {
 		}
 
 		return $authorize_only ? 'AUTHORIZE' : 'CAPTURE';
+	}
+
+	/**
+	 * Retrieves the mapped value for the "Pay Now Experience" from the new settings.
+	 *
+	 * @param array<string, scalar|array> $settings_model The new settings model data as an array.
+	 * @return bool|null The mapped 'Pay Now Experience' setting value.
+	 */
+	protected function mapped_pay_now_value( array $settings_model ): ?bool {
+		$enable_pay_now = $settings_model['enable_pay_now'] ?? null;
+
+		if ( is_null( $enable_pay_now ) ) {
+			return null;
+		}
+
+		return ! $enable_pay_now;
 	}
 }
