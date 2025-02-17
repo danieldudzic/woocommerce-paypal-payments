@@ -443,14 +443,12 @@ return array(
 		return in_array( $store_country, $send_only_countries, true );
 	},
 	'wcgateway.notice.send-only-country'                   => static function ( ContainerInterface $container ) {
-		$onboarding_state = $container->get( 'onboarding.state' );
-		assert( $onboarding_state instanceof State );
 		return new SendOnlyCountryNotice(
 			$container->get( 'wcgateway.send-only-message' ),
 			$container->get( 'wcgateway.is-send-only-country' ),
 			$container->get( 'wcgateway.is-ppcp-settings-page' ),
 			$container->get( 'wcgateway.is-wc-gateways-list-page' ),
-			$onboarding_state->current_state()
+			$container->get( 'settings.flag.is-connected' )
 		);
 	},
 
