@@ -20,13 +20,11 @@ use WooCommerce\PayPalCommerce\Settings\Data\TodosModel;
 use WooCommerce\PayPalCommerce\Settings\Data\Definition\TodosDefinition;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\AuthenticationRestEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\CommonRestEndpoint;
-use WooCommerce\PayPalCommerce\Settings\Endpoint\CompleteOnClickEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\LoginLinkRestEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\OnboardingRestEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\PayLaterMessagingEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\PaymentRestEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\RefreshFeatureStatusEndpoint;
-use WooCommerce\PayPalCommerce\Settings\Endpoint\ResetDismissedTodosEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\WebhookSettingsEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\SettingsRestEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\StylingRestEndpoint;
@@ -43,6 +41,7 @@ use WooCommerce\PayPalCommerce\Settings\Data\Definition\PaymentMethodsDefinition
 use WooCommerce\PayPalCommerce\PayLaterConfigurator\Factory\ConfigFactory;
 use WooCommerce\PayPalCommerce\WcGateway\Settings\Settings;
 use WooCommerce\PayPalCommerce\PayLaterConfigurator\Endpoint\SaveConfig;
+use WooCommerce\PayPalCommerce\WcGateway\Helper\Environment;
 
 return array(
 	'settings.url'                                => static function ( ContainerInterface $container ) : string {
@@ -123,6 +122,17 @@ return array(
 		assert( $data instanceof GeneralSettings );
 
 		return $data->is_merchant_connected();
+	},
+	'settings.flag.is-sandbox'                    => static function ( ContainerInterface $container ) : bool {
+		$data = $container->get( 'settings.data.general' );
+		assert( $data instanceof GeneralSettings );
+
+		return $data->is_sandbox_merchant();
+	},
+	'settings.environment'                        => static function ( ContainerInterface $container ) : Environment {
+		return new Environment(
+			$container->get( 'settings.flag.is-sandbox' )
+		);
 	},
 	'settings.rest.onboarding'                    => static function ( ContainerInterface $container ) : OnboardingRestEndpoint {
 		return new OnboardingRestEndpoint( $container->get( 'settings.data.onboarding' ) );
