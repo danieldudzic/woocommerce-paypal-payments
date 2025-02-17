@@ -9,7 +9,7 @@ import {
 	TodosHooks,
 } from '../data';
 
-export const useSaveSettings = () => {
+export const useStoreManager = () => {
 	const { withActivity } = CommonHooks.useBusyState();
 
 	const paymentStore = PaymentHooks.useStore();
