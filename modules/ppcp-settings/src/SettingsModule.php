@@ -106,7 +106,11 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 						)
 					);
 
-					wp_enqueue_script( 'ppcp-switch-settings-ui' );
+					wp_enqueue_script( 'ppcp-switch-settings-ui','',['wp-i18n'] );
+					wp_set_script_translations(
+						'ppcp-switch-settings-ui',
+						'woocommerce-paypal-payments',
+					);
 				}
 			);
 
@@ -159,7 +163,11 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 					true
 				);
 
-				wp_enqueue_script( 'ppcp-admin-settings' );
+				wp_enqueue_script('ppcp-admin-settings', '', ['wp-i18n']);
+				wp_set_script_translations(
+					'ppcp-admin-settings',
+					'woocommerce-paypal-payments',
+				);
 
 				/**
 				 * Require resolves.
@@ -198,11 +206,14 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 					wp_enqueue_script(
 						'ppcp-paylater-configurator-lib',
 						'https://www.paypalobjects.com/merchant-library/merchant-configurator.js',
-						array(),
+						['wp-i18n'],
 						$script_asset_file['version'],
 						true
 					);
-
+					wp_set_script_translations(
+						'ppcp-paylater-configurator-lib',
+						'woocommerce-paypal-payments',
+					);
 					$script_data['PcpPayLaterConfigurator'] = array(
 						'config'           => array(),
 						'merchantClientId' => $settings->get( 'client_id' ),
