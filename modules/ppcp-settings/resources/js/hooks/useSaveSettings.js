@@ -12,48 +12,41 @@ import {
 export const useSaveSettings = () => {
 	const { withActivity } = CommonHooks.useBusyState();
 
-	const { persist: persistPayment } = PaymentHooks.useStore();
-	const { persist: persistSettings } = SettingsHooks.useStore();
-	const { persist: persistStyling } = StylingHooks.useStore();
-	const { persist: persistTodos } = TodosHooks.useStore();
-	const { persist: persistPayLaterMessaging } =
-		PayLaterMessagingHooks.useStore();
+	const paymentStore = PaymentHooks.useStore();
+	const settingsStore = SettingsHooks.useStore();
+	const stylingStore = StylingHooks.useStore();
+	const todosStore = TodosHooks.useStore();
+	const payLaterStore = PayLaterMessagingHooks.useStore();
 
-	const persistActions = useMemo(
+	const storeActions = useMemo(
 		() => [
 			{
-				key: 'persist-methods',
-				message: 'Save payment methods',
-				action: persistPayment,
+				key: 'methods',
+				message: 'Process payment methods',
+				store: paymentStore,
 			},
 			{
-				key: 'persist-settings',
-				message: 'Save the settings',
-				action: persistSettings,
+				key: 'settings',
+				message: 'Process the settings',
+				store: settingsStore,
 			},
 			{
-				key: 'persist-styling',
-				message: 'Save styling details',
-				action: persistStyling,
+				key: 'styling',
+				message: 'Process styling details',
+				store: stylingStore,
 			},
 			{
-				key: 'persist-todos',
-				message: 'Save todos state',
-				action: persistTodos,
+				key: 'todos',
+				message: 'Process todos state',
+				store: todosStore,
 			},
 			{
-				key: 'persist-pay-later-messaging',
-				message: 'Save pay later messaging details',
-				action: persistPayLaterMessaging,
+				key: 'pay-later-messaging',
+				message: 'Process pay later messaging details',
+				store: payLaterStore,
 			},
 		],
-		[
-			persistPayLaterMessaging,
-			persistPayment,
-			persistSettings,
-			persistStyling,
-			persistTodos,
-		]
+		[ payLaterStore, paymentStore, settingsStore, stylingStore, todosStore ]
 	);
 
 	const persistAll = useCallback( () => {
@@ -65,10 +58,19 @@ export const useSaveSettings = () => {
 		 */
 		document.getElementById( 'configurator-publishButton' )?.click();
 
-		persistActions.forEach( ( { key, message, action } ) => {
-			withActivity( key, message, action );
+		storeActions.forEach( ( { key, message, store } ) => {
+			withActivity( `persist-${ key }`, message, store.persist );
 		} );
-	}, [ persistActions, withActivity ] );
+	}, [ storeActions, withActivity ] );
 
-	return { persistAll };
+	const refreshAll = useCallback( () => {
+		storeActions.forEach( ( { key, message, store } ) => {
+			withActivity( `refresh-${ key }`, message, store.refresh );
+		} );
+	}, [ storeActions, withActivity ] );
+
+	return {
+		persistAll,
+		refreshAll,
+	};
 };
