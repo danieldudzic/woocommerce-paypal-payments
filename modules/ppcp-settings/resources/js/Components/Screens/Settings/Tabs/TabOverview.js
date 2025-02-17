@@ -28,7 +28,7 @@ import SpinnerOverlay from '../../../ReusableComponents/SpinnerOverlay';
 
 const TabOverview = () => {
 	const { isReady: areTodosReady } = TodosHooks.useTodos();
-	const { isReady: merchantIsReady } = CommonHooks.useMerchantInfo();
+	const { isReady: merchantIsReady } = CommonHooks.useStore();
 
 	if ( ! areTodosReady || ! merchantIsReady ) {
 		return <SpinnerOverlay asModal={ true } />;

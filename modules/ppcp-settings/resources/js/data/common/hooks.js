@@ -50,7 +50,6 @@ const useHooks = () => {
 	} = dispatch;
 
 	// Transient accessors.
-	const [ isReady ] = useTransient( 'isReady' );
 	const [ activeModal, setActiveModal ] = useTransient( 'activeModal' );
 	const [ activeHighlight, setActiveHighlight ] =
 		useTransient( 'activeHighlight' );
@@ -72,7 +71,6 @@ const useHooks = () => {
 	};
 
 	return {
-		isReady,
 		activeModal,
 		setActiveModal,
 		activeHighlight,
@@ -162,7 +160,7 @@ export const useWebhooks = () => {
 };
 
 export const useMerchantInfo = () => {
-	const { isReady, features } = useHooks();
+	const { features } = useHooks();
 	const merchant = useMerchant();
 	const { refreshMerchantData, setMerchant } = useDispatch( STORE_NAME );
 
@@ -187,7 +185,6 @@ export const useMerchantInfo = () => {
 	}, [ refreshMerchantData, setMerchant ] );
 
 	return {
-		isReady,
 		merchant, // Merchant details
 		features, // Eligible merchant features
 		verifyLoginStatus, // Callback
