@@ -12,6 +12,7 @@ namespace WooCommerce\PayPalCommerce\Settings;
 use WooCommerce\PayPalCommerce\ApiClient\Helper\Cache;
 use WooCommerce\PayPalCommerce\Settings\Ajax\SwitchSettingsUiEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Data\Definition\FeaturesDefinition;
+use WooCommerce\PayPalCommerce\Settings\Data\FeaturesSettings;
 use WooCommerce\PayPalCommerce\Settings\Data\GeneralSettings;
 use WooCommerce\PayPalCommerce\Settings\Data\OnboardingProfile;
 use WooCommerce\PayPalCommerce\Settings\Data\PaymentSettings;
@@ -389,6 +390,9 @@ return array(
 			$container->get( 'settings.data.general' )
 		);
 	},
+	'settings.data.features'                         => static function ( ContainerInterface $container ) : FeaturesSettings {
+		return new FeaturesSettings();
+	},
 	'settings.service.features_eligibilities' => static function( ContainerInterface $container ): FeaturesEligibilityService {
 		$features = apply_filters(
 			'woocommerce_paypal_payments_rest_common_merchant_features',
@@ -415,7 +419,7 @@ return array(
 
 		return new FeaturesEligibilityService(
 			$capabilities['save_paypal'], // Save PayPal and Venmo eligibility.
-			$capabilities['acdc'] && ! $gateways['card-button'], // Enable Credit and Debit Cards on your checkout. // Advanced credit and debit cards eligibility.
+			$capabilities['acdc'] && ! $gateways['card-button'], // Advanced credit and debit cards eligibility.
 			$capabilities['apm'], // Alternative payment methods eligibility.
 			$capabilities['acdc'] && ! $capabilities['google_pay'], // Google Pay eligibility.
 			$capabilities['acdc'] && ! $capabilities['apple_pay'], // Apple Pay eligibility.
