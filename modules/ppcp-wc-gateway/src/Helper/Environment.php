@@ -9,8 +9,6 @@ declare( strict_types = 1 );
 
 namespace WooCommerce\PayPalCommerce\WcGateway\Helper;
 
-use WooCommerce\PayPalCommerce\Vendor\Psr\Container\ContainerInterface;
-
 /**
  * Class Environment
  */
@@ -27,30 +25,41 @@ class Environment {
 	public const SANDBOX = 'sandbox';
 
 	/**
-	 * The Settings.
+	 * Name of the current environment.
 	 *
-	 * @var ContainerInterface
+	 * @var string
 	 */
-	private ContainerInterface $settings;
+	private string $environment_name = '';
 
 	/**
 	 * Environment constructor.
 	 *
-	 * @param ContainerInterface $settings The settings.
+	 * @param bool $is_sandbox Whether this instance represents a sandbox environment.
 	 */
-	public function __construct( ContainerInterface $settings ) {
-		$this->settings = $settings;
+	public function __construct( bool $is_sandbox = false ) {
+		$this->set_environment( $is_sandbox );
 	}
 
 	/**
-	 * Returns the current environment.
+	 * Sets the current environment.
+	 *
+	 * @param bool $is_sandbox Whether this instance represents a sandbox environment.
+	 */
+	private function set_environment( bool $is_sandbox ) : void {
+		if ( $is_sandbox ) {
+			$this->environment_name = self::SANDBOX;
+		} else {
+			$this->environment_name = self::PRODUCTION;
+		}
+	}
+
+	/**
+	 * Returns the current environment's name.
 	 *
 	 * @return string
 	 */
 	public function current_environment() : string {
-		return (
-			$this->settings->has( 'sandbox_on' ) && $this->settings->get( 'sandbox_on' )
-		) ? self::SANDBOX : self::PRODUCTION;
+		return $this->environment_name;
 	}
 
 	/**

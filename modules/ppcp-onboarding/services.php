@@ -18,6 +18,7 @@ use WooCommerce\PayPalCommerce\Onboarding\Endpoint\UpdateSignupLinksEndpoint;
 use WooCommerce\PayPalCommerce\Onboarding\Render\OnboardingSendOnlyNoticeRenderer;
 use WooCommerce\PayPalCommerce\Onboarding\Render\OnboardingRenderer;
 use WooCommerce\PayPalCommerce\WcGateway\Helper\Environment;
+use WooCommerce\PayPalCommerce\WcGateway\Settings\Settings;
 
 return array(
 	'api.paypal-host'                    => function( ContainerInterface $container ) : string {
@@ -56,9 +57,16 @@ return array(
 
 		return $state->current_state() >= State::STATE_ONBOARDED;
 	},
-	'onboarding.environment'             => function( ContainerInterface $container ) : Environment {
+	'settings.flag.is-sandbox'           => static function ( ContainerInterface $container ) : bool {
 		$settings = $container->get( 'wcgateway.settings' );
-		return new Environment( $settings );
+		assert( $settings instanceof Settings );
+
+		return $settings->has( 'sandbox_on' ) && $settings->get( 'sandbox_on' );
+	},
+	'onboarding.environment'             => function ( ContainerInterface $container ) : Environment {
+		return new Environment(
+			$container->get( 'settings.flag.is-sandbox' )
+		);
 	},
 
 	'onboarding.assets'                  => function( ContainerInterface $container ) : OnboardingAssets {
