@@ -129,7 +129,7 @@ class PayPalGateway extends \WC_Payment_Gateway {
 	 *
 	 * @var bool
 	 */
-	private $onboarded;
+	private bool $onboarded;
 
 	/**
 	 * ID of the current PPCP gateway settings page, or empty if it is not such page.
