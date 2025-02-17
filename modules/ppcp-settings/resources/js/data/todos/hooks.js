@@ -101,9 +101,8 @@ export const useStore = () => {
 };
 
 export const useTodos = () => {
-	const { todos, fetchTodos, dismissTodo, setTodoCompleted, isReady } =
-		useHooks();
-	return { todos, fetchTodos, dismissTodo, setTodoCompleted, isReady };
+	const { todos, fetchTodos, dismissTodo, setTodoCompleted } = useHooks();
+	return { todos, fetchTodos, dismissTodo, setTodoCompleted };
 };
 
 export const useDismissedTodos = () => {
