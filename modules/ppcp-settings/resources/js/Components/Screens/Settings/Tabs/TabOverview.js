@@ -1,7 +1,7 @@
 import { __, sprintf } from '@wordpress/i18n';
-import { useState, useMemo } from '@wordpress/element';
+import { useState, useMemo, useEffect } from '@wordpress/element';
 import { Button, Icon } from '@wordpress/components';
-import { useDispatch } from '@wordpress/data';
+import { useDispatch, useSelect } from '@wordpress/data';
 import { reusableBlock } from '@wordpress/icons';
 import { store as noticesStore } from '@wordpress/notices';
 
@@ -16,15 +16,15 @@ import { useTodos } from '../../../../data/todos/hooks';
 import { useMerchantInfo } from '../../../../data/common/hooks';
 import { STORE_NAME as COMMON_STORE_NAME } from '../../../../data/common';
 import { STORE_NAME as TODOS_STORE_NAME } from '../../../../data/todos';
-import { CommonHooks, TodosHooks } from '../../../../data';
-
-import { getFeatures } from '../Components/Overview/features-config';
+import { CommonHooks, TodosHooks, FeaturesHooks } from '../../../../data';
 
 import {
 	NOTIFICATION_ERROR,
 	NOTIFICATION_SUCCESS,
 } from '../../../ReusableComponents/Icons';
 import SpinnerOverlay from '../../../ReusableComponents/SpinnerOverlay';
+import { useFeatures } from '../../../../data/features/hooks';
+import { featureButtonOnClickMap } from '../../../../data/features/actions';
 
 const TabOverview = () => {
 	const { isReady: areTodosReady } = TodosHooks.useTodos();
@@ -123,23 +123,11 @@ const OverviewFeatures = () => {
 		useDispatch( COMMON_STORE_NAME );
 	const { createSuccessNotice, createErrorNotice } =
 		useDispatch( noticesStore );
+	const { features, fetchFeatures } = useFeatures();
 
-	// Get the features data with access to setActiveModal
-	const featuresData = useMemo(
-		() => getFeatures( setActiveModal ),
-		[ setActiveModal ]
-	);
-
-	// Map merchant features status to the config
-	const features = useMemo( () => {
-		return featuresData.map( ( feature ) => {
-			const merchantFeature = merchantFeatures?.[ feature.id ];
-			return {
-				...feature,
-				enabled: merchantFeature?.enabled ?? false,
-			};
-		} );
-	}, [ featuresData, merchantFeatures ] );
+	useEffect( () => {
+		fetchFeatures( setActiveModal );
+	}, [ fetchFeatures, setActiveModal ] );
 
 	const refreshHandler = async () => {
 		setIsRefreshing( true );
@@ -201,7 +189,7 @@ const OverviewFeatures = () => {
 						title={ feature.title }
 						description={ feature.description }
 						buttons={ feature.buttons }
-						enabled={ feature.enabled }
+						enabled={ feature.isEligible }
 						notes={ feature.notes }
 					/>
 				) ) }
