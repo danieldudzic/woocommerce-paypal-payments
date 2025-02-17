@@ -1,7 +1,7 @@
 import { __, sprintf } from '@wordpress/i18n';
-import { useState, useMemo, useEffect } from '@wordpress/element';
+import { useState, useEffect } from '@wordpress/element';
 import { Button, Icon } from '@wordpress/components';
-import { useDispatch, useSelect } from '@wordpress/data';
+import { useDispatch } from '@wordpress/data';
 import { reusableBlock } from '@wordpress/icons';
 import { store as noticesStore } from '@wordpress/notices';
 
@@ -16,7 +16,7 @@ import { useTodos } from '../../../../data/todos/hooks';
 import { useMerchantInfo } from '../../../../data/common/hooks';
 import { STORE_NAME as COMMON_STORE_NAME } from '../../../../data/common';
 import { STORE_NAME as TODOS_STORE_NAME } from '../../../../data/todos';
-import { CommonHooks, TodosHooks, FeaturesHooks } from '../../../../data';
+import { CommonHooks, TodosHooks } from '../../../../data';
 
 import {
 	NOTIFICATION_ERROR,
@@ -24,7 +24,8 @@ import {
 } from '../../../ReusableComponents/Icons';
 import SpinnerOverlay from '../../../ReusableComponents/SpinnerOverlay';
 import { useFeatures } from '../../../../data/features/hooks';
-import { featureButtonOnClickMap } from '../../../../data/features/actions';
+import { selectTab, TAB_IDS } from '../../../../utils/tabSelector';
+import { setActiveModal } from '../../../../data/common/actions';
 
 const TabOverview = () => {
 	const { isReady: areTodosReady } = TodosHooks.useTodos();
@@ -48,6 +49,7 @@ export default TabOverview;
 const OverviewTodos = () => {
 	const [ isResetting, setIsResetting ] = useState( false );
 	const { todos, isReady: areTodosReady, dismissTodo } = useTodos();
+	// eslint-disable-next-line no-shadow
 	const { setActiveModal, setActiveHighlight } =
 		useDispatch( COMMON_STORE_NAME );
 	const { resetDismissedTodos, setDismissedTodos } =
@@ -118,16 +120,15 @@ const OverviewTodos = () => {
 
 const OverviewFeatures = () => {
 	const [ isRefreshing, setIsRefreshing ] = useState( false );
-	const { merchant, features: merchantFeatures } = useMerchantInfo();
-	const { refreshFeatureStatuses, setActiveModal } =
-		useDispatch( COMMON_STORE_NAME );
+	const { merchant } = useMerchantInfo();
+	const { refreshFeatureStatuses } = useDispatch( COMMON_STORE_NAME );
 	const { createSuccessNotice, createErrorNotice } =
 		useDispatch( noticesStore );
 	const { features, fetchFeatures } = useFeatures();
 
 	useEffect( () => {
-		fetchFeatures( setActiveModal );
-	}, [ fetchFeatures, setActiveModal ] );
+		fetchFeatures();
+	}, [ fetchFeatures ] );
 
 	const refreshHandler = async () => {
 		setIsRefreshing( true );
@@ -221,6 +222,15 @@ const OverviewFeatureItem = ( {
 			( enabled && button.showWhen === 'enabled' ) ||
 			( ! enabled && button.showWhen === 'disabled' )
 	);
+	const handleClick = async ( feature ) => {
+		if ( feature.action?.type === 'tab' ) {
+			const tabId = TAB_IDS[ feature.action.tab.toUpperCase() ];
+			await selectTab( tabId, feature.action.section );
+		}
+		if ( feature.action?.modal ) {
+			setActiveModal( feature.action.modal );
+		}
+	};
 
 	const actionProps = {
 		isBusy,
@@ -229,6 +239,7 @@ const OverviewFeatureItem = ( {
 		buttons: visibleButtons.map( ( button ) => ( {
 			...button,
 			url: getButtonUrl( button ),
+			onClick: () => handleClick( button ),
 		} ) ),
 	};
 

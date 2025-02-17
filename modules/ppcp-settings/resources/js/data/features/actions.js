@@ -12,7 +12,6 @@ import apiFetch from '@wordpress/api-fetch';
 import ACTION_TYPES from './action-types';
 import { REST_PERSIST_PATH } from './constants';
 import { dispatch } from '@wordpress/data';
-import { selectTab, TAB_IDS } from '../../utils/tabSelector';
 
 /**
  * @typedef {Object} Action An action object that is handled by a reducer or control.
@@ -85,51 +84,10 @@ export function persist() {
 	};
 }
 
-export function fetchFeatures( setActiveModal ) {
+export function fetchFeatures() {
 	return async () => {
 		const response = await apiFetch( { path: REST_PERSIST_PATH } );
 		const features = response?.data || [];
-		const featuresWithModal = features.map( ( feature ) => ( {
-			...feature,
-			buttons: feature.buttons.map( ( button ) => ( {
-				...button,
-				onClick:
-					featureButtonOnClickMap[ button.onClick ]( setActiveModal ),
-			} ) ),
-		} ) );
-		dispatch( setFeatures( featuresWithModal ) );
+		dispatch( setFeatures( features ) );
 	};
 }
-
-const featureButtonOnClickMap = {
-	save_paypal_and_venmo: () => {
-		selectTab( TAB_IDS.SETTINGS, 'ppcp--save-payment-methods' );
-	},
-	advanced_credit_and_debit_cards: ( setActiveModal ) => {
-		selectTab( TAB_IDS.PAYMENT_METHODS, 'ppcp-card-payments-card' ).then(
-			() => {
-				setActiveModal( 'ppcp-credit-card-gateway' );
-			}
-		);
-	},
-	alternative_payment_methods: () => {
-		selectTab( TAB_IDS.PAYMENT_METHODS, 'ppcp-alternative-payments-card' );
-	},
-	google_pay: ( setActiveModal ) => {
-		selectTab( TAB_IDS.PAYMENT_METHODS, 'ppcp-card-payments-card' ).then(
-			() => {
-				setActiveModal( 'ppcp-googlepay' );
-			}
-		);
-	},
-	apple_pay: ( setActiveModal ) => {
-		selectTab( TAB_IDS.PAYMENT_METHODS, 'ppcp-card-payments-card' ).then(
-			() => {
-				setActiveModal( 'ppcp-applepay' );
-			}
-		);
-	},
-	pay_later: () => {
-		selectTab( TAB_IDS.PAY_LATER_MESSAGING );
-	},
-};

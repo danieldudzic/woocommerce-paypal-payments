@@ -79,7 +79,11 @@ class FeaturesDefinition
 					array(
 						'type' => 'secondary',
 						'text' => __('Configure', 'woocommerce-paypal-payments'),
-						'onClick' => 'save_paypal_and_venmo',
+						'action'      => array(
+							'type' => 'tab',
+							'tab'  => 'settings',
+							'section' => 'ppcp--save-payment-methods',
+						),
 						'showWhen' => 'enabled',
 						'class' => 'small-button',
 					),
@@ -109,7 +113,12 @@ class FeaturesDefinition
 					array(
 						'type' => 'secondary',
 						'text' => __('Configure', 'woocommerce-paypal-payments'),
-						'onClick' => 'advanced_credit_and_debit_cards',
+						'action'      => array(
+							'type' => 'tab',
+							'tab'  => 'payment_methods',
+							'section' => 'ppcp-card-payments-card',
+							'modal' => 'ppcp-credit-card-gateway',
+						),
 						'showWhen' => 'enabled',
 						'class' => 'small-button',
 					),
@@ -139,7 +148,11 @@ class FeaturesDefinition
 					array(
 						'type' => 'secondary',
 						'text' => __('Configure', 'woocommerce-paypal-payments'),
-						'onClick' => 'alternative_payment_methods',
+						'action'      => array(
+							'type' => 'tab',
+							'tab'  => 'payment_methods',
+							'section' => 'ppcp-alternative-payments-card',
+						),
 						'showWhen' => 'enabled',
 						'class' => 'small-button',
 					),
@@ -166,7 +179,12 @@ class FeaturesDefinition
 					array(
 						'type' => 'secondary',
 						'text' => __('Configure', 'woocommerce-paypal-payments'),
-						'onClick' => 'google_pay',
+						'action'      => array(
+							'type' => 'tab',
+							'tab'  => 'payment_methods',
+							'section' => 'ppcp-card-payments-card',
+							'modal' => 'ppcp-googlepay',
+						),
 						'showWhen' => 'enabled',
 						'class' => 'small-button',
 					),
@@ -199,7 +217,12 @@ class FeaturesDefinition
 					array(
 						'type' => 'secondary',
 						'text' => __('Configure', 'woocommerce-paypal-payments'),
-						'onClick' => 'apple_pay',
+						'action'      => array(
+							'type' => 'tab',
+							'tab'  => 'payment_methods',
+							'section' => 'ppcp-card-payments-card',
+							'modal' => 'ppcp-applepay',
+						),
 						'showWhen' => 'enabled',
 						'class' => 'small-button',
 					),
@@ -242,7 +265,10 @@ class FeaturesDefinition
 					array(
 						'type' => 'secondary',
 						'text' => __('Configure', 'woocommerce-paypal-payments'),
-						'onClick' => 'pay_later',
+						'action'      => array(
+							'type' => 'tab',
+							'tab'  => 'pay_later_messaging',
+						),
 						'showWhen' => 'enabled',
 						'class' => 'small-button',
 					),
