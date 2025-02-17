@@ -17,10 +17,46 @@ import {
 	REST_RESET_DISMISSED_TODOS_PATH,
 } from './constants';
 
-export const setIsReady = ( isReady ) => ( {
-	type: ACTION_TYPES.SET_TRANSIENT,
-	payload: { isReady },
+/**
+ * Special. Resets all values in the store to initial defaults.
+ *
+ * @return {Object} The action.
+ */
+export const reset = () => ( {
+	type: ACTION_TYPES.RESET,
 } );
+
+/**
+ * Generic transient-data updater.
+ *
+ * @param {string} prop  Name of the property to update.
+ * @param {any}    value The new value of the property.
+ * @return {Object} The action.
+ */
+export const setTransient = ( prop, value ) => ( {
+	type: ACTION_TYPES.SET_TRANSIENT,
+	payload: { [ prop ]: value },
+} );
+
+/**
+ * Generic persistent-data updater.
+ *
+ * @param {string} prop  Name of the property to update.
+ * @param {any}    value The new value of the property.
+ * @return {Object} The action.
+ */
+export const setPersistent = ( prop, value ) => ( {
+	type: ACTION_TYPES.SET_PERSISTENT,
+	payload: { [ prop ]: value },
+} );
+
+/**
+ * Transient. Marks the store as "ready", i.e., fully initialized.
+ *
+ * @param {boolean} isReady Whether the store is ready
+ * @return {Object} The action.
+ */
+export const setIsReady = ( isReady ) => setTransient( 'isReady', isReady );
 
 export const setTodos = ( todos ) => ( {
 	type: ACTION_TYPES.SET_TODOS,
