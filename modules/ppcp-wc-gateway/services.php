@@ -113,42 +113,27 @@ return array(
 		);
 	},
 	'wcgateway.credit-card-gateway'                        => static function ( ContainerInterface $container ): CreditCardGateway {
-		$order_processor     = $container->get( 'wcgateway.order-processor' );
-		$settings_renderer   = $container->get( 'wcgateway.settings.render' );
-		$settings            = $container->get( 'wcgateway.settings' );
-		$dcc_configuration   = $container->get( 'wcgateway.configuration.dcc' );
-		$module_url          = $container->get( 'wcgateway.url' );
-		$session_handler     = $container->get( 'session.handler' );
-		$refund_processor    = $container->get( 'wcgateway.processor.refunds' );
-		$state               = $container->get( 'onboarding.state' );
-		$transaction_url_provider = $container->get( 'wcgateway.transaction-url-provider' );
-		$subscription_helper = $container->get( 'wc-subscriptions.helper' );
-		$payments_endpoint = $container->get( 'api.endpoint.payments' );
-		$logger = $container->get( 'woocommerce.logger.woocommerce' );
-		$vaulted_credit_card_handler = $container->get( 'vaulting.credit-card-handler' );
-		$icons = $container->get( 'wcgateway.credit-card-icons' );
-
 		return new CreditCardGateway(
-			$settings_renderer,
-			$order_processor,
-			$settings,
-			$dcc_configuration,
-			$icons,
-			$module_url,
-			$session_handler,
-			$refund_processor,
-			$state,
-			$transaction_url_provider,
-			$subscription_helper,
-			$payments_endpoint,
-			$vaulted_credit_card_handler,
+			$container->get( 'wcgateway.settings.render' ),
+			$container->get( 'wcgateway.order-processor' ),
+			$container->get( 'wcgateway.settings' ),
+			$container->get( 'wcgateway.configuration.dcc' ),
+			$container->get( 'wcgateway.credit-card-icons' ),
+			$container->get( 'wcgateway.url' ),
+			$container->get( 'session.handler' ),
+			$container->get( 'wcgateway.processor.refunds' ),
+			$container->get( 'onboarding.state' ),
+			$container->get( 'wcgateway.transaction-url-provider' ),
+			$container->get( 'wc-subscriptions.helper' ),
+			$container->get( 'api.endpoint.payments' ),
+			$container->get( 'vaulting.credit-card-handler' ),
 			$container->get( 'onboarding.environment' ),
 			$container->get( 'api.endpoint.order' ),
 			$container->get( 'wcgateway.endpoint.capture-card-payment' ),
 			$container->get( 'api.prefix' ),
 			$container->get( 'api.endpoint.payment-tokens' ),
 			$container->get( 'vaulting.wc-payment-tokens' ),
-			$logger
+			$container->get( 'woocommerce.logger.woocommerce' )
 		);
 	},
 	'wcgateway.credit-card-labels'                         => static function ( ContainerInterface $container ) : array {
@@ -526,57 +511,36 @@ return array(
 		return new SettingsStatus( $settings );
 	},
 	'wcgateway.settings.render'                            => static function ( ContainerInterface $container ): SettingsRenderer {
-		$settings      = $container->get( 'wcgateway.settings' );
-		$state         = $container->get( 'onboarding.state' );
-		$fields        = $container->get( 'wcgateway.settings.fields' );
-		$dcc_applies    = $container->get( 'api.helpers.dccapplies' );
-		$messages_apply = $container->get( 'button.helper.messages-apply' );
-		$dcc_product_status = $container->get( 'wcgateway.helper.dcc-product-status' );
-		$settings_status = $container->get( 'wcgateway.settings.status' );
-		$page_id         = $container->get( 'wcgateway.current-ppcp-settings-page-id' );
-		$api_shop_country = $container->get( 'api.shop.country' );
 		return new SettingsRenderer(
-			$settings,
-			$state,
-			$fields,
-			$dcc_applies,
-			$messages_apply,
-			$dcc_product_status,
-			$settings_status,
-			$page_id,
-			$api_shop_country
+			$container->get( 'wcgateway.settings' ),
+			$container->get( 'onboarding.state' ),
+			$container->get( 'wcgateway.settings.fields' ),
+			$container->get( 'api.helpers.dccapplies' ),
+			$container->get( 'button.helper.messages-apply' ),
+			$container->get( 'wcgateway.helper.dcc-product-status' ),
+			$container->get( 'wcgateway.settings.status' ),
+			$container->get( 'wcgateway.current-ppcp-settings-page-id' ),
+			$container->get( 'api.shop.country' )
 		);
 	},
 	'wcgateway.settings.listener'                          => static function ( ContainerInterface $container ): SettingsListener {
-		$settings         = $container->get( 'wcgateway.settings' );
-		$fields           = $container->get( 'wcgateway.settings.fields' );
-		$webhook_registrar = $container->get( 'webhook.registrar' );
-		$state             = $container->get( 'onboarding.state' );
-		$cache             = $container->get( 'api.paypal-bearer-cache' );
-		$bearer            = $container->get( 'api.bearer' );
-		$page_id           = $container->get( 'wcgateway.current-ppcp-settings-page-id' );
-		$signup_link_cache = $container->get( 'onboarding.signup-link-cache' );
-		$signup_link_ids = $container->get( 'onboarding.signup-link-ids' );
-		$pui_status_cache = $container->get( 'pui.status-cache' );
-		$dcc_status_cache = $container->get( 'dcc.status-cache' );
-		$logger = $container->get( 'woocommerce.logger.woocommerce' );
 		return new SettingsListener(
-			$settings,
-			$fields,
-			$webhook_registrar,
-			$cache,
-			$state,
-			$bearer,
-			$page_id,
-			$signup_link_cache,
-			$signup_link_ids,
-			$pui_status_cache,
-			$dcc_status_cache,
+			$container->get( 'wcgateway.settings' ),
+			$container->get( 'wcgateway.settings.fields' ),
+			$container->get( 'webhook.registrar' ),
+			$container->get( 'api.paypal-bearer-cache' ),
+			$container->get( 'onboarding.state' ),
+			$container->get( 'api.bearer' ),
+			$container->get( 'wcgateway.current-ppcp-settings-page-id' ),
+			$container->get( 'onboarding.signup-link-cache' ),
+			$container->get( 'onboarding.signup-link-ids' ),
+			$container->get( 'pui.status-cache' ),
+			$container->get( 'dcc.status-cache' ),
 			$container->get( 'http.redirector' ),
 			$container->get( 'api.partner_merchant_id-production' ),
 			$container->get( 'api.partner_merchant_id-sandbox' ),
 			$container->get( 'api.endpoint.billing-agreements' ),
-			$logger,
+			$container->get( 'woocommerce.logger.woocommerce' ),
 			new Cache( 'ppcp-client-credentials-cache' )
 		);
 	},
