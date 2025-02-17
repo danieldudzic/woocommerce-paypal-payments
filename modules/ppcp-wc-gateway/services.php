@@ -234,7 +234,7 @@ return array(
 			$container->get( 'wcgateway.settings' ),
 			$container->get( 'session.handler' ),
 			$container->get( 'wcgateway.processor.refunds' ),
-			$container->get( 'onboarding.state' ),
+			$container->get( 'settings.flag.is-connected' ),
 			$container->get( 'wcgateway.transaction-url-provider' ),
 			$container->get( 'wc-subscriptions.helper' ),
 			$container->get( 'wcgateway.settings.allow_card_button_gateway.default' ),
