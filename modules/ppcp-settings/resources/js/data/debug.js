@@ -65,7 +65,6 @@ export const addDebugTools = ( context, modules ) => {
 			stores.push( SettingsStoreName );
 			stores.push( StylingStoreName );
 			stores.push( TodosStoreName );
-			stores.push( FeaturesStoreName );
 		} else {
 			// Only reset the common & onboarding stores to restart the onboarding wizard.
 			stores.push( CommonStoreName );
