@@ -93,7 +93,6 @@ return array(
 		$settings            = $container->get( 'wcgateway.settings' );
 		$session_handler     = $container->get( 'session.handler' );
 		$refund_processor    = $container->get( 'wcgateway.processor.refunds' );
-		$state               = $container->get( 'onboarding.state' );
 		$transaction_url_provider = $container->get( 'wcgateway.transaction-url-provider' );
 		$subscription_helper = $container->get( 'wc-subscriptions.helper' );
 		$page_id             = $container->get( 'wcgateway.current-ppcp-settings-page-id' );
@@ -108,7 +107,7 @@ return array(
 			$settings,
 			$session_handler,
 			$refund_processor,
-			$state,
+			$container->get( 'settings.flag.is-connected' ),
 			$transaction_url_provider,
 			$subscription_helper,
 			$page_id,
