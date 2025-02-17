@@ -29,14 +29,22 @@ class SellerStatus {
 	private $capabilities;
 
 	/**
+	 * Merchant country on PayPal.
+	 *
+	 * @var string
+	 */
+	private $country;
+
+	/**
 	 * SellerStatus constructor.
 	 *
 	 * @param SellerStatusProduct[]    $products The products.
 	 * @param SellerStatusCapability[] $capabilities The capabilities.
+	 * @param string                   $country Merchant country on PayPal.
 	 *
 	 * @psalm-suppress RedundantConditionGivenDocblockType
 	 */
-	public function __construct( array $products, array $capabilities ) {
+	public function __construct( array $products, array $capabilities, string $country = '' ) {
 		foreach ( $products as $key => $product ) {
 			if ( is_a( $product, SellerStatusProduct::class ) ) {
 				continue;
@@ -52,6 +60,7 @@ class SellerStatus {
 
 		$this->products     = $products;
 		$this->capabilities = $capabilities;
+		$this->country      = $country;
 	}
 
 	/**
@@ -95,6 +104,7 @@ class SellerStatus {
 		return array(
 			'products'     => $products,
 			'capabilities' => $capabilities,
+			'country'      => $this->country,
 		);
 	}
 }
