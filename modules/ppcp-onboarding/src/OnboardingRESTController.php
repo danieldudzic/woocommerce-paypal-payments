@@ -133,7 +133,7 @@ class OnboardingRESTController {
 	 * @return array
 	 */
 	public function get_status( $request ) {
-		$environment = $this->container->get( 'onboarding.environment' );
+		$environment = $this->container->get( 'settings.environment' );
 		$state       = $this->container->get( 'onboarding.state' );
 
 		// Legacy onboarding module; using `State::STATE_ONBOARDED` checks is valid here.

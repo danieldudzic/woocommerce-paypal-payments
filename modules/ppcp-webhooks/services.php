@@ -181,7 +181,7 @@ return array(
 		return new WebhooksStatusPageAssets(
 			$container->get( 'webhook.module-url' ),
 			$container->get( 'ppcp.asset-version' ),
-			$container->get( 'onboarding.environment' )
+			$container->get( 'settings.environment' )
 		);
 	},
 

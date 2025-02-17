@@ -48,7 +48,7 @@ return array(
 			return $client_id;
 		}
 
-		$env = $container->get( 'onboarding.environment' );
+		$env = $container->get( 'settings.environment' );
 		/**
 		 * The environment.
 		 *
@@ -141,7 +141,7 @@ return array(
 		$dcc_applies         = $container->get( 'api.helpers.dccapplies' );
 		$subscription_helper = $container->get( 'wc-subscriptions.helper' );
 		$messages_apply      = $container->get( 'button.helper.messages-apply' );
-		$environment         = $container->get( 'onboarding.environment' );
+		$environment         = $container->get( 'settings.environment' );
 		$payment_token_repository = $container->get( 'vaulting.repository.payment-token' );
 		return new SmartButton(
 			$container->get( 'button.url' ),

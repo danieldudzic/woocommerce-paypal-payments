@@ -267,7 +267,7 @@ return array(
 		$product_status = $container->get( 'applepay.apple-product-status' );
 		assert( $product_status instanceof AppleProductStatus );
 
-		$environment = $container->get( 'onboarding.environment' );
+		$environment = $container->get( 'settings.environment' );
 		assert( $environment instanceof Environment );
 
 		$enabled = $product_status->is_active();

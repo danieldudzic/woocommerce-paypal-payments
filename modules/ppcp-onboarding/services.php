@@ -22,7 +22,7 @@ use WooCommerce\PayPalCommerce\WcGateway\Settings\Settings;
 
 return array(
 	'api.paypal-host'                    => function( ContainerInterface $container ) : string {
-		$environment = $container->get( 'onboarding.environment' );
+		$environment = $container->get( 'settings.environment' );
 		/**
 		 * The current environment.
 		 *
@@ -35,7 +35,7 @@ return array(
 
 	},
 	'api.paypal-website-url'             => function( ContainerInterface $container ) : string {
-		$environment = $container->get( 'onboarding.environment' );
+		$environment = $container->get( 'settings.environment' );
 		assert( $environment instanceof Environment );
 		if ( $environment->current_environment_is( Environment::SANDBOX ) ) {
 			return $container->get( 'api.paypal-website-url-sandbox' );
@@ -63,7 +63,7 @@ return array(
 
 		return $settings->has( 'sandbox_on' ) && $settings->get( 'sandbox_on' );
 	},
-	'onboarding.environment'             => function ( ContainerInterface $container ) : Environment {
+	'settings.environment'               => function ( ContainerInterface $container ) : Environment {
 		return new Environment(
 			$container->get( 'settings.flag.is-sandbox' )
 		);
@@ -76,7 +76,7 @@ return array(
 			$container->get( 'onboarding.url' ),
 			$container->get( 'ppcp.asset-version' ),
 			$state,
-			$container->get( 'onboarding.environment' ),
+			$container->get( 'settings.environment' ),
 			$login_seller_endpoint,
 			$container->get( 'wcgateway.current-ppcp-settings-page-id' )
 		);

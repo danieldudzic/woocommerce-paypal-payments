@@ -98,7 +98,7 @@ return array(
 			$container->get( 'wcgateway.transaction-url-provider' ),
 			$container->get( 'wc-subscriptions.helper' ),
 			$container->get( 'wcgateway.current-ppcp-settings-page-id' ),
-			$container->get( 'onboarding.environment' ),
+			$container->get( 'settings.environment' ),
 			$container->get( 'vaulting.repository.payment-token' ),
 			$container->get( 'woocommerce.logger.woocommerce' ),
 			$container->get( 'api.shop.country' ),
@@ -126,7 +126,7 @@ return array(
 			$container->get( 'wc-subscriptions.helper' ),
 			$container->get( 'api.endpoint.payments' ),
 			$container->get( 'vaulting.credit-card-handler' ),
-			$container->get( 'onboarding.environment' ),
+			$container->get( 'settings.environment' ),
 			$container->get( 'api.endpoint.order' ),
 			$container->get( 'wcgateway.endpoint.capture-card-payment' ),
 			$container->get( 'api.prefix' ),
@@ -208,7 +208,7 @@ return array(
 			$container->get( 'wcgateway.transaction-url-provider' ),
 			$container->get( 'wc-subscriptions.helper' ),
 			$container->get( 'wcgateway.settings.allow_card_button_gateway.default' ),
-			$container->get( 'onboarding.environment' ),
+			$container->get( 'settings.environment' ),
 			$container->get( 'vaulting.repository.payment-token' ),
 			$container->get( 'woocommerce.logger.woocommerce' ),
 			$container->get( 'api.factory.paypal-checkout-url' ),
@@ -549,7 +549,7 @@ return array(
 		$threed_secure                = $container->get( 'button.helper.three-d-secure' );
 		$authorized_payments_processor = $container->get( 'wcgateway.processor.authorized-payments' );
 		$settings                      = $container->get( 'wcgateway.settings' );
-		$environment                   = $container->get( 'onboarding.environment' );
+		$environment                   = $container->get( 'settings.environment' );
 		$logger                        = $container->get( 'woocommerce.logger.woocommerce' );
 		$subscription_helper = $container->get( 'wc-subscriptions.helper' );
 		$order_helper = $container->get( 'api.order-helper' );
@@ -1429,7 +1429,7 @@ return array(
 			$container->get( 'wcgateway.pay-upon-invoice-order-endpoint' ),
 			$container->get( 'api.factory.purchase-unit' ),
 			$container->get( 'wcgateway.pay-upon-invoice-payment-source-factory' ),
-			$container->get( 'onboarding.environment' ),
+			$container->get( 'settings.environment' ),
 			$container->get( 'wcgateway.transaction-url-provider' ),
 			$container->get( 'woocommerce.logger.woocommerce' ),
 			$container->get( 'wcgateway.pay-upon-invoice-helper' ),
@@ -1493,7 +1493,7 @@ return array(
 			$container->get( 'api.factory.shipping-preference' ),
 			$container->get( 'wcgateway.url' ),
 			$container->get( 'wcgateway.transaction-url-provider' ),
-			$container->get( 'onboarding.environment' ),
+			$container->get( 'settings.environment' ),
 			$container->get( 'woocommerce.logger.woocommerce' )
 		);
 	},
@@ -1669,7 +1669,7 @@ return array(
 		$dcc_product_status = $container->get( 'wcgateway.helper.dcc-product-status' );
 		assert( $dcc_product_status instanceof DCCProductStatus );
 
-		$environment = $container->get( 'onboarding.environment' );
+		$environment = $container->get( 'settings.environment' );
 		assert( $environment instanceof Environment );
 
 		$dcc_enabled = $dcc_product_status->is_active();
@@ -1699,7 +1699,7 @@ return array(
 		);
 	},
 	'wcgateway.settings.connection.reference-transactions-status-text' => static function ( ContainerInterface $container ): string {
-		$environment = $container->get( 'onboarding.environment' );
+		$environment = $container->get( 'settings.environment' );
 		assert( $environment instanceof Environment );
 
 		$billing_agreements_endpoint = $container->get( 'api.endpoint.billing-agreements' );
@@ -1740,7 +1740,7 @@ return array(
 		$pui_product_status = $container->get( 'wcgateway.pay-upon-invoice-product-status' );
 		assert( $pui_product_status instanceof PayUponInvoiceProductStatus );
 
-		$environment = $container->get( 'onboarding.environment' );
+		$environment = $container->get( 'settings.environment' );
 		assert( $environment instanceof Environment );
 
 		$pui_enabled = $pui_product_status->is_active();
@@ -1861,7 +1861,7 @@ return array(
 			$container->get( 'wcgateway.url' ),
 			$container->get( 'ppcp.asset-version' ),
 			$container->get( 'wcgateway.fraudnet' ),
-			$container->get( 'onboarding.environment' ),
+			$container->get( 'settings.environment' ),
 			$container->get( 'wcgateway.settings' ),
 			$container->get( 'wcgateway.gateway-repository' ),
 			$container->get( 'session.handler' ),
