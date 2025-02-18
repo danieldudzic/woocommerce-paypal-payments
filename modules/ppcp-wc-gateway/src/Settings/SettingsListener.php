@@ -263,6 +263,8 @@ class SettingsListener {
 		// phpcs:enable WordPress.Security.NonceVerification.Missing
 		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 
+		// This method is only used for legacy UI, `settings->set` is valid here.
+
 		$this->settings->set( 'merchant_id', $merchant_id );
 		$this->settings->set( 'merchant_email', $merchant_email );
 
@@ -364,6 +366,8 @@ class SettingsListener {
 		if ( ! $this->is_valid_site_request() || State::STATE_ONBOARDED !== $this->state->current_state() ) {
 			return;
 		}
+
+		// This method is only used for legacy UI, `settings->set` is valid here.
 
 		try {
 			$token = $this->bearer->bearer();
@@ -473,6 +477,10 @@ class SettingsListener {
 			$settings['enabled'] = isset( $_POST['woocommerce_ppcp-gateway_enabled'] )
 				&& 1 === absint( $_POST['woocommerce_ppcp-gateway_enabled'] );
 		}
+
+		// This method initializes a feature cache. This initialization is not
+		// required by the new UI; we can ignore the `settings->set` usage.
+		// TODO new-ux: Test, if this method is called or some non-settings parts must be converted.
 
 		// phpcs:enable phpcs:disable WordPress.Security.NonceVerification.Missing
 		// phpcs:enable phpcs:disable WordPress.Security.NonceVerification.Missing
@@ -722,6 +730,8 @@ class SettingsListener {
 	/**
 	 * Prevent enabling tracking if it is not enabled for merchant account.
 	 *
+	 * This method is not used anywhere. Not relevant for new-ux.
+	 *
 	 * @throws RuntimeException When API request fails.
 	 */
 	public function listen_for_tracking_enabled(): void {
@@ -766,6 +776,8 @@ class SettingsListener {
 		if ( ! $this->is_valid_site_request() || State::STATE_ONBOARDED !== $this->state->current_state() ) {
 			return;
 		}
+
+		// This method is only used for legacy UI, `settings->set` is valid here.
 
 		$existing_setting_value = $this->settings->has( $setting_slug ) ? $this->settings->get( $setting_slug ) : null;
 
