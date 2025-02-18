@@ -26,7 +26,10 @@ import {
 import SpinnerOverlay from '../../../ReusableComponents/SpinnerOverlay';
 import { useFeatures } from '../../../../data/features/hooks';
 import { selectTab, TAB_IDS } from '../../../../utils/tabSelector';
-import { setActiveModal } from '../../../../data/common/actions';
+import {
+	setActiveHighlight,
+	setActiveModal,
+} from '../../../../data/common/actions';
 
 const TabOverview = () => {
 	const { isReady: areTodosReady } = TodosHooks.useStore();
@@ -230,6 +233,9 @@ const OverviewFeatureItem = ( {
 		}
 		if ( feature.action?.modal ) {
 			setActiveModal( feature.action.modal );
+		}
+		if ( feature.action?.highlight ) {
+			setActiveHighlight( feature.action.highlight );
 		}
 	};
 
