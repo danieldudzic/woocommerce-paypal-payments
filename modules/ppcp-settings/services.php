@@ -42,6 +42,7 @@ use WooCommerce\PayPalCommerce\PayLaterConfigurator\Factory\ConfigFactory;
 use WooCommerce\PayPalCommerce\WcGateway\Settings\Settings;
 use WooCommerce\PayPalCommerce\PayLaterConfigurator\Endpoint\SaveConfig;
 use WooCommerce\PayPalCommerce\WcGateway\Helper\Environment;
+use WooCommerce\PayPalCommerce\WcGateway\Helper\ConnectionState;
 
 return array(
 	'settings.url'                                => static function ( ContainerInterface $container ) : string {
@@ -115,24 +116,51 @@ return array(
 		);
 	},
 	/**
+	 * Merchant connection details, which includes the connection status
+	 * (onboarding/connected) and connection-aware environment checks.
+	 * This is the preferred solution to check environment and connection state.
+	 */
+	'settings.connection-state'                   => static function ( ContainerInterface $container ) : ConnectionState {
+		$data = $container->get( 'settings.data.general' );
+		assert( $data instanceof GeneralSettings );
+
+		$is_connected = $data->is_merchant_connected();
+		$environment  = new Environment( $data->is_sandbox_merchant() );
+
+		return new ConnectionState( $is_connected, $environment );
+	},
+	'settings.environment'                        => static function ( ContainerInterface $container ) : Environment {
+		// We should remove this service in favor of directly using `settings.connection-state`.
+		$state = $container->get( 'settings.connection-state' );
+		assert( $state instanceof ConnectionState );
+
+		return $state->get_environment();
+	},
+	/**
 	 * Checks if valid merchant connection details are stored in the DB.
 	 */
 	'settings.flag.is-connected'                  => static function ( ContainerInterface $container ) : bool {
-		$data = $container->get( 'settings.data.general' );
-		assert( $data instanceof GeneralSettings );
+		/*
+		 * This service only resolves the connection status once per request.
+		 * We should remove this service in favor of directly using `settings.connection-state`.
+		 */
+		$state = $container->get( 'settings.connection-state' );
+		assert( $state instanceof ConnectionState );
 
-		return $data->is_merchant_connected();
+		return $state->is_connected();
 	},
+	/**
+	 * Checks if the merchant is connected to a sandbox environment.
+	 */
 	'settings.flag.is-sandbox'                    => static function ( ContainerInterface $container ) : bool {
-		$data = $container->get( 'settings.data.general' );
-		assert( $data instanceof GeneralSettings );
+		/*
+		 * This service only resolves the sandbox flag once per request.
+		 * We should remove this service in favor of directly using `settings.connection-state`.
+		 */
+		$state = $container->get( 'settings.connection-state' );
+		assert( $state instanceof ConnectionState );
 
-		return $data->is_sandbox_merchant();
-	},
-	'settings.environment'                        => static function ( ContainerInterface $container ) : Environment {
-		return new Environment(
-			$container->get( 'settings.flag.is-sandbox' )
-		);
+		return $state->is_sandbox();
 	},
 	'settings.rest.onboarding'                    => static function ( ContainerInterface $container ) : OnboardingRestEndpoint {
 		return new OnboardingRestEndpoint( $container->get( 'settings.data.onboarding' ) );
