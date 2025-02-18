@@ -26,10 +26,6 @@ import {
 import SpinnerOverlay from '../../../ReusableComponents/SpinnerOverlay';
 import { useFeatures } from '../../../../data/features/hooks';
 import { selectTab, TAB_IDS } from '../../../../utils/tabSelector';
-import {
-	setActiveHighlight,
-	setActiveModal,
-} from '../../../../data/common/actions';
 
 const TabOverview = () => {
 	const { isReady: areTodosReady } = TodosHooks.useStore();
@@ -126,6 +122,8 @@ const OverviewFeatures = () => {
 	const [ isRefreshing, setIsRefreshing ] = useState( false );
 	const { merchant } = CommonHooks.useMerchantInfo();
 	const { refreshFeatureStatuses } = useDispatch( CommonStoreName );
+	const { setActiveModal, setActiveHighlight } =
+		useDispatch( CommonStoreName );
 	const { createSuccessNotice, createErrorNotice } =
 		useDispatch( noticesStore );
 	const { features, fetchFeatures } = useFeatures();
@@ -196,6 +194,8 @@ const OverviewFeatures = () => {
 						buttons={ feature.buttons }
 						enabled={ feature.isEligible }
 						notes={ feature.notes }
+						setActiveModal={ setActiveModal }
+						setActiveHighlight={ setActiveHighlight }
 					/>
 				) ) }
 			</ContentWrapper>
@@ -211,6 +211,8 @@ const OverviewFeatureItem = ( {
 	buttons,
 	enabled,
 	notes,
+	setActiveModal,
+	setActiveHighlight,
 } ) => {
 	const getButtonUrl = ( button ) => {
 		if ( button.urls ) {
