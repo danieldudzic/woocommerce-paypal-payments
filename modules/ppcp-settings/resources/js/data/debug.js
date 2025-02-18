@@ -5,7 +5,6 @@ import {
 	SettingsStoreName,
 	StylingStoreName,
 	TodosStoreName,
-	FeaturesStoreName,
 } from './index';
 
 export const addDebugTools = ( context, modules ) => {
@@ -119,7 +118,6 @@ export const addDebugTools = ( context, modules ) => {
 		stores.push( SettingsStoreName );
 		stores.push( StylingStoreName );
 		stores.push( TodosStoreName );
-		stores.push( FeaturesStoreName );
 		stores.push( OnboardingStoreName );
 
 		stores.forEach( ( storeName ) => {
