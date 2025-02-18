@@ -52,6 +52,14 @@ class ConnectionState {
 	 * @param bool $is_sandbox Whether to connect to a sandbox environment.
 	 */
 	public function connect( bool $is_sandbox = false ) : void {
+		if ( ! $this->is_connected ) {
+			/**
+			 * Action that fires before the connection status changes from
+			 * disconnected to connected.
+			 */
+			do_action( 'woocommerce_paypal_payments_merchant_connection_change', true );
+		}
+
 		$this->is_connected = true;
 		$this->environment->set_environment( $is_sandbox );
 	}
@@ -60,6 +68,14 @@ class ConnectionState {
 	 * Set connection status to "not connected to PayPal" (start onboarding).
 	 */
 	public function disconnect() : void {
+		if ( $this->is_connected ) {
+			/**
+			 * Action that fires before the connection status changes from
+			 * connected to disconnected.
+			 */
+			do_action( 'woocommerce_paypal_payments_merchant_connection_change', false );
+		}
+
 		$this->is_connected = false;
 	}
 

@@ -29,7 +29,7 @@ class Environment {
 	 *
 	 * @var string
 	 */
-	private string $environment_name = '';
+	private string $environment_name;
 
 	/**
 	 * Environment constructor.
@@ -37,20 +37,46 @@ class Environment {
 	 * @param bool $is_sandbox Whether this instance represents a sandbox environment.
 	 */
 	public function __construct( bool $is_sandbox = false ) {
-		$this->set_environment( $is_sandbox );
+		$this->environment_name = $this->prepare_environment_name( $is_sandbox );
 	}
 
 	/**
-	 * Sets the current environment.
+	 * Returns a valid environment name based on the provided argument.
+	 *
+	 * @param bool $is_sandbox Whether this instance represents a sandbox environment.
+	 * @return string The environment name.
+	 */
+	private function prepare_environment_name( bool $is_sandbox ) : string {
+		if ( $is_sandbox ) {
+			return self::SANDBOX;
+		}
+
+		return self::PRODUCTION;
+	}
+
+	/**
+	 * Updates the current environment.
 	 *
 	 * @param bool $is_sandbox Whether this instance represents a sandbox environment.
 	 */
 	public function set_environment( bool $is_sandbox ) : void {
-		if ( $is_sandbox ) {
-			$this->environment_name = self::SANDBOX;
-		} else {
-			$this->environment_name = self::PRODUCTION;
+		$new_environment = $this->prepare_environment_name( $is_sandbox );
+
+		if ( $new_environment !== $this->environment_name ) {
+			/**
+			 * Action that fires before the environment status changes.
+			 *
+			 * @param string $new_environment The new environment name.
+			 * @param string $old_environment The previous environment name.
+			 */
+			do_action(
+				'woocommerce_paypal_payments_merchant_environment_change',
+				$new_environment,
+				$this->environment_name
+			);
 		}
+
+		$this->environment_name = $new_environment;
 	}
 
 	/**
@@ -65,7 +91,7 @@ class Environment {
 	/**
 	 * Detect whether the current environment equals $environment
 	 *
-	 * @deprecated Use the is_sandbox() and is_production() methods instead.
+	 * @deprecated 3.0.0 - Use the is_sandbox() and is_production() methods instead.
 	 *             These methods provide better encapsulation, are less error-prone,
 	 *             and improve code readability by removing the need to pass environment constants.
 	 * @param string $environment The value to check against.
