@@ -120,7 +120,10 @@ class Settings implements ContainerInterface {
 	 * @return bool
 	 */
 	public function has( string $id ) {
-		if ( $this->settings_map_helper->has_mapped_key( $id ) ) {
+		if (
+			$this->settings_map_helper->has_mapped_key( $id )
+			&& ! is_null( $this->settings_map_helper->mapped_value( $id ) )
+		) {
 			return true;
 		}
 
