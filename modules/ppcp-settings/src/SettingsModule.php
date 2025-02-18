@@ -51,9 +51,19 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 	 * Returns whether the old settings UI should be loaded.
 	 */
 	public static function should_use_the_old_ui() : bool {
+		// New merchants should never see the legacy UI.
+		$show_new_ux = '1' === get_option( 'woocommerce-ppcp-is-new-merchant' );
+
+		if ( $show_new_ux ) {
+			return false;
+		}
+
+		// Existing merchants can opt-in to see the new UI.
+		$opt_out_choice = 'yes' === get_option( SwitchSettingsUiEndpoint::OPTION_NAME_SHOULD_USE_OLD_UI );
+
 		return apply_filters(
 			'woocommerce_paypal_payments_should_use_the_old_ui',
-			get_option( SwitchSettingsUiEndpoint::OPTION_NAME_SHOULD_USE_OLD_UI ) === 'yes'
+			$opt_out_choice
 		);
 	}
 
