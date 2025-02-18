@@ -5,6 +5,12 @@
  */
 
 export default {
+	/**
+	 * Resets the store state to its initial values.
+	 * Used when needing to clear all store data.
+	 */
+	RESET: 'ppcp/todos/RESET',
+
 	// Transient data
 	SET_TRANSIENT: 'ppcp/todos/SET_TRANSIENT',
 	SET_COMPLETED_TODOS: 'ppcp/todos/SET_COMPLETED_TODOS',

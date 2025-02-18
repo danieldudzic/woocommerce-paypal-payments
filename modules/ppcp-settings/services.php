@@ -307,7 +307,8 @@ return array(
 	'settings.data.definition.todos'              => static function ( ContainerInterface $container ) : TodosDefinition {
 		return new TodosDefinition(
 			$container->get( 'settings.service.todos_eligibilities' ),
-			$container->get( 'settings.data.general' )
+			$container->get( 'settings.data.general' ),
+			$container->get( 'wc-subscriptions.helper' )
 		);
 	},
 	'settings.data.definition.methods'            => static function ( ContainerInterface $container ) : PaymentMethodsDefinition {
@@ -360,18 +361,18 @@ return array(
 			$capabilities['acdc'] && ! $gateways['axo'],                                              // Enable Fastlane.
 			$capabilities['acdc'] && ! $gateways['card-button'],                                      // Enable Credit and Debit Cards on your checkout.
 			$is_pay_later_messaging_enabled_for_any_location,                                         // Enable Pay Later messaging.
-			! $is_pay_later_messaging_enabled_for_any_location && ! $pay_later_statuses['product'],   // Add Pay Later messaging (Product page).
-			! $is_pay_later_messaging_enabled_for_any_location && ! $pay_later_statuses['cart'],      // Add Pay Later messaging (Cart).
+			! $is_pay_later_messaging_enabled_for_any_location && ! $pay_later_statuses['product'],    // Add Pay Later messaging (Product page).
+			! $is_pay_later_messaging_enabled_for_any_location && ! $pay_later_statuses['cart'],          // Add Pay Later messaging (Cart).
 			! $is_pay_later_messaging_enabled_for_any_location && ! $pay_later_statuses['checkout'],  // Add Pay Later messaging (Checkout).
-			true,                                                                                     // Configure a PayPal Subscription.
-			true,                                                                                     // Add PayPal buttons.
-			true,                                                                                     // Register Domain for Apple Pay.
-			$capabilities['acdc'] && ! ( $capabilities['apple_pay'] && $capabilities['google_pay'] ), // Add digital wallets to your account.
+			$container->has( 'save-payment-methods.eligible' ) && ! $container->get( 'save-payment-methods.eligible' ) && $container->has( 'wc-subscriptions.helper' ) && $container->get( 'wc-subscriptions.helper' )
+					->plugin_is_active(),                                                                                   // Configure a PayPal Subscription.
+			true,                                                                                      // Add PayPal buttons.
+			$capabilities['apple_pay'],                                                                                     // Register Domain for Apple Pay.
+			$capabilities['acdc'] && ! ( $capabilities['apple_pay'] && $capabilities['google_pay'] ),   // Add digital wallets to your account.
 			$capabilities['acdc'] && ! $capabilities['apple_pay'],                                    // Add Apple Pay to your account.
-			$capabilities['acdc'] && ! $capabilities['google_pay'],                                   // Add Google Pay to your account.
-			true,                                                                                     // Configure a PayPal Subscription.
-			$capabilities['apple_pay'] && ! $gateways['apple_pay'],                                   // Enable Apple Pay.
-			$capabilities['google_pay'] && ! $gateways['google_pay'], // Enable Google Pay.
+			$capabilities['acdc'] && ! $capabilities['google_pay'],                                  // Add Google Pay to your account.
+			$capabilities['apple_pay'] && ! $gateways['apple_pay'],                              // Enable Apple Pay.
+			$capabilities['google_pay'] && ! $gateways['google_pay'],                           // Enable Google Pay.
 		);
 	},
 );
