@@ -81,6 +81,11 @@ class SellerStatus {
 		return $this->capabilities;
 	}
 
+	/**
+	 * Returns merchant's country on PayPal.
+	 *
+	 * @return string
+	 */
 	public function country() : string {
 		return $this->country;
 	}
