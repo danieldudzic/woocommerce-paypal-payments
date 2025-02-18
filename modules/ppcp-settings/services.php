@@ -12,7 +12,6 @@ namespace WooCommerce\PayPalCommerce\Settings;
 use WooCommerce\PayPalCommerce\ApiClient\Helper\Cache;
 use WooCommerce\PayPalCommerce\Settings\Ajax\SwitchSettingsUiEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Data\Definition\FeaturesDefinition;
-use WooCommerce\PayPalCommerce\Settings\Data\FeaturesSettings;
 use WooCommerce\PayPalCommerce\Settings\Data\GeneralSettings;
 use WooCommerce\PayPalCommerce\Settings\Data\OnboardingProfile;
 use WooCommerce\PayPalCommerce\Settings\Data\PaymentSettings;
@@ -22,14 +21,12 @@ use WooCommerce\PayPalCommerce\Settings\Data\TodosModel;
 use WooCommerce\PayPalCommerce\Settings\Data\Definition\TodosDefinition;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\AuthenticationRestEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\CommonRestEndpoint;
-use WooCommerce\PayPalCommerce\Settings\Endpoint\CompleteOnClickEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\FeaturesRestEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\LoginLinkRestEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\OnboardingRestEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\PayLaterMessagingEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\PaymentRestEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\RefreshFeatureStatusEndpoint;
-use WooCommerce\PayPalCommerce\Settings\Endpoint\ResetDismissedTodosEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\WebhookSettingsEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\SettingsRestEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\StylingRestEndpoint;
@@ -47,6 +44,8 @@ use WooCommerce\PayPalCommerce\Settings\Data\Definition\PaymentMethodsDefinition
 use WooCommerce\PayPalCommerce\PayLaterConfigurator\Factory\ConfigFactory;
 use WooCommerce\PayPalCommerce\WcGateway\Settings\Settings;
 use WooCommerce\PayPalCommerce\PayLaterConfigurator\Endpoint\SaveConfig;
+use WooCommerce\PayPalCommerce\WcGateway\Helper\Environment;
+use WooCommerce\PayPalCommerce\WcGateway\Helper\ConnectionState;
 
 return array(
 	'settings.url'                                => static function ( ContainerInterface $container ) : string {
@@ -120,13 +119,51 @@ return array(
 		);
 	},
 	/**
-	 * Checks if valid merchant connection details are stored in the DB.
+	 * Merchant connection details, which includes the connection status
+	 * (onboarding/connected) and connection-aware environment checks.
+	 * This is the preferred solution to check environment and connection state.
 	 */
-	'settings.flag.is-connected'                  => static function ( ContainerInterface $container ) : bool {
+	'settings.connection-state'                   => static function ( ContainerInterface $container ) : ConnectionState {
 		$data = $container->get( 'settings.data.general' );
 		assert( $data instanceof GeneralSettings );
 
-		return $data->is_merchant_connected();
+		$is_connected = $data->is_merchant_connected();
+		$environment  = new Environment( $data->is_sandbox_merchant() );
+
+		return new ConnectionState( $is_connected, $environment );
+	},
+	'settings.environment'                        => static function ( ContainerInterface $container ) : Environment {
+		// We should remove this service in favor of directly using `settings.connection-state`.
+		$state = $container->get( 'settings.connection-state' );
+		assert( $state instanceof ConnectionState );
+
+		return $state->get_environment();
+	},
+	/**
+	 * Checks if valid merchant connection details are stored in the DB.
+	 */
+	'settings.flag.is-connected'                  => static function ( ContainerInterface $container ) : bool {
+		/*
+		 * This service only resolves the connection status once per request.
+		 * We should remove this service in favor of directly using `settings.connection-state`.
+		 */
+		$state = $container->get( 'settings.connection-state' );
+		assert( $state instanceof ConnectionState );
+
+		return $state->is_connected();
+	},
+	/**
+	 * Checks if the merchant is connected to a sandbox environment.
+	 */
+	'settings.flag.is-sandbox'                    => static function ( ContainerInterface $container ) : bool {
+		/*
+		 * This service only resolves the sandbox flag once per request.
+		 * We should remove this service in favor of directly using `settings.connection-state`.
+		 */
+		$state = $container->get( 'settings.connection-state' );
+		assert( $state instanceof ConnectionState );
+
+		return $state->is_sandbox();
 	},
 	'settings.rest.onboarding'                    => static function ( ContainerInterface $container ) : OnboardingRestEndpoint {
 		return new OnboardingRestEndpoint( $container->get( 'settings.data.onboarding' ) );
@@ -272,6 +309,7 @@ return array(
 			$container->get( 'api.env.paypal-host' ),
 			$container->get( 'api.env.endpoint.login-seller' ),
 			$container->get( 'api.repository.partner-referrals-data' ),
+			$container->get( 'settings.connection-state' ),
 			$container->get( 'woocommerce.logger.woocommerce' ),
 		);
 	},
@@ -311,7 +349,8 @@ return array(
 	'settings.data.definition.todos'              => static function ( ContainerInterface $container ) : TodosDefinition {
 		return new TodosDefinition(
 			$container->get( 'settings.service.todos_eligibilities' ),
-			$container->get( 'settings.data.general' )
+			$container->get( 'settings.data.general' ),
+			$container->get( 'wc-subscriptions.helper' )
 		);
 	},
 	'settings.data.definition.methods'            => static function ( ContainerInterface $container ) : PaymentMethodsDefinition {
@@ -364,18 +403,18 @@ return array(
 			$capabilities['acdc'] && ! $gateways['axo'],                                              // Enable Fastlane.
 			$capabilities['acdc'] && ! $gateways['card-button'],                                      // Enable Credit and Debit Cards on your checkout.
 			$is_pay_later_messaging_enabled_for_any_location,                                         // Enable Pay Later messaging.
-			! $is_pay_later_messaging_enabled_for_any_location && ! $pay_later_statuses['product'],   // Add Pay Later messaging (Product page).
-			! $is_pay_later_messaging_enabled_for_any_location && ! $pay_later_statuses['cart'],      // Add Pay Later messaging (Cart).
+			! $is_pay_later_messaging_enabled_for_any_location && ! $pay_later_statuses['product'],    // Add Pay Later messaging (Product page).
+			! $is_pay_later_messaging_enabled_for_any_location && ! $pay_later_statuses['cart'],          // Add Pay Later messaging (Cart).
 			! $is_pay_later_messaging_enabled_for_any_location && ! $pay_later_statuses['checkout'],  // Add Pay Later messaging (Checkout).
-			true,                                                                                     // Configure a PayPal Subscription.
-			true,                                                                                     // Add PayPal buttons.
-			true,                                                                                     // Register Domain for Apple Pay.
-			$capabilities['acdc'] && ! ( $capabilities['apple_pay'] && $capabilities['google_pay'] ), // Add digital wallets to your account.
+			$container->has( 'save-payment-methods.eligible' ) && ! $container->get( 'save-payment-methods.eligible' ) && $container->has( 'wc-subscriptions.helper' ) && $container->get( 'wc-subscriptions.helper' )
+					->plugin_is_active(),                                                                                   // Configure a PayPal Subscription.
+			true,                                                                                      // Add PayPal buttons.
+			$capabilities['apple_pay'],                                                                                     // Register Domain for Apple Pay.
+			$capabilities['acdc'] && ! ( $capabilities['apple_pay'] && $capabilities['google_pay'] ),   // Add digital wallets to your account.
 			$capabilities['acdc'] && ! $capabilities['apple_pay'],                                    // Add Apple Pay to your account.
-			$capabilities['acdc'] && ! $capabilities['google_pay'],                                   // Add Google Pay to your account.
-			true,                                                                                     // Configure a PayPal Subscription.
-			$capabilities['apple_pay'] && ! $gateways['apple_pay'],                                   // Enable Apple Pay.
-			$capabilities['google_pay'] && ! $gateways['google_pay'], // Enable Google Pay.
+			$capabilities['acdc'] && ! $capabilities['google_pay'],                                  // Add Google Pay to your account.
+			$capabilities['apple_pay'] && ! $gateways['apple_pay'],                              // Enable Apple Pay.
+			$capabilities['google_pay'] && ! $gateways['google_pay'],                           // Enable Google Pay.
 		);
 	},
 	'settings.rest.features'                      => static function ( ContainerInterface $container ) : FeaturesRestEndpoint {

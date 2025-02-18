@@ -102,13 +102,6 @@ class TodosEligibilityService {
 	private bool $is_paypal_buttons_eligible;
 
 	/**
-	 * Whether PayPal subscription configuration is eligible.
-	 *
-	 * @var bool
-	 */
-	private bool $is_add_subscription_eligible;
-
-	/**
 	 * Whether enabling Apple Pay is eligible.
 	 *
 	 * @var bool
@@ -137,7 +130,6 @@ class TodosEligibilityService {
 	 * @param bool $is_digital_wallet_eligible          Whether digital wallet features are eligible.
 	 * @param bool $is_apple_pay_eligible               Whether Apple Pay is eligible.
 	 * @param bool $is_google_pay_eligible              Whether Google Pay is eligible.
-	 * @param bool $is_add_subscription_eligible        Whether PayPal subscription configuration is eligible.
 	 * @param bool $is_enable_apple_pay_eligible        Whether enabling Apple Pay is eligible.
 	 * @param bool $is_enable_google_pay_eligible       Whether enabling Google Pay is eligible.
 	 */
@@ -154,7 +146,6 @@ class TodosEligibilityService {
 		bool $is_digital_wallet_eligible,
 		bool $is_apple_pay_eligible,
 		bool $is_google_pay_eligible,
-		bool $is_add_subscription_eligible,
 		bool $is_enable_apple_pay_eligible,
 		bool $is_enable_google_pay_eligible
 	) {
@@ -170,7 +161,6 @@ class TodosEligibilityService {
 		$this->is_digital_wallet_eligible               = $is_digital_wallet_eligible;
 		$this->is_apple_pay_eligible                    = $is_apple_pay_eligible;
 		$this->is_google_pay_eligible                   = $is_google_pay_eligible;
-		$this->is_add_subscription_eligible             = $is_add_subscription_eligible;
 		$this->is_enable_apple_pay_eligible             = $is_enable_apple_pay_eligible;
 		$this->is_enable_google_pay_eligible            = $is_enable_google_pay_eligible;
 	}
