@@ -306,6 +306,7 @@ return array(
 			$container->get( 'api.env.paypal-host' ),
 			$container->get( 'api.env.endpoint.login-seller' ),
 			$container->get( 'api.repository.partner-referrals-data' ),
+			$container->get( 'settings.connection-state' ),
 			$container->get( 'woocommerce.logger.woocommerce' ),
 		);
 	},
