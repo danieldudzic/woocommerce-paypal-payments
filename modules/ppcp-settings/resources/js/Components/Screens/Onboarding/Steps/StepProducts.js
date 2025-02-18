@@ -76,7 +76,17 @@ const StepProducts = () => {
 				'woocommerce-paypal-payments'
 			),
 			isDisabled: isCasualSeller,
-			contents: <DetailsSubscriptions showNotice={ isCasualSeller } />,
+			contents: (
+				/*
+				 * Note: The link should be only displayed if the subscriptions plugin is not installed.
+				 * But when the plugin is not active, this option is completely hidden;
+				 * This means: In the current configuration, we never show the link.
+				 */
+				<DetailsSubscriptions
+					showLink={ false }
+					showNotice={ isCasualSeller }
+				/>
+			),
 		},
 	];
 	return (
@@ -117,14 +127,19 @@ const DetailsPhysical = () => (
 	</ul>
 );
 
-const DetailsSubscriptions = ( { showNotice } ) => (
+const DetailsSubscriptions = ( { showLink, showNotice } ) => (
 	<>
-		<a
-			target="__blank"
-			href="https://woocommerce.com/document/woocommerce-paypal-payments/#subscriptions-faq"
-		>
-			{ __( 'WooCommerce Subscriptions', 'woocommerce-paypal-payments' ) }
-		</a>
+		{ showLink && (
+			<a
+				target="__blank"
+				href="https://woocommerce.com/document/woocommerce-paypal-payments/#subscriptions-faq"
+			>
+				{ __(
+					'WooCommerce Subscriptions',
+					'woocommerce-paypal-payments'
+				) }
+			</a>
+		) }
 		{ showNotice && (
 			<p>
 				{ __(
