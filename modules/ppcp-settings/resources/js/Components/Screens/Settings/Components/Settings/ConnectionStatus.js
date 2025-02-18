@@ -27,6 +27,7 @@ const ConnectionStatus = () => {
 						<ConnectionStatusBadge
 							isActive={ merchant.isConnected }
 							isSandbox={ merchant.isSandbox }
+							isBusinessSeller={ merchant.isBusinessSeller }
 						/>
 					}
 				/>
