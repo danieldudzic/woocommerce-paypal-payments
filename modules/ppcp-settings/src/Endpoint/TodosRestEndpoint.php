@@ -65,10 +65,10 @@ class TodosRestEndpoint extends RestEndpoint {
 	/**
 	 * TodosRestEndpoint constructor.
 	 *
-	 * @param TodosModel           $todos The todos model instance.
-	 * @param TodosDefinition      $todos_definition The todos definition instance.
-	 * @param SettingsRestEndpoint $settings The settings endpoint instance.
-	 * @param TodosSortingAndFilteringService  $sorting_service The todos sorting service.
+	 * @param TodosModel                      $todos The todos model instance.
+	 * @param TodosDefinition                 $todos_definition The todos definition instance.
+	 * @param SettingsRestEndpoint            $settings The settings endpoint instance.
+	 * @param TodosSortingAndFilteringService $sorting_service The todos sorting service.
 	 */
 	public function __construct(
 		TodosModel $todos,
