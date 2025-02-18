@@ -9,7 +9,11 @@ import {
 	TodoSettingsBlock,
 	FeatureSettingsBlock,
 } from '../../../ReusableComponents/SettingsBlocks';
-import { Content, ContentWrapper } from '../../../ReusableComponents/Elements';
+import {
+	Content,
+	ContentWrapper,
+	CardActions,
+} from '../../../ReusableComponents/Elements';
 import SettingsCard from '../../../ReusableComponents/SettingsCard';
 import { TITLE_BADGE_POSITIVE } from '../../../ReusableComponents/TitleBadge';
 import {
@@ -92,19 +96,24 @@ const OverviewTodos = () => {
 							'woocommerce-paypal-payments'
 						) }
 					</p>
-					<Button
-						variant="tertiary"
-						onClick={ resetHandler }
-						disabled={ isResetting }
-					>
-						<Icon icon={ reusableBlock } size={ 18 } />
-						{ isResetting
-							? __( 'Restoring…', 'woocommerce-paypal-payments' )
-							: __(
-									'Restore dismissed Things To Do',
-									'woocommerce-paypal-payments'
-							  ) }
-					</Button>
+					<CardActions>
+						<Button
+							variant="tertiary"
+							onClick={ resetHandler }
+							disabled={ isResetting }
+						>
+							<Icon icon={ reusableBlock } size={ 18 } />
+							{ isResetting
+								? __(
+										'Restoring…',
+										'woocommerce-paypal-payments'
+								  )
+								: __(
+										'Restore dismissed Things To Do',
+										'woocommerce-paypal-payments'
+								  ) }
+						</Button>
+					</CardActions>
 				</>
 			}
 		>
@@ -284,14 +293,16 @@ const OverviewFeatureDescription = ( { refreshHandler, isRefreshing } ) => {
 					'woocommerce-paypal-payments'
 				) }
 			</p>
-			<Button
-				variant="tertiary"
-				onClick={ refreshHandler }
-				disabled={ isRefreshing }
-			>
-				<Icon icon={ reusableBlock } size={ 18 } />
-				{ buttonLabel }
-			</Button>
+			<CardActions>
+				<Button
+					variant="tertiary"
+					onClick={ refreshHandler }
+					disabled={ isRefreshing }
+				>
+					<Icon icon={ reusableBlock } size={ 18 } />
+					{ buttonLabel }
+				</Button>
+			</CardActions>
 		</>
 	);
 };

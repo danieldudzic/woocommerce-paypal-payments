@@ -7,6 +7,7 @@ import ConnectionStatusBadge from './Parts/ConnectionStatusBadge';
 import DisconnectButton from './Parts/DisconnectButton';
 import SettingsBlock from '../../../../ReusableComponents/SettingsBlock';
 import { ControlStaticValue } from '../../../../ReusableComponents/Controls';
+import { CardActions } from '../../../../ReusableComponents/Elements';
 
 const ConnectionStatus = () => {
 	const merchant = CommonHooks.useMerchant();
@@ -61,9 +62,9 @@ const ConnectionDescription = () => {
 				'Your PayPal account connection details.',
 				'woocommerce-paypal-payments'
 			) }
-			<div className="ppcp--card-actions">
+			<CardActions isDimmed={ true }>
 				<DisconnectButton />
-			</div>
+			</CardActions>
 		</>
 	);
 };
