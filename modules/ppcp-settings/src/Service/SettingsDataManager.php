@@ -211,7 +211,8 @@ class SettingsDataManager {
 			$this->payment_methods->toggle_method_state( $method['id'], false );
 		}
 
-		// Always enable Venmo and Pay Later.
+		// Always enable PayPal, Venmo and Pay Later.
+		$this->payment_methods->toggle_method_state( PayPalGateway::ID, true );
 		$this->payment_methods->toggle_method_state( 'venmo', true );
 		$this->payment_methods->toggle_method_state( 'pay-later', true );
 
