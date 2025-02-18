@@ -20,13 +20,11 @@ use WooCommerce\PayPalCommerce\Settings\Data\TodosModel;
 use WooCommerce\PayPalCommerce\Settings\Data\Definition\TodosDefinition;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\AuthenticationRestEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\CommonRestEndpoint;
-use WooCommerce\PayPalCommerce\Settings\Endpoint\CompleteOnClickEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\LoginLinkRestEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\OnboardingRestEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\PayLaterMessagingEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\PaymentRestEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\RefreshFeatureStatusEndpoint;
-use WooCommerce\PayPalCommerce\Settings\Endpoint\ResetDismissedTodosEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\WebhookSettingsEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\SettingsRestEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\StylingRestEndpoint;
@@ -43,6 +41,8 @@ use WooCommerce\PayPalCommerce\Settings\Data\Definition\PaymentMethodsDefinition
 use WooCommerce\PayPalCommerce\PayLaterConfigurator\Factory\ConfigFactory;
 use WooCommerce\PayPalCommerce\WcGateway\Settings\Settings;
 use WooCommerce\PayPalCommerce\PayLaterConfigurator\Endpoint\SaveConfig;
+use WooCommerce\PayPalCommerce\WcGateway\Helper\Environment;
+use WooCommerce\PayPalCommerce\WcGateway\Helper\ConnectionState;
 
 return array(
 	'settings.url'                                => static function ( ContainerInterface $container ) : string {
@@ -116,13 +116,51 @@ return array(
 		);
 	},
 	/**
-	 * Checks if valid merchant connection details are stored in the DB.
+	 * Merchant connection details, which includes the connection status
+	 * (onboarding/connected) and connection-aware environment checks.
+	 * This is the preferred solution to check environment and connection state.
 	 */
-	'settings.flag.is-connected'                  => static function ( ContainerInterface $container ) : bool {
+	'settings.connection-state'                   => static function ( ContainerInterface $container ) : ConnectionState {
 		$data = $container->get( 'settings.data.general' );
 		assert( $data instanceof GeneralSettings );
 
-		return $data->is_merchant_connected();
+		$is_connected = $data->is_merchant_connected();
+		$environment  = new Environment( $data->is_sandbox_merchant() );
+
+		return new ConnectionState( $is_connected, $environment );
+	},
+	'settings.environment'                        => static function ( ContainerInterface $container ) : Environment {
+		// We should remove this service in favor of directly using `settings.connection-state`.
+		$state = $container->get( 'settings.connection-state' );
+		assert( $state instanceof ConnectionState );
+
+		return $state->get_environment();
+	},
+	/**
+	 * Checks if valid merchant connection details are stored in the DB.
+	 */
+	'settings.flag.is-connected'                  => static function ( ContainerInterface $container ) : bool {
+		/*
+		 * This service only resolves the connection status once per request.
+		 * We should remove this service in favor of directly using `settings.connection-state`.
+		 */
+		$state = $container->get( 'settings.connection-state' );
+		assert( $state instanceof ConnectionState );
+
+		return $state->is_connected();
+	},
+	/**
+	 * Checks if the merchant is connected to a sandbox environment.
+	 */
+	'settings.flag.is-sandbox'                    => static function ( ContainerInterface $container ) : bool {
+		/*
+		 * This service only resolves the sandbox flag once per request.
+		 * We should remove this service in favor of directly using `settings.connection-state`.
+		 */
+		$state = $container->get( 'settings.connection-state' );
+		assert( $state instanceof ConnectionState );
+
+		return $state->is_sandbox();
 	},
 	'settings.rest.onboarding'                    => static function ( ContainerInterface $container ) : OnboardingRestEndpoint {
 		return new OnboardingRestEndpoint( $container->get( 'settings.data.onboarding' ) );
@@ -268,6 +306,7 @@ return array(
 			$container->get( 'api.env.paypal-host' ),
 			$container->get( 'api.env.endpoint.login-seller' ),
 			$container->get( 'api.repository.partner-referrals-data' ),
+			$container->get( 'settings.connection-state' ),
 			$container->get( 'woocommerce.logger.woocommerce' ),
 		);
 	},

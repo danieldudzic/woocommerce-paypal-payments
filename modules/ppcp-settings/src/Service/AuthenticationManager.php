@@ -24,6 +24,7 @@ use WooCommerce\WooCommerce\Logging\Logger\NullLogger;
 use WooCommerce\PayPalCommerce\Settings\DTO\MerchantConnectionDTO;
 use WooCommerce\PayPalCommerce\Webhooks\WebhookRegistrar;
 use WooCommerce\PayPalCommerce\Settings\Enum\SellerTypeEnum;
+use WooCommerce\PayPalCommerce\WcGateway\Helper\ConnectionState;
 
 /**
  * Class that manages the connection to PayPal.
@@ -65,26 +66,36 @@ class AuthenticationManager {
 	private PartnerReferralsData $referrals_data;
 
 	/**
+	 * The connection state manager.
+	 *
+	 * @var ConnectionState
+	 */
+	private ConnectionState $connection_state;
+
+	/**
 	 * Constructor.
 	 *
-	 * @param GeneralSettings      $common_settings Data model that stores the connection details.
-	 * @param EnvironmentConfig    $connection_host API host for direct authentication.
-	 * @param EnvironmentConfig    $login_endpoint  API handler to fetch merchant credentials.
-	 * @param PartnerReferralsData $referrals_data  Partner referrals data.
-	 * @param ?LoggerInterface     $logger          Logging instance.
+	 * @param GeneralSettings      $common_settings  Data model that stores the connection details.
+	 * @param EnvironmentConfig    $connection_host  API host for direct authentication.
+	 * @param EnvironmentConfig    $login_endpoint   API handler to fetch merchant credentials.
+	 * @param PartnerReferralsData $referrals_data   Partner referrals data.
+	 * @param ConnectionState      $connection_state Connection state manager.
+	 * @param ?LoggerInterface     $logger           Logging instance.
 	 */
 	public function __construct(
 		GeneralSettings $common_settings,
 		EnvironmentConfig $connection_host,
 		EnvironmentConfig $login_endpoint,
 		PartnerReferralsData $referrals_data,
+		ConnectionState $connection_state,
 		?LoggerInterface $logger = null
 	) {
-		$this->common_settings = $common_settings;
-		$this->connection_host = $connection_host;
-		$this->login_endpoint  = $login_endpoint;
-		$this->referrals_data  = $referrals_data;
-		$this->logger          = $logger ?: new NullLogger();
+		$this->common_settings  = $common_settings;
+		$this->connection_host  = $connection_host;
+		$this->login_endpoint   = $login_endpoint;
+		$this->referrals_data   = $referrals_data;
+		$this->connection_state = $connection_state;
+		$this->logger           = $logger ?: new NullLogger();
 	}
 
 	/**
@@ -111,6 +122,9 @@ class AuthenticationManager {
 
 		$this->common_settings->reset_merchant_data();
 		$this->common_settings->save();
+
+		// Update the connection status and clear the environment flags.
+		$this->connection_state->disconnect();
 
 		/**
 		 * Broadcast, that the plugin disconnected from PayPal. This allows other
@@ -419,6 +433,9 @@ class AuthenticationManager {
 
 		if ( $this->common_settings->is_merchant_connected() ) {
 			$this->logger->info( 'Merchant successfully connected to PayPal' );
+
+			// Update the connection status and set the environment flags.
+			$this->connection_state->connect( $connection->is_sandbox );
 
 			/**
 			 * Request to flush caches before authenticating the merchant, to
