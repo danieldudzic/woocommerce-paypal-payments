@@ -45,7 +45,7 @@ class Environment {
 	 *
 	 * @param bool $is_sandbox Whether this instance represents a sandbox environment.
 	 */
-	private function set_environment( bool $is_sandbox ) : void {
+	public function set_environment( bool $is_sandbox ) : void {
 		if ( $is_sandbox ) {
 			$this->environment_name = self::SANDBOX;
 		} else {
