@@ -30,13 +30,17 @@ class SettingsTabMapHelper {
 	 */
 	public function map(): array {
 		return array(
-			'disable_cards'              => 'disabled_cards',
-			'brand_name'                 => 'brand_name',
-			'soft_descriptor'            => 'soft_descriptor',
-			'payee_preferred'            => 'instant_payments_only',
-			'subtotal_mismatch_behavior' => 'subtotal_adjustment',
-			'landing_page'               => 'landing_page',
-			'smart_button_language'      => 'button_language',
+			'disable_cards'               => 'disabled_cards',
+			'brand_name'                  => 'brand_name',
+			'soft_descriptor'             => 'soft_descriptor',
+			'payee_preferred'             => 'instant_payments_only',
+			'subtotal_mismatch_behavior'  => 'subtotal_adjustment',
+			'landing_page'                => 'landing_page',
+			'smart_button_language'       => 'button_language',
+			'prefix'                      => 'invoice_prefix',
+			'intent'                      => '',
+			'vault_enabled_dcc'           => 'save_card_details',
+			'blocks_final_review_enabled' => 'enable_pay_now',
 		);
 	}
 
@@ -56,6 +60,12 @@ class SettingsTabMapHelper {
 
 			case 'landing_page':
 				return $this->mapped_landing_page_value( $settings_model );
+
+			case 'intent':
+				return $this->mapped_intent_value( $settings_model );
+
+			case 'blocks_final_review_enabled':
+				return $this->mapped_pay_now_value( $settings_model );
 
 			default:
 				return $settings_model[ $new_key ] ?? null;
@@ -97,5 +107,38 @@ class SettingsTabMapHelper {
 				? ApplicationContext::LANDING_PAGE_BILLING
 				: ApplicationContext::LANDING_PAGE_NO_PREFERENCE
 			);
+	}
+
+	/**
+	 * Retrieves the mapped value for the order intent from the new settings.
+	 *
+	 * @param array<string, scalar|array> $settings_model The new settings model data as an array.
+	 * @return 'AUTHORIZE'|'CAPTURE'|null The mapped 'intent' setting value.
+	 */
+	protected function mapped_intent_value( array $settings_model ): ?string {
+		$authorize_only         = $settings_model['authorize_only'] ?? null;
+		$capture_virtual_orders = $settings_model['capture_virtual_orders'] ?? null;
+
+		if ( is_null( $authorize_only ) && is_null( $capture_virtual_orders ) ) {
+			return null;
+		}
+
+		return $authorize_only ? 'AUTHORIZE' : 'CAPTURE';
+	}
+
+	/**
+	 * Retrieves the mapped value for the "Pay Now Experience" from the new settings.
+	 *
+	 * @param array<string, scalar|array> $settings_model The new settings model data as an array.
+	 * @return bool|null The mapped 'Pay Now Experience' setting value.
+	 */
+	protected function mapped_pay_now_value( array $settings_model ): ?bool {
+		$enable_pay_now = $settings_model['enable_pay_now'] ?? null;
+
+		if ( is_null( $enable_pay_now ) ) {
+			return null;
+		}
+
+		return ! $enable_pay_now;
 	}
 }

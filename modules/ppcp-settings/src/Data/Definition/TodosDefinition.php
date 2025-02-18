@@ -11,6 +11,7 @@ namespace WooCommerce\PayPalCommerce\Settings\Data\Definition;
 
 use WooCommerce\PayPalCommerce\Settings\Service\TodosEligibilityService;
 use WooCommerce\PayPalCommerce\Settings\Data\GeneralSettings;
+use WooCommerce\PayPalCommerce\WcSubscriptions\Helper\SubscriptionHelper;
 
 /**
  * Class TodosDefinition
@@ -35,17 +36,27 @@ class TodosDefinition {
 	protected GeneralSettings $settings;
 
 	/**
+	 * The subscription helper.
+	 *
+	 * @var SubscriptionHelper
+	 */
+	protected SubscriptionHelper $subscription_helper;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param TodosEligibilityService $eligibilities The todos eligibility service.
 	 * @param GeneralSettings         $settings The general settings service.
+	 * @param SubscriptionHelper      $subscription_helper The subscription helper.
 	 */
 	public function __construct(
 		TodosEligibilityService $eligibilities,
-		GeneralSettings $settings
+		GeneralSettings $settings,
+		SubscriptionHelper $subscription_helper
 	) {
-		$this->eligibilities = $eligibilities;
-		$this->settings      = $settings;
+		$this->eligibilities       = $eligibilities;
+		$this->settings            = $settings;
+		$this->subscription_helper = $subscription_helper;
 	}
 
 	/**
@@ -126,8 +137,11 @@ class TodosDefinition {
 				'description' => __( 'Connect a subscriptions-type product from WooCommerce with PayPal', 'woocommerce-paypal-payments' ),
 				'isEligible'  => $eligibility_checks['configure_paypal_subscription'],
 				'action'      => array(
-					'type' => 'external',
-					'url'  => admin_url( 'edit.php?post_type=product&product_type=subscription' ),
+					'type'            => 'external',
+					'url'             => $this->subscription_helper->has_subscription_products()
+						? admin_url( 'edit.php?post_type=product&product_type=subscription' )  // If subscription products exist, go to the subscriptions products archive page.
+						: admin_url( 'post-new.php?post_type=product' ), // If there are no subscriptions products, go to create one.
+					'completeOnClick' => true,
 				),
 				'priority'    => 5,
 			),
