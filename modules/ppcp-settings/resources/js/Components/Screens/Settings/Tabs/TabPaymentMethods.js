@@ -112,6 +112,8 @@ const PaymentMethodCard = ( {
 	icon,
 	methods,
 	onTriggerModal,
+	isDisabled = true,
+	disabledMessage = 'This is an example disabled message.',
 } ) => (
 	<SettingsCard
 		id={ id }
@@ -121,7 +123,11 @@ const PaymentMethodCard = ( {
 		contentContainer={ false }
 	>
 		<PaymentMethodsBlock
-			paymentMethods={ methods }
+			paymentMethods={ methods.map( ( method ) => ( {
+				...method,
+				isDisabled: method.isDisabled || isDisabled,
+				disabledMessage: method.disabledMessage || disabledMessage,
+			} ) ) }
 			onTriggerModal={ onTriggerModal }
 		/>
 	</SettingsCard>
