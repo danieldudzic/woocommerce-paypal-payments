@@ -53,6 +53,21 @@ const reducer = createReducer( defaultTransient, defaultPersistent, {
 		changeTransient( state, payload ),
 
 	/**
+	 * Resets state to defaults while maintaining initialization status
+	 *
+	 * @param {Object} state Current state
+	 * @return {Object} Reset state
+	 */
+	[ ACTION_TYPES.RESET ]: ( state ) => {
+		const cleanState = changeTransient(
+			changePersistent( state, defaultPersistent ),
+			defaultTransient
+		);
+		cleanState.isReady = true; // Keep initialization flag
+		return cleanState;
+	},
+
+	/**
 	 * Updates todos list
 	 *
 	 * @param {Object} state   Current state
@@ -99,6 +114,7 @@ const reducer = createReducer( defaultTransient, defaultPersistent, {
 	},
 
 	/**
+	 * TODO: This is not used anywhere. Remove "SET_TODOS" and use this resolver instead.
 	 * Initializes persistent state with data from the server
 	 *
 	 * @param {Object} state        Current state
