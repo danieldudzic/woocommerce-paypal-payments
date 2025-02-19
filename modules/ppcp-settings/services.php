@@ -428,9 +428,10 @@ return array(
 		 * Initializes TodosEligibilityService with eligibility conditions for various PayPal features.
 		 * Each parameter determines whether a specific feature should be shown in the Things To Do list.
 		 *
-		 * Logic relies on two main factors:
-		 * 1. $capabilities - Whether the merchant is eligible for specific features on their PayPal account.
-		 * 2. $gateways, $pay_later_statuses, $button_locations - Plugin settings (enabled/disabled status).
+		 * Logic relies on three main factors:
+		 * 1. $container->get( 'x.eligible' ) - Module based eligibility check, usually whether the WooCommerce store is using a supported country/currency matrix.
+		 * 2. $capabilities - Whether the merchant is eligible for specific features on their PayPal account.
+		 * 3. $gateways, $pay_later_statuses, $button_locations - Plugin settings (enabled/disabled status).
 		 *
 		 * @param bool $is_fastlane_eligible                - Show if merchant is eligible (ACDC) but hasn't enabled Fastlane gateway.
 		 * @param bool $is_card_payment_eligible            - Show if merchant is eligible (ACDC) but hasn't enabled card button gateway.
@@ -450,7 +451,7 @@ return array(
 		 * @param bool $is_enable_google_pay_eligible       - Show if merchant has Google Pay capability but hasn't enabled the gateway.
 		 */
 		return new TodosEligibilityService(
-			$capabilities['acdc'] && ! $gateways['axo'],                                                  // Enable Fastlane.
+			$container->get( 'axo.eligible' ) && $capabilities['acdc'] && ! $gateways['axo'],                  // Enable Fastlane.
 			$capabilities['acdc'] && ! $gateways['card-button'],                                          // Enable Credit and Debit Cards on your checkout.
 			$is_pay_later_messaging_enabled_for_any_location,                                             // Enable Pay Later messaging.
 			! $is_pay_later_messaging_enabled_for_any_location && ! $pay_later_statuses['product'],       // Add Pay Later messaging (Product page).
@@ -465,10 +466,10 @@ return array(
 			! $button_locations['product_enabled'],                                                       // Add PayPal buttons to product.
 			$capabilities['apple_pay'],                                                                   // Register Domain for Apple Pay.
 			$capabilities['acdc'] && ! ( $capabilities['apple_pay'] && $capabilities['google_pay'] ),     // Add digital wallets to your account.
-			$capabilities['acdc'] && ! $capabilities['apple_pay'],                                        // Add Apple Pay to your account.
-			$capabilities['acdc'] && ! $capabilities['google_pay'],                                       // Add Google Pay to your account.
-			$capabilities['apple_pay'] && ! $gateways['apple_pay'],                                       // Enable Apple Pay.
-			$capabilities['google_pay'] && ! $gateways['google_pay'],
+			$container->get( 'applepay.eligible' ) && $capabilities['acdc'] && ! $capabilities['apple_pay'],                                        // Add Apple Pay to your account.
+			$container->get( 'googlepay.eligible' ) && $capabilities['acdc'] && ! $capabilities['google_pay'],                                       // Add Google Pay to your account.
+			$container->get( 'applepay.eligible' ) && $capabilities['apple_pay'] && ! $gateways['apple_pay'],                                       // Enable Apple Pay.
+			$container->get( 'googlepay.eligible' ) && $capabilities['google_pay'] && ! $gateways['google_pay'],
 		);
 	},
 	'settings.service.todos_sorting'              => static function ( ContainerInterface $container ) : TodosSortingAndFilteringService {
