@@ -129,8 +129,7 @@ const OverviewTodos = () => {
 
 const OverviewFeatures = () => {
 	const [ isRefreshing, setIsRefreshing ] = useState( false );
-	const { merchant, features: eligibleFeatures } =
-		CommonHooks.useMerchantInfo();
+	const { merchant } = CommonHooks.useMerchantInfo();
 	const { refreshFeatureStatuses } = useDispatch( CommonStoreName );
 	const { setActiveModal, setActiveHighlight } =
 		useDispatch( CommonStoreName );
@@ -141,17 +140,6 @@ const OverviewFeatures = () => {
 	useEffect( () => {
 		fetchFeatures();
 	}, [ fetchFeatures ] );
-	// Map merchant features status to the config
-	const featuresData = useMemo( () => {
-		return features.map( ( feature ) => {
-			const eligibleFeature = eligibleFeatures?.[ feature.id ];
-			return {
-				...feature,
-				enabled: eligibleFeature?.enabled ?? false,
-			};
-		} );
-	}, [ features, eligibleFeatures ] );
-
 	const refreshHandler = async () => {
 		setIsRefreshing( true );
 
@@ -204,7 +192,7 @@ const OverviewFeatures = () => {
 			contentContainer={ false }
 		>
 			<ContentWrapper>
-				{ featuresData.map( ( { id, ...feature } ) => (
+				{ features.map( ( { id, ...feature } ) => (
 					<OverviewFeatureItem
 						key={ id }
 						isBusy={ isRefreshing }

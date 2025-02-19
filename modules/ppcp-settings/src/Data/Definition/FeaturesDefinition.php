@@ -36,17 +36,27 @@ class FeaturesDefinition {
 	protected GeneralSettings $settings;
 
 	/**
+	 * The merchant capabilities.
+	 *
+	 * @var array
+	 */
+	protected array $merchant_capabilities;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param FeaturesEligibilityService $eligibilities The features eligibility service.
 	 * @param GeneralSettings            $settings The general settings service.
+	 * @param array                      $merchant_capabilities The merchant capabilities.
 	 */
 	public function __construct(
 		FeaturesEligibilityService $eligibilities,
-		GeneralSettings $settings
+		GeneralSettings $settings,
+		array $merchant_capabilities
 	) {
-		$this->eligibilities = $eligibilities;
-		$this->settings      = $settings;
+		$this->eligibilities         = $eligibilities;
+		$this->settings              = $settings;
+		$this->merchant_capabilities = $merchant_capabilities;
 	}
 
 	/**
@@ -55,7 +65,23 @@ class FeaturesDefinition {
 	 * @return array The array of feature definitions.
 	 */
 	public function get(): array {
+		$all_features       = $this->all_available_features();
+		$eligible_features  = array();
 		$eligibility_checks = $this->eligibilities->get_eligibility_checks();
+		foreach ( $all_features as $feature_key => $feature ) {
+			if ( $eligibility_checks[ $feature_key ]() ) {
+				$eligible_features[ $feature_key ] = $feature;
+			}
+		}
+		return $eligible_features;
+	}
+
+	/**
+	 * Returns all available features.
+	 *
+	 * @return array[] The array of all available features.
+	 */
+	public function all_available_features(): array {
 		$paylater_countries = array(
 			'UK',
 			'ES',
@@ -72,7 +98,7 @@ class FeaturesDefinition {
 			'save_paypal_and_venmo'           => array(
 				'title'       => __( 'Save PayPal and Venmo', 'woocommerce-paypal-payments' ),
 				'description' => __( 'Securely save PayPal and Venmo payment methods for subscriptions or return buyers.', 'woocommerce-paypal-payments' ),
-				'isEligible'  => $eligibility_checks['save_paypal_and_venmo'],
+				'enabled'     => $this->merchant_capabilities['save_paypal'],
 				'buttons'     => array(
 					array(
 						'type'     => 'secondary',
@@ -105,7 +131,7 @@ class FeaturesDefinition {
 			'advanced_credit_and_debit_cards' => array(
 				'title'       => __( 'Advanced Credit and Debit Cards', 'woocommerce-paypal-payments' ),
 				'description' => __( 'Process major credit and debit cards including Visa, Mastercard, American Express and Discover.', 'woocommerce-paypal-payments' ),
-				'isEligible'  => $eligibility_checks['advanced_credit_and_debit_cards'],
+				'enabled'     => $this->merchant_capabilities['acdc'],
 				'buttons'     => array(
 					array(
 						'type'     => 'secondary',
@@ -141,7 +167,7 @@ class FeaturesDefinition {
 			'alternative_payment_methods'     => array(
 				'title'       => __( 'Alternative Payment Methods', 'woocommerce-paypal-payments' ),
 				'description' => __( 'Offer global, country-specific payment options for your customers.', 'woocommerce-paypal-payments' ),
-				'isEligible'  => $eligibility_checks['alternative_payment_methods'],
+				'enabled'     => $this->merchant_capabilities['apm'],
 				'buttons'     => array(
 					array(
 						'type'     => 'secondary',
@@ -173,7 +199,7 @@ class FeaturesDefinition {
 			'google_pay'                      => array(
 				'title'       => __( 'Google Pay', 'woocommerce-paypal-payments' ),
 				'description' => __( 'Let customers pay using their Google Pay wallet.', 'woocommerce-paypal-payments' ),
-				'isEligible'  => $eligibility_checks['google_pay'],
+				'enabled'     => $this->merchant_capabilities['google_pay'],
 				'buttons'     => array(
 					array(
 						'type'     => 'secondary',
@@ -212,7 +238,7 @@ class FeaturesDefinition {
 			'apple_pay'                       => array(
 				'title'       => __( 'Apple Pay', 'woocommerce-paypal-payments' ),
 				'description' => __( 'Let customers pay using their Apple Pay wallet.', 'woocommerce-paypal-payments' ),
-				'isEligible'  => $eligibility_checks['apple_pay'],
+				'enabled'     => $this->merchant_capabilities['apple_pay'],
 				'buttons'     => array(
 					array(
 						'type'     => 'secondary',
@@ -261,7 +287,7 @@ class FeaturesDefinition {
 					'Let customers know they can buy now and pay later with PayPal. Adding this messaging can boost conversion rates and increase cart sizes by 39%¹, with no extra cost to you—plus, you get paid up front.',
 					'woocommerce-paypal-payments'
 				),
-				'isEligible'  => $eligibility_checks['pay_later'],
+				'enabled'     => $this->merchant_capabilities['pay_later'],
 				'buttons'     => array(
 					array(
 						'type'     => 'secondary',

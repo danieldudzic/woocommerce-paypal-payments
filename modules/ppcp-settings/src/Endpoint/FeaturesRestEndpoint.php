@@ -86,13 +86,10 @@ class FeaturesRestEndpoint extends RestEndpoint {
 
 		$features = array();
 		foreach ( $this->features_definition->get() as $id => $feature ) {
-			// Check eligibility and add to features if eligible.
-			if ( $feature['isEligible']() ) {
-				$features[] = array_merge(
-					array( 'id' => $id ),
-					array_diff_key( $feature, array( 'isEligible' => true ) )
-				);
-			}
+			$features[] = array_merge(
+				array( 'id' => $id ),
+				$feature
+			);
 		}
 
 		return $this->return_success(
