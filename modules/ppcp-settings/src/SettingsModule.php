@@ -304,16 +304,7 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 
 				$flags = new ConfigurationFlagsDTO();
 
-				$partners_endpoint = $container->get( 'api.endpoint.partners' );
-				assert( $partners_endpoint instanceof PartnersEndpoint );
-
-				try {
-					$seller_status = $partners_endpoint->seller_status();
-				} catch ( PayPalApiException $exception ) {
-					$seller_status = null;
-				}
-
-				$flags->country_code       = ! is_null( $seller_status ) ? $seller_status->country() : 'US';
+				$flags->country_code       = $general_settings->get_merchant_country();
 				$flags->is_business_seller = $general_settings->is_business_seller();
 				$flags->use_card_payments  = $onboarding_profile->get_accept_card_payments();
 				$flags->use_subscriptions  = in_array( ProductChoicesEnum::SUBSCRIPTIONS, $onboarding_profile->get_products(), true );

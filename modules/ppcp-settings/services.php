@@ -308,7 +308,8 @@ return array(
 			$container->get( 'api.env.endpoint.login-seller' ),
 			$container->get( 'api.repository.partner-referrals-data' ),
 			$container->get( 'settings.connection-state' ),
-			$container->get( 'woocommerce.logger.woocommerce' ),
+			$container->get( 'api.endpoint.partners' ),
+			$container->get( 'woocommerce.logger.woocommerce' )
 		);
 	},
 	'settings.service.sanitizer'                  => static function ( ContainerInterface $container ) : DataSanitizer {
