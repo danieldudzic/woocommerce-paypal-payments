@@ -340,18 +340,18 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 					unset( $payment_methods['venmo'] );
 				}
 
-				// Unset if not eligible for Google Pay.
-				if ( ! $googlepay_product_status->is_active() ) {
+				// Unset if country/currency is not supported or merchant not eligible for Google Pay.
+				if ( ! $container->get( 'googlepay.eligible' ) || ! $googlepay_product_status->is_active() ) {
 					unset( $payment_methods['ppcp-googlepay'] );
 				}
 
-				// Unset if not eligible for Apple Pay.
-				if ( ! $applepay_product_status->is_active() ) {
+				// Unset if country/currency is not supported or merchant not eligible for Apple Pay.
+				if ( ! $container->get( 'applepay.eligible' ) || ! $applepay_product_status->is_active() ) {
 					unset( $payment_methods['ppcp-applepay'] );
 				}
 
-				// Unset Fastlane if store location is not United States or merchant is not eligible for ACDC.
-				if ( $container->get( 'api.shop.country' ) !== 'US' || ! $dcc_product_status->is_active() ) {
+				// Unset Fastlane if country/currency is not supported or merchant is not eligible for BCDC.
+				if ( ! $container->get( 'axo.eligible' ) || ! $dcc_product_status->is_active() ) {
 					unset( $payment_methods['ppcp-axo-gateway'] );
 				}
 
