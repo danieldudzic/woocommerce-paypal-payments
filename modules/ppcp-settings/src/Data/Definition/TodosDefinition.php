@@ -1,6 +1,6 @@
 <?php
 /**
- * PayPal Commerce Todos Definitions
+ * Todos Definitions
  *
  * @package WooCommerce\PayPalCommerce\Settings\Data\Definition
  */
@@ -145,10 +145,30 @@ class TodosDefinition {
 				),
 				'priority'    => 5,
 			),
-			'add_paypal_buttons'                   => array(
-				'title'       => __( 'Add PayPal buttons', 'woocommerce-paypal-payments' ),
-				'description' => __( 'Allow customers to check out quickly and securely from the <x> page. Customers save time and get through checkout in fewer clicks.', 'woocommerce-paypal-payments' ),
-				'isEligible'  => $eligibility_checks['add_paypal_buttons'],
+			'add_paypal_buttons_cart'              => array(
+				'title'       => __( 'Add PayPal buttons to the Cart page', 'woocommerce-paypal-payments' ),
+				'description' => __( 'Allow customers to check out quickly and securely from the Cart page. Customers save time and get through checkout in fewer clicks.', 'woocommerce-paypal-payments' ),
+				'isEligible'  => $eligibility_checks['add_paypal_buttons_cart'],
+				'action'      => array(
+					'type' => 'tab',
+					'tab'  => 'styling',
+				),
+				'priority'    => 6,
+			),
+			'add_paypal_buttons_block_checkout'    => array(
+				'title'       => __( 'Add PayPal buttons to the Express Checkout page', 'woocommerce-paypal-payments' ),
+				'description' => __( 'Allow customers to check out quickly and securely from the Express Checkout page. Customers save time and get through checkout in fewer clicks.', 'woocommerce-paypal-payments' ),
+				'isEligible'  => $eligibility_checks['add_paypal_buttons_block_checkout'],
+				'action'      => array(
+					'type' => 'tab',
+					'tab'  => 'styling',
+				),
+				'priority'    => 6,
+			),
+			'add_paypal_buttons_product'           => array(
+				'title'       => __( 'Add PayPal buttons to the Product page', 'woocommerce-paypal-payments' ),
+				'description' => __( 'Allow customers to check out quickly and securely from the Product page. Customers save time and get through checkout in fewer clicks.', 'woocommerce-paypal-payments' ),
+				'isEligible'  => $eligibility_checks['add_paypal_buttons_product'],
 				'action'      => array(
 					'type' => 'tab',
 					'tab'  => 'styling',
