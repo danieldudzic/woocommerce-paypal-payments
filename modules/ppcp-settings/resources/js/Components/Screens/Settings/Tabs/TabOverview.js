@@ -1,5 +1,5 @@
 import { __, sprintf } from '@wordpress/i18n';
-import { useState, useEffect } from '@wordpress/element';
+import { useState, useEffect, useMemo } from '@wordpress/element';
 import { Button, Icon } from '@wordpress/components';
 import { useDispatch } from '@wordpress/data';
 import { reusableBlock } from '@wordpress/icons';
@@ -120,7 +120,8 @@ const OverviewTodos = () => {
 
 const OverviewFeatures = () => {
 	const [ isRefreshing, setIsRefreshing ] = useState( false );
-	const { merchant } = CommonHooks.useMerchantInfo();
+	const { merchant, features: eligibleFeatures } =
+		CommonHooks.useMerchantInfo();
 	const { refreshFeatureStatuses } = useDispatch( CommonStoreName );
 	const { setActiveModal, setActiveHighlight } =
 		useDispatch( CommonStoreName );
@@ -131,6 +132,16 @@ const OverviewFeatures = () => {
 	useEffect( () => {
 		fetchFeatures();
 	}, [ fetchFeatures ] );
+	// Map merchant features status to the config
+	const featuresData = useMemo( () => {
+		return features.map( ( feature ) => {
+			const eligibleFeature = eligibleFeatures?.[ feature.id ];
+			return {
+				...feature,
+				enabled: eligibleFeature?.enabled ?? false,
+			};
+		} );
+	}, [ features, eligibleFeatures ] );
 
 	const refreshHandler = async () => {
 		setIsRefreshing( true );
@@ -184,7 +195,7 @@ const OverviewFeatures = () => {
 			contentContainer={ false }
 		>
 			<ContentWrapper>
-				{ features.map( ( { id, ...feature } ) => (
+				{ featuresData.map( ( { id, ...feature } ) => (
 					<OverviewFeatureItem
 						key={ id }
 						isBusy={ isRefreshing }
@@ -192,7 +203,7 @@ const OverviewFeatures = () => {
 						title={ feature.title }
 						description={ feature.description }
 						buttons={ feature.buttons }
-						enabled={ feature.isEligible }
+						enabled={ feature.enabled }
 						notes={ feature.notes }
 						setActiveModal={ setActiveModal }
 						setActiveHighlight={ setActiveHighlight }
