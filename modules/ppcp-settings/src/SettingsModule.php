@@ -106,7 +106,7 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 						)
 					);
 
-					wp_enqueue_script( 'ppcp-switch-settings-ui','',['wp-i18n'] );
+					wp_enqueue_script( 'ppcp-switch-settings-ui', '', array( 'wp-i18n' ), $script_asset_file['version'] );
 					wp_set_script_translations(
 						'ppcp-switch-settings-ui',
 						'woocommerce-paypal-payments',
@@ -163,7 +163,7 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 					true
 				);
 
-				wp_enqueue_script('ppcp-admin-settings', '', ['wp-i18n']);
+				wp_enqueue_script( 'ppcp-admin-settings', '', array( 'wp-i18n' ), $script_asset_file['version'] );
 				wp_set_script_translations(
 					'ppcp-admin-settings',
 					'woocommerce-paypal-payments',
@@ -206,7 +206,7 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 					wp_enqueue_script(
 						'ppcp-paylater-configurator-lib',
 						'https://www.paypalobjects.com/merchant-library/merchant-configurator.js',
-						['wp-i18n'],
+						array( 'wp-i18n' ),
 						$script_asset_file['version'],
 						true
 					);
