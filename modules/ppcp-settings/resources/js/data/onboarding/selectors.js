@@ -25,7 +25,8 @@ export const flags = ( state ) => {
 };
 
 /**
- * Returns the products that we use for the production login link in the last onboarding step.
+ * Returns details about products and capabilities to use for the production login link in
+ * the last onboarding step.
  *
  * This selector does not return state-values, but uses the state to derive the products-array
  * that should be returned.
@@ -33,7 +34,7 @@ export const flags = ( state ) => {
  * @param {{}} state
  * @return {string[]} The ISU products, based on choices made in the onboarding wizard.
  */
-export const determineProducts = ( state ) => {
+export const determineProductsAndCaps = ( state ) => {
 	const derivedProducts = [];
 
 	const { isCasualSeller, areOptionalPaymentMethodsEnabled } =
