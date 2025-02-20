@@ -82,26 +82,24 @@ class LocalAlternativePaymentMethodsModule implements ServiceModule, ExtendingMo
 			 * @psalm-suppress MissingClosureParamType
 			 */
 			function ( $methods ) use ( $c ) {
-				if ( ! is_array( $methods ) ) {
+				if ( ! is_array( $methods ) || is_admin() ) {
 					return $methods;
 				}
 
-				if ( ! is_admin() ) {
-					if ( ! isset( WC()->customer ) ) {
-						return $methods;
-					}
+				if ( ! isset( WC()->customer ) ) {
+					return $methods;
+				}
 
-					$customer_country = WC()->customer->get_billing_country() ?: WC()->customer->get_shipping_country();
-					$site_currency    = get_woocommerce_currency();
+				$customer_country = WC()->customer->get_billing_country() ?: WC()->customer->get_shipping_country();
+				$site_currency    = get_woocommerce_currency();
 
-					$payment_methods = $c->get( 'ppcp-local-apms.payment-methods' );
-					foreach ( $payment_methods as $payment_method ) {
-						if (
-							! in_array( $customer_country, $payment_method['countries'], true )
-							|| ! in_array( $site_currency, $payment_method['currencies'], true )
-						) {
-							unset( $methods[ $payment_method['id'] ] );
-						}
+				$payment_methods = $c->get( 'ppcp-local-apms.payment-methods' );
+				foreach ( $payment_methods as $payment_method ) {
+					if (
+						! in_array( $customer_country, $payment_method['countries'], true )
+						|| ! in_array( $site_currency, $payment_method['currencies'], true )
+					) {
+						unset( $methods[ $payment_method['id'] ] );
 					}
 				}
 
