@@ -10,6 +10,8 @@ declare( strict_types = 1 );
 namespace WooCommerce\PayPalCommerce\Settings;
 
 use WC_Payment_Gateway;
+use WooCommerce\PayPalCommerce\ApiClient\Endpoint\PartnersEndpoint;
+use WooCommerce\PayPalCommerce\ApiClient\Exception\PayPalApiException;
 use WooCommerce\PayPalCommerce\ApiClient\Helper\DccApplies;
 use WooCommerce\PayPalCommerce\Applepay\Assets\AppleProductStatus;
 use WooCommerce\PayPalCommerce\Googlepay\Helper\ApmProductStatus;
@@ -302,8 +304,7 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 
 				$flags = new ConfigurationFlagsDTO();
 
-				// TODO: Get the merchant country from PayPal here!
-				$flags->country_code       = 'US';
+				$flags->country_code       = $general_settings->get_merchant_country();
 				$flags->is_business_seller = $general_settings->is_business_seller();
 				$flags->use_card_payments  = $onboarding_profile->get_accept_card_payments();
 				$flags->use_subscriptions  = in_array( ProductChoicesEnum::SUBSCRIPTIONS, $onboarding_profile->get_products(), true );
@@ -340,18 +341,18 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 					unset( $payment_methods['venmo'] );
 				}
 
-				// Unset if not eligible for Google Pay.
-				if ( ! $googlepay_product_status->is_active() ) {
+				// Unset if country/currency is not supported or merchant not eligible for Google Pay.
+				if ( ! $container->get( 'googlepay.eligible' ) || ! $googlepay_product_status->is_active() ) {
 					unset( $payment_methods['ppcp-googlepay'] );
 				}
 
-				// Unset if not eligible for Apple Pay.
-				if ( ! $applepay_product_status->is_active() ) {
+				// Unset if country/currency is not supported or merchant not eligible for Apple Pay.
+				if ( ! $container->get( 'applepay.eligible' ) || ! $applepay_product_status->is_active() ) {
 					unset( $payment_methods['ppcp-applepay'] );
 				}
 
-				// Unset Fastlane if store location is not United States or merchant is not eligible for ACDC.
-				if ( $container->get( 'api.shop.country' ) !== 'US' || ! $dcc_product_status->is_active() ) {
+				// Unset Fastlane if country/currency is not supported or merchant is not eligible for BCDC.
+				if ( ! $container->get( 'axo.eligible' ) || ! $dcc_product_status->is_active() ) {
 					unset( $payment_methods['ppcp-axo-gateway'] );
 				}
 
