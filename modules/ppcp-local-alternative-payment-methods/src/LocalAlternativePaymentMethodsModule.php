@@ -77,16 +77,16 @@ class LocalAlternativePaymentMethodsModule implements ServiceModule, ExtendingMo
 		add_filter(
 			'woocommerce_available_payment_gateways',
 			/**
-			 * Param types removed to avoid third-party issues.
+			 * Filters the "available gateways" list by removing gateways that
+			 * are not available for the current customer.
+			 *
+			 * This callback only _removes_ items from the payment gateway list.
 			 *
 			 * @psalm-suppress MissingClosureParamType
 			 */
 			function ( $methods ) use ( $c ) {
-				if ( ! is_array( $methods ) || is_admin() ) {
-					return $methods;
-				}
-
-				if ( ! isset( WC()->customer ) ) {
+				if ( ! is_array( $methods ) || is_admin() || empty( WC()->customer ) ) {
+					// Don't restrict the gateway list on wp-admin or when no customer is known.
 					return $methods;
 				}
 
