@@ -78,7 +78,7 @@ class SubscriptionSettingsMapHelper {
 		 *
 		 * @returns bool true if the subscription mode should be disabled, otherwise false (also by default).
 		 */
-		$subscription_mode_disabled = ( bool ) apply_filters( 'woocommerce_paypal_payments_subscription_mode_disabled', false );
+		$subscription_mode_disabled = (bool) apply_filters( 'woocommerce_paypal_payments_subscription_mode_disabled', false );
 
 		return $subscription_mode_disabled ? self::OLD_SETTINGS_SUBSCRIPTION_MODE_VALUE_DISABLED : $subscription_mode_value;
 	}
