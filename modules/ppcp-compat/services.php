@@ -14,6 +14,7 @@ use WooCommerce\PayPalCommerce\Compat\Settings\SettingsMap;
 use WooCommerce\PayPalCommerce\Compat\Settings\SettingsMapHelper;
 use WooCommerce\PayPalCommerce\Compat\Settings\SettingsTabMapHelper;
 use WooCommerce\PayPalCommerce\Compat\Settings\StylingSettingsMapHelper;
+use WooCommerce\PayPalCommerce\Compat\Settings\SubscriptionSettingsMapHelper;
 use WooCommerce\PayPalCommerce\Vendor\Psr\Container\ContainerInterface;
 
 return array(
@@ -194,5 +195,8 @@ return array(
 	},
 	'compat.settings.settings_tab_map_helper'        => static function() : SettingsTabMapHelper {
 		return new SettingsTabMapHelper();
+	},
+	'compat.settings.subscription_map_helper'        => static function( ContainerInterface $container ) : SubscriptionSettingsMapHelper {
+		return new SubscriptionSettingsMapHelper( $container->get( 'wc-subscriptions.helper' ) );
 	},
 );
