@@ -1854,6 +1854,13 @@ return array(
 		$settings      = $container->get( 'wcgateway.settings' );
 		assert( $settings instanceof Settings );
 
+		if ( apply_filters(
+			'woocommerce.feature-flags.woocommerce_paypal_payments.settings_enabled',
+			getenv( 'PCP_SETTINGS_ENABLED' ) === '1'
+		) ) {
+			return true;
+		}
+
 		return $settings->has( 'fraudnet_enabled' ) && $settings->get( 'fraudnet_enabled' );
 	},
 	'wcgateway.fraudnet-assets'                            => function( ContainerInterface $container ) : FraudNetAssets {

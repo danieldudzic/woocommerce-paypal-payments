@@ -22,8 +22,13 @@ const StepBusiness = ( {} ) => {
 	);
 
 	useEffect( () => {
+		if ( ! businessChoice ) {
+			return;
+		}
+
 		setIsCasualSeller( BUSINESS_TYPES.CASUAL_SELLER === businessChoice );
 	}, [ businessChoice, setIsCasualSeller ] );
+
 	const { canUseSubscriptions } = OnboardingHooks.useFlags();
 	const businessChoices = [
 		{
