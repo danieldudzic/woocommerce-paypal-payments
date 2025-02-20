@@ -33,7 +33,7 @@ class SellerStatus {
 	 *
 	 * @var string
 	 */
-	private $country;
+	private string $country;
 
 	/**
 	 * SellerStatus constructor.
