@@ -134,16 +134,25 @@ class SettingsMapHelper {
 	/**
 	 * Retrieves a cached model value or caches it if not already cached.
 	 *
-	 * @param int    $model_id The unique identifier for the model object.
-	 * @param string $old_key  The key in the old settings structure.
-	 * @param string $new_key  The key in the new settings structure.
-	 * @param object $model    The model object.
+	 * @param int             $model_id The unique identifier for the model object.
+	 * @param string          $old_key  The key in the old settings structure.
+	 * @param string|callable $new_key  The key in the new settings structure.
+	 * @param object          $model    The model object.
 	 *
 	 * @return mixed|null The value of the key in the model, or null if not found.
 	 */
-	protected function get_cached_model_value( int $model_id, string $old_key, string $new_key, object $model ) {
+	protected function get_cached_model_value( int $model_id, string $old_key, $new_key, object $model ) {
 		if ( ! isset( $this->model_cache[ $model_id ] ) ) {
 			$this->model_cache[ $model_id ] = $model->to_array();
+		}
+
+		if ( is_callable( $new_key ) ) {
+			// Resolve the callback once and store it in the request-cache.
+			if ( ! isset( $this->model_cache[ $model_id ][ $old_key ] ) ) {
+				$this->model_cache[ $model_id ][ $old_key ] = $new_key( $this->model_cache[ $model_id ] );
+			}
+
+			return $this->model_cache[ $model_id ][ $old_key ];
 		}
 
 		switch ( true ) {
