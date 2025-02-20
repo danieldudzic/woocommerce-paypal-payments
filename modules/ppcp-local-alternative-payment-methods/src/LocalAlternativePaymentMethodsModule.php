@@ -48,6 +48,11 @@ class LocalAlternativePaymentMethodsModule implements ServiceModule, ExtendingMo
 			return true;
 		}
 
+		/**
+		 * The "woocommerce_payment_gateways" filter is responsible for ADDING
+		 * custom payment gateways to WooCommerce. Here, we add all the local
+		 * APM gateways to the filtered list, so they become available later on.
+		 */
 		add_filter(
 			'woocommerce_payment_gateways',
 			/**
@@ -56,12 +61,12 @@ class LocalAlternativePaymentMethodsModule implements ServiceModule, ExtendingMo
 			 * @psalm-suppress MissingClosureParamType
 			 */
 			function ( $methods ) use ( $c ) {
-				$is_connected = $c->get( 'settings.flag.is-connected' );
-				if ( ! $is_connected ) {
+				if ( ! is_array( $methods ) ) {
 					return $methods;
 				}
 
-				if ( ! is_array( $methods ) ) {
+				$is_connected = $c->get( 'settings.flag.is-connected' );
+				if ( ! $is_connected ) {
 					return $methods;
 				}
 
@@ -74,13 +79,14 @@ class LocalAlternativePaymentMethodsModule implements ServiceModule, ExtendingMo
 			}
 		);
 
+		/**
+		 * Filters the "available gateways" list by REMOVING gateways that
+		 * are not available for the current customer.
+		 */
 		add_filter(
 			'woocommerce_available_payment_gateways',
 			/**
-			 * Filters the "available gateways" list by removing gateways that
-			 * are not available for the current customer.
-			 *
-			 * This callback only _removes_ items from the payment gateway list.
+			 * Param types removed to avoid third-party issues.
 			 *
 			 * @psalm-suppress MissingClosureParamType
 			 */
@@ -108,6 +114,12 @@ class LocalAlternativePaymentMethodsModule implements ServiceModule, ExtendingMo
 			}
 		);
 
+		/**
+		 * Adds all local APM gateways in the "payment_method_type" block registry
+		 * to make the payment methods available in the Block Checkout.
+		 *
+		 * @see IntegrationRegistry::initialize
+		 */
 		add_action(
 			'woocommerce_blocks_payment_method_type_registration',
 			function( PaymentMethodRegistry $payment_method_registry ) use ( $c ): void {
