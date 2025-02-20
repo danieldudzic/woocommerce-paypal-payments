@@ -90,15 +90,16 @@ class LocalAlternativePaymentMethodsModule implements ServiceModule, ExtendingMo
 					return $methods;
 				}
 
+				$payment_methods  = $c->get( 'ppcp-local-apms.payment-methods' );
 				$customer_country = WC()->customer->get_billing_country() ?: WC()->customer->get_shipping_country();
 				$site_currency    = get_woocommerce_currency();
 
-				$payment_methods = $c->get( 'ppcp-local-apms.payment-methods' );
+				// Remove unsupported gateways from the customer's payment options.
 				foreach ( $payment_methods as $payment_method ) {
-					if (
-						! in_array( $customer_country, $payment_method['countries'], true )
-						|| ! in_array( $site_currency, $payment_method['currencies'], true )
-					) {
+					$is_currency_supported = in_array( $site_currency, $payment_method['currencies'], true );
+					$is_country_supported  = in_array( $customer_country, $payment_method['countries'], true );
+
+					if ( ! $is_currency_supported || ! $is_country_supported ) {
 						unset( $methods[ $payment_method['id'] ] );
 					}
 				}
