@@ -194,7 +194,8 @@ return array(
 		return new SettingsMapHelper(
 			$container->get( 'compat.setting.new-to-old-map' ),
 			$container->get( 'compat.settings.styling_map_helper' ),
-			$container->get( 'compat.settings.settings_tab_map_helper' )
+			$container->get( 'compat.settings.settings_tab_map_helper' ),
+			$container->get( 'compat.settings.subscription_map_helper' )
 		);
 	},
 	'compat.settings.styling_map_helper'             => static function() : StylingSettingsMapHelper {
