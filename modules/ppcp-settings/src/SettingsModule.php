@@ -10,6 +10,8 @@ declare( strict_types = 1 );
 namespace WooCommerce\PayPalCommerce\Settings;
 
 use WC_Payment_Gateway;
+use WooCommerce\PayPalCommerce\ApiClient\Endpoint\PartnersEndpoint;
+use WooCommerce\PayPalCommerce\ApiClient\Exception\PayPalApiException;
 use WooCommerce\PayPalCommerce\ApiClient\Helper\DccApplies;
 use WooCommerce\PayPalCommerce\Applepay\Assets\AppleProductStatus;
 use WooCommerce\PayPalCommerce\Googlepay\Helper\ApmProductStatus;
@@ -302,8 +304,7 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 
 				$flags = new ConfigurationFlagsDTO();
 
-				// TODO: Get the merchant country from PayPal here!
-				$flags->country_code       = 'US';
+				$flags->country_code       = $general_settings->get_merchant_country();
 				$flags->is_business_seller = $general_settings->is_business_seller();
 				$flags->use_card_payments  = $onboarding_profile->get_accept_card_payments();
 				$flags->use_subscriptions  = in_array( ProductChoicesEnum::SUBSCRIPTIONS, $onboarding_profile->get_products(), true );
