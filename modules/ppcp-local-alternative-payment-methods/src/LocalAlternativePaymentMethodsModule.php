@@ -65,11 +65,6 @@ class LocalAlternativePaymentMethodsModule implements ServiceModule, ExtendingMo
 					return $methods;
 				}
 
-				$is_connected = $c->get( 'settings.flag.is-connected' );
-				if ( ! $is_connected ) {
-					return $methods;
-				}
-
 				$payment_methods = $c->get( 'ppcp-local-apms.payment-methods' );
 				foreach ( $payment_methods as $key => $value ) {
 					$methods[] = $c->get( 'ppcp-local-apms.' . $key . '.wc-gateway' );
@@ -225,12 +220,22 @@ class LocalAlternativePaymentMethodsModule implements ServiceModule, ExtendingMo
 	 * @param ContainerInterface $container Container.
 	 * @return bool
 	 */
-	private function should_add_local_apm_gateways( ContainerInterface $container ): bool {
+	private function should_add_local_apm_gateways( ContainerInterface $container ) : bool {
+		// Merchant onboarding must be completed.
+		$is_connected = $container->get( 'settings.flag.is-connected' );
+		if ( ! $is_connected ) {
+			return false;
+		}
+
+		// The general plugin functionality must be enabled.
 		$settings = $container->get( 'wcgateway.settings' );
 		assert( $settings instanceof Settings );
-		return $settings->has( 'enabled' )
-			&& $settings->get( 'enabled' ) === true
-			&& $settings->has( 'allow_local_apm_gateways' )
+		if ( ! $settings->has( 'enabled' ) || ! $settings->get( 'enabled' ) ) {
+			return false;
+		}
+
+		// Register APM gateways, when the relevant setting is active.
+		return $settings->has( 'allow_local_apm_gateways' )
 			&& $settings->get( 'allow_local_apm_gateways' ) === true;
 	}
 }
