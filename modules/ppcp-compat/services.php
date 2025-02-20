@@ -138,6 +138,9 @@ return array(
 		$settings_tab_map_helper = $container->get( 'compat.settings.settings_tab_map_helper' );
 		assert( $settings_tab_map_helper instanceof SettingsTabMapHelper );
 
+		$subscription_map_helper = $container->get( 'compat.settings.subscription_map_helper' );
+		assert( $subscription_map_helper instanceof SubscriptionSettingsMapHelper );
+
 		return array(
 			new SettingsMap(
 				$container->get( 'settings.data.general' ),
@@ -180,6 +183,10 @@ return array(
 				 * from a `LocationStylingDTO` object by dynamically accessing its properties.
 				 */
 				$styling_settings_map_helper->map()
+			),
+			new SettingsMap(
+				$container->get( 'settings.data.settings' ),
+				$subscription_map_helper->map()
 			),
 		);
 	},
