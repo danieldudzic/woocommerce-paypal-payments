@@ -148,18 +148,22 @@ return array(
 				 * the credentials are used for.
 				 */
 				array(
-					'merchant_id'            => 'merchant_id',
-					'client_id'              => 'client_id',
-					'client_secret'          => 'client_secret',
-					'sandbox_on'             => 'sandbox_merchant',
-					'live_client_id'         => 'client_id',
-					'live_client_secret'     => 'client_secret',
-					'live_merchant_id'       => 'merchant_id',
-					'live_merchant_email'    => 'merchant_email',
-					'sandbox_client_id'      => 'client_id',
-					'sandbox_client_secret'  => 'client_secret',
-					'sandbox_merchant_id'    => 'merchant_id',
-					'sandbox_merchant_email' => 'merchant_email',
+					'merchant_id'              => 'merchant_id',
+					'client_id'                => 'client_id',
+					'client_secret'            => 'client_secret',
+					'sandbox_on'               => 'sandbox_merchant',
+					'live_client_id'           => 'client_id',
+					'live_client_secret'       => 'client_secret',
+					'live_merchant_id'         => 'merchant_id',
+					'live_merchant_email'      => 'merchant_email',
+					'sandbox_client_id'        => 'client_id',
+					'sandbox_client_secret'    => 'client_secret',
+					'sandbox_merchant_id'      => 'merchant_id',
+					'sandbox_merchant_email'   => 'merchant_email',
+
+					// Hardcoded settings, not present in new UI.
+					'enabled'                  => static fn() => true,
+					'allow_local_apm_gateways' => static fn() => true,
 				)
 			),
 			new SettingsMap(
