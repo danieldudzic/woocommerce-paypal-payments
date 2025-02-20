@@ -224,7 +224,20 @@ class LocalAlternativePaymentMethodsModule implements ServiceModule, ExtendingMo
 		// Merchant onboarding must be completed.
 		$is_connected = $container->get( 'settings.flag.is-connected' );
 		if ( ! $is_connected ) {
-			return false;
+			/**
+			 * When the merchant is _not_ connected yet, we still need to
+			 * register the APM gateways in one case:
+			 *
+			 * During the authentication process (which happens via a REST call)
+			 * the gateways need to be present, so they can be correctly
+			 * pre-configured for new merchants.
+			 *
+			 * TODO is there a cleaner solution for this?
+			 */
+			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			$request_uri = wp_unslash( $_SERVER['REQUEST_URI'] ?? '' );
+
+			return str_contains( $request_uri, '/wp-json/wc/' );
 		}
 
 		// The general plugin functionality must be enabled.
