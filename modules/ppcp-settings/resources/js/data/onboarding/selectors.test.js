@@ -13,7 +13,10 @@ describe( 'determineProductsAndCaps selector [casual seller]', () => {
 				},
 				flags: { canUseCardPayments: false, canUseVaulting: false },
 			},
-			expected: [ 'EXPRESS_CHECKOUT' ],
+			expected: {
+				products: [ 'EXPRESS_CHECKOUT' ],
+				options: {},
+			},
 		},
 		{
 			name: 'should return EXPRESS_CHECKOUT when optional payment methods are disabled',
@@ -24,7 +27,10 @@ describe( 'determineProductsAndCaps selector [casual seller]', () => {
 				},
 				flags: { canUseCardPayments: true, canUseVaulting: false },
 			},
-			expected: [ 'EXPRESS_CHECKOUT' ],
+			expected: {
+				products: [ 'EXPRESS_CHECKOUT' ],
+				options: {},
+			},
 		},
 		{
 			name: 'should return EXPRESS_CHECKOUT for casual sellers with card payments',
@@ -35,7 +41,10 @@ describe( 'determineProductsAndCaps selector [casual seller]', () => {
 				},
 				flags: { canUseCardPayments: true, canUseVaulting: false },
 			},
-			expected: [ 'EXPRESS_CHECKOUT' ],
+			expected: {
+				products: [ 'EXPRESS_CHECKOUT' ],
+				options: {},
+			},
 		},
 		{
 			name: 'should return EXPRESS_CHECKOUT and ADVANCED_VAULTING when card payments are not available but vaulting is',
@@ -46,11 +55,14 @@ describe( 'determineProductsAndCaps selector [casual seller]', () => {
 				},
 				flags: { canUseCardPayments: false, canUseVaulting: true },
 			},
-			expected: [ 'EXPRESS_CHECKOUT', 'ADVANCED_VAULTING' ],
+			expected: {
+				products: [ 'EXPRESS_CHECKOUT', 'ADVANCED_VAULTING' ],
+				options: {},
+			},
 		},
 	];
 
-	it.each( testCases )( '$name', ( { state, expected } ) => {
+	test.each( testCases )( '$name', ( { state, expected } ) => {
 		const result = determineProductsAndCaps( state );
 		expect( result ).toEqual( expected );
 	} );
@@ -67,7 +79,10 @@ describe( 'determineProductsAndCaps selector [business seller]', () => {
 				},
 				flags: { canUseCardPayments: false, canUseVaulting: false },
 			},
-			expected: [ 'EXPRESS_CHECKOUT' ],
+			expected: {
+				products: [ 'EXPRESS_CHECKOUT' ],
+				options: {},
+			},
 		},
 		{
 			name: 'should return EXPRESS_CHECKOUT when optional payment methods are disabled',
@@ -78,7 +93,10 @@ describe( 'determineProductsAndCaps selector [business seller]', () => {
 				},
 				flags: { canUseCardPayments: true, canUseVaulting: false },
 			},
-			expected: [ 'EXPRESS_CHECKOUT' ],
+			expected: {
+				products: [ 'EXPRESS_CHECKOUT' ],
+				options: {},
+			},
 		},
 		{
 			name: 'should return PPCP for business merchants with card payments',
@@ -89,7 +107,10 @@ describe( 'determineProductsAndCaps selector [business seller]', () => {
 				},
 				flags: { canUseCardPayments: true, canUseVaulting: false },
 			},
-			expected: [ 'PPCP' ],
+			expected: {
+				products: [ 'PPCP' ],
+				options: {},
+			},
 		},
 		{
 			name: 'should include ADVANCED_VAULTING when vaulting is available',
@@ -100,7 +121,10 @@ describe( 'determineProductsAndCaps selector [business seller]', () => {
 				},
 				flags: { canUseCardPayments: true, canUseVaulting: true },
 			},
-			expected: [ 'PPCP', 'ADVANCED_VAULTING' ],
+			expected: {
+				products: [ 'PPCP', 'ADVANCED_VAULTING' ],
+				options: {},
+			},
 		},
 		{
 			name: 'should return EXPRESS_CHECKOUT and ADVANCED_VAULTING when card payments are not available but vaulting is',
@@ -111,11 +135,14 @@ describe( 'determineProductsAndCaps selector [business seller]', () => {
 				},
 				flags: { canUseCardPayments: false, canUseVaulting: true },
 			},
-			expected: [ 'EXPRESS_CHECKOUT', 'ADVANCED_VAULTING' ],
+			expected: {
+				products: [ 'EXPRESS_CHECKOUT', 'ADVANCED_VAULTING' ],
+				options: {},
+			},
 		},
 	];
 
-	it.each( testCases )( '$name', ( { state, expected } ) => {
+	test.each( testCases )( '$name', ( { state, expected } ) => {
 		const result = determineProductsAndCaps( state );
 		expect( result ).toEqual( expected );
 	} );
