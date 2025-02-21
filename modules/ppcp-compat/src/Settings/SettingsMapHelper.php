@@ -79,7 +79,7 @@ class SettingsMapHelper {
 	 * @param StylingSettingsMapHelper      $styling_settings_map_helper A helper for mapping the old/new styling settings.
 	 * @param SettingsTabMapHelper          $settings_tab_map_helper A helper for mapping the old/new settings tab settings.
 	 * @param SubscriptionSettingsMapHelper $subscription_map_helper A helper for mapping old and new subscription settings.
-	 * @param GeneralSettingsMapHelper $general_settings_map_helper A helper for mapping old and new general settings.
+	 * @param GeneralSettingsMapHelper      $general_settings_map_helper A helper for mapping old and new general settings.
 	 * @throws RuntimeException When an old key has multiple mappings.
 	 */
 	public function __construct(
