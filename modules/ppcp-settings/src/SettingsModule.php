@@ -344,7 +344,7 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 				$general_settings = $container->get( 'settings.data.general' );
 				assert( $general_settings instanceof GeneralSettings );
 
-				$merchant_data = $general_settings->get_merchant_data();
+				$merchant_data    = $general_settings->get_merchant_data();
 				$merchant_country = $merchant_data->merchant_country;
 
 				// Unset BCDC if merchant is eligible for ACDC and country is eligible for card fields.
