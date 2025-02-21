@@ -83,21 +83,21 @@
 	}
 }
 
-// Disabled state styling
+// Disabled state styling.
 .ppcp--method-item--disabled {
 	position: relative;
 
-	// Apply grayscale and disable interactions
+	// Apply grayscale and disable interactions.
 	.ppcp--method-inner {
-		opacity: 0.65;
-		filter: grayscale(0.9);
+		opacity: 0.7;
+		filter: grayscale(1);
 		pointer-events: none;
 		transition: filter 0.2s ease;
 	}
 
-	// Override text colors
+	// Override text colors.
 	.ppcp--method-title {
-		color: $color-gray-600 !important;
+		color: $color-gray-700 !important;
 	}
 
 	.ppcp--method-description p {
@@ -110,16 +110,16 @@
 		transition: opacity 0.2s ease, transform 0.2s ease;
 	}
 
-	// Style all buttons and toggle controls
+	// Style all buttons and toggle controls.
 	.components-button,
 	.components-form-toggle {
 		opacity: 0.5;
 	}
 
-	// Hover state - only blur the inner content
+	// Hover state - only blur the inner content.
 	&:hover {
 		.ppcp--method-inner {
-			filter: blur(2px) grayscale(0.9);
+			filter: blur(2px) grayscale(1);
 		}
 
 		.ppcp--method-disabled-message {
@@ -129,7 +129,7 @@
 	}
 }
 
-// Disabled overlay
+// Disabled overlay.
 .ppcp--method-disabled-overlay {
 	position: absolute;
 	top: 0;
@@ -153,11 +153,14 @@
 
 .ppcp--method-disabled-message {
 	padding: 14px 18px;
-	max-width: 80%;
 	text-align: center;
 	@include font(13, 20, 500);
 	color: $color-text-tertiary;
 	position: relative;
 	z-index: 51;
 	border: none;
+
+	a {
+		text-decoration: none;
+	}
 }
