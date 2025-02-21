@@ -38,6 +38,7 @@ class GeneralSettingsMapHelper {
 			'live_client_secret'       => 'client_secret',
 			'live_merchant_id'         => 'merchant_id',
 			'live_merchant_email'      => 'merchant_email',
+			'merchant_email'           => 'merchant_email',
 			'sandbox_client_id'        => 'client_id',
 			'sandbox_client_secret'    => 'client_secret',
 			'sandbox_merchant_id'      => 'merchant_id',
