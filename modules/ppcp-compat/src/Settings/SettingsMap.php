@@ -14,7 +14,7 @@ use WooCommerce\PayPalCommerce\Settings\Data\AbstractDataModel;
 /**
  * A map of old to new settings.
  *
- * @psalm-type newSettingsKey = string|callable
+ * @psalm-type newSettingsKey = string
  * @psalm-type oldSettingsKey = string
  */
 class SettingsMap {
