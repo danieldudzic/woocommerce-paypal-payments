@@ -10,6 +10,7 @@ declare( strict_types = 1 );
 namespace WooCommerce\PayPalCommerce\Compat\Settings;
 
 use RuntimeException;
+use WooCommerce\PayPalCommerce\Settings\Data\GeneralSettings;
 use WooCommerce\PayPalCommerce\Settings\Data\SettingsModel;
 use WooCommerce\PayPalCommerce\Settings\Data\StylingSettings;
 
@@ -58,22 +59,32 @@ class SettingsMapHelper {
 	protected SettingsTabMapHelper $settings_tab_map_helper;
 
 	/**
+	 * A helper for mapping old and new general settings.
+	 *
+	 * @var GeneralSettingsMapHelper
+	 */
+	protected GeneralSettingsMapHelper $general_settings_map_helper;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param SettingsMap[]            $settings_map A list of settings maps containing key definitions.
 	 * @param StylingSettingsMapHelper $styling_settings_map_helper A helper for mapping the old/new styling settings.
 	 * @param SettingsTabMapHelper     $settings_tab_map_helper A helper for mapping the old/new settings tab settings.
+	 * @param GeneralSettingsMapHelper $general_settings_map_helper A helper for mapping old and new general settings.
 	 * @throws RuntimeException When an old key has multiple mappings.
 	 */
 	public function __construct(
 		array $settings_map,
 		StylingSettingsMapHelper $styling_settings_map_helper,
-		SettingsTabMapHelper $settings_tab_map_helper
+		SettingsTabMapHelper $settings_tab_map_helper,
+		GeneralSettingsMapHelper $general_settings_map_helper
 	) {
 		$this->validate_settings_map( $settings_map );
 		$this->settings_map                = $settings_map;
 		$this->styling_settings_map_helper = $styling_settings_map_helper;
 		$this->settings_tab_map_helper     = $settings_tab_map_helper;
+		$this->general_settings_map_helper = $general_settings_map_helper;
 	}
 
 	/**
@@ -134,30 +145,24 @@ class SettingsMapHelper {
 	/**
 	 * Retrieves a cached model value or caches it if not already cached.
 	 *
-	 * @param int             $model_id The unique identifier for the model object.
-	 * @param string          $old_key  The key in the old settings structure.
-	 * @param string|callable $new_key  The key in the new settings structure.
-	 * @param object          $model    The model object.
+	 * @param int    $model_id The unique identifier for the model object.
+	 * @param string $old_key  The key in the old settings structure.
+	 * @param string $new_key  The key in the new settings structure.
+	 * @param object $model    The model object.
 	 *
 	 * @return mixed|null The value of the key in the model, or null if not found.
 	 */
-	protected function get_cached_model_value( int $model_id, string $old_key, $new_key, object $model ) {
+	protected function get_cached_model_value( int $model_id, string $old_key, string $new_key, object $model ) {
 		if ( ! isset( $this->model_cache[ $model_id ] ) ) {
 			$this->model_cache[ $model_id ] = $model->to_array();
-		}
-
-		if ( is_callable( $new_key ) ) {
-			// Resolve the callback once and store it in the request-cache.
-			if ( ! isset( $this->model_cache[ $model_id ][ $old_key ] ) ) {
-				$this->model_cache[ $model_id ][ $old_key ] = $new_key( $this->model_cache[ $model_id ] );
-			}
-
-			return $this->model_cache[ $model_id ][ $old_key ];
 		}
 
 		switch ( true ) {
 			case $model instanceof StylingSettings:
 				return $this->styling_settings_map_helper->mapped_value( $old_key, $this->model_cache[ $model_id ] );
+
+			case $model instanceof GeneralSettings:
+				return $this->general_settings_map_helper->mapped_value( $old_key, $this->model_cache[ $model_id ] );
 
 			case $model instanceof SettingsModel:
 				return $this->settings_tab_map_helper->mapped_value( $old_key, $this->model_cache[ $model_id ] );
