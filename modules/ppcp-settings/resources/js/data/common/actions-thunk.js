@@ -68,10 +68,11 @@ export function sandboxOnboardingUrl() {
 /**
  * Side effect. Fetches the ISU-login URL for a production account.
  *
- * @param {string[]} products Which products/features to display in the ISU popup.
+ * @param {string[]} [products=[]] Which products/features to display in the ISU popup.
+ * @param {Object}   [options={}]  Options to customize the onboarding workflow.
  * @return {Function} The thunk function.
  */
-export function productionOnboardingUrl( products = [] ) {
+export function productionOnboardingUrl( products = [], options = {} ) {
 	return async () => {
 		try {
 			return apiFetch( {
@@ -80,6 +81,7 @@ export function productionOnboardingUrl( products = [] ) {
 				data: {
 					useSandbox: false,
 					products,
+					options,
 				},
 			} );
 		} catch ( e ) {

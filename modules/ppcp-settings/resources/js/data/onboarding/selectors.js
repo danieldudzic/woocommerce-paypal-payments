@@ -35,7 +35,17 @@ export const flags = ( state ) => {
  * @return {string[]} The ISU products, based on choices made in the onboarding wizard.
  */
 export const determineProductsAndCaps = ( state ) => {
-	const derivedProducts = [];
+	/**
+	 * An array of product-names that are used to build an onboarding URL via the
+	 * PartnerReferrals API.
+	 */
+	const products = [];
+
+	/**
+	 * Internal options that are parsed by the PartnerReferrals class to customize
+	 * the API payload.
+	 */
+	const options = {};
 
 	const { isCasualSeller, areOptionalPaymentMethodsEnabled } =
 		persistentData( state );
@@ -46,24 +56,24 @@ export const determineProductsAndCaps = ( state ) => {
 		 * Branch 1: Credit Card Payments not available.
 		 * The store uses the Express-checkout product.
 		 */
-		derivedProducts.push( 'EXPRESS_CHECKOUT' );
+		products.push( 'EXPRESS_CHECKOUT' );
 	} else if ( isCasualSeller ) {
 		/**
 		 * Branch 2: Merchant has no business.
 		 * The store uses the Express-checkout product.
 		 */
-		derivedProducts.push( 'EXPRESS_CHECKOUT' );
+		products.push( 'EXPRESS_CHECKOUT' );
 	} else {
 		/**
 		 * Branch 3: Merchant is business, and can use CC payments.
 		 * The store uses the advanced PPCP product.
 		 */
-		derivedProducts.push( 'PPCP' );
+		products.push( 'PPCP' );
 	}
 
 	if ( canUseVaulting ) {
-		derivedProducts.push( 'ADVANCED_VAULTING' );
+		products.push( 'ADVANCED_VAULTING' );
 	}
 
-	return derivedProducts;
+	return { products, options };
 };
