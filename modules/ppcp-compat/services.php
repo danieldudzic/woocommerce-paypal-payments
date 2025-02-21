@@ -14,6 +14,7 @@ use WooCommerce\PayPalCommerce\Compat\Settings\SettingsMap;
 use WooCommerce\PayPalCommerce\Compat\Settings\SettingsMapHelper;
 use WooCommerce\PayPalCommerce\Compat\Settings\SettingsTabMapHelper;
 use WooCommerce\PayPalCommerce\Compat\Settings\StylingSettingsMapHelper;
+use WooCommerce\PayPalCommerce\Compat\Settings\SubscriptionSettingsMapHelper;
 use WooCommerce\PayPalCommerce\Vendor\Psr\Container\ContainerInterface;
 
 return array(
@@ -137,6 +138,9 @@ return array(
 		$settings_tab_map_helper = $container->get( 'compat.settings.settings_tab_map_helper' );
 		assert( $settings_tab_map_helper instanceof SettingsTabMapHelper );
 
+		$subscription_map_helper = $container->get( 'compat.settings.subscription_map_helper' );
+		assert( $subscription_map_helper instanceof SubscriptionSettingsMapHelper );
+
 		return array(
 			new SettingsMap(
 				$container->get( 'settings.data.general' ),
@@ -180,13 +184,18 @@ return array(
 				 */
 				$styling_settings_map_helper->map()
 			),
+			new SettingsMap(
+				$container->get( 'settings.data.settings' ),
+				$subscription_map_helper->map()
+			),
 		);
 	},
 	'compat.settings.settings_map_helper'            => static function( ContainerInterface $container ) : SettingsMapHelper {
 		return new SettingsMapHelper(
 			$container->get( 'compat.setting.new-to-old-map' ),
 			$container->get( 'compat.settings.styling_map_helper' ),
-			$container->get( 'compat.settings.settings_tab_map_helper' )
+			$container->get( 'compat.settings.settings_tab_map_helper' ),
+			$container->get( 'compat.settings.subscription_map_helper' )
 		);
 	},
 	'compat.settings.styling_map_helper'             => static function() : StylingSettingsMapHelper {
@@ -194,5 +203,8 @@ return array(
 	},
 	'compat.settings.settings_tab_map_helper'        => static function() : SettingsTabMapHelper {
 		return new SettingsTabMapHelper();
+	},
+	'compat.settings.subscription_map_helper'        => static function( ContainerInterface $container ) : SubscriptionSettingsMapHelper {
+		return new SubscriptionSettingsMapHelper( $container->get( 'wc-subscriptions.helper' ) );
 	},
 );
