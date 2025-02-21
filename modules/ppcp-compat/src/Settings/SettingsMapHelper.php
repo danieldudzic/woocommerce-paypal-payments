@@ -59,6 +59,13 @@ class SettingsMapHelper {
 	protected SettingsTabMapHelper $settings_tab_map_helper;
 
 	/**
+	 * A helper for mapping old and new subscription settings.
+	 *
+	 * @var SubscriptionSettingsMapHelper
+	 */
+	protected SubscriptionSettingsMapHelper $subscription_map_helper;
+
+	/**
 	 * A helper for mapping old and new general settings.
 	 *
 	 * @var GeneralSettingsMapHelper
@@ -68,9 +75,10 @@ class SettingsMapHelper {
 	/**
 	 * Constructor.
 	 *
-	 * @param SettingsMap[]            $settings_map A list of settings maps containing key definitions.
-	 * @param StylingSettingsMapHelper $styling_settings_map_helper A helper for mapping the old/new styling settings.
-	 * @param SettingsTabMapHelper     $settings_tab_map_helper A helper for mapping the old/new settings tab settings.
+	 * @param SettingsMap[]                 $settings_map A list of settings maps containing key definitions.
+	 * @param StylingSettingsMapHelper      $styling_settings_map_helper A helper for mapping the old/new styling settings.
+	 * @param SettingsTabMapHelper          $settings_tab_map_helper A helper for mapping the old/new settings tab settings.
+	 * @param SubscriptionSettingsMapHelper $subscription_map_helper A helper for mapping old and new subscription settings.
 	 * @param GeneralSettingsMapHelper $general_settings_map_helper A helper for mapping old and new general settings.
 	 * @throws RuntimeException When an old key has multiple mappings.
 	 */
@@ -78,12 +86,14 @@ class SettingsMapHelper {
 		array $settings_map,
 		StylingSettingsMapHelper $styling_settings_map_helper,
 		SettingsTabMapHelper $settings_tab_map_helper,
+		SubscriptionSettingsMapHelper $subscription_map_helper,
 		GeneralSettingsMapHelper $general_settings_map_helper
 	) {
 		$this->validate_settings_map( $settings_map );
 		$this->settings_map                = $settings_map;
 		$this->styling_settings_map_helper = $styling_settings_map_helper;
 		$this->settings_tab_map_helper     = $settings_tab_map_helper;
+		$this->subscription_map_helper     = $subscription_map_helper;
 		$this->general_settings_map_helper = $general_settings_map_helper;
 	}
 
@@ -165,7 +175,9 @@ class SettingsMapHelper {
 				return $this->general_settings_map_helper->mapped_value( $old_key, $this->model_cache[ $model_id ] );
 
 			case $model instanceof SettingsModel:
-				return $this->settings_tab_map_helper->mapped_value( $old_key, $this->model_cache[ $model_id ] );
+				return $old_key === 'subscriptions_mode'
+				? $this->subscription_map_helper->mapped_value( $old_key, $this->model_cache[ $model_id ] )
+				: $this->settings_tab_map_helper->mapped_value( $old_key, $this->model_cache[ $model_id ] );
 
 			default:
 				return $this->model_cache[ $model_id ][ $new_key ] ?? null;
