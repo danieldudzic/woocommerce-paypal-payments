@@ -1,5 +1,5 @@
 import { __, sprintf } from '@wordpress/i18n';
-import { useState, useEffect, useMemo } from '@wordpress/element';
+import { useState, useEffect } from '@wordpress/element';
 import { Button, Icon } from '@wordpress/components';
 import { useDispatch } from '@wordpress/data';
 import { reusableBlock } from '@wordpress/icons';
