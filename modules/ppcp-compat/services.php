@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace WooCommerce\PayPalCommerce\Compat;
 
 use WooCommerce\PayPalCommerce\Compat\Assets\CompatAssets;
+use WooCommerce\PayPalCommerce\Compat\Settings\GeneralSettingsMapHelper;
 use WooCommerce\PayPalCommerce\Compat\Settings\SettingsMap;
 use WooCommerce\PayPalCommerce\Compat\Settings\SettingsMapHelper;
 use WooCommerce\PayPalCommerce\Compat\Settings\SettingsTabMapHelper;
@@ -137,34 +138,13 @@ return array(
 		$settings_tab_map_helper = $container->get( 'compat.settings.settings_tab_map_helper' );
 		assert( $settings_tab_map_helper instanceof SettingsTabMapHelper );
 
+		$general_map_helper = $container->get( 'compat.settings.general_map_helper' );
+		assert( $general_map_helper instanceof GeneralSettingsMapHelper );
+
 		return array(
 			new SettingsMap(
 				$container->get( 'settings.data.general' ),
-				/**
-				 * The new GeneralSettings class stores the current connection
-				 * details, without adding an environment-suffix (no `_sandbox`
-				 * or `_production` in the field name)
-				 * Only the `sandbox_merchant` flag indicates, which environment
-				 * the credentials are used for.
-				 */
-				array(
-					'merchant_id'              => 'merchant_id',
-					'client_id'                => 'client_id',
-					'client_secret'            => 'client_secret',
-					'sandbox_on'               => 'sandbox_merchant',
-					'live_client_id'           => 'client_id',
-					'live_client_secret'       => 'client_secret',
-					'live_merchant_id'         => 'merchant_id',
-					'live_merchant_email'      => 'merchant_email',
-					'sandbox_client_id'        => 'client_id',
-					'sandbox_client_secret'    => 'client_secret',
-					'sandbox_merchant_id'      => 'merchant_id',
-					'sandbox_merchant_email'   => 'merchant_email',
-
-					// Hardcoded settings, not present in new UI.
-					'enabled'                  => static fn() => true,
-					'allow_local_apm_gateways' => static fn() => true,
-				)
+				$general_map_helper->map()
 			),
 			new SettingsMap(
 				$container->get( 'settings.data.settings' ),
@@ -190,7 +170,8 @@ return array(
 		return new SettingsMapHelper(
 			$container->get( 'compat.setting.new-to-old-map' ),
 			$container->get( 'compat.settings.styling_map_helper' ),
-			$container->get( 'compat.settings.settings_tab_map_helper' )
+			$container->get( 'compat.settings.settings_tab_map_helper' ),
+			$container->get( 'compat.settings.general_map_helper' )
 		);
 	},
 	'compat.settings.styling_map_helper'             => static function() : StylingSettingsMapHelper {
@@ -198,5 +179,8 @@ return array(
 	},
 	'compat.settings.settings_tab_map_helper'        => static function() : SettingsTabMapHelper {
 		return new SettingsTabMapHelper();
+	},
+	'compat.settings.general_map_helper'             => static function() : GeneralSettingsMapHelper {
+		return new GeneralSettingsMapHelper();
 	},
 );
