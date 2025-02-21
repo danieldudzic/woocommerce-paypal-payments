@@ -349,8 +349,7 @@ return array(
 	'settings.data.definition.todos'              => static function ( ContainerInterface $container ) : TodosDefinition {
 		return new TodosDefinition(
 			$container->get( 'settings.service.todos_eligibilities' ),
-			$container->get( 'settings.data.general' ),
-			$container->get( 'wc-subscriptions.helper' )
+			$container->get( 'settings.data.general' )
 		);
 	},
 	'settings.data.definition.methods'            => static function ( ContainerInterface $container ) : PaymentMethodsDefinition {
@@ -435,7 +434,6 @@ return array(
 		 * 3. $gateways, $pay_later_statuses, $button_locations - Plugin settings (enabled/disabled status).
 		 *
 		 * @param bool $is_fastlane_eligible                - Show if merchant is eligible (ACDC) but hasn't enabled Fastlane gateway.
-		 * @param bool $is_card_payment_eligible            - Show if merchant is eligible (ACDC) but hasn't enabled card button gateway.
 		 * @param bool $is_pay_later_messaging_eligible     - Show if Pay Later messaging is enabled for at least one location.
 		 * @param bool $is_pay_later_messaging_product_eligible - Show if Pay Later is not enabled anywhere and specifically not on product page.
 		 * @param bool $is_pay_later_messaging_cart_eligible - Show if Pay Later is not enabled anywhere and specifically not on cart.
@@ -453,7 +451,6 @@ return array(
 		 */
 		return new TodosEligibilityService(
 			$container->get( 'axo.eligible' ) && $capabilities['acdc'] && ! $gateways['axo'],                  // Enable Fastlane.
-			$capabilities['acdc'] && ! $gateways['card-button'],                                          // Enable Credit and Debit Cards on your checkout.
 			$is_pay_later_messaging_enabled_for_any_location,                                             // Enable Pay Later messaging.
 			! $is_pay_later_messaging_enabled_for_any_location && ! $pay_later_statuses['product'],       // Add Pay Later messaging (Product page).
 			! $is_pay_later_messaging_enabled_for_any_location && ! $pay_later_statuses['cart'],          // Add Pay Later messaging (Cart).
