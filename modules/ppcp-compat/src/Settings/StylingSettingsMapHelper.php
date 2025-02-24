@@ -119,7 +119,6 @@ class StylingSettingsMapHelper {
 			'checkout'               => 'classic_checkout',
 			'mini-cart'              => 'mini_cart',
 			'checkout-block-express' => 'express_checkout',
-			'block-editor'           => 'block-editor',
 		);
 	}
 
@@ -225,9 +224,10 @@ class StylingSettingsMapHelper {
 	protected function mapped_disabled_funding_value( array $styling_models ): ?array {
 		$disabled_funding         = array();
 		$locations_to_context_map = $this->current_context_to_new_button_location_map();
+		$current_context          = $locations_to_context_map[ $this->context() ] ?? '';
 
 		foreach ( $styling_models as $model ) {
-			if ( $model->location !== $locations_to_context_map[ $this->context() ] || in_array( 'venmo', $model->methods, true ) ) {
+			if ( $model->location !== $current_context || in_array( 'venmo', $model->methods, true ) ) {
 				continue;
 			}
 
@@ -253,10 +253,11 @@ class StylingSettingsMapHelper {
 		}
 
 		$locations_to_context_map = $this->current_context_to_new_button_location_map();
+		$current_context          = $locations_to_context_map[ $this->context() ] ?? '';
 
 		foreach ( $styling_models as $model ) {
 			if ( ! $model->enabled
-				|| $model->location !== $locations_to_context_map[ $this->context() ]
+				|| $model->location !== $current_context
 				|| ! in_array( $button_name, $model->methods, true )
 			) {
 				continue;
