@@ -1,5 +1,5 @@
 /**
- * Hooks: Provide the main API for components to interact with the store.
+ * Hooks: Provide the main API for components to interact with the features store.
  *
  * These encapsulate store interactions, offering a consistent interface.
  * Hooks simplify data access and manipulation for components.
@@ -7,49 +7,61 @@
  * @file
  */
 
-import { useMemo } from '@wordpress/element';
-import { useDispatch, useSelect } from '@wordpress/data';
-
-import { createHooksForStore } from '../utils';
-import { STORE_NAME } from './constants';
-
-/**
- * Single source of truth for access Redux details.
- *
- * This hook returns a stable API to access actions, selectors and special hooks to generate
- * getter- and setters for transient or persistent properties.
- *
- * @return {{select, dispatch, useTransient, usePersistent}} Store data API.
- */
-const useStoreData = () => {
-	const select = useSelect( ( selectors ) => selectors( STORE_NAME ), [] );
-	const dispatch = useDispatch( STORE_NAME );
-	const { useTransient, usePersistent } = createHooksForStore( STORE_NAME );
-
-	return useMemo(
-		() => ( {
-			select,
-			dispatch,
-			useTransient,
-			usePersistent,
-		} ),
-		[ select, dispatch, useTransient, usePersistent ]
-	);
-};
-
-export const useStore = () => {
-	const { dispatch, useTransient } = useStoreData();
-	const [ isReady ] = useTransient( 'isReady' );
-
-	return { persist: dispatch.persist, isReady };
-};
+import { useSelect, useDispatch } from '@wordpress/data';
+import { useEffect } from '@wordpress/element';
+import apiFetch from '@wordpress/api-fetch';
+import { STORE_NAME, REST_PATH } from './constants';
 
 export const useFeatures = () => {
-	const { usePersistent } = useStoreData();
-	const [ features, fetchFeatures ] = usePersistent( 'features' );
+	const { features, isReady } = useSelect( ( select ) => {
+		const store = select( STORE_NAME );
+
+		return {
+			features: store.getFeatures() || [],
+			isReady: select( STORE_NAME ).transientData()?.isReady || false,
+		};
+	}, [] );
+
+	const { setFeatures, setIsReady } = useDispatch( STORE_NAME );
+
+	useEffect( () => {
+		const loadInitialFeatures = async () => {
+			try {
+				const response = await apiFetch( { path: REST_PATH } );
+
+				if ( response?.data?.features ) {
+					const featuresData = response.data.features;
+
+					if ( featuresData.length > 0 ) {
+						await setFeatures( featuresData );
+						await setIsReady( true );
+					}
+				}
+			} catch ( error ) {}
+		};
+
+		if ( ! isReady ) {
+			loadInitialFeatures();
+		}
+	}, [ isReady, setFeatures, setIsReady ] );
 
 	return {
 		features,
-		fetchFeatures,
+		isReady,
+		fetchFeatures: async () => {
+			try {
+				const response = await apiFetch( { path: REST_PATH } );
+				const featuresData = response.data?.features || [];
+
+				if ( featuresData.length > 0 ) {
+					await setFeatures( featuresData );
+					await setIsReady( true );
+					return { success: true, features: featuresData };
+				}
+				return { success: false, features: [] };
+			} catch ( error ) {
+				return { success: false, error, message: error.message };
+			}
+		},
 	};
 };

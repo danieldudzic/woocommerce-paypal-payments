@@ -1,9 +1,8 @@
 <?php
 /**
- * REST endpoint to manage the features items.
+ * REST endpoint to manage features.
  *
- * Provides endpoints for retrieving features
- * via WP REST API routes.
+ * Provides endpoints for retrieving features via WP REST API routes.
  *
  * @package WooCommerce\PayPalCommerce\Settings\Endpoint
  */
@@ -17,7 +16,7 @@ use WP_REST_Response;
 use WooCommerce\PayPalCommerce\Settings\Data\Definition\FeaturesDefinition;
 
 /**
- * REST controller for the features items in the Overview tab.
+ * REST controller for the features in the Overview tab.
  *
  * This API acts as the intermediary between the "external world" and our
  * internal data model. It's responsible for checking eligibility and
@@ -48,8 +47,8 @@ class FeaturesRestEndpoint extends RestEndpoint {
 	/**
 	 * FeaturesRestEndpoint constructor.
 	 *
-	 * @param FeaturesDefinition      $features_definition The features definition instance.
-	 * @param SettingsRestEndpoint    $settings The settings endpoint instance.
+	 * @param FeaturesDefinition   $features_definition The features definition instance.
+	 * @param SettingsRestEndpoint $settings The settings endpoint instance.
 	 */
 	public function __construct(
 		FeaturesDefinition $features_definition,
@@ -83,16 +82,21 @@ class FeaturesRestEndpoint extends RestEndpoint {
 	 * @return WP_REST_Response The response containing features data.
 	 */
 	public function get_features(): WP_REST_Response {
-
 		$features = array();
 		foreach ( $this->features_definition->get() as $id => $feature ) {
-			// Check eligibility and add to features if eligible.
-			if ( $feature['isEligible']() ) {
-				$features[] = array_merge(
-					array( 'id' => $id ),
-					array_diff_key( $feature, array( 'isEligible' => true ) )
-				);
+			// Evaluate eligibility check.
+			if ( is_callable( $feature['isEligible'] ) ) {
+				$is_eligible = $feature['isEligible']();
+			} else {
+				$is_eligible = (bool) $feature['isEligible'];
 			}
+
+			// Include all features with their eligibility state.
+			$features[] = array_merge(
+				array( 'id' => $id ),
+				array_diff_key( $feature, array( 'isEligible' => true ) ),
+				array( 'isEligible' => $is_eligible )
+			);
 		}
 
 		return $this->return_success(

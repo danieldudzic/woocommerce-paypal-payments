@@ -22,7 +22,7 @@ const defaultTransient = Object.freeze( {
 
 /**
  * Persistent: Values that are loaded from and saved to the DB.
- * These represent the core todos configuration.
+ * These represent the core features configuration.
  */
 const defaultPersistent = Object.freeze( {
 	features: [],
@@ -50,10 +50,10 @@ const reducer = createReducer( defaultTransient, defaultPersistent, {
 		changeTransient( state, payload ),
 
 	/**
-	 * Updates todos list
+	 * Updates features list
 	 *
 	 * @param {Object} state   Current state
-	 * @param {Object} payload Update payload
+	 * @param {Object} payload Update payload containing features array
 	 * @return {Object} Updated state
 	 */
 	[ ACTION_TYPES.SET_FEATURES ]: ( state, payload ) => {
@@ -65,7 +65,7 @@ const reducer = createReducer( defaultTransient, defaultPersistent, {
 	 *
 	 * @param {Object} state        Current state
 	 * @param {Object} payload      Hydration payload containing server data
-	 * @param {Object} payload.data The todos data to hydrate
+	 * @param {Object} payload.data The features data to hydrate
 	 * @return {Object} Hydrated state
 	 */
 	[ ACTION_TYPES.HYDRATE ]: ( state, payload ) =>

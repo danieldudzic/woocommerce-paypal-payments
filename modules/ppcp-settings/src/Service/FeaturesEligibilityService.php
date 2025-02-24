@@ -77,12 +77,12 @@ class FeaturesEligibilityService {
 		bool $is_apple_pay_eligible,
 		bool $is_pay_later_eligible
 	) {
-		$this->is_save_paypal_and_venmo_eligible            = $is_save_paypal_and_venmo_eligible;
-		$this->is_advanced_credit_and_debit_cards_eligible  = $is_advanced_credit_and_debit_cards_eligible;
-		$this->is_alternative_payment_methods_eligible      = $is_alternative_payment_methods_eligible;
-		$this->is_google_pay_eligible                       = $is_google_pay_eligible;
-		$this->is_apple_pay_eligible                        = $is_apple_pay_eligible;
-		$this->is_pay_later_eligible                        = $is_pay_later_eligible;
+		$this->is_save_paypal_and_venmo_eligible           = $is_save_paypal_and_venmo_eligible;
+		$this->is_advanced_credit_and_debit_cards_eligible = $is_advanced_credit_and_debit_cards_eligible;
+		$this->is_alternative_payment_methods_eligible     = $is_alternative_payment_methods_eligible;
+		$this->is_google_pay_eligible                      = $is_google_pay_eligible;
+		$this->is_apple_pay_eligible                       = $is_apple_pay_eligible;
+		$this->is_pay_later_eligible                       = $is_pay_later_eligible;
 	}
 
 	/**
@@ -92,12 +92,12 @@ class FeaturesEligibilityService {
 	 */
 	public function get_eligibility_checks(): array {
 		return array(
-			'save_paypal_and_venmo'            => fn() => $this->is_save_paypal_and_venmo_eligible,
-			'advanced_credit_and_debit_cards'  => fn() => $this->is_advanced_credit_and_debit_cards_eligible,
-			'alternative_payment_methods'      => fn() => $this->is_alternative_payment_methods_eligible,
-			'google_pay'                       => fn() => $this->is_google_pay_eligible,
-			'apple_pay'                        => fn() => $this->is_apple_pay_eligible,
-			'pay_later'                        => fn() => $this->is_pay_later_eligible,
+			'save_paypal_and_venmo'           => fn() => $this->is_save_paypal_and_venmo_eligible,
+			'advanced_credit_and_debit_cards' => fn() => $this->is_advanced_credit_and_debit_cards_eligible,
+			'alternative_payment_methods'     => fn() => $this->is_alternative_payment_methods_eligible,
+			'google_pay'                      => fn() => $this->is_google_pay_eligible,
+			'apple_pay'                       => fn() => $this->is_apple_pay_eligible,
+			'pay_later'                       => fn() => $this->is_pay_later_eligible,
 		);
 	}
 }

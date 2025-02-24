@@ -11,26 +11,24 @@
 import { __ } from '@wordpress/i18n';
 import apiFetch from '@wordpress/api-fetch';
 
-import { REST_HYDRATE_PATH } from './constants';
+import { REST_PATH } from './constants';
 
 /**
- * Retrieve settings from the site's REST API.
+ * Hydrates the features data from the API.
+ *
+ * @return {Object} Action to dispatch.
  */
-export function persistentData() {
-	return async ( { dispatch, registry } ) => {
+export function getFeatures() {
+	return async ( { dispatch } ) => {
 		try {
-			const result = await apiFetch( { path: REST_HYDRATE_PATH } );
-			await dispatch.hydrate( result );
-			await dispatch.setIsReady( true );
-		} catch ( e ) {
-			await registry
-				.dispatch( 'core/notices' )
-				.createErrorNotice(
-					__(
-						'Error retrieving features details.',
-						'woocommerce-paypal-payments'
-					)
-				);
+			const response = await apiFetch( { path: REST_PATH } );
+
+			if ( response?.features ) {
+				dispatch.setFeatures( response.features );
+				dispatch.setIsReady( true );
+			}
+		} catch ( error ) {
+			console.error( 'Error fetching features:', error );
 		}
 	};
 }

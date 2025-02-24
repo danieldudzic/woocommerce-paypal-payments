@@ -8,6 +8,7 @@
  */
 
 const EMPTY_OBJ = Object.freeze( {} );
+const EMPTY_ARR = Object.freeze( [] );
 
 const getState = ( state ) => state || EMPTY_OBJ;
 
@@ -18,4 +19,9 @@ export const persistentData = ( state ) => {
 export const transientData = ( state ) => {
 	const { data, ...transientState } = getState( state );
 	return transientState || EMPTY_OBJ;
+};
+
+export const getFeatures = ( state ) => {
+	const features = state?.features || persistentData( state ).features;
+	return features || EMPTY_ARR;
 };
