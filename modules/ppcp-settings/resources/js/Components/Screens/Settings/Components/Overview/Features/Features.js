@@ -78,12 +78,12 @@ const Features = () => {
 			contentContainer={ false }
 		>
 			<ContentWrapper>
-				{ features.map( ( { id, isEligible, ...feature } ) => (
+				{ features.map( ( { id, enabled, ...feature } ) => (
 					<FeatureItem
 						key={ id }
 						isBusy={ isRefreshing }
 						isSandbox={ merchant.isSandbox }
-						enabled={ isEligible }
+						enabled={ enabled }
 						{ ...feature }
 					/>
 				) ) }

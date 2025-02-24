@@ -479,13 +479,13 @@ return array(
 			$container->get( 'googlepay.eligible' ) && $capabilities['google_pay'] && ! $gateways['google_pay'],
 		);
 	},
-	'settings.rest.features'                      => static function ( ContainerInterface $container ) : FeaturesRestEndpoint {
+	'settings.rest.features'                       => static function ( ContainerInterface $container ) : FeaturesRestEndpoint {
 		return new FeaturesRestEndpoint(
 			$container->get( 'settings.data.definition.features' ),
 			$container->get( 'settings.rest.settings' )
 		);
 	},
-	'settings.data.definition.features'           => static function ( ContainerInterface $container ) : FeaturesDefinition {
+	'settings.data.definition.features'            => static function ( ContainerInterface $container ) : FeaturesDefinition {
 		$features = apply_filters(
 			'woocommerce_paypal_payments_rest_common_merchant_features',
 			array()
@@ -511,8 +511,8 @@ return array(
 			'save_paypal' => $capabilities['save_paypal'], // Save PayPal and Venmo eligibility.
 			'acdc'        => $capabilities['acdc'] && ! $gateways['card-button'], // Advanced credit and debit cards eligibility.
 			'apm'         => $capabilities['apm'], // Alternative payment methods eligibility.
-			'google_pay'  => $capabilities['acdc'] && ! $capabilities['google_pay'], // Google Pay eligibility.
-			'apple_pay'   => $capabilities['acdc'] && ! $capabilities['apple_pay'], // Apple Pay eligibility.
+			'google_pay'  => $capabilities['acdc'] && $capabilities['google_pay'], // Google Pay eligibility.
+			'apple_pay'   => $capabilities['acdc'] && $capabilities['apple_pay'], // Apple Pay eligibility.
 			'pay_later'   => $capabilities['paylater'],
 		);
 		return new FeaturesDefinition(
@@ -521,7 +521,7 @@ return array(
 			$merchant_capabilities
 		);
 	},
-	'settings.service.features_eligibilities'     => static function( ContainerInterface $container ): FeaturesEligibilityService {
+	'settings.service.features_eligibilities'      => static function( ContainerInterface $container ): FeaturesEligibilityService {
 
 		$messages_apply = $container->get( 'button.helper.messages-apply' );
 		assert( $messages_apply instanceof MessagesApply );
@@ -538,6 +538,11 @@ return array(
 			$container->get( 'googlepay.eligible' ), // Google Pay eligibility.
 			$container->get( 'applepay.eligible' ), // Apple Pay eligibility.
 			$pay_later_eligible, // Pay Later eligibility.
+		);
+	},
+	'settings.service.todos_sorting'               => static function ( ContainerInterface $container ) : TodosSortingAndFilteringService {
+		return new TodosSortingAndFilteringService(
+			$container->get( 'settings.data.todos' )
 		);
 	},
 );
