@@ -233,7 +233,7 @@ class LocalAlternativePaymentMethodsModule implements ServiceModule, ExtendingMo
 	 * @return bool
 	 */
 	private function should_add_local_apm_gateways( ContainerInterface $container ) : bool {
-		// Merchant onboarding must be completed.
+		// APMs are only available after merchant onboarding is completed.
 		$is_connected = $container->get( 'settings.flag.is-connected' );
 		if ( ! $is_connected ) {
 			/**
@@ -243,13 +243,8 @@ class LocalAlternativePaymentMethodsModule implements ServiceModule, ExtendingMo
 			 * During the authentication process (which happens via a REST call)
 			 * the gateways need to be present, so they can be correctly
 			 * pre-configured for new merchants.
-			 *
-			 * TODO is there a cleaner solution for this?
 			 */
-			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-			$request_uri = wp_unslash( $_SERVER['REQUEST_URI'] ?? '' );
-
-			return str_contains( $request_uri, '/wp-json/wc/' );
+			return $this->is_rest_request();
 		}
 
 		// The general plugin functionality must be enabled.
@@ -262,5 +257,17 @@ class LocalAlternativePaymentMethodsModule implements ServiceModule, ExtendingMo
 		// Register APM gateways, when the relevant setting is active.
 		return $settings->has( 'allow_local_apm_gateways' )
 			&& $settings->get( 'allow_local_apm_gateways' ) === true;
+	}
+
+	/**
+	 * Checks, whether the current request is trying to access a WooCommerce REST endpoint.
+	 *
+	 * @return bool True, if the request path matches the WC-Rest namespace.
+	 */
+	private function is_rest_request(): bool {
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		$request_uri = wp_unslash( $_SERVER['REQUEST_URI'] ?? '' );
+
+		return str_contains( $request_uri, '/wp-json/wc/' );
 	}
 }
