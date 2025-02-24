@@ -119,6 +119,7 @@ class StylingSettingsMapHelper {
 			'checkout'               => 'classic_checkout',
 			'mini-cart'              => 'mini_cart',
 			'checkout-block-express' => 'express_checkout',
+			'block-editor'           => 'block-editor',
 		);
 	}
 
