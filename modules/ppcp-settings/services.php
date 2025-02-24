@@ -10,7 +10,9 @@ declare( strict_types = 1 );
 namespace WooCommerce\PayPalCommerce\Settings;
 
 use WooCommerce\PayPalCommerce\ApiClient\Helper\Cache;
+use WooCommerce\PayPalCommerce\Button\Helper\MessagesApply;
 use WooCommerce\PayPalCommerce\Settings\Ajax\SwitchSettingsUiEndpoint;
+use WooCommerce\PayPalCommerce\Settings\Data\Definition\FeaturesDefinition;
 use WooCommerce\PayPalCommerce\Settings\Data\Definition\PaymentMethodsDependenciesDefinition;
 use WooCommerce\PayPalCommerce\Settings\Data\GeneralSettings;
 use WooCommerce\PayPalCommerce\Settings\Data\OnboardingProfile;
@@ -21,6 +23,7 @@ use WooCommerce\PayPalCommerce\Settings\Data\TodosModel;
 use WooCommerce\PayPalCommerce\Settings\Data\Definition\TodosDefinition;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\AuthenticationRestEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\CommonRestEndpoint;
+use WooCommerce\PayPalCommerce\Settings\Endpoint\FeaturesRestEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\LoginLinkRestEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\OnboardingRestEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\PayLaterMessagingEndpoint;
@@ -33,6 +36,7 @@ use WooCommerce\PayPalCommerce\Settings\Endpoint\TodosRestEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Handler\ConnectionListener;
 use WooCommerce\PayPalCommerce\Settings\Service\AuthenticationManager;
 use WooCommerce\PayPalCommerce\Settings\Service\ConnectionUrlGenerator;
+use WooCommerce\PayPalCommerce\Settings\Service\FeaturesEligibilityService;
 use WooCommerce\PayPalCommerce\Settings\Service\OnboardingUrlManager;
 use WooCommerce\PayPalCommerce\Settings\Service\TodosEligibilityService;
 use WooCommerce\PayPalCommerce\Settings\Service\TodosSortingAndFilteringService;
@@ -473,6 +477,67 @@ return array(
 			$container->get( 'googlepay.eligible' ) && $capabilities['acdc'] && ! $capabilities['google_pay'],                                       // Add Google Pay to your account.
 			$container->get( 'applepay.eligible' ) && $capabilities['apple_pay'] && ! $gateways['apple_pay'],                                       // Enable Apple Pay.
 			$container->get( 'googlepay.eligible' ) && $capabilities['google_pay'] && ! $gateways['google_pay'],
+		);
+	},
+	'settings.rest.features'                       => static function ( ContainerInterface $container ) : FeaturesRestEndpoint {
+		return new FeaturesRestEndpoint(
+			$container->get( 'settings.data.definition.features' ),
+			$container->get( 'settings.rest.settings' )
+		);
+	},
+	'settings.data.definition.features'            => static function ( ContainerInterface $container ) : FeaturesDefinition {
+		$features = apply_filters(
+			'woocommerce_paypal_payments_rest_common_merchant_features',
+			array()
+		);
+
+		$payment_endpoint = $container->get( 'settings.rest.payment' );
+		$settings = $payment_endpoint->get_details()->get_data();
+
+		// Settings status.
+		$gateways = array(
+			'card-button' => $settings['data']['ppcp-card-button-gateway']['enabled'] ?? false,
+		);
+		// Merchant capabilities, serve to show active or inactive badge and buttons.
+		$capabilities = array(
+			'apple_pay'   => $features['apple_pay']['enabled'] ?? false,
+			'google_pay'  => $features['google_pay']['enabled'] ?? false,
+			'acdc'        => $features['advanced_credit_and_debit_cards']['enabled'] ?? false,
+			'save_paypal' => $features['save_paypal_and_venmo']['enabled'] ?? false,
+			'apm'         => $features['alternative_payment_methods']['enabled'] ?? false,
+			'paylater'    => $features['pay_later_messaging']['enabled'] ?? false,
+		);
+		$merchant_capabilities = array(
+			'save_paypal' => $capabilities['save_paypal'], // Save PayPal and Venmo eligibility.
+			'acdc'        => $capabilities['acdc'] && ! $gateways['card-button'], // Advanced credit and debit cards eligibility.
+			'apm'         => $capabilities['apm'], // Alternative payment methods eligibility.
+			'google_pay'  => $capabilities['acdc'] && $capabilities['google_pay'], // Google Pay eligibility.
+			'apple_pay'   => $capabilities['acdc'] && $capabilities['apple_pay'], // Apple Pay eligibility.
+			'pay_later'   => $capabilities['paylater'],
+		);
+		return new FeaturesDefinition(
+			$container->get( 'settings.service.features_eligibilities' ),
+			$container->get( 'settings.data.general' ),
+			$merchant_capabilities
+		);
+	},
+	'settings.service.features_eligibilities'      => static function( ContainerInterface $container ): FeaturesEligibilityService {
+
+		$messages_apply = $container->get( 'button.helper.messages-apply' );
+		assert( $messages_apply instanceof MessagesApply );
+		$pay_later_eligible = $messages_apply->for_country();
+
+		$merchant_country = $container->get( 'api.shop.country' );
+		$ineligible_countries = array( 'RU', 'BR', 'JP' );
+		$apm_eligible = ! in_array( $merchant_country, $ineligible_countries, true );
+
+		return new FeaturesEligibilityService(
+			$container->get( 'save-payment-methods.eligible' ), // Save PayPal and Venmo eligibility.
+			$container->get( 'card-fields.eligible' ), // Advanced credit and debit cards eligibility.
+			$apm_eligible, // Alternative payment methods eligibility.
+			$container->get( 'googlepay.eligible' ), // Google Pay eligibility.
+			$container->get( 'applepay.eligible' ), // Apple Pay eligibility.
+			$pay_later_eligible, // Pay Later eligibility.
 		);
 	},
 	'settings.service.todos_sorting'               => static function ( ContainerInterface $container ) : TodosSortingAndFilteringService {
