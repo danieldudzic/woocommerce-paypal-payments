@@ -42,10 +42,24 @@ class LocalAlternativePaymentMethodsModule implements ServiceModule, ExtendingMo
 	/**
 	 * {@inheritDoc}
 	 */
-	public function run( ContainerInterface $c ): bool {
+	public function run( ContainerInterface $c ) : bool {
+		add_action( 'after_setup_theme', fn() => $this->run_with_translations( $c ) );
+
+		return true;
+	}
+
+	/**
+	 * Set up WP hooks that depend on translation features.
+	 * Runs after the theme setup, when translations are available, which is fired
+	 * before the `init` hook, which usually contains most of the logic.
+	 *
+	 * @param ContainerInterface $c The DI container.
+	 * @return void
+	 */
+	private function run_with_translations( ContainerInterface $c ) : void {
 		// When Local APMs are disabled, none of the following hooks are needed.
 		if ( ! $this->should_add_local_apm_gateways( $c ) ) {
-			return true;
+			return;
 		}
 
 		/**
@@ -193,8 +207,6 @@ class LocalAlternativePaymentMethodsModule implements ServiceModule, ExtendingMo
 			10,
 			2
 		);
-
-		return true;
 	}
 
 	/**
