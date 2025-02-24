@@ -80,12 +80,11 @@ use WooCommerce\PayPalCommerce\ApiClient\Repository\PayeeRepository;
 use WooCommerce\PayPalCommerce\WcGateway\Settings\Settings;
 use WooCommerce\PayPalCommerce\ApiClient\Authentication\ConnectBearer;
 use WooCommerce\PayPalCommerce\WcGateway\Helper\EnvironmentConfig;
-use WooCommerce\PayPalCommerce\Onboarding\State;
 use WooCommerce\PayPalCommerce\WcGateway\Helper\Environment;
 
 return array(
 	'api.host'                                       => static function( ContainerInterface $container ) : string {
-		$environment = $container->get( 'onboarding.environment' );
+		$environment = $container->get( 'settings.environment' );
 		assert( $environment instanceof Environment );
 
 		if ( $environment->is_sandbox() ) {
@@ -671,6 +670,7 @@ return array(
 				'FR' => $default_currencies,
 				'DE' => $default_currencies,
 				'GR' => $default_currencies,
+				'HK' => $default_currencies,
 				'HU' => $default_currencies,
 				'IE' => $default_currencies,
 				'IT' => $default_currencies,
@@ -688,6 +688,7 @@ return array(
 				'PT' => $default_currencies,
 				'RO' => $default_currencies,
 				'SK' => $default_currencies,
+				'SG' => $default_currencies,
 				'SI' => $default_currencies,
 				'ES' => $default_currencies,
 				'SE' => $default_currencies,
@@ -736,6 +737,7 @@ return array(
 				'FR' => $mastercard_visa_amex,
 				'GB' => $mastercard_visa_amex,
 				'GR' => $mastercard_visa_amex,
+				'HK' => $mastercard_visa_amex,
 				'HU' => $mastercard_visa_amex,
 				'IE' => $mastercard_visa_amex,
 				'IT' => $mastercard_visa_amex,
@@ -765,6 +767,7 @@ return array(
 				'SE' => $mastercard_visa_amex,
 				'SI' => $mastercard_visa_amex,
 				'SK' => $mastercard_visa_amex,
+				'SG' => $mastercard_visa_amex,
 				'JP' => array(
 					'mastercard' => array(),
 					'visa'       => array(),

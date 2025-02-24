@@ -11,7 +11,6 @@ namespace WooCommerce\PayPalCommerce\LocalAlternativePaymentMethods;
 
 use WC_Order;
 use Automattic\WooCommerce\Blocks\Payments\PaymentMethodRegistry;
-use WooCommerce\PayPalCommerce\Onboarding\State;
 use WooCommerce\PayPalCommerce\Vendor\Inpsyde\Modularity\Module\ExecutableModule;
 use WooCommerce\PayPalCommerce\Vendor\Inpsyde\Modularity\Module\ExtendingModule;
 use WooCommerce\PayPalCommerce\Vendor\Inpsyde\Modularity\Module\ModuleClassNameIdTrait;
@@ -44,7 +43,16 @@ class LocalAlternativePaymentMethodsModule implements ServiceModule, ExtendingMo
 	 * {@inheritDoc}
 	 */
 	public function run( ContainerInterface $c ): bool {
+		// When Local APMs are disabled, none of the following hooks are needed.
+		if ( ! $this->should_add_local_apm_gateways( $c ) ) {
+			return true;
+		}
 
+		/**
+		 * The "woocommerce_payment_gateways" filter is responsible for ADDING
+		 * custom payment gateways to WooCommerce. Here, we add all the local
+		 * APM gateways to the filtered list, so they become available later on.
+		 */
 		add_filter(
 			'woocommerce_payment_gateways',
 			/**
@@ -53,14 +61,6 @@ class LocalAlternativePaymentMethodsModule implements ServiceModule, ExtendingMo
 			 * @psalm-suppress MissingClosureParamType
 			 */
 			function ( $methods ) use ( $c ) {
-				if ( ! self::should_add_local_apm_gateways( $c ) ) {
-					return $methods;
-				}
-				$onboarding_state = $c->get( 'onboarding.state' );
-				if ( $onboarding_state->current_state() === State::STATE_START ) {
-					return $methods;
-				}
-
 				if ( ! is_array( $methods ) ) {
 					return $methods;
 				}
@@ -74,6 +74,10 @@ class LocalAlternativePaymentMethodsModule implements ServiceModule, ExtendingMo
 			}
 		);
 
+		/**
+		 * Filters the "available gateways" list by REMOVING gateways that
+		 * are not available for the current customer.
+		 */
 		add_filter(
 			'woocommerce_available_payment_gateways',
 			/**
@@ -82,29 +86,22 @@ class LocalAlternativePaymentMethodsModule implements ServiceModule, ExtendingMo
 			 * @psalm-suppress MissingClosureParamType
 			 */
 			function ( $methods ) use ( $c ) {
-				if ( ! self::should_add_local_apm_gateways( $c ) ) {
+				if ( ! is_array( $methods ) || is_admin() || empty( WC()->customer ) ) {
+					// Don't restrict the gateway list on wp-admin or when no customer is known.
 					return $methods;
 				}
-				if ( ! is_array( $methods ) ) {
-					return $methods;
-				}
 
-				if ( ! is_admin() ) {
-					if ( ! isset( WC()->customer ) ) {
-						return $methods;
-					}
+				$payment_methods  = $c->get( 'ppcp-local-apms.payment-methods' );
+				$customer_country = WC()->customer->get_billing_country() ?: WC()->customer->get_shipping_country();
+				$site_currency    = get_woocommerce_currency();
 
-					$customer_country = WC()->customer->get_billing_country() ?: WC()->customer->get_shipping_country();
-					$site_currency    = get_woocommerce_currency();
+				// Remove unsupported gateways from the customer's payment options.
+				foreach ( $payment_methods as $payment_method ) {
+					$is_currency_supported = in_array( $site_currency, $payment_method['currencies'], true );
+					$is_country_supported  = in_array( $customer_country, $payment_method['countries'], true );
 
-					$payment_methods = $c->get( 'ppcp-local-apms.payment-methods' );
-					foreach ( $payment_methods as $payment_method ) {
-						if (
-							! in_array( $customer_country, $payment_method['countries'], true )
-							|| ! in_array( $site_currency, $payment_method['currencies'], true )
-						) {
-							unset( $methods[ $payment_method['id'] ] );
-						}
+					if ( ! $is_currency_supported || ! $is_country_supported ) {
+						unset( $methods[ $payment_method['id'] ] );
 					}
 				}
 
@@ -112,12 +109,15 @@ class LocalAlternativePaymentMethodsModule implements ServiceModule, ExtendingMo
 			}
 		);
 
+		/**
+		 * Adds all local APM gateways in the "payment_method_type" block registry
+		 * to make the payment methods available in the Block Checkout.
+		 *
+		 * @see IntegrationRegistry::initialize
+		 */
 		add_action(
 			'woocommerce_blocks_payment_method_type_registration',
 			function( PaymentMethodRegistry $payment_method_registry ) use ( $c ): void {
-				if ( ! self::should_add_local_apm_gateways( $c ) ) {
-					return;
-				}
 				$payment_methods = $c->get( 'ppcp-local-apms.payment-methods' );
 				foreach ( $payment_methods as $key => $value ) {
 					$payment_method_registry->register( $c->get( 'ppcp-local-apms.' . $key . '.payment-method' ) );
@@ -128,9 +128,6 @@ class LocalAlternativePaymentMethodsModule implements ServiceModule, ExtendingMo
 		add_filter(
 			'woocommerce_paypal_payments_localized_script_data',
 			function ( array $data ) use ( $c ) {
-				if ( ! self::should_add_local_apm_gateways( $c ) ) {
-					return $data;
-				}
 				$payment_methods = $c->get( 'ppcp-local-apms.payment-methods' );
 
 				$default_disable_funding               = $data['url_params']['disable-funding'] ?? '';
@@ -149,9 +146,6 @@ class LocalAlternativePaymentMethodsModule implements ServiceModule, ExtendingMo
 			 * @psalm-suppress MissingClosureParamType
 			 */
 			function( $order_id ) use ( $c ) {
-				if ( ! self::should_add_local_apm_gateways( $c ) ) {
-					return;
-				}
 				$order = wc_get_order( $order_id );
 				if ( ! $order instanceof WC_Order ) {
 					return;
@@ -184,9 +178,6 @@ class LocalAlternativePaymentMethodsModule implements ServiceModule, ExtendingMo
 		add_action(
 			'woocommerce_paypal_payments_payment_capture_completed_webhook_handler',
 			function( WC_Order $wc_order, string $order_id ) use ( $c ) {
-				if ( ! self::should_add_local_apm_gateways( $c ) ) {
-					return;
-				}
 				$payment_methods = $c->get( 'ppcp-local-apms.payment-methods' );
 				if (
 				! $this->is_local_apm( $wc_order->get_payment_method(), $payment_methods )
@@ -229,12 +220,35 @@ class LocalAlternativePaymentMethodsModule implements ServiceModule, ExtendingMo
 	 * @param ContainerInterface $container Container.
 	 * @return bool
 	 */
-	private function should_add_local_apm_gateways( ContainerInterface $container ): bool {
+	private function should_add_local_apm_gateways( ContainerInterface $container ) : bool {
+		// Merchant onboarding must be completed.
+		$is_connected = $container->get( 'settings.flag.is-connected' );
+		if ( ! $is_connected ) {
+			/**
+			 * When the merchant is _not_ connected yet, we still need to
+			 * register the APM gateways in one case:
+			 *
+			 * During the authentication process (which happens via a REST call)
+			 * the gateways need to be present, so they can be correctly
+			 * pre-configured for new merchants.
+			 *
+			 * TODO is there a cleaner solution for this?
+			 */
+			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			$request_uri = wp_unslash( $_SERVER['REQUEST_URI'] ?? '' );
+
+			return str_contains( $request_uri, '/wp-json/wc/' );
+		}
+
+		// The general plugin functionality must be enabled.
 		$settings = $container->get( 'wcgateway.settings' );
 		assert( $settings instanceof Settings );
-		return $settings->has( 'enabled' )
-			&& $settings->get( 'enabled' ) === true
-			&& $settings->has( 'allow_local_apm_gateways' )
+		if ( ! $settings->has( 'enabled' ) || ! $settings->get( 'enabled' ) ) {
+			return false;
+		}
+
+		// Register APM gateways, when the relevant setting is active.
+		return $settings->has( 'allow_local_apm_gateways' )
 			&& $settings->get( 'allow_local_apm_gateways' ) === true;
 	}
 }

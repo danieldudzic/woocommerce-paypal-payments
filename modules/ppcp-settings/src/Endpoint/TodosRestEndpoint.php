@@ -17,6 +17,7 @@ use WP_REST_Response;
 use WP_REST_Request;
 use WooCommerce\PayPalCommerce\Settings\Data\TodosModel;
 use WooCommerce\PayPalCommerce\Settings\Data\Definition\TodosDefinition;
+use WooCommerce\PayPalCommerce\Settings\Service\TodosSortingAndFilteringService;
 
 /**
  * REST controller for the "Things To Do" items in the Overview tab.
@@ -32,17 +33,6 @@ class TodosRestEndpoint extends RestEndpoint {
 	 * @var string
 	 */
 	protected $rest_base = 'todos';
-
-	/**
-	 * Pay Later messaging todo IDs in priority order.
-	 *
-	 * @var array
-	 */
-	private const PAY_LATER_IDS = array(
-		'add_pay_later_messaging_product_page',
-		'add_pay_later_messaging_cart',
-		'add_pay_later_messaging_checkout',
-	);
 
 	/**
 	 * The todos model instance.
@@ -66,20 +56,30 @@ class TodosRestEndpoint extends RestEndpoint {
 	protected SettingsRestEndpoint $settings;
 
 	/**
+	 * The todos sorting service.
+	 *
+	 * @var TodosSortingAndFilteringService
+	 */
+	protected TodosSortingAndFilteringService $sorting_service;
+
+	/**
 	 * TodosRestEndpoint constructor.
 	 *
-	 * @param TodosModel           $todos The todos model instance.
-	 * @param TodosDefinition      $todos_definition The todos definition instance.
-	 * @param SettingsRestEndpoint $settings The settings endpoint instance.
+	 * @param TodosModel                      $todos The todos model instance.
+	 * @param TodosDefinition                 $todos_definition The todos definition instance.
+	 * @param SettingsRestEndpoint            $settings The settings endpoint instance.
+	 * @param TodosSortingAndFilteringService $sorting_service The todos sorting service.
 	 */
 	public function __construct(
 		TodosModel $todos,
 		TodosDefinition $todos_definition,
-		SettingsRestEndpoint $settings
+		SettingsRestEndpoint $settings,
+		TodosSortingAndFilteringService $sorting_service
 	) {
 		$this->todos            = $todos;
 		$this->todos_definition = $todos_definition;
 		$this->settings         = $settings;
+		$this->sorting_service  = $sorting_service;
 	}
 
 	/**
@@ -157,8 +157,7 @@ class TodosRestEndpoint extends RestEndpoint {
 			}
 		}
 
-		$sorted_todos   = $this->sort_todos_by_priority( $todos );
-		$filtered_todos = $this->filter_pay_later_todos( $sorted_todos );
+		$filtered_todos = $this->sorting_service->apply_all_priority_filters( $todos );
 
 		return $this->return_success(
 			array(
@@ -244,68 +243,5 @@ class TodosRestEndpoint extends RestEndpoint {
 				__( 'Failed to reset dismissed todos.', 'woocommerce-paypal-payments' )
 			);
 		}
-	}
-
-	/**
-	 * Filters Pay Later messaging todos to show only the highest priority eligible todo.
-	 *
-	 * @param array $todos The array of todos to filter.
-	 * @return array Filtered todos with only one Pay Later messaging todo.
-	 */
-	private function filter_pay_later_todos( array $todos ): array {
-		$pay_later_todos = array_filter(
-			$todos,
-			function( $todo ) {
-				return in_array( $todo['id'], self::PAY_LATER_IDS, true );
-			}
-		);
-
-		$other_todos = array_filter(
-			$todos,
-			function( $todo ) {
-				return ! in_array( $todo['id'], self::PAY_LATER_IDS, true );
-			}
-		);
-
-		// Find the highest priority Pay Later todo that's eligible.
-		$priority_pay_later_todo = null;
-		foreach ( self::PAY_LATER_IDS as $pay_later_id ) {
-			$matching_todo = current(
-				array_filter(
-					$pay_later_todos,
-					function( $todo ) use ( $pay_later_id ) {
-						return $todo['id'] === $pay_later_id;
-					}
-				)
-			);
-
-			if ( $matching_todo ) {
-				$priority_pay_later_todo = $matching_todo;
-				break;
-			}
-		}
-
-		return $priority_pay_later_todo
-			? array_merge( $other_todos, array( $priority_pay_later_todo ) )
-			: $other_todos;
-	}
-
-	/**
-	 * Sorts todos by their priority value.
-	 *
-	 * @param array $todos Array of todos to sort.
-	 * @return array Sorted array of todos.
-	 */
-	private function sort_todos_by_priority( array $todos ): array {
-		usort(
-			$todos,
-			function( $a, $b ) {
-				$priority_a = $a['priority'] ?? 999;
-				$priority_b = $b['priority'] ?? 999;
-				return $priority_a <=> $priority_b;
-			}
-		);
-
-		return $todos;
 	}
 }

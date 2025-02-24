@@ -84,18 +84,9 @@ class FeaturesRestEndpoint extends RestEndpoint {
 	public function get_features(): WP_REST_Response {
 		$features = array();
 		foreach ( $this->features_definition->get() as $id => $feature ) {
-			// Evaluate eligibility check.
-			if ( is_callable( $feature['isEligible'] ) ) {
-				$is_eligible = $feature['isEligible']();
-			} else {
-				$is_eligible = (bool) $feature['isEligible'];
-			}
-
-			// Include all features with their eligibility state.
 			$features[] = array_merge(
 				array( 'id' => $id ),
-				array_diff_key( $feature, array( 'isEligible' => true ) ),
-				array( 'isEligible' => $is_eligible )
+				$feature
 			);
 		}
 
