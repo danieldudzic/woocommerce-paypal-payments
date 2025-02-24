@@ -451,6 +451,7 @@ class AuthenticationManager {
 		}
 
 		try {
+			// TODO: this call only reliably works in the _next_ request, because in the current request the PartnersEndpoint instance might be initialized with an empty merchant_id.
 			$seller_status = $this->partners_endpoint->seller_status();
 
 			// Request the merchant details via a PayPal API request.
@@ -462,8 +463,8 @@ class AuthenticationManager {
 			// Persist the changes.
 			$this->common_settings->set_merchant_data( $connection );
 			$this->common_settings->save();
-		} catch ( PayPalApiException $exception ) {
-			$this->logger->warning( 'Could not determine merchant country' );
+		} catch ( Throwable $exception ) {
+			$this->logger->warning( 'Could not determine merchant country: ' . $exception->getMessage() );
 		}
 	}
 
