@@ -188,6 +188,7 @@ class AuthenticationManager {
 	 * PayPal account using a client ID and secret.
 	 *
 	 * Part of the "Direct Connection" (Manual Connection) flow.
+	 * This connection type is only available to business merchants.
 	 *
 	 * @param bool   $use_sandbox   Whether to use the sandbox mode.
 	 * @param string $client_id     The client ID.
@@ -208,19 +209,13 @@ class AuthenticationManager {
 
 		$payee = $this->request_payee( $client_id, $client_secret, $use_sandbox );
 
-		try {
-			$seller_status = $this->partners_endpoint->seller_status();
-		} catch ( PayPalApiException $exception ) {
-			$seller_status = null;
-		}
-
 		$connection = new MerchantConnectionDTO(
 			$use_sandbox,
 			$client_id,
 			$client_secret,
 			$payee['merchant_id'],
 			$payee['email_address'],
-			! is_null( $seller_status ) ? $seller_status->country() : '',
+			'',
 			SellerTypeEnum::BUSINESS
 		);
 
@@ -331,13 +326,6 @@ class AuthenticationManager {
 		if ( SellerTypeEnum::is_valid( $seller_type ) ) {
 			$connection->seller_type = $seller_type;
 		}
-
-		try {
-			$seller_status = $this->partners_endpoint->seller_status();
-		} catch ( PayPalApiException $exception ) {
-			$seller_status = null;
-		}
-		$connection->merchant_country = ! is_null( $seller_status ) ? $seller_status->country() : '';
 
 		$this->update_connection_details( $connection );
 	}
@@ -450,6 +438,36 @@ class AuthenticationManager {
 	}
 
 	/**
+	 * Fetches additional details about the connected merchant from PayPal
+	 * and stores them in the DB.
+	 *
+	 * This process only works after persisting basic connection details.
+	 *
+	 * @return void
+	 */
+	private function enrich_merchant_details() : void {
+		if ( ! $this->common_settings->is_merchant_connected() ) {
+			return;
+		}
+
+		try {
+			$seller_status = $this->partners_endpoint->seller_status();
+
+			// Request the merchant details via a PayPal API request.
+			$connection = $this->common_settings->get_merchant_data();
+
+			// Enrich the connection details with additional details.
+			$connection->merchant_country = $seller_status->country();
+
+			// Persist the changes.
+			$this->common_settings->set_merchant_data( $connection );
+			$this->common_settings->save();
+		} catch ( PayPalApiException $exception ) {
+			$this->logger->warning( 'Could not determine merchant country' );
+		}
+	}
+
+	/**
 	 * Stores the provided details in the data model.
 	 *
 	 * @param MerchantConnectionDTO $connection Connection details to persist.
@@ -469,6 +487,9 @@ class AuthenticationManager {
 
 			// Update the connection status and set the environment flags.
 			$this->connection_state->connect( $connection->is_sandbox );
+
+			// At this point, we can use the PayPal API to get more details about the seller.
+			$this->enrich_merchant_details();
 
 			/**
 			 * Request to flush caches before authenticating the merchant, to
