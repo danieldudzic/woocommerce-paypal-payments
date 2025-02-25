@@ -80,6 +80,9 @@ class OnboardingRestEndpoint extends RestEndpoint {
 		'can_use_subscriptions'  => array(
 			'js_name' => 'canUseSubscriptions',
 		),
+		'is_woopayments_active'  => array(
+			'js_name' => 'isWooPaymentsActive',
+		),
 	);
 
 	/**

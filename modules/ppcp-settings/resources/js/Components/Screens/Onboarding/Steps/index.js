@@ -59,6 +59,8 @@ export const getSteps = ( flags ) => {
 	const steps = filterSteps( ALL_STEPS, [
 		// Casual selling: Unlock the "Personal Account" choice.
 		( step ) => flags.canUseCasualSelling || step.id !== 'business',
+		// Hide methods screen when WooPayments is active.
+		( step ) => ! flags.isWooPaymentsActive || step.id !== 'methods',
 	] );
 
 	const totalStepsCount = steps.length;
