@@ -118,7 +118,7 @@ class CommonRestEndpoint extends RestEndpoint {
 		 * GET /wp-json/wc/v3/wc_paypal/common
 		 */
 		register_rest_route(
-			$this->namespace,
+			static::NAMESPACE,
 			'/' . $this->rest_base,
 			array(
 				'methods'             => WP_REST_Server::READABLE,
@@ -134,7 +134,7 @@ class CommonRestEndpoint extends RestEndpoint {
 		 * }
 		 */
 		register_rest_route(
-			$this->namespace,
+			static::NAMESPACE,
 			'/' . $this->rest_base,
 			array(
 				'methods'             => WP_REST_Server::EDITABLE,
@@ -147,7 +147,7 @@ class CommonRestEndpoint extends RestEndpoint {
 		 * GET /wp-json/wc/v3/wc_paypal/common/merchant
 		 */
 		register_rest_route(
-			$this->namespace,
+			static::NAMESPACE,
 			"/$this->rest_base/merchant",
 			array(
 				'methods'             => WP_REST_Server::READABLE,

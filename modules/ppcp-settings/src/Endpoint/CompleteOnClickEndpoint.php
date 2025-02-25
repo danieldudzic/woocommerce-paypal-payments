@@ -62,7 +62,7 @@ class CompleteOnClickEndpoint extends RestEndpoint {
 	 */
 	public function register_routes(): void {
 		register_rest_route(
-			$this->namespace,
+			static::NAMESPACE,
 			'/' . $this->rest_base,
 			array(
 				'methods'             => WP_REST_Server::EDITABLE,

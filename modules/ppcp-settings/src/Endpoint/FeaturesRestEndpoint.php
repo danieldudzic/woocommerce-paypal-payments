@@ -64,7 +64,7 @@ class FeaturesRestEndpoint extends RestEndpoint {
 	public function register_routes(): void {
 		// GET /features - Get features list.
 		register_rest_route(
-			$this->namespace,
+			static::NAMESPACE,
 			'/' . $this->rest_base,
 			array(
 				array(
