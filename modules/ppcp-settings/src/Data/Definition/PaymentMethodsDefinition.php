@@ -153,7 +153,7 @@ class PaymentMethodsDefinition {
 			'icon'            => $icon,
 			'itemTitle'       => $title,
 			'itemDescription' => $description,
-			'warningMessages' => $warning_messages ?? array(),
+			'warningMessages' => $warning_messages,
 		);
 
 		// Add dependency information if provided - ensure it's included directly in the config.
