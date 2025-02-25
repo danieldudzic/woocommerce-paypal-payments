@@ -365,13 +365,10 @@ return array(
 			)
 		);
 
-		// Join notices if any exist.
-		$axo_combined_notices = ! empty( $axo_notices ) ? implode( '', $axo_notices ) : '';
-
 		return new PaymentMethodsDefinition(
 			$container->get( 'settings.data.payment' ),
 			$container->get( 'settings.data.definition.method_dependencies' ),
-			$axo_combined_notices
+			$axo_notices
 		);
 	},
 	'settings.data.definition.method_dependencies' => static function ( ContainerInterface $container ) : PaymentMethodsDependenciesDefinition {

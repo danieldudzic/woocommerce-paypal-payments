@@ -187,7 +187,7 @@
 	}
 
 	/* Add invisible bridge to prevent gap between icon and popover */
-	&::before {
+	&:before {
 		content: '';
 		position: absolute;
 		bottom: 100%;
@@ -202,6 +202,9 @@
 	.ppcp--method-warning-message {
 		position: absolute;
 		bottom: calc(100% + 15px);
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
 		left: 50%;
 		transform: translateX(-50%);
 		width: 250px;
@@ -216,7 +219,7 @@
 		transition: opacity 0.2s ease, visibility 0.2s;
 		pointer-events: none;
 
-		&::after {
+		&:after {
 			content: '';
 			position: absolute;
 			top: 100%;
@@ -249,6 +252,14 @@
 			background: inherit;
 			color: inherit;
 		}
+
+		code {
+			font-size: 12px;
+		}
+
+		ul {
+			list-style: inside;
+		}
 	}
 
 	&:hover .ppcp--method-warning-message,
@@ -261,7 +272,7 @@
 
 // For RTL support
 html[dir="rtl"] .ppcp--method-warning {
-	&::before {
+	&:before {
 		left: auto;
 		right: 50%;
 		transform: translateX(50%);
@@ -272,7 +283,7 @@ html[dir="rtl"] .ppcp--method-warning {
 		right: 50%;
 		transform: translateX(50%);
 
-		&::after {
+		&:after {
 			left: auto;
 			right: 50%;
 			margin-right: -6px;

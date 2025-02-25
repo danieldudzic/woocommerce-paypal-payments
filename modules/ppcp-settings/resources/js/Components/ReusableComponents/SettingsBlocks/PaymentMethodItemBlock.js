@@ -5,7 +5,7 @@ import { useActiveHighlight } from '../../../data/common/hooks';
 
 import SettingsBlock from '../SettingsBlock';
 import PaymentMethodIcon from '../PaymentMethodIcon';
-import WarningMessage from '../../../Components/Screens/Settings/Components/Payment/WarningMessage';
+import WarningMessages from '../../../Components/Screens/Settings/Components/Payment/WarningMessages';
 
 const PaymentMethodItemBlock = ( {
 	paymentMethod,
@@ -14,11 +14,12 @@ const PaymentMethodItemBlock = ( {
 	isSelected,
 	isDisabled,
 	disabledMessage,
-	warningMessage,
+	warningMessages,
 } ) => {
 	const { activeHighlight, setActiveHighlight } = useActiveHighlight();
 	const isHighlighted = activeHighlight === paymentMethod.id;
-	const hasWarning = !! warningMessage;
+	const hasWarning =
+		warningMessages && Object.keys( warningMessages ).length > 0;
 
 	// Reset the active highlight after 2 seconds
 	useEffect( () => {
@@ -77,7 +78,9 @@ const PaymentMethodItemBlock = ( {
 							onChange={ onSelect }
 						/>
 						{ hasWarning && ! isDisabled && isSelected && (
-							<WarningMessage warningMessage={ warningMessage } />
+							<WarningMessages
+								warningMessages={ warningMessages }
+							/>
 						) }
 					</div>
 					{ paymentMethod?.fields && onTriggerModal && (

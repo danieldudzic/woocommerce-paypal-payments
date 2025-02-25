@@ -34,7 +34,7 @@ const PaymentMethodsBlock = ( { paymentMethods = [], onTriggerModal } ) => {
 							onTriggerModal={ () =>
 								onTriggerModal?.( paymentMethod.id )
 							}
-							warningMessage={ paymentMethod.warningMessage }
+							warningMessages={ paymentMethod.warningMessages }
 						/>
 					);
 				} ) }

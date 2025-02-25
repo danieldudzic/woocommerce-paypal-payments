@@ -50,9 +50,9 @@ class PaymentMethodsDefinition {
 	/**
 	 * Conflict notices for Axo gateway.
 	 *
-	 * @var string
+	 * @var array
 	 */
-	private string $axo_conflicts_notice = '';
+	private array $axo_conflicts_notices;
 
 	/**
 	 * List of WooCommerce payment gateways.
@@ -66,16 +66,16 @@ class PaymentMethodsDefinition {
 	 *
 	 * @param PaymentSettings                      $settings Payment methods data model.
 	 * @param PaymentMethodsDependenciesDefinition $dependencies_definition Payment dependencies definition.
-	 * @param string                               $axo_conflicts_notice Conflicts notice for Axo.
+	 * @param array                                $axo_conflicts_notices Conflicts notices for Axo.
 	 */
 	public function __construct(
 		PaymentSettings $settings,
 		PaymentMethodsDependenciesDefinition $dependencies_definition,
-		string $axo_conflicts_notice = ''
+		array $axo_conflicts_notices = array()
 	) {
 		$this->settings                = $settings;
 		$this->dependencies_definition = $dependencies_definition;
-		$this->axo_conflicts_notice    = $axo_conflicts_notice;
+		$this->axo_conflicts_notices   = $axo_conflicts_notices;
 	}
 
 	/**
@@ -106,7 +106,7 @@ class PaymentMethodsDefinition {
 				$method['icon'],
 				$method['fields'] ?? array(),
 				$depends_on,
-				$method['warningMessage'] ?? null
+				$method['warningMessages'] ?? array()
 			);
 		}
 		// Add dependency maps to metadata.
@@ -128,7 +128,7 @@ class PaymentMethodsDefinition {
 	 * @param array|false $fields      Optional. Additional fields to display in the edit modal.
 	 *                                 Setting this to false omits all fields.
 	 * @param array       $depends_on  Optional. IDs of payment methods that this depends on.
-	 * @param string|null $warning_message Optional. Warning message to display in the UI.
+	 * @param array       $warning_messages Optional. Warning messages to display in the UI.
 	 * @return array Payment method definition.
 	 */
 	private function build_method_definition(
@@ -138,7 +138,7 @@ class PaymentMethodsDefinition {
 		string $icon,
 		$fields = array(),
 		array $depends_on = array(),
-		$warning_message = null
+		array $warning_messages = array()
 	) : array {
 		$gateway = $this->wc_gateways[ $gateway_id ] ?? null;
 
@@ -153,7 +153,7 @@ class PaymentMethodsDefinition {
 			'icon'            => $icon,
 			'itemTitle'       => $title,
 			'itemDescription' => $description,
-			'warningMessage'  => $warning_message ?? null,
+			'warningMessages' => $warning_messages ?? array(),
 		);
 
 		// Add dependency information if provided - ensure it's included directly in the config.
@@ -283,11 +283,11 @@ class PaymentMethodsDefinition {
 				),
 			),
 			array(
-				'id'             => AxoGateway::ID,
-				'title'          => __( 'Fastlane by PayPal', 'woocommerce-paypal-payments' ),
-				'description'    => __( "Tap into the scale and trust of PayPal's customer network to recognize shoppers and make guest checkout more seamless than ever.", 'woocommerce-paypal-payments' ),
-				'icon'           => 'payment-method-fastlane',
-				'fields'         => array(
+				'id'              => AxoGateway::ID,
+				'title'           => __( 'Fastlane by PayPal', 'woocommerce-paypal-payments' ),
+				'description'     => __( "Tap into the scale and trust of PayPal's customer network to recognize shoppers and make guest checkout more seamless than ever.", 'woocommerce-paypal-payments' ),
+				'icon'            => 'payment-method-fastlane',
+				'fields'          => array(
 					'fastlaneCardholderName'   => array(
 						'type'    => 'toggle',
 						'default' => $this->settings->get_fastlane_cardholder_name(),
@@ -305,7 +305,7 @@ class PaymentMethodsDefinition {
 						),
 					),
 				),
-				'warningMessage' => $this->axo_conflicts_notice ?: '',
+				'warningMessages' => $this->axo_conflicts_notices,
 			),
 			array(
 				'id'          => ApplePayGateway::ID,
