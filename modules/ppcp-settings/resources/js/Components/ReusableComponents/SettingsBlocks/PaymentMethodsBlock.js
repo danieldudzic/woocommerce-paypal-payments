@@ -33,6 +33,9 @@ const PaymentMethodsBlock = ( { paymentMethods = [], onTriggerModal } ) => {
 						onTriggerModal={ () =>
 							onTriggerModal?.( paymentMethod.id )
 						}
+						warningMessage={
+							'<strong>Note:</strong> The accelerated guest buyer experience provided by Fastlane may not be fully compatible with some of the following <a href="%1$s">active plugins</a>: <ul class="ppcp--method-notice-list"><li>WooCommerce Subscriptions 5.2.0</li><li>Product Add-Ons Premium 6.1.3</li><li>YITH WooCommerce Checkout Manager 3.4.0</li></ul>'
+						}
 					/>
 				) ) }
 		</SettingsBlock>
