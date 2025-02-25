@@ -169,6 +169,7 @@ class PaymentRestEndpoint extends RestEndpoint {
 				'icon'            => $method['icon'],
 				'itemTitle'       => $method['itemTitle'],
 				'itemDescription' => $method['itemDescription'],
+				'warningMessage'  => $method['warningMessage'],
 			);
 
 			if ( isset( $method['fields'] ) ) {

@@ -358,9 +358,24 @@ return array(
 		);
 	},
 	'settings.data.definition.methods'             => static function ( ContainerInterface $container ) : PaymentMethodsDefinition {
+		$axo_checkout_config_notice = $container->get( 'axo.checkout-config-notice.raw' );
+		$axo_incompatible_plugins_notice = $container->get( 'axo.incompatible-plugins-notice.raw' );
+
+		// Combine the notices - only include non-empty ones.
+		$axo_notices = array_filter(
+			array(
+				$axo_checkout_config_notice,
+				$axo_incompatible_plugins_notice,
+			)
+		);
+
+		// Join notices if any exist.
+		$axo_combined_notices = ! empty( $axo_notices ) ? implode( '', $axo_notices ) : '';
+
 		return new PaymentMethodsDefinition(
 			$container->get( 'settings.data.payment' ),
-			$container->get( 'settings.data.definition.method_dependencies' )
+			$container->get( 'settings.data.definition.method_dependencies' ),
+			$axo_combined_notices
 		);
 	},
 	'settings.data.definition.method_dependencies' => static function ( ContainerInterface $container ) : PaymentMethodsDependenciesDefinition {

@@ -238,6 +238,12 @@
 		.ppcp--method-notice-list {
 			margin-bottom: 0;
 		}
+
+		.highlight {
+			font-weight: 700;
+			background: inherit;
+			color: inherit;
+		}
 	}
 
 	&:hover .ppcp--method-warning-message,
