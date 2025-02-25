@@ -63,6 +63,10 @@
 			&:hover {
 				transform: rotate(45deg);
 			}
+
+			&.components-button {
+				height: auto;
+			}
 		}
 
 		.ppcp--method-icon {
@@ -79,6 +83,7 @@
 			justify-content: space-between;
 			align-items: center;
 			margin-top: auto;
+			min-height: 24px;
 		}
 
 		.ppcp--method-toggle-wrapper {
