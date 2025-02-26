@@ -201,6 +201,7 @@ class WooCommerceOrderCreator {
 		if ( $payer ) {
 			$address    = $payer->address();
 			$payer_name = $payer->name();
+			$payer_phone = $payer->phone();
 
 			$wc_email    = null;
 			$wc_customer = WC()->customer;
@@ -220,6 +221,7 @@ class WooCommerceOrderCreator {
 				'state'      => $address ? $address->admin_area_1() : '',
 				'postcode'   => $address ? $address->postal_code() : '',
 				'country'    => $address ? $address->country_code() : '',
+				'phone'      => $payer_phone ? $payer_phone->phone()->national_number() : ''
 			);
 		}
 
