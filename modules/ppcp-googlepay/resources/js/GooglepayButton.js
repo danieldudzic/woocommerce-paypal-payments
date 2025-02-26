@@ -808,6 +808,8 @@ class GooglepayButton extends PaymentButton {
 	async processPayment( paymentData ) {
 		this.logGroup( 'processPayment' );
 
+		let result;
+
 		const payer = payerDataFromPaymentResponse( paymentData );
 
 		const paymentError = ( reason ) => {
@@ -891,14 +893,13 @@ class GooglepayButton extends PaymentButton {
 			}
 		};
 
-		const addBillingDataToSession = () => {
-			moduleStorage.setPayer( payer );
-			setPayerData( payer );
-		};
 
 		return new Promise( async ( resolve ) => {
 			try {
-				addBillingDataToSession();
+				// Add billing data to session.
+				moduleStorage.setPayer( payer );
+				setPayerData( payer );
+
 				await processPaymentPromise( resolve );
 			} catch ( err ) {
 				resolve( paymentError( err.message ) );
