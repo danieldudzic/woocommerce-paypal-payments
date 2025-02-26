@@ -85,6 +85,11 @@
 			margin-top: auto;
 			min-height: 24px;
 		}
+
+		.ppcp--method-toggle-wrapper {
+			display: flex;
+			align-items: center;
+		}
 	}
 }
 
@@ -145,7 +150,7 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	z-index: 50;
+	z-index: 8;
 	border-radius: var(--container-border-radius);
 	pointer-events: auto;
 	opacity: 0;
@@ -162,10 +167,127 @@
 	@include font(13, 20, 500);
 	color: $color-text-tertiary;
 	position: relative;
-	z-index: 51;
+	z-index: 9;
 	border: none;
 
 	a {
 		text-decoration: none;
+	}
+}
+
+/* Warning message */
+.ppcp--method-warning {
+	position: relative;
+	display: inline-flex;
+	cursor: help;
+
+	svg {
+		fill: currentColor;
+		color: $color-warning;
+	}
+
+	/* Add invisible bridge to prevent gap between icon and popover */
+	&:before {
+		content: '';
+		position: absolute;
+		bottom: 100%;
+		left: 50%;
+		transform: translateX(-50%);
+		width: 30px;
+		height: 15px;
+		background-color: transparent;
+	}
+
+	// Popover bubble
+	.ppcp--method-warning-message {
+		position: absolute;
+		bottom: calc(100% + 15px);
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+		left: 50%;
+		transform: translateX(-50%);
+		width: 250px;
+		padding: 16px;
+		background-color: $color-white;
+		border: 1px solid $color-gray-200;
+		border-radius: 4px;
+		z-index: 9;
+		box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+		opacity: 0;
+		visibility: hidden;
+		transition: opacity 0.2s ease, visibility 0.2s;
+		pointer-events: none;
+
+		&:after {
+			content: '';
+			position: absolute;
+			top: 100%;
+			left: 50%;
+			margin-left: -6px;
+			width: 12px;
+			height: 12px;
+			background: $color-white;
+			border-right: 1px solid $color-gray-200;
+			border-bottom: 1px solid $color-gray-200;
+			box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.01);
+			transform: rotate(45deg);
+			margin-top: -6px;
+		}
+
+		a {
+			text-decoration: none;
+
+			&:hover {
+				text-decoration: underline;
+			}
+		}
+
+		.ppcp--method-notice-list {
+			margin-bottom: 0;
+		}
+
+		.highlight {
+			font-weight: 700;
+			background: inherit;
+			color: inherit;
+		}
+
+		code {
+			font-size: 12px;
+		}
+
+		ul {
+			list-style: inside;
+		}
+	}
+
+	&:hover .ppcp--method-warning-message,
+	& .ppcp--method-warning-message:hover {
+		opacity: 1;
+		visibility: visible;
+		pointer-events: auto;
+	}
+}
+
+// For RTL support
+html[dir="rtl"] .ppcp--method-warning {
+	&:before {
+		left: auto;
+		right: 50%;
+		transform: translateX(50%);
+	}
+
+	.ppcp--method-warning-message {
+		left: auto;
+		right: 50%;
+		transform: translateX(50%);
+
+		&:after {
+			left: auto;
+			right: 50%;
+			margin-right: -6px;
+			margin-left: 0;
+		}
 	}
 }

@@ -20,21 +20,24 @@ const PaymentMethodsBlock = ( { paymentMethods = [], onTriggerModal } ) => {
 			{ paymentMethods
 				// Remove empty/invalid payment method entries.
 				.filter( ( m ) => m && m.id )
-				.map( ( paymentMethod ) => (
-					<PaymentMethodItemBlock
-						key={ paymentMethod.id }
-						paymentMethod={ paymentMethod }
-						isSelected={ paymentMethod.enabled }
-						isDisabled={ paymentMethod.isDisabled }
-						disabledMessage={ paymentMethod.disabledMessage }
-						onSelect={ ( checked ) =>
-							handleSelect( paymentMethod.id, checked )
-						}
-						onTriggerModal={ () =>
-							onTriggerModal?.( paymentMethod.id )
-						}
-					/>
-				) ) }
+				.map( ( paymentMethod ) => {
+					return (
+						<PaymentMethodItemBlock
+							key={ paymentMethod.id }
+							paymentMethod={ paymentMethod }
+							isSelected={ paymentMethod.enabled }
+							isDisabled={ paymentMethod.isDisabled }
+							disabledMessage={ paymentMethod.disabledMessage }
+							onSelect={ ( checked ) =>
+								handleSelect( paymentMethod.id, checked )
+							}
+							onTriggerModal={ () =>
+								onTriggerModal?.( paymentMethod.id )
+							}
+							warningMessages={ paymentMethod.warningMessages }
+						/>
+					);
+				} ) }
 		</SettingsBlock>
 	);
 };

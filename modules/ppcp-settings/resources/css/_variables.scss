@@ -17,6 +17,7 @@ $color-text-text: #070707;
 $color-border: #AEAEAE;
 $color-divider: #F0F0F0;
 $color-error-red: #cc1818;
+$color-warning: #e2a030;
 
 $shadow-card: 0 3px 6px 0 rgba(0, 0, 0, 0.15);
 $color-gradient-dark: #001435;
@@ -66,6 +67,7 @@ $card-vertical-gap: 48px;
 	--color-text-teriary: #{$color-text-tertiary};
 	--color-text-description: #{$color-gray-700};
 	--color-error: #{$color-error-red};
+	--color-warning: #{$color-warning};
 
 	// Default settings-block theme.
 	--block-item-gap: 16px;

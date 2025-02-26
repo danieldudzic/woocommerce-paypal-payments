@@ -5,6 +5,7 @@ import { useActiveHighlight } from '../../../data/common/hooks';
 
 import SettingsBlock from '../SettingsBlock';
 import PaymentMethodIcon from '../PaymentMethodIcon';
+import WarningMessages from '../../../Components/Screens/Settings/Components/Payment/WarningMessages';
 
 const PaymentMethodItemBlock = ( {
 	paymentMethod,
@@ -13,9 +14,12 @@ const PaymentMethodItemBlock = ( {
 	isSelected,
 	isDisabled,
 	disabledMessage,
+	warningMessages,
 } ) => {
 	const { activeHighlight, setActiveHighlight } = useActiveHighlight();
 	const isHighlighted = activeHighlight === paymentMethod.id;
+	const hasWarning =
+		warningMessages && Object.keys( warningMessages ).length > 0;
 
 	// Reset the active highlight after 2 seconds
 	useEffect( () => {
@@ -28,12 +32,20 @@ const PaymentMethodItemBlock = ( {
 		}
 	}, [ isHighlighted, setActiveHighlight ] );
 
+	// Determine class names based on states
+	const methodItemClasses = [
+		'ppcp--method-item',
+		isHighlighted ? 'ppcp-highlight' : '',
+		isDisabled ? 'ppcp--method-item--disabled' : '',
+		hasWarning && ! isDisabled ? 'ppcp--method-item--warning' : '',
+	]
+		.filter( Boolean )
+		.join( ' ' );
+
 	return (
 		<SettingsBlock
 			id={ paymentMethod.id }
-			className={ `ppcp--method-item ${
-				isHighlighted ? 'ppcp-highlight' : ''
-			} ${ isDisabled ? 'ppcp--method-item--disabled' : '' }` }
+			className={ methodItemClasses }
 			separatorAndGap={ false }
 		>
 			{ isDisabled && (
@@ -59,11 +71,18 @@ const PaymentMethodItemBlock = ( {
 					{ paymentMethod.itemDescription }
 				</p>
 				<div className="ppcp--method-footer">
-					<ToggleControl
-						__nextHasNoMarginBottom
-						checked={ isSelected }
-						onChange={ onSelect }
-					/>
+					<div className="ppcp--method-toggle-wrapper">
+						<ToggleControl
+							__nextHasNoMarginBottom
+							checked={ isSelected }
+							onChange={ onSelect }
+						/>
+						{ hasWarning && ! isDisabled && isSelected && (
+							<WarningMessages
+								warningMessages={ warningMessages }
+							/>
+						) }
+					</div>
 					{ paymentMethod?.fields && onTriggerModal && (
 						<Button
 							className="ppcp--method-settings"
