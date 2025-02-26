@@ -25,6 +25,7 @@ const defaultTransient = Object.freeze( {
 		canUseSubscriptions: false,
 		shouldSkipPaymentMethods: false,
 		canUseFastlane: false,
+		canUsePayLater: false,
 	} ),
 } );
 

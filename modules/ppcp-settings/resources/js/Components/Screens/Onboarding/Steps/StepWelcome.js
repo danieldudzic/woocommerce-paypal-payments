@@ -12,7 +12,8 @@ import AdvancedOptionsForm from '../Components/AdvancedOptionsForm';
 
 const StepWelcome = ( { setStep, currentStep } ) => {
 	const { storeCountry } = CommonHooks.useWooSettings();
-	const { canUseCardPayments, canUseFastlane } = OnboardingHooks.useFlags();
+	const { canUseCardPayments, canUseFastlane, canUsePayLater } =
+		OnboardingHooks.useFlags();
 	const nonAcdcIcons = [ 'paypal', 'visa', 'mastercard', 'amex', 'discover' ];
 
 	return (
@@ -55,7 +56,7 @@ const StepWelcome = ( { setStep, currentStep } ) => {
 			<WelcomeDocs
 				useAcdc={ canUseCardPayments }
 				isFastlane={ canUseFastlane }
-				isPayLater={ true }
+				isPayLater={ canUsePayLater }
 				storeCountry={ storeCountry }
 			/>
 			<Separator text={ __( 'or', 'woocommerce-paypal-payments' ) } />
