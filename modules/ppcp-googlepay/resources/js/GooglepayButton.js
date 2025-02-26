@@ -532,7 +532,7 @@ class GooglepayButton extends PaymentButton {
 	/**
 	 * Show Google Pay payment sheet when Google Pay payment button is clicked
 	 */
-	onButtonClick() {
+	async onButtonClick() {
 		this.logGroup( 'onButtonClick' );
 
 		const initiatePaymentRequest = async () => {
@@ -584,10 +584,11 @@ class GooglepayButton extends PaymentButton {
 				} );
 		};
 
-		validateForm()
+		const paymentData = await validateForm()
 			.then( getTransactionInfo )
-			.then( initiatePaymentRequest )
-			.finally( () => this.logGroup() )
+			.then( initiatePaymentRequest );
+
+		this.logGroup();
 	}
 
 	paymentDataRequest() {
