@@ -44,7 +44,6 @@ import moduleStorage from './Helper/GooglePayStorage';
  * @property {Function}            createButton         - The convenience method is used to generate a Google Pay payment button styled with the latest Google Pay branding for insertion into a webpage.
  * @property {Function}            isReadyToPay         - Use the isReadyToPay(isReadyToPayRequest) method to determine a user's ability to return a form of payment from the Google Pay API.
  * @property {(Object) => Promise} loadPaymentData      - This method presents a Google Pay payment sheet that allows selection of a payment method and optionally configured parameters
- * @property {Function}            onPaymentAuthorized  - This method is called when a payment is authorized in the payment sheet.
  * @property {Function}            onPaymentDataChanged - This method handles payment data changes in the payment sheet such as shipping address and shipping options.
  */
 
@@ -190,7 +189,6 @@ class GooglepayButton extends PaymentButton {
 		);
 
 		this.init = this.init.bind( this );
-		this.onPaymentAuthorized = this.onPaymentAuthorized.bind( this );
 		this.onPaymentDataChanged = this.onPaymentDataChanged.bind( this );
 		this.onButtonClick = this.onButtonClick.bind( this );
 
@@ -411,8 +409,6 @@ class GooglepayButton extends PaymentButton {
 			return callbacks;
 		}
 
-		callbacks.onPaymentAuthorized = this.onPaymentAuthorized;
-
 		if ( this.requiresShipping ) {
 			callbacks.onPaymentDataChanged = this.onPaymentDataChanged;
 		}
@@ -591,7 +587,7 @@ class GooglepayButton extends PaymentButton {
 		};
 
 		const useShippingCallback = this.requiresShipping;
-		const callbackIntents = [ 'PAYMENT_AUTHORIZATION' ];
+		const callbackIntents = [];
 
 		if ( useShippingCallback ) {
 			callbackIntents.push( 'SHIPPING_ADDRESS', 'SHIPPING_OPTION' );
@@ -790,12 +786,6 @@ class GooglepayButton extends PaymentButton {
 	//------------------------
 	// Payment process
 	//------------------------
-
-	onPaymentAuthorized( paymentData ) {
-		this.log( 'onPaymentAuthorized', paymentData );
-
-		return this.processPayment( paymentData );
-	}
 
 	async processPayment( paymentData ) {
 		this.logGroup( 'processPayment' );
