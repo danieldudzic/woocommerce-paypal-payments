@@ -49,6 +49,7 @@ use WooCommerce\PayPalCommerce\WcGateway\Settings\Settings;
 use WooCommerce\PayPalCommerce\PayLaterConfigurator\Endpoint\SaveConfig;
 use WooCommerce\PayPalCommerce\WcGateway\Helper\Environment;
 use WooCommerce\PayPalCommerce\WcGateway\Helper\ConnectionState;
+use WooCommerce\PayPalCommerce\Settings\Service\InternalRestService;
 
 return array(
 	'settings.url'                                 => static function ( ContainerInterface $container ) : string {
@@ -172,7 +173,10 @@ return array(
 		return new OnboardingRestEndpoint( $container->get( 'settings.data.onboarding' ) );
 	},
 	'settings.rest.common'                         => static function ( ContainerInterface $container ) : CommonRestEndpoint {
-		return new CommonRestEndpoint( $container->get( 'settings.data.general' ) );
+		return new CommonRestEndpoint(
+			$container->get( 'settings.data.general' ),
+			$container->get( 'settings.service.rest-service' )
+		);
 	},
 	'settings.rest.payment'                        => static function ( ContainerInterface $container ) : PaymentRestEndpoint {
 		return new PaymentRestEndpoint(
@@ -313,9 +317,12 @@ return array(
 			$container->get( 'api.env.endpoint.login-seller' ),
 			$container->get( 'api.repository.partner-referrals-data' ),
 			$container->get( 'settings.connection-state' ),
-			$container->get( 'api.endpoint.partners' ),
+			$container->get( 'settings.service.rest-service' ),
 			$container->get( 'woocommerce.logger.woocommerce' )
 		);
+	},
+	'settings.service.rest-service'                => static function ( ContainerInterface $container ) : InternalRestService {
+		return new InternalRestService();
 	},
 	'settings.service.sanitizer'                   => static function ( ContainerInterface $container ) : DataSanitizer {
 		return new DataSanitizer();

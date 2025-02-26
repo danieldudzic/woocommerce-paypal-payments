@@ -13,6 +13,7 @@ use WP_REST_Server;
 use WP_REST_Response;
 use WP_REST_Request;
 use WooCommerce\PayPalCommerce\Settings\Data\GeneralSettings;
+use WooCommerce\PayPalCommerce\Settings\Service\InternalRestService;
 
 /**
  * REST controller for "common" settings, which are used and modified by
@@ -22,6 +23,11 @@ use WooCommerce\PayPalCommerce\Settings\Data\GeneralSettings;
  * internal data model.
  */
 class CommonRestEndpoint extends RestEndpoint {
+	/**
+	 * Full REST path to the merchant-details endpoint, relative to the namespace.
+	 */
+	protected const SELLER_ACCOUNT_PATH = 'common/seller-account';
+
 	/**
 	 * The base path for this REST controller.
 	 *
@@ -35,6 +41,13 @@ class CommonRestEndpoint extends RestEndpoint {
 	 * @var GeneralSettings
 	 */
 	protected GeneralSettings $settings;
+
+	/**
+	 * Internal REST handler, used to authenticate internal requests.
+	 *
+	 * @var InternalRestService
+	 */
+	protected InternalRestService $rest_service;
 
 	/**
 	 * Field mapping for request to profile transformation.
@@ -104,10 +117,27 @@ class CommonRestEndpoint extends RestEndpoint {
 	/**
 	 * Constructor.
 	 *
-	 * @param GeneralSettings $settings The settings instance.
+	 * @param GeneralSettings     $settings     The settings instance.
+	 * @param InternalRestService $rest_service Internal REST handler, for authentication.
 	 */
-	public function __construct( GeneralSettings $settings ) {
-		$this->settings = $settings;
+	public function __construct( GeneralSettings $settings, InternalRestService $rest_service ) {
+		$this->settings     = $settings;
+		$this->rest_service = $rest_service;
+	}
+
+	/**
+	 * Returns the path to the "Get Seller Account Details" REST route.
+	 * This is an internal route which is consumed by the plugin itself during onboarding.
+	 *
+	 * @param bool $full_route Whether to return the full endpoint path or just the route name.
+	 * @return string The full path to the REST endpoint.
+	 */
+	public static function seller_account_route( bool $full_route = false ) : string {
+		if ( $full_route ) {
+			return '/' . static::NAMESPACE . '/' . self::SELLER_ACCOUNT_PATH;
+		}
+
+		return self::SELLER_ACCOUNT_PATH;
 	}
 
 	/**
@@ -153,6 +183,24 @@ class CommonRestEndpoint extends RestEndpoint {
 				'methods'             => WP_REST_Server::READABLE,
 				'callback'            => array( $this, 'get_merchant_details' ),
 				'permission_callback' => array( $this, 'check_permission' ),
+			)
+		);
+
+		/**
+		 * GET /wp-json/wc/v3/wc_paypal/common/seller-account
+		 */
+		register_rest_route(
+			static::NAMESPACE,
+			self::seller_account_route(),
+			array(
+				'methods'             => WP_REST_Server::READABLE,
+				'callback'            => array( $this, 'get_seller_account_info' ),
+				'permission_callback' => function ( WP_REST_Request $request ) {
+					$token    = $request->get_header( 'X-Internal-Token' );
+					$endpoint = self::seller_account_route();
+
+					return $this->rest_service->verify_token( $token, $endpoint );
+				},
 			)
 		);
 	}
@@ -203,6 +251,17 @@ class CommonRestEndpoint extends RestEndpoint {
 		$extra_data = $this->add_merchant_info( array() );
 
 		return $this->return_success( $js_data, $extra_data );
+	}
+
+	/**
+	 * Requests details from the PayPal API.
+	 *
+	 * Used during onboarding to enrich the merchant details in the DB.
+	 *
+	 * @return WP_REST_Response Seller details, provided by PayPal's API.
+	 */
+	public function get_seller_account_info() : WP_REST_Response {
+		return $this->return_success( array( 'country' => 'XY' ) );
 	}
 
 	/**

@@ -27,6 +27,7 @@ use WooCommerce\PayPalCommerce\Settings\DTO\MerchantConnectionDTO;
 use WooCommerce\PayPalCommerce\Webhooks\WebhookRegistrar;
 use WooCommerce\PayPalCommerce\Settings\Enum\SellerTypeEnum;
 use WooCommerce\PayPalCommerce\WcGateway\Helper\ConnectionState;
+use WooCommerce\PayPalCommerce\Settings\Endpoint\CommonRestEndpoint;
 
 /**
  * Class that manages the connection to PayPal.
@@ -75,22 +76,22 @@ class AuthenticationManager {
 	private ConnectionState $connection_state;
 
 	/**
-	 * Partners endpoint.
+	 * Internal REST service, to consume own REST handlers in a separate request.
 	 *
-	 * @var PartnersEndpoint
+	 * @var InternalRestService
 	 */
-	private PartnersEndpoint $partners_endpoint;
+	private InternalRestService $rest_service;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param GeneralSettings      $common_settings   Data model that stores the connection details.
-	 * @param EnvironmentConfig    $connection_host   API host for direct authentication.
-	 * @param EnvironmentConfig    $login_endpoint    API handler to fetch merchant credentials.
-	 * @param PartnerReferralsData $referrals_data    Partner referrals data.
-	 * @param ConnectionState      $connection_state  Connection state manager.
-	 * @param PartnersEndpoint     $partners_endpoint Partners endpoint.
-	 * @param ?LoggerInterface     $logger            Logging instance.
+	 * @param GeneralSettings      $common_settings  Data model that stores the connection details.
+	 * @param EnvironmentConfig    $connection_host  API host for direct authentication.
+	 * @param EnvironmentConfig    $login_endpoint   API handler to fetch merchant credentials.
+	 * @param PartnerReferralsData $referrals_data   Partner referrals data.
+	 * @param ConnectionState      $connection_state Connection state manager.
+	 * @param InternalRestService  $rest_service     Allows calling internal REST endpoints.
+	 * @param ?LoggerInterface     $logger           Logging instance.
 	 */
 	public function __construct(
 		GeneralSettings $common_settings,
@@ -98,16 +99,16 @@ class AuthenticationManager {
 		EnvironmentConfig $login_endpoint,
 		PartnerReferralsData $referrals_data,
 		ConnectionState $connection_state,
-		PartnersEndpoint $partners_endpoint,
+		InternalRestService $rest_service,
 		?LoggerInterface $logger = null
 	) {
-		$this->common_settings   = $common_settings;
-		$this->connection_host   = $connection_host;
-		$this->login_endpoint    = $login_endpoint;
-		$this->referrals_data    = $referrals_data;
-		$this->connection_state  = $connection_state;
-		$this->partners_endpoint = $partners_endpoint;
-		$this->logger            = $logger ?: new NullLogger();
+		$this->common_settings  = $common_settings;
+		$this->connection_host  = $connection_host;
+		$this->login_endpoint   = $login_endpoint;
+		$this->referrals_data   = $referrals_data;
+		$this->connection_state = $connection_state;
+		$this->rest_service     = $rest_service;
+		$this->logger           = $logger ?: new NullLogger();
 	}
 
 	/**
@@ -281,17 +282,10 @@ class AuthenticationManager {
 		 */
 		$connection = $this->common_settings->get_merchant_data();
 
-		try {
-			$seller_status = $this->partners_endpoint->seller_status();
-		} catch ( PayPalApiException $exception ) {
-			$seller_status = null;
-		}
-
-		$connection->is_sandbox       = $use_sandbox;
-		$connection->client_id        = $credentials['client_id'];
-		$connection->client_secret    = $credentials['client_secret'];
-		$connection->merchant_id      = $credentials['merchant_id'];
-		$connection->merchant_country = ! is_null( $seller_status ) ? $seller_status->country() : '';
+		$connection->is_sandbox    = $use_sandbox;
+		$connection->client_id     = $credentials['client_id'];
+		$connection->client_secret = $credentials['client_secret'];
+		$connection->merchant_id   = $credentials['merchant_id'];
 
 		$this->update_connection_details( $connection );
 	}
@@ -451,14 +445,14 @@ class AuthenticationManager {
 		}
 
 		try {
-			// TODO: this call only reliably works in the _next_ request, because in the current request the PartnersEndpoint instance might be initialized with an empty merchant_id.
-			$seller_status = $this->partners_endpoint->seller_status();
+			$endpoint = CommonRestEndpoint::seller_account_route( true );
+			$details  = $this->rest_service->get_data( $endpoint );
 
 			// Request the merchant details via a PayPal API request.
 			$connection = $this->common_settings->get_merchant_data();
 
 			// Enrich the connection details with additional details.
-			$connection->merchant_country = $seller_status->country();
+			$connection->merchant_country = $details['country'];
 
 			// Persist the changes.
 			$this->common_settings->set_merchant_data( $connection );
