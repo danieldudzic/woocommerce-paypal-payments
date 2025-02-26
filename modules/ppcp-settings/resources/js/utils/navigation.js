@@ -22,11 +22,14 @@ export const getQuery = () =>
 /**
  * Updates the query parameters of the current page.
  *
- * @param {Object} query Object of params to be updated.
+ * @param {Object}  query           Object of params to be updated.
+ * @param {boolean} [replace=false] Whether to add the query vars (false) or replace previous query vars with the new details (true).
  * @throws {TypeError} If the query is not an object.
  */
-export const updateQueryString = ( query ) =>
-	pushHistory( getNewPath( query ) );
+export const updateQueryString = ( query, replace = false ) => {
+	const newQuery = replace ? query : { ...getQuery(), ...query };
+	return pushHistory( getNewPath( newQuery ) );
+};
 
 /**
  * Return a URL with set query parameters.
@@ -36,4 +39,4 @@ export const updateQueryString = ( query ) =>
  * @return {string} Updated URL merging query params into existing params.
  */
 export const getNewPath = ( query, basePath = getPath() ) =>
-	addQueryArgs( basePath, { ...getQuery(), ...query } );
+	addQueryArgs( basePath, query );
