@@ -52,7 +52,8 @@ class OnboardingProfile extends AbstractDataModel {
 		bool $can_use_vaulting = false,
 		bool $can_use_card_payments = false,
 		bool $can_use_subscriptions = false,
-		bool $should_skip_payment_methods = false
+		bool $should_skip_payment_methods = false,
+		bool $can_use_fastlane = false
 	) {
 		parent::__construct();
 
@@ -61,6 +62,7 @@ class OnboardingProfile extends AbstractDataModel {
 		$this->flags['can_use_card_payments']       = $can_use_card_payments;
 		$this->flags['can_use_subscriptions']       = $can_use_subscriptions;
 		$this->flags['should_skip_payment_methods'] = $should_skip_payment_methods;
+		$this->flags['can_use_fastlane'] = $can_use_fastlane;
 	}
 
 	/**

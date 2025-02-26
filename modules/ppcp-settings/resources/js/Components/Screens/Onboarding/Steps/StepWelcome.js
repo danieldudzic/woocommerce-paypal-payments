@@ -12,7 +12,7 @@ import AdvancedOptionsForm from '../Components/AdvancedOptionsForm';
 
 const StepWelcome = ( { setStep, currentStep } ) => {
 	const { storeCountry } = CommonHooks.useWooSettings();
-	const { canUseCardPayments } = OnboardingHooks.useFlags();
+	const { canUseCardPayments, canUseFastlane } = OnboardingHooks.useFlags();
 	const nonAcdcIcons = [ 'paypal', 'visa', 'mastercard', 'amex', 'discover' ];
 
 	return (
@@ -54,7 +54,7 @@ const StepWelcome = ( { setStep, currentStep } ) => {
 			<Separator className="ppcp-r-page-welcome-mode-separator" />
 			<WelcomeDocs
 				useAcdc={ canUseCardPayments }
-				isFastlane={ true }
+				isFastlane={ canUseFastlane }
 				isPayLater={ true }
 				storeCountry={ storeCountry }
 			/>
