@@ -870,11 +870,7 @@ class GooglepayButton extends PaymentButton {
 			return isApproved;
 		};
 
-		const processPaymentPromise = async ( resolve ) => {
-			const id = await this.contextHandler.createOrder();
-
-			this.log( 'createOrder', id );
-
+		const processPaymentPromise = async ( resolve, id ) => {
 			const isApprovedByPayPal = await checkPayPalApproval( id );
 
 			if ( ! isApprovedByPayPal ) {
@@ -900,7 +896,10 @@ class GooglepayButton extends PaymentButton {
 			setPayerData( payer );
 
 			try {
-				await processPaymentPromise( resolve );
+				const orderId = await this.contextHandler.createOrder();
+				this.log( 'createOrder', orderId );
+
+				await processPaymentPromise( resolve, orderId );
 			} catch ( err ) {
 				resolve( paymentError( err.message ) );
 			}
