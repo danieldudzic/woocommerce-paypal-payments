@@ -23,7 +23,7 @@ class StylingSettingsMapHelper {
 
 	use ContextTrait;
 
-	protected const BUTTON_NAMES = array( 'googlepay', 'applepay', 'pay-later' );
+	protected const BUTTON_NAMES = array( 'ppcp-googlepay', 'ppcp-applepay', 'pay-later' );
 
 	/**
 	 * Maps old setting keys to new setting style names.
@@ -84,10 +84,10 @@ class StylingSettingsMapHelper {
 				return $this->mapped_disabled_funding_value( $styling_models );
 
 			case 'googlepay_button_enabled':
-				return $this->mapped_button_enabled_value( $styling_models, 'googlepay' );
+				return $this->mapped_button_enabled_value( $styling_models, 'ppcp-googlepay' );
 
 			case 'applepay_button_enabled':
-				return $this->mapped_button_enabled_value( $styling_models, 'applepay' );
+				return $this->mapped_button_enabled_value( $styling_models, 'ppcp-applepay' );
 
 			case 'pay_later_button_enabled':
 				return $this->mapped_button_enabled_value( $styling_models, 'pay-later' );
