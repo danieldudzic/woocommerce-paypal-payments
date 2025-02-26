@@ -535,7 +535,7 @@ class GooglepayButton extends PaymentButton {
 	onButtonClick() {
 		this.log( 'onButtonClick' );
 
-		const initiatePaymentRequest = () => {
+		const initiatePaymentRequest = async () => {
 			window.ppcpFundingSource = 'googlepay';
 			const paymentDataRequest = this.paymentDataRequest();
 
@@ -548,7 +548,7 @@ class GooglepayButton extends PaymentButton {
 			return this.paymentsClient.loadPaymentData( paymentDataRequest );
 		};
 
-		const validateForm = () => {
+		const validateForm = async () => {
 			if ( 'function' !== typeof this.contextHandler.validateForm ) {
 				return Promise.resolve();
 			}
@@ -559,7 +559,7 @@ class GooglepayButton extends PaymentButton {
 			} );
 		};
 
-		const getTransactionInfo = () => {
+		const getTransactionInfo = async () => {
 			if ( 'function' !== typeof this.contextHandler.transactionInfo ) {
 				return Promise.resolve();
 			}
