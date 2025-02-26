@@ -84,10 +84,13 @@ class StylingSettingsMapHelper {
 				return $this->mapped_disabled_funding_value( $styling_models );
 
 			case 'googlepay_button_enabled':
-				return $this->mapped_google_pay_or_apple_pay_enabled_value( $styling_models, 'googlepay' );
+				return $this->mapped_button_enabled_value( $styling_models, 'googlepay' );
 
 			case 'applepay_button_enabled':
-				return $this->mapped_google_pay_or_apple_pay_enabled_value( $styling_models, 'applepay' );
+				return $this->mapped_button_enabled_value( $styling_models, 'applepay' );
+
+			case 'pay_later_button_enabled':
+				return $this->mapped_button_enabled_value( $styling_models, 'pay-later' );
 
 			default:
 				foreach ( $this->locations_map() as $old_location_name => $new_location_name ) {
