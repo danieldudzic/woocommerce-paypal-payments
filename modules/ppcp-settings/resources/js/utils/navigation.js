@@ -61,9 +61,9 @@ export const filterObjectKeys = ( obj, allowedKeys ) => {
  * Clean the browser URL by removing unsupported query parameters.
  *
  * @param {string[]} supportedArgs An array of supported query parameter names.
- * @return {boolean} Returns true if the URL was already clean, false if it was cleaned.
+ * @return {boolean} Returns true if the URL was modified (cleaned), false if nothing changed.
  */
-export const cleanBrowserUrl = ( supportedArgs ) => {
+export const cleanUrlQueryParams = ( supportedArgs ) => {
 	const currentQuery = getQuery();
 	const cleanedQuery = filterObjectKeys( currentQuery, supportedArgs );
 
@@ -71,10 +71,10 @@ export const cleanBrowserUrl = ( supportedArgs ) => {
 		Object.keys( cleanedQuery ).length ===
 		Object.keys( currentQuery ).length;
 
-	if ( ! isUrlClean ) {
-		updateQueryString( cleanedQuery, true );
+	if ( isUrlClean ) {
 		return false;
 	}
 
+	updateQueryString( cleanedQuery, true );
 	return true;
 };

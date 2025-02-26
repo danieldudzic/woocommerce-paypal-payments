@@ -6,7 +6,7 @@ import SpinnerOverlay from './ReusableComponents/SpinnerOverlay';
 import SendOnlyMessage from './Screens/SendOnlyMessage';
 import OnboardingScreen from './Screens/Onboarding';
 import SettingsScreen from './Screens/Settings';
-import { cleanBrowserUrl, getQuery } from '../utils/navigation';
+import { getQuery, cleanUrlQueryParams } from '../utils/navigation';
 
 const SettingsApp = () => {
 	const { isReady: onboardingIsReady, completed: onboardingCompleted } =
@@ -35,10 +35,15 @@ const SettingsApp = () => {
 	const [ activePanel, setActivePanel ] = useState( getQuery().panel );
 
 	const removeUnsupportedArgs = () => {
-		if ( cleanBrowserUrl( [ 'page', 'tab', 'section' ] ) ) {
-			return;
+		const urlWasCleaned = cleanUrlQueryParams( [
+			'page',
+			'tab',
+			'section',
+		] );
+
+		if ( urlWasCleaned ) {
+			setActivePanel( '' );
 		}
-		setActivePanel( '' );
 	};
 
 	const Content = useMemo( () => {
