@@ -40,6 +40,7 @@ const SavePaymentMethods = () => {
 				) }
 				value={ savePaypalAndVenmo }
 				onChange={ setSavePaypalAndVenmo }
+				disabled={ ! savePaypalAndVenmo }
 			/>
 
 			<ControlToggleButton
