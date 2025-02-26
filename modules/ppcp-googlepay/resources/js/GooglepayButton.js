@@ -870,42 +870,38 @@ class GooglepayButton extends PaymentButton {
 			return isApproved;
 		};
 
-		const processPaymentPromise = async ( resolve, id ) => {
+		const processPaymentPromise = async ( id ) => {
 			const isApprovedByPayPal = await checkPayPalApproval( id );
 
 			if ( ! isApprovedByPayPal ) {
-				resolve( paymentError( 'TRANSACTION FAILED' ) );
-
-				return;
+				return paymentError( 'TRANSACTION FAILED' );
 			}
 
 			// This must be the last step in the process, as it initiates a redirect.
 			const success = await approveOrderServerSide( id );
 
 			if ( success ) {
-				resolve( this.processPaymentResponse( 'SUCCESS' ) );
-			} else {
-				resolve( paymentError( 'FAILED TO APPROVE' ) );
+				return this.processPaymentResponse( 'SUCCESS' );
 			}
+			return paymentError( 'FAILED TO APPROVE' );
 		};
 
+		// Add billing data to session.
+		moduleStorage.setPayer( payer );
+		setPayerData( payer );
 
-		return new Promise( async ( resolve ) => {
-			// Add billing data to session.
-			moduleStorage.setPayer( payer );
-			setPayerData( payer );
+		try {
+			const orderId = await this.contextHandler.createOrder();
+			this.log( 'createOrder', orderId );
 
-			try {
-				const orderId = await this.contextHandler.createOrder();
-				this.log( 'createOrder', orderId );
+			result = await processPaymentPromise( orderId );
+		} catch ( err ) {
+			result = paymentError( err.message );
+		}
 
-				await processPaymentPromise( resolve, orderId );
-			} catch ( err ) {
-				resolve( paymentError( err.message ) );
-			}
+		this.logGroup();
 
-			this.logGroup();
-		} );
+		return result;
 	}
 
 	processPaymentResponse( state, intent = null, message = null ) {
