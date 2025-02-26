@@ -812,14 +812,27 @@ class GooglepayButton extends PaymentButton {
 
 		const payer = payerDataFromPaymentResponse( paymentData );
 
+		const paymentResponse = ( state, intent = null, message = null ) => {
+			const response = {
+				transactionState: state,
+			};
+
+			if ( intent || message ) {
+				response.error = {
+					intent,
+					message,
+				};
+			}
+
+			this.log( 'processPaymentResponse', response );
+
+			return response;
+		};
+
 		const paymentError = ( reason ) => {
 			this.error( reason );
 
-			return this.processPaymentResponse(
-				'ERROR',
-				'PAYMENT_AUTHORIZATION',
-				reason
-			);
+			return paymentResponse( 'ERROR', 'PAYMENT_AUTHORIZATION', reason );
 		};
 
 		const checkPayPalApproval = async ( orderId ) => {
@@ -840,9 +853,13 @@ class GooglepayButton extends PaymentButton {
 		/**
 		 * This approval mainly confirms that the orderID is valid.
 		 *
-		 * It's still needed because this handler redirects to the checkout page if the server-side
+		 * It's still needed because this handler REDIRECTS to the checkout page if the server-side
 		 * approval was successful.
 		 *
+		 * I.e. on success, the approveOrder handler initiates a browser navigation; this means
+		 * it should be the last action that happens in the payment process.
+		 *
+		 * @see onApproveForContinue.js
 		 * @param {string} orderID
 		 */
 		const approveOrderServerSide = async ( orderID ) => {
@@ -886,7 +903,7 @@ class GooglepayButton extends PaymentButton {
 				const success = await approveOrderServerSide( orderId );
 
 				if ( success ) {
-					result = this.processPaymentResponse( 'SUCCESS' );
+					result = paymentResponse( 'SUCCESS' );
 				} else {
 					result = paymentError( 'FAILED TO APPROVE' );
 				}
@@ -898,23 +915,6 @@ class GooglepayButton extends PaymentButton {
 		this.logGroup();
 
 		return result;
-	}
-
-	processPaymentResponse( state, intent = null, message = null ) {
-		const response = {
-			transactionState: state,
-		};
-
-		if ( intent || message ) {
-			response.error = {
-				intent,
-				message,
-			};
-		}
-
-		this.log( 'processPaymentResponse', response );
-
-		return response;
 	}
 
 	/**
