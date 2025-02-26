@@ -62,12 +62,12 @@ const SettingsApp = () => {
 		}
 
 		if ( isSendOnlyCountry ) {
-			cleanBrowserUrl( true );
+			cleanBrowserUrl();
 			return <SendOnlyMessage />;
 		}
 
 		if ( ! onboardingCompleted ) {
-			cleanBrowserUrl( true );
+			cleanBrowserUrl();
 			return <OnboardingScreen />;
 		}
 
