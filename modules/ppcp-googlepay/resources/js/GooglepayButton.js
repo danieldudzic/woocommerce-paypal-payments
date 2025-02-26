@@ -870,22 +870,6 @@ class GooglepayButton extends PaymentButton {
 			return isApproved;
 		};
 
-		const processPaymentPromise = async ( id ) => {
-			const isApprovedByPayPal = await checkPayPalApproval( id );
-
-			if ( ! isApprovedByPayPal ) {
-				return paymentError( 'TRANSACTION FAILED' );
-			}
-
-			// This must be the last step in the process, as it initiates a redirect.
-			const success = await approveOrderServerSide( id );
-
-			if ( success ) {
-				return this.processPaymentResponse( 'SUCCESS' );
-			}
-			return paymentError( 'FAILED TO APPROVE' );
-		};
-
 		// Add billing data to session.
 		moduleStorage.setPayer( payer );
 		setPayerData( payer );
@@ -894,7 +878,19 @@ class GooglepayButton extends PaymentButton {
 			const orderId = await this.contextHandler.createOrder();
 			this.log( 'createOrder', orderId );
 
-			result = await processPaymentPromise( orderId );
+			const isApprovedByPayPal = await checkPayPalApproval( orderId );
+
+			if ( ! isApprovedByPayPal ) {
+				result = paymentError( 'TRANSACTION FAILED' );
+			} else {
+				const success = await approveOrderServerSide( orderId );
+
+				if ( success ) {
+					result = this.processPaymentResponse( 'SUCCESS' );
+				} else {
+					result = paymentError( 'FAILED TO APPROVE' );
+				}
+			}
 		} catch ( err ) {
 			result = paymentError( err.message );
 		}
