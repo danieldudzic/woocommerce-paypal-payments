@@ -240,16 +240,16 @@ class StylingSettingsMapHelper {
 	}
 
 	/**
-	 * Retrieves the mapped enabled/disabled Google Pay or Apple Pay value from the new settings.
+	 * Retrieves the mapped enabled or disabled button value from the new settings.
 	 *
-	 * @param LocationStylingDTO[]   $styling_models The list of location styling models.
-	 * @param 'googlepay'|'applepay' $button_name The button name ('googlepay' or 'applepay').
+	 * @param LocationStylingDTO[] $styling_models The list of location styling models.
+	 * @param string               $button_name The button name (see {@link self::BUTTON_NAMES}).
 	 * @return int The enabled (1) or disabled (0) state.
 	 * @throws RuntimeException If an invalid button name is provided.
 	 */
-	protected function mapped_google_pay_or_apple_pay_enabled_value( array $styling_models, string $button_name ): ?int {
-		if ( $button_name !== 'googlepay' && $button_name !== 'applepay' ) {
-			throw new RuntimeException( 'Wrong button name is provided. Either "googlepay" or "applepay" can be used' );
+	protected function mapped_button_enabled_value( array $styling_models, string $button_name ): ?int {
+		if ( ! in_array( $button_name, self::BUTTON_NAMES, true ) ) {
+			throw new RuntimeException( 'Wrong button name is provided.' );
 		}
 
 		$locations_to_context_map = $this->current_context_to_new_button_location_map();
