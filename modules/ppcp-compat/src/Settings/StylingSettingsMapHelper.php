@@ -48,6 +48,7 @@ class StylingSettingsMapHelper {
 			'googlepay_button_enabled'                 => '',
 			'applepay_button_enabled'                  => '',
 			'smart_button_enable_styling_per_location' => '',
+			'pay_later_button_enabled'                 => '',
 		);
 
 		foreach ( $this->locations_map() as $old_location_name => $new_location_name ) {
