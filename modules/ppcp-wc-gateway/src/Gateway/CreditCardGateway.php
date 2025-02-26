@@ -430,6 +430,7 @@ class CreditCardGateway extends \WC_Payment_Gateway_CC {
 			foreach ( $tokens as $token ) {
 				if ( $token->get_id() === (int) $card_payment_token_for_free_trial ) {
 					$wc_order->payment_complete();
+					$wc_order->add_payment_token( $token );
 					return $this->handle_payment_success( $wc_order );
 				}
 			}
@@ -475,6 +476,7 @@ class CreditCardGateway extends \WC_Payment_Gateway_CC {
 
 					$order = $this->order_endpoint->order( $create_order->id );
 					$wc_order->update_meta_data( PayPalGateway::INTENT_META_KEY, $order->intent() );
+					$wc_order->add_payment_token( $token );
 
 					if ( $order->intent() === 'AUTHORIZE' ) {
 						$order = $this->order_endpoint->authorize( $order );

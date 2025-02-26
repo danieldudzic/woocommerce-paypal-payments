@@ -285,11 +285,12 @@ class SubscriptionHelper {
 	 * Returns previous order transaction from the given subscription.
 	 *
 	 * @param WC_Subscription $subscription WooCommerce Subscription.
+	 * @param string          $vault_token_id Vault token id.
 	 * @return string
 	 */
-	public function previous_transaction( WC_Subscription $subscription ): string {
+	public function previous_transaction( WC_Subscription $subscription, string $vault_token_id ): string {
 		$orders = $subscription->get_related_orders( 'ids', array( 'parent', 'renewal' ) );
-		if ( ! $orders ) {
+		if ( ! $orders || ! $vault_token_id ) {
 			return '';
 		}
 
@@ -308,8 +309,12 @@ class SubscriptionHelper {
 				&& $current_order->get_payment_method() === $order->get_payment_method()
 			) {
 				$transaction_id = $order->get_transaction_id();
-				if ( $transaction_id ) {
-					return $transaction_id;
+				$tokens         = $order->get_payment_tokens();
+				foreach ( $tokens as $token ) {
+					$wc_token = \WC_Payment_Tokens::get( $token );
+					if ( $transaction_id && $wc_token->get_token() === $vault_token_id ) {
+						return $transaction_id;
+					}
 				}
 			}
 		}
