@@ -40,3 +40,41 @@ export const updateQueryString = ( query, replace = false ) => {
  */
 export const getNewPath = ( query, basePath = getPath() ) =>
 	addQueryArgs( basePath, query );
+
+/**
+ * Filter an object to only include specified keys.
+ *
+ * @param {Object}   obj         The object to filter.
+ * @param {string[]} allowedKeys An array of allowed key names.
+ * @return {Object} A new object with only the allowed keys.
+ */
+export const filterObjectKeys = ( obj, allowedKeys ) => {
+	return Object.keys( obj ).reduce( ( acc, key ) => {
+		if ( allowedKeys.includes( key ) ) {
+			acc[ key ] = obj[ key ];
+		}
+		return acc;
+	}, {} );
+};
+
+/**
+ * Clean the browser URL by removing unsupported query parameters.
+ *
+ * @param {string[]} supportedArgs An array of supported query parameter names.
+ * @return {boolean} Returns true if the URL was already clean, false if it was cleaned.
+ */
+export const cleanBrowserUrl = ( supportedArgs ) => {
+	const currentQuery = getQuery();
+	const cleanedQuery = filterObjectKeys( currentQuery, supportedArgs );
+
+	const isUrlClean =
+		Object.keys( cleanedQuery ).length ===
+		Object.keys( currentQuery ).length;
+
+	if ( ! isUrlClean ) {
+		updateQueryString( cleanedQuery, true );
+		return false;
+	}
+
+	return true;
+};

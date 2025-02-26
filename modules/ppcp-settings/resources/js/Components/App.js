@@ -6,7 +6,7 @@ import SpinnerOverlay from './ReusableComponents/SpinnerOverlay';
 import SendOnlyMessage from './Screens/SendOnlyMessage';
 import OnboardingScreen from './Screens/Onboarding';
 import SettingsScreen from './Screens/Settings';
-import { getQuery, updateQueryString } from '../utils/navigation';
+import { cleanBrowserUrl, getQuery } from '../utils/navigation';
 
 const SettingsApp = () => {
 	const { isReady: onboardingIsReady, completed: onboardingCompleted } =
@@ -32,29 +32,14 @@ const SettingsApp = () => {
 		loading: ! onboardingIsReady,
 	} );
 
-	const cleanBrowserUrl = () => {
-		const queryArgs = getQuery();
-		const supportedArgs = [ 'page', 'tab', 'section' ];
+	const [ activePanel, setActivePanel ] = useState( getQuery().panel );
 
-		const cleanedArgs = Object.keys( queryArgs ).reduce( ( acc, key ) => {
-			if ( supportedArgs.includes( key ) ) {
-				acc[ key ] = queryArgs[ key ];
-			}
-			return acc;
-		}, {} );
-
-		const isUrlClean =
-			Object.keys( cleanedArgs ).length ===
-			Object.keys( queryArgs ).length;
-
-		if ( isUrlClean ) {
+	const removeUnsupportedArgs = () => {
+		if ( cleanBrowserUrl( [ 'page', 'tab', 'section' ] ) ) {
 			return;
 		}
-		updateQueryString( cleanedArgs, true );
 		setActivePanel( '' );
 	};
-
-	const [ activePanel, setActivePanel ] = useState( getQuery().panel );
 
 	const Content = useMemo( () => {
 		if ( ! onboardingIsReady || ! merchantIsReady ) {
@@ -62,12 +47,12 @@ const SettingsApp = () => {
 		}
 
 		if ( isSendOnlyCountry ) {
-			cleanBrowserUrl();
+			removeUnsupportedArgs();
 			return <SendOnlyMessage />;
 		}
 
 		if ( ! onboardingCompleted ) {
-			cleanBrowserUrl();
+			removeUnsupportedArgs();
 			return <OnboardingScreen />;
 		}
 
