@@ -533,7 +533,7 @@ class GooglepayButton extends PaymentButton {
 	 * Show Google Pay payment sheet when Google Pay payment button is clicked
 	 */
 	onButtonClick() {
-		this.log( 'onButtonClick' );
+		this.logGroup( 'onButtonClick' );
 
 		const initiatePaymentRequest = async () => {
 			window.ppcpFundingSource = 'googlepay';
@@ -545,7 +545,16 @@ class GooglepayButton extends PaymentButton {
 				this.context
 			);
 
-			return this.paymentsClient.loadPaymentData( paymentDataRequest );
+			return this.paymentsClient
+				.loadPaymentData( paymentDataRequest )
+				.then( ( paymentData ) => {
+					this.log( 'loadPaymentData response:', paymentData );
+					return paymentData;
+				} )
+				.catch( ( error ) => {
+					this.error( 'loadPaymentData failed:', error );
+					throw error;
+				} );
 		};
 
 		const validateForm = async () => {
@@ -577,7 +586,8 @@ class GooglepayButton extends PaymentButton {
 
 		validateForm()
 			.then( getTransactionInfo )
-			.then( initiatePaymentRequest );
+			.then( initiatePaymentRequest )
+			.finally( () => this.logGroup() )
 	}
 
 	paymentDataRequest() {
