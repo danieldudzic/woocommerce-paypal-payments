@@ -895,11 +895,11 @@ class GooglepayButton extends PaymentButton {
 
 
 		return new Promise( async ( resolve ) => {
-			try {
-				// Add billing data to session.
-				moduleStorage.setPayer( payer );
-				setPayerData( payer );
+			// Add billing data to session.
+			moduleStorage.setPayer( payer );
+			setPayerData( payer );
 
+			try {
 				await processPaymentPromise( resolve );
 			} catch ( err ) {
 				resolve( paymentError( err.message ) );
