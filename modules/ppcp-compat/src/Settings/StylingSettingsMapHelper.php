@@ -208,7 +208,7 @@ class StylingSettingsMapHelper {
 		$enabled_locations = array();
 		$locations         = array_flip( $this->locations_map() );
 		foreach ( $styling_models as $model ) {
-			if ( ! $model->enabled || ! in_array( 'paylater', $model->methods, true ) ) {
+			if ( ! $model->enabled || ! in_array( 'pay-later', $model->methods, true ) ) {
 				continue;
 			}
 
