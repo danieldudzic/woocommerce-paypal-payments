@@ -312,7 +312,7 @@ class SubscriptionHelper {
 				$tokens         = $order->get_payment_tokens();
 				foreach ( $tokens as $token ) {
 					$wc_token = \WC_Payment_Tokens::get( $token );
-					if ( $transaction_id && $wc_token->get_token() === $vault_token_id ) {
+					if ( $transaction_id && $wc_token instanceof \WC_Payment_Token && $wc_token->get_token() === $vault_token_id ) {
 						return $transaction_id;
 					}
 				}
