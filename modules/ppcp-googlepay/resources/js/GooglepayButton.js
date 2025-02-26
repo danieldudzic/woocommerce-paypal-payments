@@ -589,6 +589,13 @@ class GooglepayButton extends PaymentButton {
 			.then( initiatePaymentRequest );
 
 		this.logGroup();
+
+		// If something failed above, stop here. Only continue if we have the paymentData.
+		if ( ! paymentData ) {
+			return;
+		}
+
+		return this.processPayment( paymentData );
 	}
 
 	paymentDataRequest() {
