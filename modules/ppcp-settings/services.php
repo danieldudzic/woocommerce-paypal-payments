@@ -171,7 +171,7 @@ return array(
 	'settings.rest.common'                         => static function ( ContainerInterface $container ) : CommonRestEndpoint {
 		return new CommonRestEndpoint(
 			$container->get( 'settings.data.general' ),
-			$container->get( 'settings.service.rest-service' )
+			$container->get( 'api.endpoint.partners' )
 		);
 	},
 	'settings.rest.payment'                        => static function ( ContainerInterface $container ) : PaymentRestEndpoint {

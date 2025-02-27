@@ -14,6 +14,7 @@ use WP_REST_Response;
 use WP_REST_Request;
 use WooCommerce\PayPalCommerce\Settings\Data\GeneralSettings;
 use WooCommerce\PayPalCommerce\Settings\Service\InternalRestService;
+use WooCommerce\PayPalCommerce\ApiClient\Endpoint\PartnersEndpoint;
 
 /**
  * REST controller for "common" settings, which are used and modified by
@@ -43,11 +44,11 @@ class CommonRestEndpoint extends RestEndpoint {
 	protected GeneralSettings $settings;
 
 	/**
-	 * Internal REST handler, used to authenticate internal requests.
+	 * The Partners-Endpoint instance to request seller details from PayPal's API.
 	 *
-	 * @var InternalRestService
+	 * @var PartnersEndpoint
 	 */
-	protected InternalRestService $rest_service;
+	protected PartnersEndpoint $partners_endpoint;
 
 	/**
 	 * Field mapping for request to profile transformation.
@@ -117,12 +118,12 @@ class CommonRestEndpoint extends RestEndpoint {
 	/**
 	 * Constructor.
 	 *
-	 * @param GeneralSettings     $settings     The settings instance.
-	 * @param InternalRestService $rest_service Internal REST handler, for authentication.
+	 * @param GeneralSettings  $settings          The settings instance.
+	 * @param PartnersEndpoint $partners_endpoint Partners-API to get merchant details from PayPal.
 	 */
-	public function __construct( GeneralSettings $settings, InternalRestService $rest_service ) {
-		$this->settings     = $settings;
-		$this->rest_service = $rest_service;
+	public function __construct( GeneralSettings $settings, PartnersEndpoint $partners_endpoint ) {
+		$this->settings          = $settings;
+		$this->partners_endpoint = $partners_endpoint;
 	}
 
 	/**
@@ -256,7 +257,9 @@ class CommonRestEndpoint extends RestEndpoint {
 	 * @return WP_REST_Response Seller details, provided by PayPal's API.
 	 */
 	public function get_seller_account_info() : WP_REST_Response {
-		return $this->return_success( array( 'country' => 'XY' ) );
+		$seller_status = $this->partners_endpoint->seller_status();
+
+		return $this->return_success( array( 'country' => $seller_status->country() ) );
 	}
 
 	/**
