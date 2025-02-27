@@ -6,6 +6,7 @@
  *
  * @file
  */
+import { PRODUCT_TYPES } from './configuration';
 
 const EMPTY_OBJ = Object.freeze( {} );
 
@@ -32,14 +33,17 @@ export const flags = ( state ) => {
  * that should be returned.
  *
  * @param {{}} state
- * @return {string[]} The ISU products, based on choices made in the onboarding wizard.
+ * @return {{products:string[], options:{}}} The ISU products, based on choices made in the onboarding wizard.
  */
 export const determineProductsAndCaps = ( state ) => {
 	/**
 	 * An array of product-names that are used to build an onboarding URL via the
-	 * PartnerReferrals API.
+	 * PartnerReferrals API. To avoid confusion with the "products" property from the
+	 * Redux store, this collection has a distinct name.
+	 *
+	 * On server-side, this value is referred to as "products" again.
 	 */
-	const products = [];
+	const apiModules = [];
 
 	/**
 	 * Internal options that are parsed by the PartnerReferrals class to customize
@@ -56,24 +60,26 @@ export const determineProductsAndCaps = ( state ) => {
 		 * Branch 1: Credit Card Payments not available.
 		 * The store uses the Express-checkout product.
 		 */
-		products.push( 'EXPRESS_CHECKOUT' );
+		apiModules.push( 'EXPRESS_CHECKOUT' );
 	} else if ( isCasualSeller ) {
 		/**
 		 * Branch 2: Merchant has no business.
 		 * The store uses the Express-checkout product.
 		 */
-		products.push( 'EXPRESS_CHECKOUT' );
+		apiModules.push( 'EXPRESS_CHECKOUT' );
 	} else {
 		/**
 		 * Branch 3: Merchant is business, and can use CC payments.
 		 * The store uses the advanced PPCP product.
+		 *
+		 * This is the only branch that can use subscriptions.
 		 */
-		products.push( 'PPCP' );
+		apiModules.push( 'PPCP' );
 	}
 
 	if ( canUseVaulting ) {
-		products.push( 'ADVANCED_VAULTING' );
+		apiModules.push( 'ADVANCED_VAULTING' );
 	}
 
-	return { products, options };
+	return { products: apiModules, options };
 };
