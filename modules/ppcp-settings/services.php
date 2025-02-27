@@ -318,7 +318,9 @@ return array(
 		);
 	},
 	'settings.service.rest-service'                => static function ( ContainerInterface $container ) : InternalRestService {
-		return new InternalRestService();
+		return new InternalRestService(
+			$container->get( 'woocommerce.logger.woocommerce' )
+		);
 	},
 	'settings.service.sanitizer'                   => static function ( ContainerInterface $container ) : DataSanitizer {
 		return new DataSanitizer();
