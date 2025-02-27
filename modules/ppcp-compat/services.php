@@ -172,6 +172,16 @@ return array(
 				$container->get( 'settings.data.settings' ),
 				$subscription_map_helper->map()
 			),
+			/**
+			 * We need to pass the PaymentSettings model instance to use it in some helpers.
+			 * Once the new settings module is permanently enabled,
+			 * this model can be passed as a dependency to the appropriate helper classes.
+			 * For now, we must pass it this way to avoid errors when the new settings module is disabled.
+			 */
+			new SettingsMap(
+				$container->get( 'settings.data.payment' ),
+				array()
+			),
 		);
 	},
 	'compat.settings.settings_map_helper'            => static function( ContainerInterface $container ) : SettingsMapHelper {
