@@ -16,7 +16,7 @@ describe( 'determineProductsAndCaps selector [casual seller]', () => {
 			},
 			expected: {
 				products: [ 'EXPRESS_CHECKOUT' ],
-				options: { useSubscriptions: false },
+				options: { useSubscriptions: false, useCardPayments: false },
 			},
 		},
 		{
@@ -30,7 +30,7 @@ describe( 'determineProductsAndCaps selector [casual seller]', () => {
 			},
 			expected: {
 				products: [ 'EXPRESS_CHECKOUT' ],
-				options: { useSubscriptions: false },
+				options: { useSubscriptions: false, useCardPayments: false },
 			},
 		},
 		{
@@ -44,7 +44,7 @@ describe( 'determineProductsAndCaps selector [casual seller]', () => {
 			},
 			expected: {
 				products: [ 'EXPRESS_CHECKOUT' ],
-				options: { useSubscriptions: false },
+				options: { useSubscriptions: false, useCardPayments: true },
 			},
 		},
 		{
@@ -58,7 +58,7 @@ describe( 'determineProductsAndCaps selector [casual seller]', () => {
 			},
 			expected: {
 				products: [ 'EXPRESS_CHECKOUT', 'ADVANCED_VAULTING' ],
-				options: { useSubscriptions: false },
+				options: { useSubscriptions: false, useCardPayments: false },
 			},
 		},
 		{
@@ -73,7 +73,7 @@ describe( 'determineProductsAndCaps selector [casual seller]', () => {
 			},
 			expected: {
 				products: [ 'EXPRESS_CHECKOUT', 'ADVANCED_VAULTING' ],
-				options: { useSubscriptions: false },
+				options: { useSubscriptions: false, useCardPayments: false },
 			},
 		},
 	];
@@ -97,7 +97,7 @@ describe( 'determineProductsAndCaps selector [business seller]', () => {
 			},
 			expected: {
 				products: [ 'EXPRESS_CHECKOUT' ],
-				options: { useSubscriptions: false },
+				options: { useSubscriptions: false, useCardPayments: false },
 			},
 		},
 		{
@@ -111,7 +111,7 @@ describe( 'determineProductsAndCaps selector [business seller]', () => {
 			},
 			expected: {
 				products: [ 'EXPRESS_CHECKOUT' ],
-				options: { useSubscriptions: false },
+				options: { useSubscriptions: false, useCardPayments: false },
 			},
 		},
 		{
@@ -125,7 +125,7 @@ describe( 'determineProductsAndCaps selector [business seller]', () => {
 			},
 			expected: {
 				products: [ 'PPCP' ],
-				options: { useSubscriptions: false },
+				options: { useSubscriptions: false, useCardPayments: true },
 			},
 		},
 		{
@@ -139,7 +139,7 @@ describe( 'determineProductsAndCaps selector [business seller]', () => {
 			},
 			expected: {
 				products: [ 'PPCP', 'ADVANCED_VAULTING' ],
-				options: { useSubscriptions: false },
+				options: { useSubscriptions: false, useCardPayments: true },
 			},
 		},
 		{
@@ -154,7 +154,7 @@ describe( 'determineProductsAndCaps selector [business seller]', () => {
 			},
 			expected: {
 				products: [ 'EXPRESS_CHECKOUT', 'ADVANCED_VAULTING' ],
-				options: { useSubscriptions: false },
+				options: { useSubscriptions: false, useCardPayments: false },
 			},
 		},
 		{
@@ -169,7 +169,7 @@ describe( 'determineProductsAndCaps selector [business seller]', () => {
 			},
 			expected: {
 				products: [ 'PPCP', 'ADVANCED_VAULTING' ],
-				options: { useSubscriptions: true },
+				options: { useSubscriptions: true, useCardPayments: true },
 			},
 		},
 	];
