@@ -51,6 +51,7 @@ export const determineProductsAndCaps = ( state ) => {
 	 */
 	const options = {
 		useSubscriptions: false,
+		useCardPayments: false,
 	};
 
 	const { isCasualSeller, areOptionalPaymentMethodsEnabled, products } =
@@ -81,6 +82,10 @@ export const determineProductsAndCaps = ( state ) => {
 		if ( products?.includes( PRODUCT_TYPES.SUBSCRIPTIONS ) ) {
 			options.useSubscriptions = true;
 		}
+	}
+
+	if ( canUseCardPayments && areOptionalPaymentMethodsEnabled ) {
+		options.useCardPayments = true;
 	}
 
 	if ( canUseVaulting ) {
