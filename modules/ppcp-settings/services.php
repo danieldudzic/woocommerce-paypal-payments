@@ -69,13 +69,17 @@ return array(
 		$can_use_subscriptions  = $container->has( 'wc-subscriptions.helper' ) && $container->get( 'wc-subscriptions.helper' )
 				->plugin_is_active();
 		$should_skip_payment_methods = class_exists( '\WC_Payments' );
+		$can_use_fastlane = $container->get( 'axo.eligible' );
+		$can_use_pay_later = $container->get( 'button.helper.messages-apply' );
 
 		return new OnboardingProfile(
 			$can_use_casual_selling,
 			$can_use_vaulting,
 			$can_use_card_payments,
 			$can_use_subscriptions,
-			$should_skip_payment_methods
+			$should_skip_payment_methods,
+			$can_use_fastlane,
+			$can_use_pay_later->for_country()
 		);
 	},
 	'settings.data.general'                        => static function ( ContainerInterface $container ) : GeneralSettings {

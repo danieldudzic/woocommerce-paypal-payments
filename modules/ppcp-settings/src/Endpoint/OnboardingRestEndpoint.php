@@ -83,6 +83,12 @@ class OnboardingRestEndpoint extends RestEndpoint {
 		'should_skip_payment_methods' => array(
 			'js_name' => 'shouldSkipPaymentMethods',
 		),
+		'can_use_fastlane'            => array(
+			'js_name' => 'canUseFastlane',
+		),
+		'can_use_pay_later'           => array(
+			'js_name' => 'canUsePayLater',
+		),
 	);
 
 	/**
