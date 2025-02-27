@@ -45,7 +45,7 @@ class OnboardingProfile extends AbstractDataModel {
 	 * @param bool $can_use_subscriptions  Whether WC Subscriptions plugin is active.
 	 * @param bool $should_skip_payment_methods  Whether it should skip payment methods screen.
 	 * @param bool $can_use_fastlane  Whether it can use Fastlane or not.
-	 * @param bool $can_use_pay_later  Whether it can use PAy Later or not.
+	 * @param bool $can_use_pay_later  Whether it can use Pay Later or not.
 	 *
 	 * @throws RuntimeException If the OPTION_KEY is not defined in the child class.
 	 */
