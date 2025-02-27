@@ -447,19 +447,20 @@ class AuthenticationManager {
 		try {
 			$endpoint = CommonRestEndpoint::seller_account_route( true );
 			$details  = $this->rest_service->get_response( $endpoint );
-
-			// Request the merchant details via a PayPal API request.
-			$connection = $this->common_settings->get_merchant_data();
-
-			// Enrich the connection details with additional details.
-			$connection->merchant_country = $details['country'];
-
-			// Persist the changes.
-			$this->common_settings->set_merchant_data( $connection );
-			$this->common_settings->save();
 		} catch ( Throwable $exception ) {
 			$this->logger->warning( 'Could not determine merchant country: ' . $exception->getMessage() );
+			return;
 		}
+
+		// Request the merchant details via a PayPal API request.
+		$connection = $this->common_settings->get_merchant_data();
+
+		// Enrich the connection details with additional details.
+		$connection->merchant_country = $details['country'];
+
+		// Persist the changes.
+		$this->common_settings->set_merchant_data( $connection );
+		$this->common_settings->save();
 	}
 
 	/**
