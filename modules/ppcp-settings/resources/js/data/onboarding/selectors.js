@@ -49,9 +49,11 @@ export const determineProductsAndCaps = ( state ) => {
 	 * Internal options that are parsed by the PartnerReferrals class to customize
 	 * the API payload.
 	 */
-	const options = {};
+	const options = {
+		useSubscriptions: false,
+	};
 
-	const { isCasualSeller, areOptionalPaymentMethodsEnabled } =
+	const { isCasualSeller, areOptionalPaymentMethodsEnabled, products } =
 		persistentData( state );
 	const { canUseVaulting, canUseCardPayments } = flags( state );
 
@@ -75,6 +77,10 @@ export const determineProductsAndCaps = ( state ) => {
 		 * This is the only branch that can use subscriptions.
 		 */
 		apiModules.push( 'PPCP' );
+
+		if ( products?.includes( PRODUCT_TYPES.SUBSCRIPTIONS ) ) {
+			options.useSubscriptions = true;
+		}
 	}
 
 	if ( canUseVaulting ) {
