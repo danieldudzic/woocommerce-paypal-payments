@@ -5,23 +5,25 @@ import { useCallback, useState } from '@wordpress/element';
 import { CommonHooks } from '../../../../../../data';
 import { useToggleState } from '../../../../../../hooks/useToggleState';
 import { HStack } from '../../../../../ReusableComponents/Stack';
+import { useNavigation } from '../../../../../../hooks/useNavigation';
 
 const DisconnectButton = () => {
 	const { isOpen, setIsOpen } = useToggleState( 'disconnect-merchant' );
 	const [ resetFlag, setResetFlag ] = useState( false );
 	const { disconnectMerchant } = CommonHooks.useDisconnectMerchant();
+	const { goToPluginSettings } = useNavigation();
 
 	const handleOpen = useCallback( () => {
 		setIsOpen( true );
-	}, [] );
+	}, [ setIsOpen ] );
 
 	const handleCancel = useCallback( () => {
 		setIsOpen( false );
-	}, [] );
+	}, [ setIsOpen ] );
 
 	const handleConfirm = useCallback( async () => {
 		await disconnectMerchant( resetFlag );
-		window.location.reload();
+		goToPluginSettings();
 	}, [ disconnectMerchant, resetFlag ] );
 
 	const confirmationTitle = __(

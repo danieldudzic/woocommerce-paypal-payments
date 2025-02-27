@@ -69,18 +69,14 @@ return array(
 		$can_use_card_payments  = $container->has( 'card-fields.eligible' ) && $container->get( 'card-fields.eligible' );
 		$can_use_subscriptions  = $container->has( 'wc-subscriptions.helper' ) && $container->get( 'wc-subscriptions.helper' )
 				->plugin_is_active();
-
-		// Card payments are disabled for this plugin when WooPayments is active.
-		// TODO: Move this condition to the card-fields.eligible service?
-		if ( class_exists( '\WC_Payments' ) ) {
-			$can_use_card_payments = false;
-		}
+		$should_skip_payment_methods = class_exists( '\WC_Payments' );
 
 		return new OnboardingProfile(
 			$can_use_casual_selling,
 			$can_use_vaulting,
 			$can_use_card_payments,
-			$can_use_subscriptions
+			$can_use_subscriptions,
+			$should_skip_payment_methods
 		);
 	},
 	'settings.data.general'                        => static function ( ContainerInterface $container ) : GeneralSettings {
@@ -365,9 +361,21 @@ return array(
 		);
 	},
 	'settings.data.definition.methods'             => static function ( ContainerInterface $container ) : PaymentMethodsDefinition {
+		$axo_checkout_config_notice = $container->get( 'axo.checkout-config-notice.raw' );
+		$axo_incompatible_plugins_notice = $container->get( 'axo.incompatible-plugins-notice.raw' );
+
+		// Combine the notices - only include non-empty ones.
+		$axo_notices = array_filter(
+			array(
+				$axo_checkout_config_notice,
+				$axo_incompatible_plugins_notice,
+			)
+		);
+
 		return new PaymentMethodsDefinition(
 			$container->get( 'settings.data.payment' ),
-			$container->get( 'settings.data.definition.method_dependencies' )
+			$container->get( 'settings.data.definition.method_dependencies' ),
+			$axo_notices
 		);
 	},
 	'settings.data.definition.method_dependencies' => static function ( ContainerInterface $container ) : PaymentMethodsDependenciesDefinition {
