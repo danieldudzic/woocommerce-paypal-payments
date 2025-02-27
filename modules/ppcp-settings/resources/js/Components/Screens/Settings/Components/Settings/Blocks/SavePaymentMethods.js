@@ -3,6 +3,7 @@ import { __, sprintf } from '@wordpress/i18n';
 import SettingsBlock from '../../../../../ReusableComponents/SettingsBlock';
 import { ControlToggleButton } from '../../../../../ReusableComponents/Controls';
 import { SettingsHooks } from '../../../../../../data';
+import { useMerchantInfo } from '../../../../../../data/common/hooks';
 
 const SavePaymentMethods = () => {
 	const {
@@ -11,6 +12,8 @@ const SavePaymentMethods = () => {
 		saveCardDetails,
 		setSaveCardDetails,
 	} = SettingsHooks.useSettings();
+
+	const { features } = useMerchantInfo();
 
 	return (
 		<SettingsBlock
@@ -38,8 +41,13 @@ const SavePaymentMethods = () => {
 					'https://woocommerce.com/document/woocommerce-paypal-payments/#pay-later',
 					'https://woocommerce.com/document/woocommerce-paypal-payments/#alternative-payment-methods'
 				) }
-				value={ savePaypalAndVenmo }
+				value={
+					features.save_paypal_and_venmo.enabled
+						? savePaypalAndVenmo
+						: false
+				}
 				onChange={ setSavePaypalAndVenmo }
+				disabled={ ! features.save_paypal_and_venmo.enabled }
 			/>
 
 			<ControlToggleButton
