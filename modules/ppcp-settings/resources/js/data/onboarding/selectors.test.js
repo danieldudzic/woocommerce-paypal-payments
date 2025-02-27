@@ -1,5 +1,6 @@
 import '@testing-library/jest-dom';
 
+import { PRODUCT_TYPES } from './configuration';
 import { determineProductsAndCaps } from './selectors';
 
 describe( 'determineProductsAndCaps selector [casual seller]', () => {
@@ -15,7 +16,7 @@ describe( 'determineProductsAndCaps selector [casual seller]', () => {
 			},
 			expected: {
 				products: [ 'EXPRESS_CHECKOUT' ],
-				options: {},
+				options: { useSubscriptions: false },
 			},
 		},
 		{
@@ -29,7 +30,7 @@ describe( 'determineProductsAndCaps selector [casual seller]', () => {
 			},
 			expected: {
 				products: [ 'EXPRESS_CHECKOUT' ],
-				options: {},
+				options: { useSubscriptions: false },
 			},
 		},
 		{
@@ -43,7 +44,7 @@ describe( 'determineProductsAndCaps selector [casual seller]', () => {
 			},
 			expected: {
 				products: [ 'EXPRESS_CHECKOUT' ],
-				options: {},
+				options: { useSubscriptions: false },
 			},
 		},
 		{
@@ -57,7 +58,22 @@ describe( 'determineProductsAndCaps selector [casual seller]', () => {
 			},
 			expected: {
 				products: [ 'EXPRESS_CHECKOUT', 'ADVANCED_VAULTING' ],
-				options: {},
+				options: { useSubscriptions: false },
+			},
+		},
+		{
+			name: 'should ignore SUBSCRIPTION product for casual sellers',
+			state: {
+				data: {
+					isCasualSeller: true,
+					areOptionalPaymentMethodsEnabled: true,
+					products: [ PRODUCT_TYPES.SUBSCRIPTIONS ],
+				},
+				flags: { canUseCardPayments: false, canUseVaulting: true },
+			},
+			expected: {
+				products: [ 'EXPRESS_CHECKOUT', 'ADVANCED_VAULTING' ],
+				options: { useSubscriptions: false },
 			},
 		},
 	];
@@ -81,7 +97,7 @@ describe( 'determineProductsAndCaps selector [business seller]', () => {
 			},
 			expected: {
 				products: [ 'EXPRESS_CHECKOUT' ],
-				options: {},
+				options: { useSubscriptions: false },
 			},
 		},
 		{
@@ -95,7 +111,7 @@ describe( 'determineProductsAndCaps selector [business seller]', () => {
 			},
 			expected: {
 				products: [ 'EXPRESS_CHECKOUT' ],
-				options: {},
+				options: { useSubscriptions: false },
 			},
 		},
 		{
@@ -109,7 +125,7 @@ describe( 'determineProductsAndCaps selector [business seller]', () => {
 			},
 			expected: {
 				products: [ 'PPCP' ],
-				options: {},
+				options: { useSubscriptions: false },
 			},
 		},
 		{
@@ -123,7 +139,7 @@ describe( 'determineProductsAndCaps selector [business seller]', () => {
 			},
 			expected: {
 				products: [ 'PPCP', 'ADVANCED_VAULTING' ],
-				options: {},
+				options: { useSubscriptions: false },
 			},
 		},
 		{
@@ -132,12 +148,28 @@ describe( 'determineProductsAndCaps selector [business seller]', () => {
 				data: {
 					isCasualSeller: false,
 					areOptionalPaymentMethodsEnabled: true,
+					products: [ PRODUCT_TYPES.VIRTUAL ],
 				},
 				flags: { canUseCardPayments: false, canUseVaulting: true },
 			},
 			expected: {
 				products: [ 'EXPRESS_CHECKOUT', 'ADVANCED_VAULTING' ],
-				options: {},
+				options: { useSubscriptions: false },
+			},
+		},
+		{
+			name: 'should enable the SUBSCRIPTIONS option when a business seller selects the subscriptions-product',
+			state: {
+				data: {
+					isCasualSeller: false,
+					areOptionalPaymentMethodsEnabled: true,
+					products: [ PRODUCT_TYPES.SUBSCRIPTIONS ],
+				},
+				flags: { canUseCardPayments: true, canUseVaulting: true },
+			},
+			expected: {
+				products: [ 'PPCP', 'ADVANCED_VAULTING' ],
+				options: { useSubscriptions: true },
 			},
 		},
 	];
