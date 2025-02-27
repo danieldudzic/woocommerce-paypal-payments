@@ -169,6 +169,7 @@ export const useMerchantInfo = () => {
 	const { features } = useHooks();
 	const merchant = useMerchant();
 	const { refreshMerchantData, setMerchant } = useDispatch( STORE_NAME );
+	const { isReady } = useStore();
 
 	const verifyLoginStatus = useCallback( async () => {
 		const result = await refreshMerchantData();
@@ -194,6 +195,7 @@ export const useMerchantInfo = () => {
 		merchant, // Merchant details
 		features, // Eligible merchant features
 		verifyLoginStatus, // Callback
+		isReady,
 	};
 };
 

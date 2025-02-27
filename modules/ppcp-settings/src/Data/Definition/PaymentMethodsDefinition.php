@@ -1,6 +1,6 @@
 <?php
 /**
- * PayPal Commerce Todos Definitions
+ * Payment Methods Definitions
  *
  * @package WooCommerce\PayPalCommerce\Settings\Data\Definition
  */
@@ -41,6 +41,20 @@ class PaymentMethodsDefinition {
 	private PaymentSettings $settings;
 
 	/**
+	 * Payment method dependencies definition.
+	 *
+	 * @var PaymentMethodsDependenciesDefinition
+	 */
+	private PaymentMethodsDependenciesDefinition $dependencies_definition;
+
+	/**
+	 * Conflict notices for Axo gateway.
+	 *
+	 * @var array
+	 */
+	private array $axo_conflicts_notices;
+
+	/**
 	 * List of WooCommerce payment gateways.
 	 *
 	 * @var array|null
@@ -50,10 +64,18 @@ class PaymentMethodsDefinition {
 	/**
 	 * Constructor.
 	 *
-	 * @param PaymentSettings $settings Payment methods data model.
+	 * @param PaymentSettings                      $settings Payment methods data model.
+	 * @param PaymentMethodsDependenciesDefinition $dependencies_definition Payment dependencies definition.
+	 * @param array                                $axo_conflicts_notices Conflicts notices for Axo.
 	 */
-	public function __construct( PaymentSettings $settings ) {
-		$this->settings = $settings;
+	public function __construct(
+		PaymentSettings $settings,
+		PaymentMethodsDependenciesDefinition $dependencies_definition,
+		array $axo_conflicts_notices = array()
+	) {
+		$this->settings                = $settings;
+		$this->dependencies_definition = $dependencies_definition;
+		$this->axo_conflicts_notices   = $axo_conflicts_notices;
 	}
 
 	/**
@@ -64,24 +86,34 @@ class PaymentMethodsDefinition {
 	public function get_definitions() : array {
 		// Refresh the WooCommerce gateway details before we build the definitions.
 		$this->wc_gateways = WC()->payment_gateways()->payment_gateways();
-
-		$all_methods = array_merge(
+		$all_methods       = array_merge(
 			$this->group_paypal_methods(),
 			$this->group_card_methods(),
 			$this->group_apms(),
 		);
-
-		$result = array();
+		$result            = array();
 		foreach ( $all_methods as $method ) {
-			$result[ $method['id'] ] = $this->build_method_definition(
-				$method['id'],
+			$method_id = $method['id'];
+			// Add dependency info if applicable.
+			$depends_on = $this->dependencies_definition->get_parent_methods( $method_id );
+			if ( ! empty( $depends_on ) ) {
+				$method['depends_on'] = $depends_on;
+			}
+			$result[ $method_id ] = $this->build_method_definition(
+				$method_id,
 				$method['title'],
 				$method['description'],
 				$method['icon'],
-				$method['fields'] ?? array()
+				$method['fields'] ?? array(),
+				$depends_on,
+				$method['warningMessages'] ?? array()
 			);
 		}
-
+		// Add dependency maps to metadata.
+		$result['__meta'] = array(
+			'dependencies' => $this->dependencies_definition->get_dependencies(),
+			'dependents'   => $this->dependencies_definition->get_dependents_map(),
+		);
 		return $result;
 	}
 
@@ -95,6 +127,8 @@ class PaymentMethodsDefinition {
 	 * @param string      $icon        Admin-side icon of the payment method.
 	 * @param array|false $fields      Optional. Additional fields to display in the edit modal.
 	 *                                 Setting this to false omits all fields.
+	 * @param array       $depends_on  Optional. IDs of payment methods that this depends on.
+	 * @param array       $warning_messages Optional. Warning messages to display in the UI.
 	 * @return array Payment method definition.
 	 */
 	private function build_method_definition(
@@ -102,7 +136,9 @@ class PaymentMethodsDefinition {
 		string $title,
 		string $description,
 		string $icon,
-		$fields = array()
+		$fields = array(),
+		array $depends_on = array(),
+		array $warning_messages = array()
 	) : array {
 		$gateway = $this->wc_gateways[ $gateway_id ] ?? null;
 
@@ -117,7 +153,13 @@ class PaymentMethodsDefinition {
 			'icon'            => $icon,
 			'itemTitle'       => $title,
 			'itemDescription' => $description,
+			'warningMessages' => $warning_messages,
 		);
+
+		// Add dependency information if provided - ensure it's included directly in the config.
+		if ( ! empty( $depends_on ) ) {
+			$config['depends_on'] = $depends_on;
+		}
 
 		if ( is_array( $fields ) ) {
 			$config['fields'] = array_merge(
@@ -241,11 +283,11 @@ class PaymentMethodsDefinition {
 				),
 			),
 			array(
-				'id'          => AxoGateway::ID,
-				'title'       => __( 'Fastlane by PayPal', 'woocommerce-paypal-payments' ),
-				'description' => __( "Tap into the scale and trust of PayPal's customer network to recognize shoppers and make guest checkout more seamless than ever.", 'woocommerce-paypal-payments' ),
-				'icon'        => 'payment-method-fastlane',
-				'fields'      => array(
+				'id'              => AxoGateway::ID,
+				'title'           => __( 'Fastlane by PayPal', 'woocommerce-paypal-payments' ),
+				'description'     => __( "Tap into the scale and trust of PayPal's customer network to recognize shoppers and make guest checkout more seamless than ever.", 'woocommerce-paypal-payments' ),
+				'icon'            => 'payment-method-fastlane',
+				'fields'          => array(
 					'fastlaneCardholderName'   => array(
 						'type'    => 'toggle',
 						'default' => $this->settings->get_fastlane_cardholder_name(),
@@ -263,6 +305,7 @@ class PaymentMethodsDefinition {
 						),
 					),
 				),
+				'warningMessages' => $this->axo_conflicts_notices,
 			),
 			array(
 				'id'          => ApplePayGateway::ID,

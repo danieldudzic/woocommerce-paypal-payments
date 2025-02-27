@@ -23,7 +23,7 @@ class SettingsNoticeGenerator {
 	 *
 	 * @var string[]
 	 */
-	protected $incompatible_plugin_names;
+	protected array $incompatible_plugin_names;
 
 	/**
 	 * SettingsNoticeGenerator constructor.
@@ -37,14 +37,19 @@ class SettingsNoticeGenerator {
 	/**
 	 * Generates the full HTML of the notification.
 	 *
-	 * @param string $message  HTML of the inner message contents.
-	 * @param bool   $is_error Whether the provided message is an error. Affects the notice color.
+	 * @param string $message    HTML of the inner message contents.
+	 * @param bool   $is_error   Whether the provided message is an error. Affects the notice color.
+	 * @param bool   $raw_message Whether to return raw message without HTML wrappers.
 	 *
-	 * @return string The full HTML code of the notification, or an empty string.
+	 * @return string The full HTML code of the notification, or an empty string, or raw message.
 	 */
-	private function render_notice( string $message, bool $is_error = false ) : string {
+	private function render_notice( string $message, bool $is_error = false, bool $raw_message = false ) : string {
 		if ( ! $message ) {
 			return '';
+		}
+
+		if ( $raw_message ) {
+			return $message;
 		}
 
 		return sprintf(
@@ -57,9 +62,10 @@ class SettingsNoticeGenerator {
 	/**
 	 * Generates the checkout notice.
 	 *
+	 * @param bool $raw_message Whether to return raw message without HTML wrappers.
 	 * @return string
 	 */
-	public function generate_checkout_notice(): string {
+	public function generate_checkout_notice( bool $raw_message = false ): string {
 		$checkout_page_link       = esc_url( get_edit_post_link( wc_get_page_id( 'checkout' ) ) ?? '' );
 		$block_checkout_docs_link = __(
 			'https://woocommerce.com/document/woocommerce-store-editing/customizing-cart-and-checkout/#using-the-cart-and-checkout-blocks',
@@ -90,15 +96,16 @@ class SettingsNoticeGenerator {
 			);
 		}
 
-		return $notice_content ? '<div class="ppcp-notice ppcp-notice-error"><p>' . $notice_content . '</p></div>' : '';
+		return $this->render_notice( $notice_content, true, $raw_message );
 	}
 
 	/**
 	 * Generates the incompatible plugins notice.
 	 *
+	 * @param bool $raw_message Whether to return raw message without HTML wrappers.
 	 * @return string
 	 */
-	public function generate_incompatible_plugins_notice(): string {
+	public function generate_incompatible_plugins_notice( bool $raw_message = false ): string {
 		if ( empty( $this->incompatible_plugin_names ) ) {
 			return '';
 		}
@@ -114,17 +121,17 @@ class SettingsNoticeGenerator {
 			implode( '', $this->incompatible_plugin_names )
 		);
 
-		return '<div class="ppcp-notice"><p>' . $notice_content . '</p></div>';
+		return $this->render_notice( $notice_content, false, $raw_message );
 	}
 
 	/**
 	 * Generates a warning notice with instructions on conflicting plugin-internal settings.
 	 *
-	 * @param Settings $settings The plugin settings container, which is checked for conflicting
-	 *                           values.
+	 * @param Settings $settings The plugin settings container, which is checked for conflicting values.
+	 * @param bool     $raw_message Whether to return raw message without HTML wrappers.
 	 * @return string
 	 */
-	public function generate_settings_conflict_notice( Settings $settings ) : string {
+	public function generate_settings_conflict_notice( Settings $settings, bool $raw_message = false ) : string {
 		$notice_content = '';
 		$is_dcc_enabled = false;
 
@@ -142,6 +149,6 @@ class SettingsNoticeGenerator {
 			);
 		}
 
-		return $this->render_notice( $notice_content, true );
+		return $this->render_notice( $notice_content, true, $raw_message );
 	}
 }

@@ -111,7 +111,7 @@ class PaymentRestEndpoint extends RestEndpoint {
 		 * GET wc/v3/wc_paypal/payment
 		 */
 		register_rest_route(
-			$this->namespace,
+			static::NAMESPACE,
 			'/' . $this->rest_base,
 			array(
 				'methods'             => WP_REST_Server::READABLE,
@@ -131,7 +131,7 @@ class PaymentRestEndpoint extends RestEndpoint {
 		 * }
 		 */
 		register_rest_route(
-			$this->namespace,
+			static::NAMESPACE,
 			'/' . $this->rest_base,
 			array(
 				'methods'             => WP_REST_Server::EDITABLE,
@@ -150,7 +150,17 @@ class PaymentRestEndpoint extends RestEndpoint {
 		$gateway_settings = array();
 		$all_methods      = $this->gateways();
 
+		// First extract __meta if present.
+		if ( isset( $all_methods['__meta'] ) ) {
+			$gateway_settings['__meta'] = $all_methods['__meta'];
+		}
+
 		foreach ( $all_methods as $key => $method ) {
+			// Skip the __meta key as we've already handled it.
+			if ( $key === '__meta' ) {
+				continue;
+			}
+
 			$gateway_settings[ $key ] = array(
 				'id'              => $method['id'],
 				'title'           => $method['title'],
@@ -159,10 +169,16 @@ class PaymentRestEndpoint extends RestEndpoint {
 				'icon'            => $method['icon'],
 				'itemTitle'       => $method['itemTitle'],
 				'itemDescription' => $method['itemDescription'],
+				'warningMessages' => $method['warningMessages'],
 			);
 
 			if ( isset( $method['fields'] ) ) {
 				$gateway_settings[ $key ]['fields'] = $method['fields'];
+			}
+
+			// Preserve dependency information.
+			if ( isset( $method['depends_on'] ) ) {
+				$gateway_settings[ $key ]['depends_on'] = $method['depends_on'];
 			}
 		}
 

@@ -13,6 +13,8 @@ use WP_REST_Server;
 use WP_REST_Response;
 use WP_REST_Request;
 use WooCommerce\PayPalCommerce\Settings\Data\GeneralSettings;
+use WooCommerce\PayPalCommerce\Settings\Service\InternalRestService;
+use WooCommerce\PayPalCommerce\ApiClient\Endpoint\PartnersEndpoint;
 
 /**
  * REST controller for "common" settings, which are used and modified by
@@ -22,6 +24,11 @@ use WooCommerce\PayPalCommerce\Settings\Data\GeneralSettings;
  * internal data model.
  */
 class CommonRestEndpoint extends RestEndpoint {
+	/**
+	 * Full REST path to the merchant-details endpoint, relative to the namespace.
+	 */
+	protected const SELLER_ACCOUNT_PATH = 'common/seller-account';
+
 	/**
 	 * The base path for this REST controller.
 	 *
@@ -35,6 +42,13 @@ class CommonRestEndpoint extends RestEndpoint {
 	 * @var GeneralSettings
 	 */
 	protected GeneralSettings $settings;
+
+	/**
+	 * The Partners-Endpoint instance to request seller details from PayPal's API.
+	 *
+	 * @var PartnersEndpoint
+	 */
+	protected PartnersEndpoint $partners_endpoint;
 
 	/**
 	 * Field mapping for request to profile transformation.
@@ -104,10 +118,27 @@ class CommonRestEndpoint extends RestEndpoint {
 	/**
 	 * Constructor.
 	 *
-	 * @param GeneralSettings $settings The settings instance.
+	 * @param GeneralSettings  $settings          The settings instance.
+	 * @param PartnersEndpoint $partners_endpoint Partners-API to get merchant details from PayPal.
 	 */
-	public function __construct( GeneralSettings $settings ) {
-		$this->settings = $settings;
+	public function __construct( GeneralSettings $settings, PartnersEndpoint $partners_endpoint ) {
+		$this->settings          = $settings;
+		$this->partners_endpoint = $partners_endpoint;
+	}
+
+	/**
+	 * Returns the path to the "Get Seller Account Details" REST route.
+	 * This is an internal route which is consumed by the plugin itself during onboarding.
+	 *
+	 * @param bool $full_route Whether to return the full endpoint path or just the route name.
+	 * @return string The full path to the REST endpoint.
+	 */
+	public static function seller_account_route( bool $full_route = false ) : string {
+		if ( $full_route ) {
+			return '/' . static::NAMESPACE . '/' . self::SELLER_ACCOUNT_PATH;
+		}
+
+		return self::SELLER_ACCOUNT_PATH;
 	}
 
 	/**
@@ -118,7 +149,7 @@ class CommonRestEndpoint extends RestEndpoint {
 		 * GET /wp-json/wc/v3/wc_paypal/common
 		 */
 		register_rest_route(
-			$this->namespace,
+			static::NAMESPACE,
 			'/' . $this->rest_base,
 			array(
 				'methods'             => WP_REST_Server::READABLE,
@@ -134,7 +165,7 @@ class CommonRestEndpoint extends RestEndpoint {
 		 * }
 		 */
 		register_rest_route(
-			$this->namespace,
+			static::NAMESPACE,
 			'/' . $this->rest_base,
 			array(
 				'methods'             => WP_REST_Server::EDITABLE,
@@ -147,11 +178,24 @@ class CommonRestEndpoint extends RestEndpoint {
 		 * GET /wp-json/wc/v3/wc_paypal/common/merchant
 		 */
 		register_rest_route(
-			$this->namespace,
+			static::NAMESPACE,
 			"/$this->rest_base/merchant",
 			array(
 				'methods'             => WP_REST_Server::READABLE,
 				'callback'            => array( $this, 'get_merchant_details' ),
+				'permission_callback' => array( $this, 'check_permission' ),
+			)
+		);
+
+		/**
+		 * GET /wp-json/wc/v3/wc_paypal/common/seller-account
+		 */
+		register_rest_route(
+			static::NAMESPACE,
+			self::seller_account_route(),
+			array(
+				'methods'             => WP_REST_Server::READABLE,
+				'callback'            => array( $this, 'get_seller_account_info' ),
 				'permission_callback' => array( $this, 'check_permission' ),
 			)
 		);
@@ -203,6 +247,19 @@ class CommonRestEndpoint extends RestEndpoint {
 		$extra_data = $this->add_merchant_info( array() );
 
 		return $this->return_success( $js_data, $extra_data );
+	}
+
+	/**
+	 * Requests details from the PayPal API.
+	 *
+	 * Used during onboarding to enrich the merchant details in the DB.
+	 *
+	 * @return WP_REST_Response Seller details, provided by PayPal's API.
+	 */
+	public function get_seller_account_info() : WP_REST_Response {
+		$seller_status = $this->partners_endpoint->seller_status();
+
+		return $this->return_success( array( 'country' => $seller_status->country() ) );
 	}
 
 	/**

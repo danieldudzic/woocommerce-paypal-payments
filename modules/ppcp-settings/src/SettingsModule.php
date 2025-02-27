@@ -108,7 +108,11 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 						)
 					);
 
-					wp_enqueue_script( 'ppcp-switch-settings-ui' );
+					wp_enqueue_script( 'ppcp-switch-settings-ui', '', array( 'wp-i18n' ), $script_asset_file['version'] );
+					wp_set_script_translations(
+						'ppcp-switch-settings-ui',
+						'woocommerce-paypal-payments',
+					);
 				}
 			);
 
@@ -161,7 +165,11 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 					true
 				);
 
-				wp_enqueue_script( 'ppcp-admin-settings' );
+				wp_enqueue_script( 'ppcp-admin-settings', '', array( 'wp-i18n' ), $script_asset_file['version'] );
+				wp_set_script_translations(
+					'ppcp-admin-settings',
+					'woocommerce-paypal-payments',
+				);
 
 				/**
 				 * Require resolves.
@@ -191,6 +199,7 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 						'imagesUrl' => $module_url . '/images/',
 					),
 					'wcPaymentsTabUrl'                => admin_url( 'admin.php?page=wc-settings&tab=checkout' ),
+					'pluginSettingsUrl'               => admin_url( 'admin.php?page=wc-settings&tab=checkout&section=ppcp-gateway' ),
 					'debug'                           => defined( 'WP_DEBUG' ) && WP_DEBUG,
 					'isPayLaterConfiguratorAvailable' => $is_pay_later_configurator_available,
 					'storeCountry'                    => $container->get( 'wcgateway.store-country' ),
@@ -200,11 +209,14 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 					wp_enqueue_script(
 						'ppcp-paylater-configurator-lib',
 						'https://www.paypalobjects.com/merchant-library/merchant-configurator.js',
-						array(),
+						array( 'wp-i18n' ),
 						$script_asset_file['version'],
 						true
 					);
-
+					wp_set_script_translations(
+						'ppcp-paylater-configurator-lib',
+						'woocommerce-paypal-payments',
+					);
 					$script_data['PcpPayLaterConfigurator'] = array(
 						'config'           => array(),
 						'merchantClientId' => $settings->get( 'client_id' ),
@@ -247,6 +259,7 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 					'styling'                => $container->get( 'settings.rest.styling' ),
 					'todos'                  => $container->get( 'settings.rest.todos' ),
 					'pay_later_messaging'    => $container->get( 'settings.rest.pay_later_messaging' ),
+					'features'               => $container->get( 'settings.rest.features' ),
 				);
 
 				foreach ( $endpoints as $endpoint ) {
@@ -330,6 +343,12 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 				$dcc_applies = $container->get( 'api.helpers.dccapplies' );
 				assert( $dcc_applies instanceof DCCApplies );
 
+				$general_settings = $container->get( 'settings.data.general' );
+				assert( $general_settings instanceof GeneralSettings );
+
+				$merchant_data    = $general_settings->get_merchant_data();
+				$merchant_country = $merchant_data->merchant_country;
+
 				// Unset BCDC if merchant is eligible for ACDC and country is eligible for card fields.
 				$card_fields_eligible = $container->get( 'card-fields.eligible' );
 				if ( $dcc_product_status->is_active() && $card_fields_eligible ) {
@@ -354,6 +373,16 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 				// Unset Fastlane if country/currency is not supported or merchant is not eligible for BCDC.
 				if ( ! $container->get( 'axo.eligible' ) || ! $dcc_product_status->is_active() ) {
 					unset( $payment_methods['ppcp-axo-gateway'] );
+				}
+
+				// Unset OXXO if merchant country is not Mexico.
+				if ( 'MX' !== $merchant_country ) {
+					unset( $payment_methods[ OXXO::ID ] );
+				}
+
+				// Unset Pay Unon Invoice if merchant country is not Germany.
+				if ( 'DE' !== $merchant_country ) {
+					unset( $payment_methods[ PayUponInvoiceGateway::ID ] );
 				}
 
 				// For non-ACDC regions unset ACDC, local APMs and set BCDC.
