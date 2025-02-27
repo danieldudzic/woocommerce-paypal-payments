@@ -19,6 +19,7 @@ use WC_Subscriptions;
 use WC_Subscriptions_Product;
 use WCS_Manual_Renewal_Manager;
 use WooCommerce\PayPalCommerce\WcGateway\Exception\NotFoundException;
+use WP_Query;
 
 /**
  * Class SubscriptionHelper
@@ -345,5 +346,31 @@ class SubscriptionHelper {
 		}
 
 		return '';
+	}
+
+	/**
+	 * Checks if any subscription products exist.
+	 *
+	 * @return bool
+	 */
+	public function has_subscription_products(): bool {
+		// Query for subscription products.
+		$args = array(
+			'post_type'      => 'product',
+			'post_status'    => 'publish',
+			'posts_per_page' => 1,
+			// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
+			'tax_query'      => array(
+				array(
+					'taxonomy' => 'product_type',
+					'field'    => 'slug',
+					'terms'    => 'subscription',
+				),
+			),
+		);
+
+		$subscription_products = new WP_Query( $args );
+
+		return $subscription_products->have_posts();
 	}
 }

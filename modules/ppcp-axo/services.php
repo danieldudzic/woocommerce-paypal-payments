@@ -66,7 +66,7 @@ return array(
 			$container->get( 'ppcp.asset-version' ),
 			$container->get( 'session.handler' ),
 			$container->get( 'wcgateway.settings' ),
-			$container->get( 'onboarding.environment' ),
+			$container->get( 'settings.environment' ),
 			$container->get( 'axo.insights' ),
 			$container->get( 'wcgateway.settings.status' ),
 			$container->get( 'api.shop.currency.getter' ),
@@ -89,7 +89,7 @@ return array(
 			$container->get( 'api.factory.purchase-unit' ),
 			$container->get( 'api.factory.shipping-preference' ),
 			$container->get( 'wcgateway.transaction-url-provider' ),
-			$container->get( 'onboarding.environment' ),
+			$container->get( 'settings.environment' ),
 			$container->get( 'woocommerce.logger.woocommerce' )
 		);
 	},
@@ -206,11 +206,26 @@ return array(
 		return $settings_notice_generator->generate_checkout_notice();
 	},
 
+	'axo.checkout-config-notice.raw'         => static function ( ContainerInterface $container ) : string {
+		$settings_notice_generator = $container->get( 'axo.helpers.settings-notice-generator' );
+		assert( $settings_notice_generator instanceof SettingsNoticeGenerator );
+
+		return $settings_notice_generator->generate_checkout_notice( true );
+	},
+
 	'axo.incompatible-plugins-notice'        => static function ( ContainerInterface $container ) : string {
 		$settings_notice_generator = $container->get( 'axo.helpers.settings-notice-generator' );
 		assert( $settings_notice_generator instanceof SettingsNoticeGenerator );
 
 		return $settings_notice_generator->generate_incompatible_plugins_notice();
+	},
+
+	'axo.incompatible-plugins-notice.raw'    => static function ( ContainerInterface $container ) : string {
+		$settings_notice_generator = new SettingsNoticeGenerator(
+			$container->get( 'axo.fastlane-incompatible-plugin-names' )
+		);
+
+		return $settings_notice_generator->generate_incompatible_plugins_notice( true );
 	},
 
 	'axo.smart-button-location-notice'       => static function ( ContainerInterface $container ) : string {

@@ -12,6 +12,8 @@ namespace WooCommerce\PayPalCommerce\Settings\Service;
 use JsonException;
 use Throwable;
 use Psr\Log\LoggerInterface;
+use WooCommerce\PayPalCommerce\ApiClient\Endpoint\PartnersEndpoint;
+use WooCommerce\PayPalCommerce\ApiClient\Exception\PayPalApiException;
 use WooCommerce\PayPalCommerce\ApiClient\Exception\RuntimeException;
 use WooCommerce\PayPalCommerce\ApiClient\Authentication\PayPalBearer;
 use WooCommerce\PayPalCommerce\ApiClient\Endpoint\LoginSeller;
@@ -24,6 +26,7 @@ use WooCommerce\WooCommerce\Logging\Logger\NullLogger;
 use WooCommerce\PayPalCommerce\Settings\DTO\MerchantConnectionDTO;
 use WooCommerce\PayPalCommerce\Webhooks\WebhookRegistrar;
 use WooCommerce\PayPalCommerce\Settings\Enum\SellerTypeEnum;
+use WooCommerce\PayPalCommerce\WcGateway\Helper\ConnectionState;
 
 /**
  * Class that manages the connection to PayPal.
@@ -65,26 +68,46 @@ class AuthenticationManager {
 	private PartnerReferralsData $referrals_data;
 
 	/**
+	 * The connection state manager.
+	 *
+	 * @var ConnectionState
+	 */
+	private ConnectionState $connection_state;
+
+	/**
+	 * Partners endpoint.
+	 *
+	 * @var PartnersEndpoint
+	 */
+	private PartnersEndpoint $partners_endpoint;
+
+	/**
 	 * Constructor.
 	 *
-	 * @param GeneralSettings      $common_settings Data model that stores the connection details.
-	 * @param EnvironmentConfig    $connection_host API host for direct authentication.
-	 * @param EnvironmentConfig    $login_endpoint  API handler to fetch merchant credentials.
-	 * @param PartnerReferralsData $referrals_data  Partner referrals data.
-	 * @param ?LoggerInterface     $logger          Logging instance.
+	 * @param GeneralSettings      $common_settings  Data model that stores the connection details.
+	 * @param EnvironmentConfig    $connection_host  API host for direct authentication.
+	 * @param EnvironmentConfig    $login_endpoint   API handler to fetch merchant credentials.
+	 * @param PartnerReferralsData $referrals_data   Partner referrals data.
+	 * @param ConnectionState      $connection_state Connection state manager.
+	 * @param PartnersEndpoint     $partners_endpoint Partners endpoint.
+	 * @param ?LoggerInterface     $logger           Logging instance.
 	 */
 	public function __construct(
 		GeneralSettings $common_settings,
 		EnvironmentConfig $connection_host,
 		EnvironmentConfig $login_endpoint,
 		PartnerReferralsData $referrals_data,
+		ConnectionState $connection_state,
+		PartnersEndpoint $partners_endpoint,
 		?LoggerInterface $logger = null
 	) {
-		$this->common_settings = $common_settings;
-		$this->connection_host = $connection_host;
-		$this->login_endpoint  = $login_endpoint;
-		$this->referrals_data  = $referrals_data;
-		$this->logger          = $logger ?: new NullLogger();
+		$this->common_settings   = $common_settings;
+		$this->connection_host   = $connection_host;
+		$this->login_endpoint    = $login_endpoint;
+		$this->referrals_data    = $referrals_data;
+		$this->connection_state  = $connection_state;
+		$this->partners_endpoint = $partners_endpoint;
+		$this->logger            = $logger ?: new NullLogger();
 	}
 
 	/**
@@ -111,6 +134,9 @@ class AuthenticationManager {
 
 		$this->common_settings->reset_merchant_data();
 		$this->common_settings->save();
+
+		// Update the connection status and clear the environment flags.
+		$this->connection_state->disconnect();
 
 		/**
 		 * Broadcast, that the plugin disconnected from PayPal. This allows other
@@ -182,12 +208,19 @@ class AuthenticationManager {
 
 		$payee = $this->request_payee( $client_id, $client_secret, $use_sandbox );
 
+		try {
+			$seller_status = $this->partners_endpoint->seller_status();
+		} catch ( PayPalApiException $exception ) {
+			$seller_status = null;
+		}
+
 		$connection = new MerchantConnectionDTO(
 			$use_sandbox,
 			$client_id,
 			$client_secret,
 			$payee['merchant_id'],
 			$payee['email_address'],
+			! is_null( $seller_status ) ? $seller_status->country() : '',
 			SellerTypeEnum::BUSINESS
 		);
 
@@ -253,10 +286,17 @@ class AuthenticationManager {
 		 */
 		$connection = $this->common_settings->get_merchant_data();
 
-		$connection->is_sandbox    = $use_sandbox;
-		$connection->client_id     = $credentials['client_id'];
-		$connection->client_secret = $credentials['client_secret'];
-		$connection->merchant_id   = $credentials['merchant_id'];
+		try {
+			$seller_status = $this->partners_endpoint->seller_status();
+		} catch ( PayPalApiException $exception ) {
+			$seller_status = null;
+		}
+
+		$connection->is_sandbox       = $use_sandbox;
+		$connection->client_id        = $credentials['client_id'];
+		$connection->client_secret    = $credentials['client_secret'];
+		$connection->merchant_id      = $credentials['merchant_id'];
+		$connection->merchant_country = ! is_null( $seller_status ) ? $seller_status->country() : '';
 
 		$this->update_connection_details( $connection );
 	}
@@ -291,6 +331,13 @@ class AuthenticationManager {
 		if ( SellerTypeEnum::is_valid( $seller_type ) ) {
 			$connection->seller_type = $seller_type;
 		}
+
+		try {
+			$seller_status = $this->partners_endpoint->seller_status();
+		} catch ( PayPalApiException $exception ) {
+			$seller_status = null;
+		}
+		$connection->merchant_country = ! is_null( $seller_status ) ? $seller_status->country() : '';
 
 		$this->update_connection_details( $connection );
 	}
@@ -419,6 +466,9 @@ class AuthenticationManager {
 
 		if ( $this->common_settings->is_merchant_connected() ) {
 			$this->logger->info( 'Merchant successfully connected to PayPal' );
+
+			// Update the connection status and set the environment flags.
+			$this->connection_state->connect( $connection->is_sandbox );
 
 			/**
 			 * Request to flush caches before authenticating the merchant, to

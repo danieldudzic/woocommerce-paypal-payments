@@ -13,8 +13,32 @@ import { useCallback, useEffect, useMemo, useState } from '@wordpress/element';
 import { createHooksForStore } from '../utils';
 import { STORE_NAME } from './constants';
 
-const useHooks = () => {
+/**
+ * Single source of truth for access Redux details.
+ *
+ * This hook returns a stable API to access actions, selectors and special hooks to generate
+ * getter- and setters for transient or persistent properties.
+ *
+ * @return {{select, dispatch, useTransient, usePersistent}} Store data API.
+ */
+const useStoreData = () => {
+	const select = useSelect( ( selectors ) => selectors( STORE_NAME ), [] );
+	const dispatch = useDispatch( STORE_NAME );
 	const { useTransient, usePersistent } = createHooksForStore( STORE_NAME );
+
+	return useMemo(
+		() => ( {
+			select,
+			dispatch,
+			useTransient,
+			usePersistent,
+		} ),
+		[ select, dispatch, useTransient, usePersistent ]
+	);
+};
+
+const useHooks = () => {
+	const { useTransient, usePersistent, dispatch, select } = useStoreData();
 	const {
 		persist,
 		sandboxOnboardingUrl,
@@ -23,10 +47,9 @@ const useHooks = () => {
 		authenticateWithOAuth,
 		startWebhookSimulation,
 		checkWebhookSimulationState,
-	} = useDispatch( STORE_NAME );
+	} = dispatch;
 
 	// Transient accessors.
-	const [ isReady ] = useTransient( 'isReady' );
 	const [ activeModal, setActiveModal ] = useTransient( 'activeModal' );
 	const [ activeHighlight, setActiveHighlight ] =
 		useTransient( 'activeHighlight' );
@@ -38,18 +61,9 @@ const useHooks = () => {
 	);
 
 	// Read-only properties.
-	const wooSettings = useSelect(
-		( select ) => select( STORE_NAME ).wooSettings(),
-		[]
-	);
-	const features = useSelect(
-		( select ) => select( STORE_NAME ).features(),
-		[]
-	);
-	const webhooks = useSelect(
-		( select ) => select( STORE_NAME ).webhooks(),
-		[]
-	);
+	const wooSettings = select.wooSettings();
+	const features = select.features();
+	const webhooks = select.webhooks();
 
 	const savePersistent = async ( setter, value ) => {
 		setter( value );
@@ -57,7 +71,6 @@ const useHooks = () => {
 	};
 
 	return {
-		isReady,
 		activeModal,
 		setActiveModal,
 		activeHighlight,
@@ -80,6 +93,19 @@ const useHooks = () => {
 		startWebhookSimulation,
 		checkWebhookSimulationState,
 	};
+};
+
+export const useStore = () => {
+	const { select, dispatch, useTransient } = useStoreData();
+	const { persist, refresh } = dispatch;
+	const [ isReady ] = useTransient( 'isReady' );
+
+	// Load persistent data from REST if not done yet.
+	if ( ! isReady ) {
+		select.persistentData();
+	}
+
+	return { persist, refresh, isReady };
 };
 
 export const useSandbox = () => {
@@ -139,26 +165,36 @@ export const useWebhooks = () => {
 };
 
 export const useMerchantInfo = () => {
-	const { isReady, features } = useHooks();
+	const { features } = useHooks();
 	const merchant = useMerchant();
-	const { refreshMerchantData } = useDispatch( STORE_NAME );
+	const { refreshMerchantData, setMerchant } = useDispatch( STORE_NAME );
+	const { isReady } = useStore();
 
 	const verifyLoginStatus = useCallback( async () => {
 		const result = await refreshMerchantData();
 
-		if ( ! result.success ) {
+		if ( ! result.success || ! result.merchant ) {
 			throw new Error( result?.message || result?.error?.message );
 		}
 
+		const newMerchant = result.merchant;
+
 		// Verify if the server state is "connected" and we have a merchant ID.
-		return merchant?.isConnected && merchant?.id;
-	}, [ refreshMerchantData, merchant ] );
+		if ( newMerchant?.isConnected && newMerchant?.id ) {
+			// Update the verified merchant details in Redux.
+			setMerchant( newMerchant );
+
+			return true;
+		}
+
+		return false;
+	}, [ refreshMerchantData, setMerchant ] );
 
 	return {
-		isReady,
 		merchant, // Merchant details
 		features, // Eligible merchant features
 		verifyLoginStatus, // Callback
+		isReady,
 	};
 };
 
@@ -195,7 +231,9 @@ export const useActiveHighlight = () => {
 	return { activeHighlight, setActiveHighlight };
 };
 
-// -- Not using the `useHooks()` data provider --
+/*
+ * Busy state management hooks
+ */
 
 export const useBusyState = () => {
 	const { startActivity, stopActivity } = useDispatch( STORE_NAME );
@@ -225,6 +263,8 @@ export const useBusyState = () => {
 	);
 
 	return {
+		startActivity,
+		stopActivity,
 		withActivity, // HOC
 		isBusy, // Boolean.
 	};
