@@ -86,13 +86,13 @@ class StylingSettingsMapHelper {
 				return $this->mapped_disabled_funding_value( $styling_models, $payment_settings );
 
 			case 'googlepay_button_enabled':
-				return $this->mapped_button_enabled_value( $styling_models, 'ppcp-googlepay' );
+				return $this->mapped_button_enabled_value( $styling_models, 'ppcp-googlepay', $payment_settings );
 
 			case 'applepay_button_enabled':
-				return $this->mapped_button_enabled_value( $styling_models, 'ppcp-applepay' );
+				return $this->mapped_button_enabled_value( $styling_models, 'ppcp-applepay', $payment_settings );
 
 			case 'pay_later_button_enabled':
-				return $this->mapped_button_enabled_value( $styling_models, 'pay-later' );
+				return $this->mapped_button_enabled_value( $styling_models, 'pay-later', $payment_settings );
 
 			default:
 				foreach ( $this->locations_map() as $old_location_name => $new_location_name ) {
@@ -251,14 +251,15 @@ class StylingSettingsMapHelper {
 	 *
 	 * @param LocationStylingDTO[] $styling_models The list of location styling models.
 	 * @param string               $button_name The button name (see {@link self::BUTTON_NAMES}).
+	 * @param PaymentSettings      $payment_settings The payment settings model.
 	 * @return int The enabled (1) or disabled (0) state.
 	 * @throws RuntimeException If an invalid button name is provided.
 	 */
-	protected function mapped_button_enabled_value( array $styling_models, string $button_name ): ?int {
+	protected function mapped_button_enabled_value( array $styling_models, string $button_name, PaymentSettings $payment_settings ): ?int {
 		if ( ! in_array( $button_name, self::BUTTON_NAMES, true ) ) {
 			throw new RuntimeException( 'Wrong button name is provided.' );
 		}
-
+var_dump($payment_settings->is_method_enabled($button_name));
 		$locations_to_context_map = $this->current_context_to_new_button_location_map();
 		$current_context          = $locations_to_context_map[ $this->context() ] ?? '';
 
