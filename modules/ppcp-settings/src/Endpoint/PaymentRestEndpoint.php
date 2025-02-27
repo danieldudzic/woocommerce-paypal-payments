@@ -111,7 +111,7 @@ class PaymentRestEndpoint extends RestEndpoint {
 		 * GET wc/v3/wc_paypal/payment
 		 */
 		register_rest_route(
-			$this->namespace,
+			static::NAMESPACE,
 			'/' . $this->rest_base,
 			array(
 				'methods'             => WP_REST_Server::READABLE,
@@ -131,7 +131,7 @@ class PaymentRestEndpoint extends RestEndpoint {
 		 * }
 		 */
 		register_rest_route(
-			$this->namespace,
+			static::NAMESPACE,
 			'/' . $this->rest_base,
 			array(
 				'methods'             => WP_REST_Server::EDITABLE,

@@ -88,7 +88,7 @@ class TodosRestEndpoint extends RestEndpoint {
 	public function register_routes(): void {
 		// GET/POST /todos - Get todos list and update dismissed todos.
 		register_rest_route(
-			$this->namespace,
+			static::NAMESPACE,
 			'/' . $this->rest_base,
 			array(
 				array(
@@ -106,7 +106,7 @@ class TodosRestEndpoint extends RestEndpoint {
 
 		// POST /todos/reset - Reset dismissed todos.
 		register_rest_route(
-			$this->namespace,
+			static::NAMESPACE,
 			'/' . $this->rest_base . '/reset',
 			array(
 				'methods'             => WP_REST_Server::EDITABLE,
@@ -117,7 +117,7 @@ class TodosRestEndpoint extends RestEndpoint {
 
 		// POST /todos/complete - Mark todo as completed on click.
 		register_rest_route(
-			$this->namespace,
+			static::NAMESPACE,
 			'/' . $this->rest_base . '/complete',
 			array(
 				'methods'             => WP_REST_Server::EDITABLE,

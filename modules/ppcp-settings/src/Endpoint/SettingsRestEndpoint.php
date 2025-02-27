@@ -109,7 +109,7 @@ class SettingsRestEndpoint extends RestEndpoint {
 		 * POST wc/v3/wc_paypal/settings
 		 */
 		register_rest_route(
-			$this->namespace,
+			static::NAMESPACE,
 			'/' . $this->rest_base,
 			array(
 				array(
