@@ -11,7 +11,15 @@ namespace WooCommerce\PayPalCommerce\Settings\Service;
 
 use Throwable;
 use Psr\Log\LoggerInterface;
+use WP_Http_Cookie;
 
+/**
+ * Consume internal REST endpoints from server-side.
+ *
+ * This service makes a real HTTP request to the endpoint, forwarding the
+ * authentication cookies of the current request to maintain the user session
+ * while invoking a completely isolated and freshly initialized server request.
+ */
 class InternalRestService {
 
 	/**
@@ -35,11 +43,17 @@ class InternalRestService {
 		$this->logger = $logger;
 	}
 
+	/**
+	 * Performs a REST call to the defined local REST endpoint.
+	 *
+	 * @param string $endpoint The endpoint for which the token is generated.
+	 * @return mixed The REST response.
+	 */
 	public function get_data( string $endpoint ) : array {
-		$token    = $this->generate_token( $endpoint );
-		$rest_url = rest_url( $endpoint );
+		$rest_url     = rest_url( $endpoint );
+		$rest_nonce   = wp_create_nonce( 'wp_rest' );
+		$auth_cookies = $this->build_authentication_cookie();
 
-		$response = wp_remote_get(
 		$this->logger->info( "Calling internal REST endpoint: $rest_url" );
 
 		$response = wp_remote_request(
@@ -47,9 +61,10 @@ class InternalRestService {
 			array(
 				'method'  => 'GET',
 				'headers' => array(
-					'X-Internal-Token' => $token,
-					'Content-Type'     => 'application/json',
+					'Content-Type' => 'application/json',
+					'X-WP-Nonce'   => $rest_nonce,
 				),
+				'cookies' => $auth_cookies,
 			)
 		);
 
@@ -86,13 +101,35 @@ class InternalRestService {
 		return $json['data'];
 	}
 
-	public function verify_token( string $token, string $endpoint ) : bool {
-		$expected_token = $this->generate_token( $endpoint );
+	/**
+	 * Generate the cookie collection with relevant WordPress authentication
+	 * cookies, which allows us to extend the current user's session to the
+	 * called REST endpoint.
+	 *
+	 * @return array A list of cookies that are required to authenticate the user.
+	 */
+	private function build_authentication_cookie() : array {
+		$cookies = array();
 
-		return $expected_token === $token;
-	}
+		// Cookie names are defined in constants and can be changed by site owners.
+		$wp_cookie_constants = array( 'AUTH_COOKIE', 'SECURE_AUTH_COOKIE', 'LOGGED_IN_COOKIE' );
 
-	private function generate_token( string $token_id ) : string {
-		return base64_encode( $token_id );
+		foreach ( $wp_cookie_constants as $cookie_const ) {
+			$cookie_name = (string) constant( $cookie_const );
+
+			if ( ! isset( $_COOKIE[ $cookie_name ] ) ) {
+				continue;
+			}
+
+			$cookies[] = new WP_Http_Cookie(
+				array(
+					'name'  => $cookie_name,
+					// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+					'value' => wp_unslash( $_COOKIE[ $cookie_name ] ),
+				)
+			);
+		}
+
+		return $cookies;
 	}
 }

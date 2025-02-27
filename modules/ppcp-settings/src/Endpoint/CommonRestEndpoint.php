@@ -195,12 +195,7 @@ class CommonRestEndpoint extends RestEndpoint {
 			array(
 				'methods'             => WP_REST_Server::READABLE,
 				'callback'            => array( $this, 'get_seller_account_info' ),
-				'permission_callback' => function ( WP_REST_Request $request ) {
-					$token    = $request->get_header( 'X-Internal-Token' );
-					$endpoint = self::seller_account_route();
-
-					return $this->rest_service->verify_token( $token, $endpoint );
-				},
+				'permission_callback' => array( $this, 'check_permission' ),
 			)
 		);
 	}
