@@ -49,7 +49,7 @@ class InternalRestService {
 	 * @param string $endpoint The endpoint for which the token is generated.
 	 * @return mixed The REST response.
 	 */
-	public function get_data( string $endpoint ) : array {
+	public function get_response( string $endpoint ) {
 		$rest_url     = rest_url( $endpoint );
 		$rest_nonce   = wp_create_nonce( 'wp_rest' );
 		$auth_cookies = $this->build_authentication_cookie();

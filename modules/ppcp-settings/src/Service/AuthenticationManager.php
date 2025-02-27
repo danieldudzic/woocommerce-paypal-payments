@@ -446,7 +446,7 @@ class AuthenticationManager {
 
 		try {
 			$endpoint = CommonRestEndpoint::seller_account_route( true );
-			$details  = $this->rest_service->get_data( $endpoint );
+			$details  = $this->rest_service->get_response( $endpoint );
 
 			// Request the merchant details via a PayPal API request.
 			$connection = $this->common_settings->get_merchant_data();
