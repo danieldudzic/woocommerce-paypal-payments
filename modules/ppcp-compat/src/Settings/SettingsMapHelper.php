@@ -10,7 +10,9 @@ declare( strict_types = 1 );
 namespace WooCommerce\PayPalCommerce\Compat\Settings;
 
 use RuntimeException;
+use WooCommerce\PayPalCommerce\Settings\Data\AbstractDataModel;
 use WooCommerce\PayPalCommerce\Settings\Data\GeneralSettings;
+use WooCommerce\PayPalCommerce\Settings\Data\PaymentSettings;
 use WooCommerce\PayPalCommerce\Settings\Data\SettingsModel;
 use WooCommerce\PayPalCommerce\Settings\Data\StylingSettings;
 
@@ -169,7 +171,11 @@ class SettingsMapHelper {
 
 		switch ( true ) {
 			case $model instanceof StylingSettings:
-				return $this->styling_settings_map_helper->mapped_value( $old_key, $this->model_cache[ $model_id ] );
+				return $this->styling_settings_map_helper->mapped_value(
+					$old_key,
+					$this->model_cache[ $model_id ],
+					$this->get_payment_settings_model()
+				);
 
 			case $model instanceof GeneralSettings:
 				return $this->general_settings_map_helper->mapped_value( $old_key, $this->model_cache[ $model_id ] );
@@ -216,5 +222,24 @@ class SettingsMapHelper {
 				);
 			}
 		}
+	}
+
+	/**
+	 * Retrieves the PaymentSettings model instance.
+	 *
+	 * Once the new settings module is permanently enabled,
+	 * this model can be passed as a dependency to the appropriate helper classes.
+	 * For now, we must pass it this way to avoid errors when the new settings module is disabled.
+	 *
+	 * @return AbstractDataModel|null
+	 */
+	protected function get_payment_settings_model() : ?AbstractDataModel {
+		foreach ( $this->settings_map as $settings_map_instance ) {
+			if ( $settings_map_instance->get_model() instanceof PaymentSettings ) {
+				return $settings_map_instance->get_model();
+			}
+		}
+
+		return null;
 	}
 }

@@ -10,7 +10,11 @@ declare(strict_types=1);
 namespace WooCommerce\PayPalCommerce\Compat\Settings;
 
 use RuntimeException;
+use WooCommerce\PayPalCommerce\Applepay\ApplePayGateway;
 use WooCommerce\PayPalCommerce\Button\Helper\ContextTrait;
+use WooCommerce\PayPalCommerce\Googlepay\GooglePayGateway;
+use WooCommerce\PayPalCommerce\Settings\Data\AbstractDataModel;
+use WooCommerce\PayPalCommerce\Settings\Data\PaymentSettings;
 use WooCommerce\PayPalCommerce\Settings\DTO\LocationStylingDTO;
 
 /**
@@ -23,7 +27,7 @@ class StylingSettingsMapHelper {
 
 	use ContextTrait;
 
-	protected const BUTTON_NAMES = array( 'ppcp-googlepay', 'ppcp-applepay', 'pay-later' );
+	protected const BUTTON_NAMES = array( GooglePayGateway::ID, ApplePayGateway::ID, 'pay-later' );
 
 	/**
 	 * Maps old setting keys to new setting style names.
@@ -64,12 +68,13 @@ class StylingSettingsMapHelper {
 	/**
 	 * Retrieves the value of a mapped key from the new settings.
 	 *
-	 * @param string               $old_key The key from the legacy settings.
-	 * @param LocationStylingDTO[] $styling_models The list of location styling models.
+	 * @param string                 $old_key The key from the legacy settings.
+	 * @param LocationStylingDTO[]   $styling_models The list of location styling models.
+	 * @param AbstractDataModel|null $payment_settings The payment settings model.
 	 *
 	 * @return mixed The value of the mapped setting, (null if not found).
 	 */
-	public function mapped_value( string $old_key, array $styling_models ) {
+	public function mapped_value( string $old_key, array $styling_models, ?AbstractDataModel $payment_settings ) {
 		switch ( $old_key ) {
 			case 'smart_button_locations':
 				return $this->mapped_smart_button_locations_value( $styling_models );
@@ -81,16 +86,16 @@ class StylingSettingsMapHelper {
 				return $this->mapped_pay_later_button_locations_value( $styling_models );
 
 			case 'disable_funding':
-				return $this->mapped_disabled_funding_value( $styling_models );
+				return $this->mapped_disabled_funding_value( $styling_models, $payment_settings );
 
 			case 'googlepay_button_enabled':
-				return $this->mapped_button_enabled_value( $styling_models, 'ppcp-googlepay' );
+				return $this->mapped_button_enabled_value( $styling_models, GooglePayGateway::ID, $payment_settings );
 
 			case 'applepay_button_enabled':
-				return $this->mapped_button_enabled_value( $styling_models, 'ppcp-applepay' );
+				return $this->mapped_button_enabled_value( $styling_models, ApplePayGateway::ID, $payment_settings );
 
 			case 'pay_later_button_enabled':
-				return $this->mapped_button_enabled_value( $styling_models, 'pay-later' );
+				return $this->mapped_button_enabled_value( $styling_models, 'pay-later', $payment_settings );
 
 			default:
 				foreach ( $this->locations_map() as $old_location_name => $new_location_name ) {
@@ -224,52 +229,80 @@ class StylingSettingsMapHelper {
 	/**
 	 * Retrieves the mapped disabled funding value from the new settings.
 	 *
-	 * @param LocationStylingDTO[] $styling_models The list of location styling models.
+	 * @param LocationStylingDTO[]   $styling_models The list of location styling models.
+	 * @param AbstractDataModel|null $payment_settings The payment settings model.
 	 * @return array|null The list of disabled funding, or null if none are disabled.
 	 */
-	protected function mapped_disabled_funding_value( array $styling_models ): ?array {
+	protected function mapped_disabled_funding_value( array $styling_models, ?AbstractDataModel $payment_settings ): ?array {
+		if ( is_null( $payment_settings ) ) {
+			return null;
+		}
+
 		$disabled_funding         = array();
 		$locations_to_context_map = $this->current_context_to_new_button_location_map();
 		$current_context          = $locations_to_context_map[ $this->context() ] ?? '';
+		assert( $payment_settings instanceof PaymentSettings );
 
 		foreach ( $styling_models as $model ) {
-			if ( $model->location !== $current_context || in_array( 'venmo', $model->methods, true ) ) {
-				continue;
+			if ( $model->location === $current_context ) {
+				if ( ! in_array( 'venmo', $model->methods, true ) || ! $payment_settings->get_venmo_enabled() ) {
+					$disabled_funding[] = 'venmo';
+				}
 			}
-
-			$disabled_funding[] = 'venmo';
-
-			return $disabled_funding;
 		}
 
-		return null;
+		return $disabled_funding;
 	}
 
 	/**
 	 * Retrieves the mapped enabled or disabled button value from the new settings.
 	 *
-	 * @param LocationStylingDTO[] $styling_models The list of location styling models.
-	 * @param string               $button_name The button name (see {@link self::BUTTON_NAMES}).
+	 * @param LocationStylingDTO[]   $styling_models The list of location styling models.
+	 * @param string                 $button_name The button name (see {@link self::BUTTON_NAMES}).
+	 * @param AbstractDataModel|null $payment_settings The payment settings model.
 	 * @return int The enabled (1) or disabled (0) state.
 	 * @throws RuntimeException If an invalid button name is provided.
 	 */
-	protected function mapped_button_enabled_value( array $styling_models, string $button_name ): ?int {
+	protected function mapped_button_enabled_value( array $styling_models, string $button_name, ?AbstractDataModel $payment_settings ): ?int {
+		if ( is_null( $payment_settings ) ) {
+			return null;
+		}
+
 		if ( ! in_array( $button_name, self::BUTTON_NAMES, true ) ) {
 			throw new RuntimeException( 'Wrong button name is provided.' );
 		}
 
 		$locations_to_context_map = $this->current_context_to_new_button_location_map();
 		$current_context          = $locations_to_context_map[ $this->context() ] ?? '';
+		assert( $payment_settings instanceof PaymentSettings );
 
 		foreach ( $styling_models as $model ) {
-			if ( ! $model->enabled
-				|| $model->location !== $current_context
-				|| ! in_array( $button_name, $model->methods, true )
-			) {
-				continue;
+			if ( $model->enabled && $model->location === $current_context ) {
+				if ( in_array( $button_name, $model->methods, true ) && $payment_settings->is_method_enabled( $button_name ) ) {
+					return 1;
+				}
 			}
+		}
 
-			return 1;
+		if ( $current_context === 'classic_checkout' ) {
+			/**
+			 * Outputs an inline CSS style that hides the Google Pay gateway (on Classic Checkout)
+			 * In case if the button is disabled from the styling settings but the gateway itself is enabled.
+			 *
+			 * @return void
+			 */
+			add_action(
+				'woocommerce_paypal_payments_checkout_button_render',
+				static function (): void {
+					?>
+					<style data-hide-gateway='<?php echo esc_attr( GooglePayGateway::ID ); ?>'>
+						.wc_payment_method.payment_method_ppcp-googlepay {
+							display: none;
+						}
+					</style>
+					<?php
+				}
+			);
 		}
 
 		return 0;
