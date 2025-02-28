@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace WooCommerce\PayPalCommerce\Compat\Settings;
 
 use RuntimeException;
+use WooCommerce\PayPalCommerce\Applepay\ApplePayGateway;
 use WooCommerce\PayPalCommerce\Button\Helper\ContextTrait;
 use WooCommerce\PayPalCommerce\Googlepay\GooglePayGateway;
 use WooCommerce\PayPalCommerce\Settings\Data\PaymentSettings;
@@ -25,7 +26,7 @@ class StylingSettingsMapHelper {
 
 	use ContextTrait;
 
-	protected const BUTTON_NAMES = array( 'ppcp-googlepay', 'ppcp-applepay', 'pay-later' );
+	protected const BUTTON_NAMES = array( GooglePayGateway::ID, ApplePayGateway::ID, 'pay-later' );
 
 	/**
 	 * Maps old setting keys to new setting style names.
@@ -87,10 +88,10 @@ class StylingSettingsMapHelper {
 				return $this->mapped_disabled_funding_value( $styling_models, $payment_settings );
 
 			case 'googlepay_button_enabled':
-				return $this->mapped_button_enabled_value( $styling_models, 'ppcp-googlepay', $payment_settings );
+				return $this->mapped_button_enabled_value( $styling_models, GooglePayGateway::ID, $payment_settings );
 
 			case 'applepay_button_enabled':
-				return $this->mapped_button_enabled_value( $styling_models, 'ppcp-applepay', $payment_settings );
+				return $this->mapped_button_enabled_value( $styling_models, ApplePayGateway::ID, $payment_settings );
 
 			case 'pay_later_button_enabled':
 				return $this->mapped_button_enabled_value( $styling_models, 'pay-later', $payment_settings );
