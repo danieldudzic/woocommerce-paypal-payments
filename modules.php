@@ -92,7 +92,7 @@ return function ( string $root_dir ): iterable {
 	}
 
 	$show_new_ux    = '1' === get_option( 'woocommerce-ppcp-is-new-merchant' );
-	$preview_new_ux = '0' !== getenv( 'PCP_SETTINGS_ENABLED' );
+	$preview_new_ux = '1' === getenv( 'PCP_SETTINGS_ENABLED' );
 
 	if ( apply_filters(
 		'woocommerce.feature-flags.woocommerce_paypal_payments.settings_enabled',
