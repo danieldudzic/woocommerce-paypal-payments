@@ -11,6 +11,7 @@ namespace WooCommerce\PayPalCommerce\Compat\Settings;
 
 use RuntimeException;
 use WooCommerce\PayPalCommerce\Button\Helper\ContextTrait;
+use WooCommerce\PayPalCommerce\Googlepay\GooglePayGateway;
 use WooCommerce\PayPalCommerce\Settings\Data\PaymentSettings;
 use WooCommerce\PayPalCommerce\Settings\DTO\LocationStylingDTO;
 
@@ -259,19 +260,37 @@ class StylingSettingsMapHelper {
 		if ( ! in_array( $button_name, self::BUTTON_NAMES, true ) ) {
 			throw new RuntimeException( 'Wrong button name is provided.' );
 		}
-var_dump($payment_settings->is_method_enabled($button_name));
+
 		$locations_to_context_map = $this->current_context_to_new_button_location_map();
 		$current_context          = $locations_to_context_map[ $this->context() ] ?? '';
 
 		foreach ( $styling_models as $model ) {
-			if ( ! $model->enabled
-				|| $model->location !== $current_context
-				|| ! in_array( $button_name, $model->methods, true )
-			) {
-				continue;
+			if ( $model->enabled && $model->location === $current_context ) {
+				if ( in_array( $button_name, $model->methods, true ) && $payment_settings->is_method_enabled( $button_name ) ) {
+					return 1;
+				}
 			}
+		}
 
-			return 1;
+		if ( $current_context === 'classic_checkout' ) {
+			/**
+			 * Outputs an inline CSS style that hides the Google Pay gateway (on Classic Checkout)
+			 * In case if the button is disabled from the styling settings but the gateway itself is enabled.
+			 *
+			 * @return void
+			 */
+			add_action(
+				'woocommerce_paypal_payments_checkout_button_render',
+				static function (): void {
+					?>
+					<style data-hide-gateway='<?php echo esc_attr( GooglePayGateway::ID ); ?>'>
+						.wc_payment_method.payment_method_ppcp-googlepay {
+							display: none;
+						}
+					</style>
+					<?php
+				}
+			);
 		}
 
 		return 0;
