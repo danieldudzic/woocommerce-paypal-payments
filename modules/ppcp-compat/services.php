@@ -190,7 +190,8 @@ return array(
 			$container->get( 'compat.settings.styling_map_helper' ),
 			$container->get( 'compat.settings.settings_tab_map_helper' ),
 			$container->get( 'compat.settings.subscription_map_helper' ),
-			$container->get( 'compat.settings.general_map_helper' )
+			$container->get( 'compat.settings.general_map_helper' ),
+			$container->get( 'wcgateway.settings.admin-settings-enabled' )
 		);
 	},
 	'compat.settings.styling_map_helper'             => static function() : StylingSettingsMapHelper {
