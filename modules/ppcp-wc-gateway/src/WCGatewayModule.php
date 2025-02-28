@@ -458,9 +458,14 @@ class WCGatewayModule implements ServiceModule, ExtendingModule, ExecutableModul
 		);
 
 		if ( defined( 'WP_CLI' ) && WP_CLI ) {
-			\WP_CLI::add_command(
-				'pcp settings',
-				$c->get( 'wcgateway.cli.settings.command' )
+			add_action(
+				'init',
+				function() use ( $c ) {
+					\WP_CLI::add_command(
+						'pcp settings',
+						$c->get( 'wcgateway.cli.settings.command' )
+					);
+				}
 			);
 		}
 
