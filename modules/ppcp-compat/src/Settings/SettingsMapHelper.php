@@ -231,7 +231,7 @@ class SettingsMapHelper {
 	 * this model can be passed as a dependency to the appropriate helper classes.
 	 * For now, we must pass it this way to avoid errors when the new settings module is disabled.
 	 *
-	 * @return PaymentSettings|null
+	 * @return AbstractDataModel|null
 	 */
 	protected function get_payment_settings_model() : ?AbstractDataModel {
 		foreach ( $this->settings_map as $settings_map_instance ) {

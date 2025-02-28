@@ -13,6 +13,7 @@ use RuntimeException;
 use WooCommerce\PayPalCommerce\Applepay\ApplePayGateway;
 use WooCommerce\PayPalCommerce\Button\Helper\ContextTrait;
 use WooCommerce\PayPalCommerce\Googlepay\GooglePayGateway;
+use WooCommerce\PayPalCommerce\Settings\Data\AbstractDataModel;
 use WooCommerce\PayPalCommerce\Settings\Data\PaymentSettings;
 use WooCommerce\PayPalCommerce\Settings\DTO\LocationStylingDTO;
 
@@ -67,13 +68,13 @@ class StylingSettingsMapHelper {
 	/**
 	 * Retrieves the value of a mapped key from the new settings.
 	 *
-	 * @param string               $old_key The key from the legacy settings.
-	 * @param LocationStylingDTO[] $styling_models The list of location styling models.
-	 * @param PaymentSettings      $payment_settings The payment settings model.
+	 * @param string                 $old_key The key from the legacy settings.
+	 * @param LocationStylingDTO[]   $styling_models The list of location styling models.
+	 * @param AbstractDataModel|null $payment_settings The payment settings model.
 	 *
 	 * @return mixed The value of the mapped setting, (null if not found).
 	 */
-	public function mapped_value( string $old_key, array $styling_models, PaymentSettings $payment_settings ) {
+	public function mapped_value( string $old_key, array $styling_models, ?AbstractDataModel $payment_settings ) {
 		switch ( $old_key ) {
 			case 'smart_button_locations':
 				return $this->mapped_smart_button_locations_value( $styling_models );
@@ -228,14 +229,19 @@ class StylingSettingsMapHelper {
 	/**
 	 * Retrieves the mapped disabled funding value from the new settings.
 	 *
-	 * @param LocationStylingDTO[] $styling_models The list of location styling models.
-	 * @param PaymentSettings      $payment_settings The payment settings model.
+	 * @param LocationStylingDTO[]   $styling_models The list of location styling models.
+	 * @param AbstractDataModel|null $payment_settings The payment settings model.
 	 * @return array|null The list of disabled funding, or null if none are disabled.
 	 */
-	protected function mapped_disabled_funding_value( array $styling_models, PaymentSettings $payment_settings ): ?array {
+	protected function mapped_disabled_funding_value( array $styling_models, ?AbstractDataModel $payment_settings ): ?array {
+		if ( is_null( $payment_settings ) ) {
+			return null;
+		}
+
 		$disabled_funding         = array();
 		$locations_to_context_map = $this->current_context_to_new_button_location_map();
 		$current_context          = $locations_to_context_map[ $this->context() ] ?? '';
+		assert( $payment_settings instanceof PaymentSettings );
 
 		foreach ( $styling_models as $model ) {
 			if ( $model->location === $current_context ) {
