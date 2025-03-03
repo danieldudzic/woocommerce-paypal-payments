@@ -193,6 +193,7 @@ class GooglepayButton extends PaymentButton {
 		this.onButtonClick = this.onButtonClick.bind( this );
 
 		this.log( 'Create instance' );
+		this.log( this.ppcpConfig );
 	}
 
 	/**
@@ -847,7 +848,31 @@ class GooglepayButton extends PaymentButton {
 
 			this.log( 'confirmOrder', confirmOrderResponse );
 
-			return 'APPROVED' === confirmOrderResponse?.status;
+			switch ( confirmOrderResponse?.status ) {
+				case 'APPROVED':
+					return true;
+				case 'PAYER_ACTION_REQUIRED':
+					return 'action_required';
+				default:
+					return false;
+			}
+		};
+		/**
+		 * Initiates payer action and handles the 3DS contingency.
+		 *
+		 * @param {string} orderID
+		 */
+		const initiatePayerAction = async ( orderID ) => {
+			this.log( 'initiatePayerAction', orderID );
+
+			this.log(
+				'==== Confirm Payment Completed Payer Action Required ====='
+			);
+			await widgetBuilder.paypal
+				.Googlepay()
+				.initiatePayerAction( { orderId: orderID } );
+
+			this.log( '===== Payer Action Completed =====' );
 		};
 
 		/**
@@ -887,6 +912,28 @@ class GooglepayButton extends PaymentButton {
 			return isApproved;
 		};
 
+		const captureOrderServerSide = async ( orderID ) => {
+			let isCaptured = true;
+			this.log( 'context', this.contextHandler );
+			await this.contextHandler.captureOrder(
+				{ orderID, payer },
+				{
+					restart: () =>
+						new Promise( ( resolve ) => {
+							isCaptured = false;
+							resolve();
+						} ),
+					order: {
+						get: () =>
+							new Promise( ( resolve ) => {
+								resolve( null );
+							} ),
+					},
+				}
+			);
+			return isCaptured;
+		};
+
 		// Add billing data to session.
 		moduleStorage.setPayer( payer );
 		setPayerData( payer );
@@ -899,6 +946,14 @@ class GooglepayButton extends PaymentButton {
 
 			if ( ! isApprovedByPayPal ) {
 				result = paymentError( 'TRANSACTION FAILED' );
+			} else if ( isApprovedByPayPal === 'action_required' ) {
+				await initiatePayerAction( orderId );
+				const success = await captureOrderServerSide( orderId );
+				if ( success ) {
+					result = paymentResponse( 'SUCCESS' );
+				} else {
+					result = paymentError( 'FAILED TO APPROVE' );
+				}
 			} else {
 				const success = await approveOrderServerSide( orderId );
 

@@ -10,7 +10,9 @@ declare(strict_types=1);
 namespace WooCommerce\PayPalCommerce\Button;
 
 use WooCommerce\PayPalCommerce\Button\Endpoint\ApproveSubscriptionEndpoint;
+use WooCommerce\PayPalCommerce\Button\Endpoint\CaptureOrderEndpoint;
 use WooCommerce\PayPalCommerce\Button\Endpoint\CartScriptParamsEndpoint;
+use WooCommerce\PayPalCommerce\Button\Endpoint\GetOrderEndpoint;
 use WooCommerce\PayPalCommerce\Button\Endpoint\SimulateCartEndpoint;
 use WooCommerce\PayPalCommerce\Button\Helper\CartProductsHelper;
 use WooCommerce\PayPalCommerce\Button\Helper\CheckoutFormSaver;
@@ -280,6 +282,19 @@ return array(
 			$container->get( 'blocks.settings.final_review_enabled' ),
 			$container->get( 'button.helper.wc-order-creator' ),
 			$container->get( 'wcgateway.paypal-gateway' )
+		);
+	},
+	'button.endpoint.get-order'        => static function( ContainerInterface $container ): GetOrderEndpoint {
+		return new GetOrderEndpoint(
+			$container->get( 'button.request-data' ),
+			$container->get( 'api.endpoint.order' )
+		);
+	},
+	'button.endpoint.capture-order'        => static function( ContainerInterface $container ): CaptureOrderEndpoint {
+		return new CaptureOrderEndpoint(
+			$container->get( 'button.request-data' ),
+			$container->get( 'api.endpoint.order' ),
+			$container->get( 'button.helper.wc-order-creator' ),
 		);
 	},
 	'button.checkout-form-saver'                  => static function ( ContainerInterface $container ): CheckoutFormSaver {
