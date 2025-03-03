@@ -857,6 +857,7 @@ class GooglepayButton extends PaymentButton {
 					return false;
 			}
 		};
+
 		/**
 		 * Initiates payer action and handles the 3DS contingency.
 		 *
@@ -865,14 +866,13 @@ class GooglepayButton extends PaymentButton {
 		const initiatePayerAction = async ( orderID ) => {
 			this.log( 'initiatePayerAction', orderID );
 
-			this.log(
-				'==== Confirm Payment Completed Payer Action Required ====='
-			);
 			await widgetBuilder.paypal
 				.Googlepay()
 				.initiatePayerAction( { orderId: orderID } );
 
-			this.log( '===== Payer Action Completed =====' );
+			// TODO: We need to make a server-side request to check if the 3DS process was successful.
+
+			return true;
 		};
 
 		/**
@@ -947,14 +947,19 @@ class GooglepayButton extends PaymentButton {
 			if ( ! isApprovedByPayPal ) {
 				result = paymentError( 'TRANSACTION FAILED' );
 			} else {
-				/**
-				 * This payment requires a 3DS verification before we can process the order.
-				 */
-				if ( isApprovedByPayPal === 'action_required' ) {
-					await initiatePayerAction( orderId );
-				}
+				let success = false;
 
-				const success = await approveOrderServerSide( orderId );
+				// This payment requires a 3DS verification before we can process the order.
+				if ( isApprovedByPayPal === 'action_required' ) {
+					const approved = await initiatePayerAction( orderId );
+
+					// Only approve on server-side when 3DS was successful.
+					if ( approved ) {
+						success = await approveOrderServerSide( orderId );
+					}
+				} else {
+					success = await approveOrderServerSide( orderId );
+				}
 
 				if ( success ) {
 					result = paymentResponse( 'SUCCESS' );
