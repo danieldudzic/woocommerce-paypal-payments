@@ -6,7 +6,8 @@
  *
  * @file
  */
-import { PRODUCT_TYPES } from './configuration';
+
+import { PAYPAL_PRODUCTS, PRODUCT_TYPES } from './configuration';
 
 const EMPTY_OBJ = Object.freeze( {} );
 
@@ -63,13 +64,13 @@ export const determineProductsAndCaps = ( state ) => {
 		 * Branch 1: Credit Card Payments not available.
 		 * The store uses the Express-checkout product.
 		 */
-		apiModules.push( 'EXPRESS_CHECKOUT' );
+		apiModules.push( PAYPAL_PRODUCTS.BCDC );
 	} else if ( isCasualSeller ) {
 		/**
 		 * Branch 2: Merchant has no business.
 		 * The store uses the Express-checkout product.
 		 */
-		apiModules.push( 'EXPRESS_CHECKOUT' );
+		apiModules.push( PAYPAL_PRODUCTS.BCDC );
 	} else {
 		/**
 		 * Branch 3: Merchant is business, and can use CC payments.
@@ -77,7 +78,7 @@ export const determineProductsAndCaps = ( state ) => {
 		 *
 		 * This is the only branch that can use subscriptions.
 		 */
-		apiModules.push( 'PPCP' );
+		apiModules.push( PAYPAL_PRODUCTS.ACDC );
 
 		if ( products?.includes( PRODUCT_TYPES.SUBSCRIPTIONS ) ) {
 			options.useSubscriptions = true;
@@ -89,7 +90,7 @@ export const determineProductsAndCaps = ( state ) => {
 	}
 
 	if ( canUseVaulting ) {
-		apiModules.push( 'ADVANCED_VAULTING' );
+		apiModules.push( PAYPAL_PRODUCTS.VAULTING );
 	}
 
 	return { products: apiModules, options };
