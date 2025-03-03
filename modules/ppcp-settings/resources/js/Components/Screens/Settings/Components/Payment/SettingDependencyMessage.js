@@ -78,7 +78,6 @@ const SettingDependencyMessage = ( { settingId, requiredValue } ) => {
 	// Get a human-friendly setting name.
 	const settingName = settingNames[ settingId ] || settingId;
 
-	// Create the SettingLink element once
 	const settingLink = (
 		<SettingLink settingName={ settingName } sectionId={ settingId } />
 	);
