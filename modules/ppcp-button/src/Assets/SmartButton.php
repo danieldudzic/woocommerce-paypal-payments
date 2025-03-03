@@ -1145,17 +1145,13 @@ document.querySelector("#payment").before(document.querySelector(".ppcp-messages
 					'endpoint' => \WC_AJAX::get_endpoint( ChangeCartEndpoint::ENDPOINT ),
 					'nonce'    => wp_create_nonce( ChangeCartEndpoint::nonce() ),
 				),
-				'get_order'                   => array(
+				'get_order'                      => array(
 					'endpoint' => \WC_AJAX::get_endpoint( GetOrderEndpoint::ENDPOINT ),
 					'nonce'    => wp_create_nonce( GetOrderEndpoint::nonce() ),
 				),
 				'create_order'                   => array(
 					'endpoint' => \WC_AJAX::get_endpoint( CreateOrderEndpoint::ENDPOINT ),
 					'nonce'    => wp_create_nonce( CreateOrderEndpoint::nonce() ),
-				),
-				'capture_order'                   => array(
-					'endpoint' => \WC_AJAX::get_endpoint( CaptureOrderEndpoint::ENDPOINT ),
-					'nonce'    => wp_create_nonce( CaptureOrderEndpoint::nonce() ),
 				),
 				'approve_order'                  => array(
 					'endpoint' => \WC_AJAX::get_endpoint( ApproveOrderEndpoint::ENDPOINT ),

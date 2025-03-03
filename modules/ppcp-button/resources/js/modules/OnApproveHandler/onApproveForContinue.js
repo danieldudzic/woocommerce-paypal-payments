@@ -14,7 +14,6 @@ const initiateRedirect = ( successUrl ) => {
 };
 
 const onApprove = ( context, errorHandler ) => {
-	console.log( 'onApprove' );
 	return ( data, actions ) => {
 		const canCreateOrder =
 			! context.config.vaultingEnabled || data.paymentSource !== 'venmo';
@@ -49,6 +48,7 @@ const onApprove = ( context, errorHandler ) => {
 					} );
 				}
 
+				const orderReceivedUrl = approveData.data?.order_received_url;
 				initiateRedirect( orderReceivedUrl || context.config.redirect );
 			} );
 	};

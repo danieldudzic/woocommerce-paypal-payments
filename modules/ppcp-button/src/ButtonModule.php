@@ -10,7 +10,6 @@ declare(strict_types=1);
 namespace WooCommerce\PayPalCommerce\Button;
 
 use WooCommerce\PayPalCommerce\Button\Endpoint\ApproveSubscriptionEndpoint;
-use WooCommerce\PayPalCommerce\Button\Endpoint\CaptureOrderEndpoint;
 use WooCommerce\PayPalCommerce\Button\Endpoint\CartScriptParamsEndpoint;
 use WooCommerce\PayPalCommerce\Button\Endpoint\GetOrderEndpoint;
 use WooCommerce\PayPalCommerce\Button\Endpoint\SaveCheckoutFormEndpoint;
@@ -183,16 +182,6 @@ class ButtonModule implements ServiceModule, ExtendingModule, ExecutableModule {
 			'wc_ajax_' . GetOrderEndpoint::ENDPOINT,
 			static function () use ( $container ) {
 				$endpoint = $container->get( 'button.endpoint.get-order' );
-				assert( $endpoint instanceof GetOrderEndpoint );
-
-				$endpoint->handle_request();
-			}
-		);
-
-		add_action(
-			'wc_ajax_' . CaptureOrderEndpoint::ENDPOINT,
-			static function () use ( $container ) {
-				$endpoint = $container->get( 'button.endpoint.capture-order' );
 				assert( $endpoint instanceof GetOrderEndpoint );
 
 				$endpoint->handle_request();
