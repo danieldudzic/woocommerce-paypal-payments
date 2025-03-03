@@ -250,6 +250,11 @@ class GeneralSettings extends AbstractDataModel {
 	 * @return string
 	 */
 	public function get_merchant_country() : string {
+		// When we don't know the merchant's real country, we assume it's the Woo store-country.
+		if ( empty( $this->data['merchant_country'] ) ) {
+			return $this->woo_settings['country'];
+		}
+
 		return $this->data['merchant_country'];
 	}
 }

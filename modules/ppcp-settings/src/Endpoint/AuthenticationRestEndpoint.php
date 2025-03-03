@@ -87,7 +87,7 @@ class AuthenticationRestEndpoint extends RestEndpoint {
 		 * }
 		 */
 		register_rest_route(
-			$this->namespace,
+			static::NAMESPACE,
 			'/' . $this->rest_base . '/direct',
 			array(
 				'methods'             => WP_REST_Server::EDITABLE,
@@ -125,7 +125,7 @@ class AuthenticationRestEndpoint extends RestEndpoint {
 		 * }
 		 */
 		register_rest_route(
-			$this->namespace,
+			static::NAMESPACE,
 			'/' . $this->rest_base . '/oauth',
 			array(
 				'methods'             => WP_REST_Server::EDITABLE,
@@ -155,7 +155,7 @@ class AuthenticationRestEndpoint extends RestEndpoint {
 		 * POST /wp-json/wc/v3/wc_paypal/authenticate/disconnect
 		 */
 		register_rest_route(
-			$this->namespace,
+			static::NAMESPACE,
 			'/' . $this->rest_base . '/disconnect',
 			array(
 				'methods'             => WP_REST_Server::EDITABLE,

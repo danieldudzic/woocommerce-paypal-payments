@@ -27,6 +27,7 @@ use WooCommerce\PayPalCommerce\Settings\DTO\MerchantConnectionDTO;
 use WooCommerce\PayPalCommerce\Webhooks\WebhookRegistrar;
 use WooCommerce\PayPalCommerce\Settings\Enum\SellerTypeEnum;
 use WooCommerce\PayPalCommerce\WcGateway\Helper\ConnectionState;
+use WooCommerce\PayPalCommerce\Settings\Endpoint\CommonRestEndpoint;
 
 /**
  * Class that manages the connection to PayPal.
@@ -75,11 +76,11 @@ class AuthenticationManager {
 	private ConnectionState $connection_state;
 
 	/**
-	 * Partners endpoint.
+	 * Internal REST service, to consume own REST handlers in a separate request.
 	 *
-	 * @var PartnersEndpoint
+	 * @var InternalRestService
 	 */
-	private PartnersEndpoint $partners_endpoint;
+	private InternalRestService $rest_service;
 
 	/**
 	 * Constructor.
@@ -89,7 +90,7 @@ class AuthenticationManager {
 	 * @param EnvironmentConfig    $login_endpoint   API handler to fetch merchant credentials.
 	 * @param PartnerReferralsData $referrals_data   Partner referrals data.
 	 * @param ConnectionState      $connection_state Connection state manager.
-	 * @param PartnersEndpoint     $partners_endpoint Partners endpoint.
+	 * @param InternalRestService  $rest_service     Allows calling internal REST endpoints.
 	 * @param ?LoggerInterface     $logger           Logging instance.
 	 */
 	public function __construct(
@@ -98,16 +99,16 @@ class AuthenticationManager {
 		EnvironmentConfig $login_endpoint,
 		PartnerReferralsData $referrals_data,
 		ConnectionState $connection_state,
-		PartnersEndpoint $partners_endpoint,
+		InternalRestService $rest_service,
 		?LoggerInterface $logger = null
 	) {
-		$this->common_settings   = $common_settings;
-		$this->connection_host   = $connection_host;
-		$this->login_endpoint    = $login_endpoint;
-		$this->referrals_data    = $referrals_data;
-		$this->connection_state  = $connection_state;
-		$this->partners_endpoint = $partners_endpoint;
-		$this->logger            = $logger ?: new NullLogger();
+		$this->common_settings  = $common_settings;
+		$this->connection_host  = $connection_host;
+		$this->login_endpoint   = $login_endpoint;
+		$this->referrals_data   = $referrals_data;
+		$this->connection_state = $connection_state;
+		$this->rest_service     = $rest_service;
+		$this->logger           = $logger ?: new NullLogger();
 	}
 
 	/**
@@ -188,6 +189,7 @@ class AuthenticationManager {
 	 * PayPal account using a client ID and secret.
 	 *
 	 * Part of the "Direct Connection" (Manual Connection) flow.
+	 * This connection type is only available to business merchants.
 	 *
 	 * @param bool   $use_sandbox   Whether to use the sandbox mode.
 	 * @param string $client_id     The client ID.
@@ -208,19 +210,13 @@ class AuthenticationManager {
 
 		$payee = $this->request_payee( $client_id, $client_secret, $use_sandbox );
 
-		try {
-			$seller_status = $this->partners_endpoint->seller_status();
-		} catch ( PayPalApiException $exception ) {
-			$seller_status = null;
-		}
-
 		$connection = new MerchantConnectionDTO(
 			$use_sandbox,
 			$client_id,
 			$client_secret,
 			$payee['merchant_id'],
 			$payee['email_address'],
-			! is_null( $seller_status ) ? $seller_status->country() : '',
+			'',
 			SellerTypeEnum::BUSINESS
 		);
 
@@ -286,17 +282,10 @@ class AuthenticationManager {
 		 */
 		$connection = $this->common_settings->get_merchant_data();
 
-		try {
-			$seller_status = $this->partners_endpoint->seller_status();
-		} catch ( PayPalApiException $exception ) {
-			$seller_status = null;
-		}
-
-		$connection->is_sandbox       = $use_sandbox;
-		$connection->client_id        = $credentials['client_id'];
-		$connection->client_secret    = $credentials['client_secret'];
-		$connection->merchant_id      = $credentials['merchant_id'];
-		$connection->merchant_country = ! is_null( $seller_status ) ? $seller_status->country() : '';
+		$connection->is_sandbox    = $use_sandbox;
+		$connection->client_id     = $credentials['client_id'];
+		$connection->client_secret = $credentials['client_secret'];
+		$connection->merchant_id   = $credentials['merchant_id'];
 
 		$this->update_connection_details( $connection );
 	}
@@ -331,13 +320,6 @@ class AuthenticationManager {
 		if ( SellerTypeEnum::is_valid( $seller_type ) ) {
 			$connection->seller_type = $seller_type;
 		}
-
-		try {
-			$seller_status = $this->partners_endpoint->seller_status();
-		} catch ( PayPalApiException $exception ) {
-			$seller_status = null;
-		}
-		$connection->merchant_country = ! is_null( $seller_status ) ? $seller_status->country() : '';
 
 		$this->update_connection_details( $connection );
 	}
@@ -450,6 +432,38 @@ class AuthenticationManager {
 	}
 
 	/**
+	 * Fetches additional details about the connected merchant from PayPal
+	 * and stores them in the DB.
+	 *
+	 * This process only works after persisting basic connection details.
+	 *
+	 * @return void
+	 */
+	private function enrich_merchant_details() : void {
+		if ( ! $this->common_settings->is_merchant_connected() ) {
+			return;
+		}
+
+		try {
+			$endpoint = CommonRestEndpoint::seller_account_route( true );
+			$details  = $this->rest_service->get_response( $endpoint );
+		} catch ( Throwable $exception ) {
+			$this->logger->warning( 'Could not determine merchant country: ' . $exception->getMessage() );
+			return;
+		}
+
+		// Request the merchant details via a PayPal API request.
+		$connection = $this->common_settings->get_merchant_data();
+
+		// Enrich the connection details with additional details.
+		$connection->merchant_country = $details['country'];
+
+		// Persist the changes.
+		$this->common_settings->set_merchant_data( $connection );
+		$this->common_settings->save();
+	}
+
+	/**
 	 * Stores the provided details in the data model.
 	 *
 	 * @param MerchantConnectionDTO $connection Connection details to persist.
@@ -469,6 +483,9 @@ class AuthenticationManager {
 
 			// Update the connection status and set the environment flags.
 			$this->connection_state->connect( $connection->is_sandbox );
+
+			// At this point, we can use the PayPal API to get more details about the seller.
+			$this->enrich_merchant_details();
 
 			/**
 			 * Request to flush caches before authenticating the merchant, to

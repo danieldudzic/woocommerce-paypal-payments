@@ -60,7 +60,7 @@ class LoginLinkRestEndpoint extends RestEndpoint {
 		 * }
 		 */
 		register_rest_route(
-			$this->namespace,
+			static::NAMESPACE,
 			'/' . $this->rest_base,
 			array(
 				'methods'             => WP_REST_Server::EDITABLE,
