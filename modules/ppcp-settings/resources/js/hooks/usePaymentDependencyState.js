@@ -1,5 +1,5 @@
 /**
- * Custom hook to handle payment-method-based payment method dependencies
+ * Custom hook to handle payment-method-based dependencies
  */
 import { useSelect } from '@wordpress/data';
 
@@ -25,77 +25,54 @@ const getParentMethodName = ( parentId, methodsMap ) => {
  * @return {Array} List of disabled parent IDs, empty if none
  */
 const findDisabledParents = ( method, methodsMap ) => {
-	const dependencies = method.depends_on_payment_methods || [];
+	const dependencies = method.depends_on_payment_methods;
 
-	if ( ! dependencies.length ) {
+	if ( ! dependencies || ! Array.isArray( dependencies ) ) {
 		return [];
 	}
 
-	const disabledParents = dependencies.filter( ( parentId ) => {
+	return dependencies.filter( ( parentId ) => {
 		const parent = methodsMap[ parentId ];
 		return parent && ! parent.enabled;
 	} );
-
-	return disabledParents;
 };
 
 /**
- * Hook to evaluate payment method dependencies for a set of methods
+ * Hook to evaluate payment method dependencies
  *
  * @param {Array}  methods    - List of payment methods
  * @param {Object} methodsMap - Map of payment methods by ID
- * @return {Object|null} Dependency state object keyed by method ID, or null if not ready
+ * @return {Object} Dependency state object keyed by method ID
  */
 const usePaymentDependencyState = ( methods, methodsMap ) => {
-	const dependencyState = useSelect(
-		( select ) => {
-			const paymentStore = select( 'wc/paypal/payment' );
-			if ( ! paymentStore ) {
-				return null;
-			}
+	return useSelect( () => {
+		const result = {};
 
-			// Check if payment methods data is available
-			if (
-				! methods ||
-				! methodsMap ||
-				Object.keys( methodsMap ).length === 0
-			) {
-				return null;
-			}
-
-			const result = {};
-
+		if ( methods && methodsMap && Object.keys( methodsMap ).length > 0 ) {
 			methods.forEach( ( method ) => {
-				if ( ! method || ! method.id ) {
-					return;
-				}
-
-				const disabledParents = findDisabledParents(
-					method,
-					methodsMap
-				);
-
-				if ( disabledParents.length > 0 ) {
-					const parentId = disabledParents[ 0 ];
-					const parentName = getParentMethodName(
-						parentId,
+				if ( method && method.id ) {
+					const disabledParents = findDisabledParents(
+						method,
 						methodsMap
 					);
 
-					result[ method.id ] = {
-						isDisabled: true,
-						parentId,
-						parentName,
-					};
+					if ( disabledParents.length > 0 ) {
+						const parentId = disabledParents[ 0 ];
+						result[ method.id ] = {
+							isDisabled: true,
+							parentId,
+							parentName: getParentMethodName(
+								parentId,
+								methodsMap
+							),
+						};
+					}
 				}
 			} );
+		}
 
-			return result;
-		},
-		[ methods, methodsMap ]
-	);
-
-	return dependencyState;
+		return result;
+	}, [ methods, methodsMap ] );
 };
 
 export default usePaymentDependencyState;
