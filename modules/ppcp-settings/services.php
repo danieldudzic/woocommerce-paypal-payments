@@ -173,7 +173,8 @@ return array(
 	'settings.rest.payment'                        => static function ( ContainerInterface $container ) : PaymentRestEndpoint {
 		return new PaymentRestEndpoint(
 			$container->get( 'settings.data.payment' ),
-			$container->get( 'settings.data.definition.methods' )
+			$container->get( 'settings.data.definition.methods' ),
+			$container->get( 'settings.data.definition.method_dependencies' )
 		);
 	},
 	'settings.rest.styling'                        => static function ( ContainerInterface $container ) : StylingRestEndpoint {
@@ -367,12 +368,11 @@ return array(
 
 		return new PaymentMethodsDefinition(
 			$container->get( 'settings.data.payment' ),
-			$container->get( 'settings.data.definition.method_dependencies' ),
 			$axo_notices
 		);
 	},
 	'settings.data.definition.method_dependencies' => static function ( ContainerInterface $container ) : PaymentMethodsDependenciesDefinition {
-		return new PaymentMethodsDependenciesDefinition();
+		return new PaymentMethodsDependenciesDefinition( $container->get( 'wcgateway.settings' ) );
 	},
 	'settings.service.pay_later_status'            => static function ( ContainerInterface $container ) : array {
 		$pay_later_endpoint = $container->get( 'settings.rest.pay_later_messaging' );

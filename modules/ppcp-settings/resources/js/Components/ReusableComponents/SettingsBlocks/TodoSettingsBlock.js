@@ -7,7 +7,6 @@ const TodoSettingsBlock = ( {
 	todosData,
 	className = '',
 	setActiveModal,
-	setActiveHighlight,
 	onDismissTodo,
 } ) => {
 	const [ dismissingIds, setDismissingIds ] = useState( new Set() );
@@ -57,9 +56,6 @@ const TodoSettingsBlock = ( {
 
 		if ( todo.action.modal ) {
 			setActiveModal( todo.action.modal );
-		}
-		if ( todo.action.highlight ) {
-			setActiveHighlight( todo.action.highlight );
 		}
 	};
 

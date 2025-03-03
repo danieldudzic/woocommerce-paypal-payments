@@ -1,3 +1,6 @@
+/**
+ * Custom hook to handle payment-method-based payment method dependencies
+ */
 import { useSelect } from '@wordpress/data';
 
 /**
@@ -22,36 +25,51 @@ const getParentMethodName = ( parentId, methodsMap ) => {
  * @return {Array} List of disabled parent IDs, empty if none
  */
 const findDisabledParents = ( method, methodsMap ) => {
-	if ( ! method.depends_on?.length && ! method._disabledByDependency ) {
+	const dependencies = method.depends_on_payment_methods || [];
+
+	if ( ! dependencies.length ) {
 		return [];
 	}
 
-	const parents = method.depends_on || [];
-
-	return parents.filter( ( parentId ) => {
+	const disabledParents = dependencies.filter( ( parentId ) => {
 		const parent = methodsMap[ parentId ];
 		return parent && ! parent.enabled;
 	} );
+
+	return disabledParents;
 };
 
 /**
- * Custom hook to handle payment method dependencies
+ * Hook to evaluate payment method dependencies for a set of methods
  *
  * @param {Array}  methods    - List of payment methods
  * @param {Object} methodsMap - Map of payment methods by ID
- * @return {Object} Dependency state object with methods that should be disabled
+ * @return {Object|null} Dependency state object keyed by method ID, or null if not ready
  */
 const usePaymentDependencyState = ( methods, methodsMap ) => {
-	return useSelect(
+	const dependencyState = useSelect(
 		( select ) => {
 			const paymentStore = select( 'wc/paypal/payment' );
 			if ( ! paymentStore ) {
-				return {};
+				return null;
+			}
+
+			// Check if payment methods data is available
+			if (
+				! methods ||
+				! methodsMap ||
+				Object.keys( methodsMap ).length === 0
+			) {
+				return null;
 			}
 
 			const result = {};
 
 			methods.forEach( ( method ) => {
+				if ( ! method || ! method.id ) {
+					return;
+				}
+
 				const disabledParents = findDisabledParents(
 					method,
 					methodsMap
@@ -76,6 +94,8 @@ const usePaymentDependencyState = ( methods, methodsMap ) => {
 		},
 		[ methods, methodsMap ]
 	);
+
+	return dependencyState;
 };
 
 export default usePaymentDependencyState;
