@@ -105,6 +105,12 @@ class PaymentSettings extends AbstractDataModel {
 				return $this->get_paylater_enabled();
 
 			default:
+				if (
+					! did_filter( 'woocommerce_payment_gateways' )
+					|| doing_filter( 'woocommerce_payment_gateways' )
+				) {
+					return true;
+				}
 				$gateway = $this->get_gateway( $method_id );
 
 				if ( $gateway ) {

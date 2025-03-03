@@ -229,4 +229,21 @@ define( 'PPCP_PAYPAL_BN_CODE', 'Woo_PPCP' );
 		return class_exists( 'woocommerce' );
 	}
 
+	add_action(
+		'woocommerce_paypal_payments_gateway_migrate',
+		/**
+		 * Set new merchant flag on plugin install.
+		 *
+		 * When installing the plugin for the first time, we direct the user to
+		 * the new UI without a data migration, and fully hide the legacy UI.
+		 *
+		 * @param string|false $version String with previous installed plugin version.
+		 *                              Boolean false on first installation on a new site.
+		 */
+		static function ( $version ) {
+			if ( ! $version ) {
+				update_option( 'woocommerce-ppcp-is-new-merchant', '1' );
+			}
+		}
+	);
 } )();
