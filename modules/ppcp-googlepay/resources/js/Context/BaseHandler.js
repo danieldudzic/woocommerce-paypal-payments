@@ -55,6 +55,27 @@ class BaseHandler {
 		return this.actionHandler().configuration().onApprove( data, actions );
 	}
 
+	getOrder( orderId ) {
+		return new Promise( ( resolve, reject ) => {
+			fetch( this.ppcpConfig.ajax.get_order.endpoint, {
+				method: 'POST',
+				credentials: 'same-origin',
+				body: JSON.stringify( {
+					nonce: this.ppcpConfig.ajax.get_order.nonce,
+					order_id: orderId,
+				} ),
+			} )
+				.then( ( result ) => result.json() )
+				.then( ( result ) => {
+					if ( ! result.success || ! result.data ) {
+						reject();
+					}
+
+					resolve( result.data );
+				} );
+		} );
+	}
+
 	captureOrder( data, actions ) {
 		return fetch( this.ppcpConfig.ajax.get_order.endpoint, {
 			method: 'POST',
