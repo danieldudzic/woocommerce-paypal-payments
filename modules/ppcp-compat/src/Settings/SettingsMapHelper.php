@@ -10,7 +10,9 @@ declare( strict_types = 1 );
 namespace WooCommerce\PayPalCommerce\Compat\Settings;
 
 use RuntimeException;
+use WooCommerce\PayPalCommerce\Settings\Data\AbstractDataModel;
 use WooCommerce\PayPalCommerce\Settings\Data\GeneralSettings;
+use WooCommerce\PayPalCommerce\Settings\Data\PaymentSettings;
 use WooCommerce\PayPalCommerce\Settings\Data\SettingsModel;
 use WooCommerce\PayPalCommerce\Settings\Data\StylingSettings;
 
@@ -73,6 +75,13 @@ class SettingsMapHelper {
 	protected GeneralSettingsMapHelper $general_settings_map_helper;
 
 	/**
+	 * Whether the new settings module is enabled.
+	 *
+	 * @var bool
+	 */
+	protected bool $new_settings_module_enabled;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param SettingsMap[]                 $settings_map A list of settings maps containing key definitions.
@@ -80,6 +89,7 @@ class SettingsMapHelper {
 	 * @param SettingsTabMapHelper          $settings_tab_map_helper A helper for mapping the old/new settings tab settings.
 	 * @param SubscriptionSettingsMapHelper $subscription_map_helper A helper for mapping old and new subscription settings.
 	 * @param GeneralSettingsMapHelper      $general_settings_map_helper A helper for mapping old and new general settings.
+	 * @param bool                          $new_settings_module_enabled Whether the new settings module is enabled.
 	 * @throws RuntimeException When an old key has multiple mappings.
 	 */
 	public function __construct(
@@ -87,7 +97,8 @@ class SettingsMapHelper {
 		StylingSettingsMapHelper $styling_settings_map_helper,
 		SettingsTabMapHelper $settings_tab_map_helper,
 		SubscriptionSettingsMapHelper $subscription_map_helper,
-		GeneralSettingsMapHelper $general_settings_map_helper
+		GeneralSettingsMapHelper $general_settings_map_helper,
+		bool $new_settings_module_enabled
 	) {
 		$this->validate_settings_map( $settings_map );
 		$this->settings_map                = $settings_map;
@@ -95,6 +106,7 @@ class SettingsMapHelper {
 		$this->settings_tab_map_helper     = $settings_tab_map_helper;
 		$this->subscription_map_helper     = $subscription_map_helper;
 		$this->general_settings_map_helper = $general_settings_map_helper;
+		$this->new_settings_module_enabled = $new_settings_module_enabled;
 	}
 
 	/**
@@ -124,6 +136,10 @@ class SettingsMapHelper {
 	 * @return mixed|null The value of the mapped setting, or null if not found.
 	 */
 	public function mapped_value( string $old_key ) {
+		if ( ! $this->new_settings_module_enabled ) {
+			return null;
+		}
+
 		$this->ensure_map_initialized();
 		if ( ! isset( $this->key_to_model[ $old_key ] ) ) {
 			return null;
@@ -147,6 +163,10 @@ class SettingsMapHelper {
 	 * @return bool True if the key exists in the new settings, false otherwise.
 	 */
 	public function has_mapped_key( string $old_key ) : bool {
+		if ( ! $this->new_settings_module_enabled ) {
+			return false;
+		}
+
 		$this->ensure_map_initialized();
 
 		return isset( $this->key_to_model[ $old_key ] );
@@ -169,7 +189,11 @@ class SettingsMapHelper {
 
 		switch ( true ) {
 			case $model instanceof StylingSettings:
-				return $this->styling_settings_map_helper->mapped_value( $old_key, $this->model_cache[ $model_id ] );
+				return $this->styling_settings_map_helper->mapped_value(
+					$old_key,
+					$this->model_cache[ $model_id ],
+					$this->get_payment_settings_model()
+				);
 
 			case $model instanceof GeneralSettings:
 				return $this->general_settings_map_helper->mapped_value( $old_key, $this->model_cache[ $model_id ] );
@@ -216,5 +240,24 @@ class SettingsMapHelper {
 				);
 			}
 		}
+	}
+
+	/**
+	 * Retrieves the PaymentSettings model instance.
+	 *
+	 * Once the new settings module is permanently enabled,
+	 * this model can be passed as a dependency to the appropriate helper classes.
+	 * For now, we must pass it this way to avoid errors when the new settings module is disabled.
+	 *
+	 * @return AbstractDataModel|null
+	 */
+	protected function get_payment_settings_model() : ?AbstractDataModel {
+		foreach ( $this->settings_map as $settings_map_instance ) {
+			if ( $settings_map_instance->get_model() instanceof PaymentSettings ) {
+				return $settings_map_instance->get_model();
+			}
+		}
+
+		return null;
 	}
 }

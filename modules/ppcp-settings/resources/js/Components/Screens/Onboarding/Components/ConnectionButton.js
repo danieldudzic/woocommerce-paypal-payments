@@ -32,7 +32,6 @@ const ButtonOrPlaceholder = ( {
 
 	if ( href ) {
 		buttonProps.href = href;
-		buttonProps.target = 'PPFrame';
 		buttonProps[ 'data-paypal-button' ] = 'true';
 		buttonProps[ 'data-paypal-onboard-button' ] = 'true';
 	}

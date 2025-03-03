@@ -83,6 +83,12 @@ class OnboardingRestEndpoint extends RestEndpoint {
 		'should_skip_payment_methods' => array(
 			'js_name' => 'shouldSkipPaymentMethods',
 		),
+		'can_use_fastlane'            => array(
+			'js_name' => 'canUseFastlane',
+		),
+		'can_use_pay_later'           => array(
+			'js_name' => 'canUsePayLater',
+		),
 	);
 
 	/**
@@ -104,7 +110,7 @@ class OnboardingRestEndpoint extends RestEndpoint {
 		 * GET /wp-json/wc/v3/wc_paypal/onboarding
 		 */
 		register_rest_route(
-			$this->namespace,
+			static::NAMESPACE,
 			'/' . $this->rest_base,
 			array(
 				'methods'             => WP_REST_Server::READABLE,
@@ -120,7 +126,7 @@ class OnboardingRestEndpoint extends RestEndpoint {
 		 * }
 		 */
 		register_rest_route(
-			$this->namespace,
+			static::NAMESPACE,
 			'/' . $this->rest_base,
 			array(
 				'methods'             => WP_REST_Server::EDITABLE,
