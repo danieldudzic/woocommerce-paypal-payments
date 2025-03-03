@@ -284,7 +284,7 @@ return array(
 			$container->get( 'wcgateway.paypal-gateway' )
 		);
 	},
-	'button.endpoint.get-order'        => static function( ContainerInterface $container ): GetOrderEndpoint {
+	'button.endpoint.get-order'                   => static function( ContainerInterface $container ): GetOrderEndpoint {
 		return new GetOrderEndpoint(
 			$container->get( 'button.request-data' ),
 			$container->get( 'api.endpoint.order' )
