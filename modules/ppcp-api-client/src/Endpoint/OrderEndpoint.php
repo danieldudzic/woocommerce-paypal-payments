@@ -449,15 +449,16 @@ class OrderEndpoint {
 		return $order;
 	}
 
+
 	/**
-	 * Fetches an order for a given ID.
+	 * Fetches an order for a given ID and returns the raw, unparsed JSON response.
 	 *
-	 * @param string $id The ID.
+	 * @param string $id The PayPal order-ID.
 	 *
-	 * @return Order
+	 * @return stdClass
 	 * @throws RuntimeException If the request fails.
 	 */
-	public function order( string $id ): Order {
+	public function raw_order( string $id ): stdClass {
 		$bearer = $this->bearer->bearer();
 		$url    = trailingslashit( $this->host ) . 'v2/checkout/orders/' . $id;
 		$args   = array(
@@ -480,6 +481,7 @@ class OrderEndpoint {
 		}
 		$json        = json_decode( $response['body'] );
 		$status_code = (int) wp_remote_retrieve_response_code( $response );
+
 		if ( 404 === $status_code || empty( $response['body'] ) ) {
 			$error = new RuntimeException(
 				__( 'Could not retrieve order.', 'woocommerce-paypal-payments' ),
@@ -495,6 +497,7 @@ class OrderEndpoint {
 			);
 			throw $error;
 		}
+
 		if ( 200 !== $status_code ) {
 			$error = new PayPalApiException(
 				$json,
@@ -510,6 +513,20 @@ class OrderEndpoint {
 			);
 			throw $error;
 		}
+
+		return $json;
+	}
+
+	/**
+	 * Fetches an order for a given ID.
+	 *
+	 * @param string $id The ID.
+	 *
+	 * @return Order
+	 * @throws RuntimeException If the request fails.
+	 */
+	public function order( string $id ) : Order {
+		$json = $this->raw_order( $id );
 
 		return $this->order_factory->from_paypal_response( $json );
 	}
