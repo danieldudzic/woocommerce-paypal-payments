@@ -946,15 +946,14 @@ class GooglepayButton extends PaymentButton {
 
 			if ( ! isApprovedByPayPal ) {
 				result = paymentError( 'TRANSACTION FAILED' );
-			} else if ( isApprovedByPayPal === 'action_required' ) {
-				await initiatePayerAction( orderId );
-				const success = await captureOrderServerSide( orderId );
-				if ( success ) {
-					result = paymentResponse( 'SUCCESS' );
-				} else {
-					result = paymentError( 'FAILED TO APPROVE' );
-				}
 			} else {
+				/**
+				 * This payment requires a 3DS verification before we can process the order.
+				 */
+				if ( isApprovedByPayPal === 'action_required' ) {
+					await initiatePayerAction( orderId );
+				}
+
 				const success = await approveOrderServerSide( orderId );
 
 				if ( success ) {
