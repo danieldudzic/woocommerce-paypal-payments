@@ -62,6 +62,21 @@ import moduleStorage from './Helper/GooglePayStorage';
  * @property {string} checkoutOption   - Optional. Affects the submit button text displayed in the Google Pay payment sheet.
  */
 
+/**
+ * Indicates that the payment was approved by PayPal and can be processed.
+ */
+const ORDER_APPROVED = 'approved';
+
+/**
+ * We should not process this order, as it failed for some reason.
+ */
+const ORDER_FAILED = 'failed';
+
+/**
+ * The order is still pending, and we need to request 3DS details from the customer.
+ */
+const ORDER_INCOMPLETE = 'payerAction';
+
 function payerDataFromPaymentResponse( response ) {
 	const raw = response?.paymentMethodData?.info?.billingAddress;
 
@@ -818,10 +833,7 @@ class GooglepayButton extends PaymentButton {
 			};
 
 			if ( intent || message ) {
-				response.error = {
-					intent,
-					message,
-				};
+				response.error = { intent, message };
 			}
 
 			this.log( 'processPaymentResponse', response );
@@ -849,11 +861,13 @@ class GooglepayButton extends PaymentButton {
 
 			switch ( confirmOrderResponse?.status ) {
 				case 'APPROVED':
-					return true;
+					return ORDER_APPROVED;
+
 				case 'PAYER_ACTION_REQUIRED':
-					return 'action_required';
+					return ORDER_INCOMPLETE;
+
 				default:
-					return false;
+					return ORDER_FAILED;
 			}
 		};
 
@@ -915,13 +929,13 @@ class GooglepayButton extends PaymentButton {
 			const orderId = await this.contextHandler.createOrder();
 			this.log( 'createOrder', orderId );
 
-			const isApprovedByPayPal = await checkPayPalApproval( orderId );
+			const orderState = await checkPayPalApproval( orderId );
 
-			if ( ! isApprovedByPayPal ) {
+			if ( ORDER_FAILED === orderState ) {
 				result = paymentError( 'TRANSACTION FAILED' );
 			} else {
 				// This payment requires a 3DS verification before we can process the order.
-				if ( isApprovedByPayPal === 'action_required' ) {
+				if ( ORDER_INCOMPLETE === orderState ) {
 					await initiatePayerAction( orderId );
 				}
 
