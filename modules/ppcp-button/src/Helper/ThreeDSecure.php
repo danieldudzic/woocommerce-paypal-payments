@@ -70,14 +70,29 @@ class ThreeDSecure {
 			return $this->return_decision( self::NO_DECISION, $order );
 		}
 
-		if ( ! ( $payment_source->properties()->brand ?? '' ) ) {
+		if ( isset( $payment_source->properties()->card ) ) {
+			/**
+			 * GooglePay provides the credit-card details and authentication-result
+			 * via the "cards" attribute. We assume, that this structure is also
+			 * used for other payment methods that support 3DS.
+			 */
+			$card_properties = $payment_source->properties()->card;
+		} else {
+			/**
+			 * For regular credit card payments (via PayPal) we get all details
+			 * directly in the payment_source properties.
+			 */
+			$card_properties = $payment_source->properties();
+		}
+
+		if ( ! ( $card_properties->brand ?? '' ) ) {
 			return $this->return_decision( self::NO_DECISION, $order );
 		}
-		if ( ! ( $payment_source->properties()->authentication_result ?? '' ) ) {
+		if ( ! ( $card_properties->authentication_result ?? '' ) ) {
 			return $this->return_decision( self::NO_DECISION, $order );
 		}
 
-		$authentication_result = $payment_source->properties()->authentication_result ?? null;
+		$authentication_result = $card_properties->authentication_result ?? null;
 		if ( $authentication_result ) {
 			$result = $this->card_authentication_result_factory->from_paypal_response( $authentication_result );
 
