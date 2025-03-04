@@ -51,8 +51,6 @@ const useHooks = () => {
 
 	// Transient accessors.
 	const [ activeModal, setActiveModal ] = useTransient( 'activeModal' );
-	const [ activeHighlight, setActiveHighlight ] =
-		useTransient( 'activeHighlight' );
 
 	// Persistent accessors.
 	const [ isSandboxMode, setSandboxMode ] = usePersistent( 'useSandbox' );
@@ -73,8 +71,6 @@ const useHooks = () => {
 	return {
 		activeModal,
 		setActiveModal,
-		activeHighlight,
-		setActiveHighlight,
 		isSandboxMode,
 		setSandboxMode: ( state ) => {
 			return savePersistent( setSandboxMode, state );
@@ -224,11 +220,6 @@ export const useMerchant = () => {
 export const useActiveModal = () => {
 	const { activeModal, setActiveModal } = useHooks();
 	return { activeModal, setActiveModal };
-};
-
-export const useActiveHighlight = () => {
-	const { activeHighlight, setActiveHighlight } = useHooks();
-	return { activeHighlight, setActiveHighlight };
 };
 
 /*

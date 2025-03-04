@@ -10,8 +10,9 @@ import { scrollAndHighlight } from '../../../../../utils/scrollAndHighlight';
  * @param {string} props.parentName - Display name of the parent payment method
  * @return {JSX.Element} The formatted message with link
  */
-const DependencyMessage = ( { parentId, parentName } ) => {
-	// Using WordPress createInterpolateElement with proper React elements
+const PaymentDependencyMessage = ( { parentId, parentName } ) => {
+	const displayName = parentName || parentId;
+
 	return createInterpolateElement(
 		/* translators: %s: payment method name */
 		__(
@@ -28,7 +29,7 @@ const DependencyMessage = ( { parentId, parentName } ) => {
 							scrollAndHighlight( parentId );
 						} }
 					>
-						{ parentName }
+						{ displayName }
 					</a>
 				</strong>
 			),
@@ -36,4 +37,4 @@ const DependencyMessage = ( { parentId, parentName } ) => {
 	);
 };
 
-export default DependencyMessage;
+export default PaymentDependencyMessage;

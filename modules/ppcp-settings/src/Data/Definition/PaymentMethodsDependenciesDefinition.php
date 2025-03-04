@@ -9,6 +9,8 @@ declare( strict_types = 1 );
 
 namespace WooCommerce\PayPalCommerce\Settings\Data\Definition;
 
+use WooCommerce\PayPalCommerce\WcGateway\Exception\NotFoundException;
+use WooCommerce\PayPalCommerce\WcGateway\Settings\Settings;
 use WooCommerce\PayPalCommerce\Applepay\ApplePayGateway;
 use WooCommerce\PayPalCommerce\Axo\Gateway\AxoGateway;
 use WooCommerce\PayPalCommerce\Googlepay\GooglePayGateway;
@@ -29,19 +31,35 @@ use WooCommerce\PayPalCommerce\WcGateway\Gateway\PayUponInvoice\PayUponInvoiceGa
 /**
  * Class PaymentMethodsDependenciesDefinition
  *
- * Defines dependency relationships between payment methods.
+ * Defines dependency relationships between payment methods and settings.
  */
 class PaymentMethodsDependenciesDefinition {
 
 	/**
-	 * Get all payment method dependencies
+	 * Current settings values
+	 *
+	 * @var Settings
+	 */
+	private Settings $settings;
+
+	/**
+	 * Constructor
+	 *
+	 * @param Settings $settings Settings instance.
+	 */
+	public function __construct( Settings $settings ) {
+		$this->settings = $settings;
+	}
+
+	/**
+	 * Get payment method to payment method dependencies
 	 *
 	 * Maps dependent method ID => array of parent method IDs.
 	 * A dependent method is disabled if ANY of its required parents is disabled.
 	 *
 	 * @return array The dependency relationships between payment methods
 	 */
-	public function get_dependencies(): array {
+	public function get_payment_method_dependencies(): array {
 		$dependencies = array(
 			CardButtonGateway::ID     => array( PayPalGateway::ID ),
 			CreditCardGateway::ID     => array( PayPalGateway::ID ),
@@ -69,43 +87,114 @@ class PaymentMethodsDependenciesDefinition {
 	}
 
 	/**
-	 * Create a mapping from parent methods to their dependent methods
+	 * Get setting to payment method dependencies.
 	 *
-	 * @return array Parent-to-child dependency map
+	 * Maps method ID => array of required settings with their values.
+	 * A method is disabled if ANY of its required settings doesn't match the required value.
+	 *
+	 * @return array The dependency relationships between settings and payment methods
 	 */
-	public function get_dependents_map(): array {
-		$result       = array();
-		$dependencies = $this->get_dependencies();
+	public function get_setting_dependencies(): array {
+		$dependencies = array(
+			'pay-later' => array(
+				'savePaypalAndVenmo' => false,
+			),
+		);
 
-		foreach ( $dependencies as $child_id => $parent_ids ) {
-			foreach ( $parent_ids as $parent_id ) {
-				if ( ! isset( $result[ $parent_id ] ) ) {
-					$result[ $parent_id ] = array();
-				}
-				$result[ $parent_id ][] = $child_id;
-			}
-		}
-
-		return $result;
+		return apply_filters(
+			'woocommerce_paypal_payments_setting_dependencies',
+			$dependencies
+		);
 	}
 
 	/**
-	 * Get all parent methods that a method depends on
+	 * Get method setting dependencies
+	 *
+	 * Returns the setting dependencies for a specific method ID.
+	 *
+	 * @param string $method_id Method ID to check.
+	 * @return array Setting dependencies for the method or empty array if none exist
+	 */
+	public function get_method_setting_dependencies( string $method_id ): array {
+		$setting_dependencies = $this->get_setting_dependencies();
+		return $setting_dependencies[ $method_id ] ?? array();
+	}
+
+	/**
+	 * Add dependency information to the payment method definitions
+	 *
+	 * @param array $methods Payment method definitions.
+	 * @return array Payment method definitions with dependency information
+	 */
+	public function add_dependency_info_to_methods( array $methods ): array {
+		foreach ( $methods as $method_id => &$method ) {
+			// Skip the __meta key.
+			if ( $method_id === '__meta' ) {
+				continue;
+			}
+
+			// Add payment method dependency info if applicable.
+			$payment_method_dependencies = $this->get_method_payment_method_dependencies( $method_id );
+			if ( ! empty( $payment_method_dependencies ) ) {
+				$method['depends_on_payment_methods'] = $payment_method_dependencies;
+			}
+
+			// Check if this method has setting dependencies.
+			$method_setting_dependencies = $this->get_method_setting_dependencies( $method_id );
+			if ( ! empty( $method_setting_dependencies ) ) {
+				$settings = array();
+				foreach ( $method_setting_dependencies as $setting_id => $required_value ) {
+					$settings[ $setting_id ] = array(
+						'id'    => $setting_id,
+						'value' => $required_value,
+					);
+				}
+
+				$method['depends_on_settings'] = array(
+					'settings' => $settings,
+				);
+			}
+		}
+
+		// Add global metadata about settings that affect dependencies.
+		if ( ! isset( $methods['__meta'] ) ) {
+			$methods['__meta'] = array();
+		}
+
+		$methods['__meta']['settings_affecting_methods'] = $this->get_all_dependent_settings();
+
+		return $methods;
+	}
+
+	/**
+	 * Get payment method dependencies for a specific method
 	 *
 	 * @param string $method_id Method ID to check.
 	 * @return array Array of parent method IDs
 	 */
-	public function get_parent_methods( string $method_id ): array {
-		return $this->get_dependencies()[ $method_id ] ?? array();
+	public function get_method_payment_method_dependencies( string $method_id ): array {
+		return $this->get_payment_method_dependencies()[ $method_id ] ?? array();
 	}
 
 	/**
-	 * Get methods that depend on a parent method
+	 * Get all settings that affect payment methods
 	 *
-	 * @param string $parent_id Parent method ID.
-	 * @return array Array of dependent method IDs
+	 * @return array Array of unique setting keys that affect payment methods
 	 */
-	public function get_dependent_methods( string $parent_id ): array {
-		return $this->get_dependents_map()[ $parent_id ] ?? array();
+	public function get_all_dependent_settings(): array {
+		$settings     = array();
+		$dependencies = $this->get_setting_dependencies();
+
+		foreach ( $dependencies as $method_settings ) {
+			if ( isset( $method_settings['settings'] ) ) {
+				foreach ( $method_settings['settings'] as $setting_data ) {
+					if ( ! in_array( $setting_data['id'], $settings, true ) ) {
+						$settings[] = $setting_data['id'];
+					}
+				}
+			}
+		}
+
+		return $settings;
 	}
 }
