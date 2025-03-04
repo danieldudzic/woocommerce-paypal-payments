@@ -867,7 +867,7 @@ class GooglepayButton extends PaymentButton {
 
 			await widgetBuilder.paypal
 				.Googlepay()
-				.initiatePayerAction( { orderId: orderID } )
+				.initiatePayerAction( { orderId: orderID } );
 		};
 
 		/**
