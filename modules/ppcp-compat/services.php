@@ -11,6 +11,7 @@ namespace WooCommerce\PayPalCommerce\Compat;
 
 use WooCommerce\PayPalCommerce\Compat\Assets\CompatAssets;
 use WooCommerce\PayPalCommerce\Compat\Settings\GeneralSettingsMapHelper;
+use WooCommerce\PayPalCommerce\Compat\Settings\PaymentMethodSettingsMapHelper;
 use WooCommerce\PayPalCommerce\Compat\Settings\SettingsMap;
 use WooCommerce\PayPalCommerce\Compat\Settings\SettingsMapHelper;
 use WooCommerce\PayPalCommerce\Compat\Settings\SettingsTabMapHelper;
@@ -145,6 +146,9 @@ return array(
 		$general_map_helper = $container->get( 'compat.settings.general_map_helper' );
 		assert( $general_map_helper instanceof GeneralSettingsMapHelper );
 
+		$payment_methods_map_helper = $container->get( 'compat.settings.payment_methods_map_helper' );
+		assert( $payment_methods_map_helper instanceof PaymentMethodSettingsMapHelper );
+
 		return array(
 			new SettingsMap(
 				$container->get( 'settings.data.general' ),
@@ -182,6 +186,10 @@ return array(
 				$container->get( 'settings.data.payment' ),
 				array()
 			),
+			new SettingsMap(
+				$container->get( 'settings.data.payment' ),
+				$payment_methods_map_helper->map()
+			),
 		);
 	},
 	'compat.settings.settings_map_helper'            => static function( ContainerInterface $container ) : SettingsMapHelper {
@@ -191,6 +199,7 @@ return array(
 			$container->get( 'compat.settings.settings_tab_map_helper' ),
 			$container->get( 'compat.settings.subscription_map_helper' ),
 			$container->get( 'compat.settings.general_map_helper' ),
+			$container->get( 'compat.settings.payment_methods_map_helper' ),
 			$container->get( 'wcgateway.settings.admin-settings-enabled' )
 		);
 	},
@@ -205,5 +214,8 @@ return array(
 	},
 	'compat.settings.general_map_helper'             => static function() : GeneralSettingsMapHelper {
 		return new GeneralSettingsMapHelper();
+	},
+	'compat.settings.payment_methods_map_helper'     => static function() : PaymentMethodSettingsMapHelper {
+		return new PaymentMethodSettingsMapHelper();
 	},
 );
