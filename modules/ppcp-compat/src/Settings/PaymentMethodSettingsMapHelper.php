@@ -9,7 +9,8 @@ declare(strict_types=1);
 
 namespace WooCommerce\PayPalCommerce\Compat\Settings;
 
-use WooCommerce\PayPalCommerce\Settings\Data\PaymentSettings;
+use WooCommerce\PayPalCommerce\Axo\Gateway\AxoGateway;
+use WooCommerce\PayPalCommerce\WcGateway\Gateway\CreditCardGateway;
 
 /**
  * A map of old to new payment method settings.
@@ -26,20 +27,18 @@ class PaymentMethodSettingsMapHelper {
 	 */
 	public function map(): array {
 		return array(
-			'dcc_enabled' => 'acdc',
-			'axo_enabled' => 'axo',
+			'dcc_enabled' => CreditCardGateway::ID,
+			'axo_enabled' => AxoGateway::ID,
 		);
 	}
 
 	/**
 	 * Retrieves the value of a mapped key from the new settings.
 	 *
-	 * @param string          $old_key The key from the legacy settings.
-	 * @param PaymentSettings $payment_settings The payment settings model.
-	 *
+	 * @param string $old_key The key from the legacy settings.
 	 * @return mixed The value of the mapped setting, (null if not found).
 	 */
-	public function mapped_value( string $old_key, PaymentSettings $payment_settings ): ?bool {
+	public function mapped_value( string $old_key): ?bool {
 
 		$payment_method = $this->map()[ $old_key ] ?? false;
 
@@ -47,6 +46,19 @@ class PaymentMethodSettingsMapHelper {
 			return null;
 		}
 
-		return $payment_settings->is_method_enabled( $payment_method );
+		return $this->is_gateway_enabled( $payment_method );
+	}
+
+	/**
+	 * Checks if the payment gateway with the given name is enabled.
+	 *
+	 * @param string $gateway_name The gateway name.
+	 * @return bool True if the payment gateway with the given name is enabled, otherwise false.
+	 */
+	protected function is_gateway_enabled( string $gateway_name ): bool {
+		$gateway_settings = get_option( "woocommerce_{$gateway_name}_settings", [] );
+		$gateway_enabled  = $gateway_settings['enabled'] ?? false;
+
+		return $gateway_enabled === 'yes';
 	}
 }
