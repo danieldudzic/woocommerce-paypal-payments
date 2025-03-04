@@ -862,10 +862,10 @@ class GooglepayButton extends PaymentButton {
 		 *
 		 * @param {string} orderID
 		 */
-		const initiatePayerAction = async ( orderID ) => {
+		const initiatePayerAction = ( orderID ) => {
 			this.log( 'initiatePayerAction', orderID );
 
-			await widgetBuilder.paypal
+			return widgetBuilder.paypal
 				.Googlepay()
 				.initiatePayerAction( { orderId: orderID } );
 		};
