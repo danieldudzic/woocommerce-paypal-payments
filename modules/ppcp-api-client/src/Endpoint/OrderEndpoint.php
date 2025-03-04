@@ -449,16 +449,15 @@ class OrderEndpoint {
 		return $order;
 	}
 
-
 	/**
-	 * Fetches an order for a given ID and returns the raw, unparsed JSON response.
+	 * Fetches an order for a given ID.
 	 *
-	 * @param string $id The PayPal order-ID.
+	 * @param string $id The ID.
 	 *
-	 * @return stdClass
+	 * @return Order
 	 * @throws RuntimeException If the request fails.
 	 */
-	public function raw_order( string $id ): stdClass {
+	public function order( string $id ): Order {
 		$bearer = $this->bearer->bearer();
 		$url    = trailingslashit( $this->host ) . 'v2/checkout/orders/' . $id;
 		$args   = array(
@@ -513,20 +512,6 @@ class OrderEndpoint {
 			);
 			throw $error;
 		}
-
-		return $json;
-	}
-
-	/**
-	 * Fetches an order for a given ID.
-	 *
-	 * @param string $id The ID.
-	 *
-	 * @return Order
-	 * @throws RuntimeException If the request fails.
-	 */
-	public function order( string $id ) : Order {
-		$json = $this->raw_order( $id );
 
 		return $this->order_factory->from_paypal_response( $json );
 	}
