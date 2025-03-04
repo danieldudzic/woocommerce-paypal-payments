@@ -857,81 +857,6 @@ class GooglepayButton extends PaymentButton {
 			}
 		};
 
-		const verifyThreeDSResponse = ( status ) => {
-			const {
-				liability_shift: liabilityShift = null,
-				three_d_secure: threeDS = null,
-			} = status || {};
-
-			if ( ! threeDS ) {
-				console.error( '3DS: No 3DS data available' );
-				return false;
-			}
-
-			// Check enrollment status first
-			switch ( threeDS.enrollment_status ) {
-				case 'Y':
-					// All clear; the following 3DS checks are meaningful.
-					break;
-
-				case 'N':
-				case 'U':
-					// Risky. The 3DS verification is not available, or the bank does not participate.
-					// Bail, as the checks below are not reliable/relevant.
-					console.warn( '3DS: Not available', threeDS );
-					return true;
-			}
-
-			// 3DS is active, so a missing liabilityShift indicates a failure.
-			if ( ! liabilityShift ) {
-				console.error( '3DS: Missing liability shift data' );
-				return false;
-			}
-
-			// Check liability shift; is a risk-mitigation indicator, no failure possible.
-			switch ( liabilityShift ) {
-				case 'POSSIBLE':
-					console.log( '3DS: Liability shift possible' );
-					break;
-				case 'NO':
-					console.warn( '3DS: Liability with the merchant' );
-					break;
-				case 'UNKNOWN':
-					console.warn( '3DS: Liability shift unknown' );
-					break;
-			}
-
-			// Check 3DS authentication status.
-			switch ( threeDS.authentication_status ) {
-				case 'Y':
-					// Highest security clearance. Great customer!
-					console.log( '3DS: Authentication successful' );
-					return true;
-				case 'A':
-					// Indicates a basic risk mitigation, but not full 3DS clearance.
-					console.log( '3DS: Verification started, but incomplete' );
-					return true;
-				case 'N':
-					console.error( '3DS: Authentication failed or denied' );
-					return false;
-				case 'U':
-					console.error( '3DS: Unable to complete authentication' );
-					return false;
-				case 'R':
-					console.error( '3DS: Authentication rejected' );
-					return false;
-				case 'C':
-				case 'D':
-					// Risky, but not failed.
-					console.warn( '3DS: Challenge required' );
-					return true;
-			}
-
-			// If we've made it this far, consider it a success, since no red-flags were present.
-			console.warn( '3DS: Cleared, but unknown status', threeDS );
-			return true;
-		};
-
 		/**
 		 * Initiates payer action and handles the 3DS contingency.
 		 *
@@ -939,21 +864,10 @@ class GooglepayButton extends PaymentButton {
 		 */
 		const initiatePayerAction = async ( orderID ) => {
 			this.log( 'initiatePayerAction', orderID );
-			let wasApproved = false;
 
 			await widgetBuilder.paypal
 				.Googlepay()
 				.initiatePayerAction( { orderId: orderID } )
-				.then( async () => {
-					const order = await this.contextHandler.getOrder( orderID );
-					const status =
-						order?.payment_source?.google_pay?.card
-							?.authentication_result;
-
-					wasApproved = verifyThreeDSResponse( status );
-				} );
-
-			return wasApproved;
 		};
 
 		/**
@@ -993,28 +907,6 @@ class GooglepayButton extends PaymentButton {
 			return isApproved;
 		};
 
-		const captureOrderServerSide = async ( orderID ) => {
-			let isCaptured = true;
-			this.log( 'context', this.contextHandler );
-			await this.contextHandler.captureOrder(
-				{ orderID, payer },
-				{
-					restart: () =>
-						new Promise( ( resolve ) => {
-							isCaptured = false;
-							resolve();
-						} ),
-					order: {
-						get: () =>
-							new Promise( ( resolve ) => {
-								resolve( null );
-							} ),
-					},
-				}
-			);
-			return isCaptured;
-		};
-
 		// Add billing data to session.
 		moduleStorage.setPayer( payer );
 		setPayerData( payer );
@@ -1028,19 +920,12 @@ class GooglepayButton extends PaymentButton {
 			if ( ! isApprovedByPayPal ) {
 				result = paymentError( 'TRANSACTION FAILED' );
 			} else {
-				let success = false;
-
 				// This payment requires a 3DS verification before we can process the order.
 				if ( isApprovedByPayPal === 'action_required' ) {
-					const approved = await initiatePayerAction( orderId );
-
-					// Only approve on server-side when 3DS was successful.
-					if ( approved ) {
-						success = await approveOrderServerSide( orderId );
-					}
-				} else {
-					success = await approveOrderServerSide( orderId );
+					await initiatePayerAction( orderId );
 				}
+
+				const success = await approveOrderServerSide( orderId );
 
 				if ( success ) {
 					result = paymentResponse( 'SUCCESS' );
