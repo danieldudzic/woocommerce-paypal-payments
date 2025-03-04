@@ -6,7 +6,7 @@
  * @package WooCommerce\PayPalCommerce\Button\Endpoint
  */
 
-declare(strict_types=1);
+declare( strict_types = 1 );
 
 namespace WooCommerce\PayPalCommerce\Button\Endpoint;
 
@@ -24,7 +24,6 @@ use WooCommerce\PayPalCommerce\Button\Helper\WooCommerceOrderCreator;
 use WooCommerce\PayPalCommerce\Session\SessionHandler;
 use WooCommerce\PayPalCommerce\WcGateway\Gateway\PayPalGateway;
 use WooCommerce\PayPalCommerce\WcGateway\Settings\Settings;
-use WooCommerce\PayPalCommerce\WcSubscriptions\Helper\SubscriptionHelper;
 
 /**
  * Class ApproveOrderEndpoint
@@ -115,17 +114,17 @@ class ApproveOrderEndpoint implements EndpointInterface {
 	/**
 	 * ApproveOrderEndpoint constructor.
 	 *
-	 * @param RequestData             $request_data The request data helper.
-	 * @param OrderEndpoint           $order_endpoint The order endpoint.
-	 * @param SessionHandler          $session_handler The session handler.
-	 * @param ThreeDSecure            $three_d_secure The 3d secure helper object.
-	 * @param Settings                $settings The settings.
-	 * @param DccApplies              $dcc_applies The DCC applies object.
-	 * @param OrderHelper             $order_helper The order helper.
+	 * @param RequestData             $request_data         The request data helper.
+	 * @param OrderEndpoint           $order_endpoint       The order endpoint.
+	 * @param SessionHandler          $session_handler      The session handler.
+	 * @param ThreeDSecure            $three_d_secure       The 3d secure helper object.
+	 * @param Settings                $settings             The settings.
+	 * @param DccApplies              $dcc_applies          The DCC applies object.
+	 * @param OrderHelper             $order_helper         The order helper.
 	 * @param bool                    $final_review_enabled Whether the final review is enabled.
-	 * @param PayPalGateway           $gateway The WC gateway.
-	 * @param WooCommerceOrderCreator $wc_order_creator The WooCommerce order creator.
-	 * @param LoggerInterface         $logger The logger.
+	 * @param PayPalGateway           $gateway              The WC gateway.
+	 * @param WooCommerceOrderCreator $wc_order_creator     The WooCommerce order creator.
+	 * @param LoggerInterface         $logger               The logger.
 	 */
 	public function __construct(
 		RequestData $request_data,
@@ -159,7 +158,7 @@ class ApproveOrderEndpoint implements EndpointInterface {
 	 *
 	 * @return string
 	 */
-	public static function nonce(): string {
+	public static function nonce() : string {
 		return self::ENDPOINT;
 	}
 
@@ -169,9 +168,9 @@ class ApproveOrderEndpoint implements EndpointInterface {
 	 * @return bool
 	 * @throws RuntimeException When order not found or handling failed.
 	 */
-	public function handle_request(): bool {
+	public function handle_request() : bool {
 		try {
-			$data = $this->request_data->read_request( $this->nonce() );
+			$data = $this->request_data->read_request( self::nonce() );
 			if ( ! isset( $data['order_id'] ) ) {
 				throw new RuntimeException(
 					__( 'No order id given', 'woocommerce-paypal-payments' )
@@ -181,6 +180,7 @@ class ApproveOrderEndpoint implements EndpointInterface {
 			$order = $this->api_endpoint->order( $data['order_id'] );
 
 			$payment_source = $order->payment_source();
+
 			if ( $payment_source && $payment_source->name() === 'card' ) {
 				if ( $this->settings->has( 'disable_cards' ) ) {
 					$disabled_cards = (array) $this->settings->get( 'disable_cards' );
@@ -250,6 +250,7 @@ class ApproveOrderEndpoint implements EndpointInterface {
 				wp_send_json_success( array( 'order_received_url' => $order_received_url ) );
 			}
 			wp_send_json_success();
+
 			return true;
 		} catch ( Exception $error ) {
 			$this->logger->error( 'Order approve failed: ' . $error->getMessage() );
@@ -262,6 +263,7 @@ class ApproveOrderEndpoint implements EndpointInterface {
 					'details' => is_a( $error, PayPalApiException::class ) ? $error->details() : array(),
 				)
 			);
+
 			return false;
 		}
 	}
@@ -271,7 +273,7 @@ class ApproveOrderEndpoint implements EndpointInterface {
 	 *
 	 * @return void
 	 */
-	protected function toggle_final_review_enabled_setting(): void {
+	protected function toggle_final_review_enabled_setting() : void {
 		// TODO new-ux: This flag must also be updated in the new settings.
 		$final_review_enabled_setting = $this->settings->has( 'blocks_final_review_enabled' ) && $this->settings->get( 'blocks_final_review_enabled' );
 		$this->settings->set( 'blocks_final_review_enabled', ! $final_review_enabled_setting );
