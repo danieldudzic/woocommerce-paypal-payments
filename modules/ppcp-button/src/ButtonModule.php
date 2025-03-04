@@ -11,7 +11,6 @@ namespace WooCommerce\PayPalCommerce\Button;
 
 use WooCommerce\PayPalCommerce\Button\Endpoint\ApproveSubscriptionEndpoint;
 use WooCommerce\PayPalCommerce\Button\Endpoint\CartScriptParamsEndpoint;
-use WooCommerce\PayPalCommerce\Button\Endpoint\GetOrderEndpoint;
 use WooCommerce\PayPalCommerce\Button\Endpoint\SaveCheckoutFormEndpoint;
 use WooCommerce\PayPalCommerce\Button\Endpoint\SimulateCartEndpoint;
 use WooCommerce\PayPalCommerce\Button\Endpoint\ValidateCheckoutEndpoint;
@@ -173,16 +172,6 @@ class ButtonModule implements ServiceModule, ExtendingModule, ExecutableModule {
 			static function () use ( $container ) {
 				$endpoint = $container->get( 'button.endpoint.approve-subscription' );
 				assert( $endpoint instanceof ApproveSubscriptionEndpoint );
-
-				$endpoint->handle_request();
-			}
-		);
-
-		add_action(
-			'wc_ajax_' . GetOrderEndpoint::ENDPOINT,
-			static function () use ( $container ) {
-				$endpoint = $container->get( 'button.endpoint.get-order' );
-				assert( $endpoint instanceof GetOrderEndpoint );
 
 				$endpoint->handle_request();
 			}
