@@ -19,9 +19,22 @@ class PartnerReferralsDataTest extends TestCase {
 	private const DEFAULT_NONCE = 'a1233wtergfsdt4365tzrshgfbaewa36AGa1233wtergfsdt4365tzrshgfbaewa36AG';
 
 	/**
-	 * Sample URL which is used to mock the `admin_url()` response
+	 * Sample URL which is used to mock the `admin_url()` response, used to build the return URL.
+	 * Specifically, we want to verify the $path which is appended to the admin URL.
 	 */
 	private const ADMIN_URL = 'https://example.com/wp-admin/';
+
+	/**
+	 * A sample token that we add to the return URL.
+	 * We pass this const to the `->data()` method to ensure it's appended at the end of the
+	 * return URL as-is.
+	 */
+	private const TOKEN = 'SECURE_TOKEN';
+
+	/**
+	 * Expected return URL to see at in the payload, including the ppcpToken.
+	 */
+	private const RETURN_URL = 'https://example.com/wp-admin/admin.php?page=wc-settings&tab=checkout&section=ppcp-gateway&ppcpToken=SECURE_TOKEN';
 
 	private $testee;
 	private $dccApplies;
@@ -33,7 +46,7 @@ class PartnerReferralsDataTest extends TestCase {
 		$this->testee     = new PartnerReferralsData( $this->dccApplies );
 
 		when( 'admin_url' )->alias( static fn( string $path ) => self::ADMIN_URL . $path );
-		when( 'add_query_arg' )->alias( static fn( $args, $url ) => $url );
+		when( 'add_query_arg' )->justReturn( self::RETURN_URL );
 	}
 
 	/**
@@ -48,7 +61,7 @@ class PartnerReferralsDataTest extends TestCase {
 	private function getBaseExpectedArray() : array {
 		return [
 			'partner_config_override' => [
-				'return_url'             => 'https://example.com/wp-admin/admin.php?page=wc-settings&tab=checkout&section=ppcp-gateway',
+				'return_url'             => self::RETURN_URL,
 				'return_url_description' => 'Return to your shop.',
 				'show_add_credit_card'   => true,
 			],
@@ -156,7 +169,7 @@ class PartnerReferralsDataTest extends TestCase {
 		/**
 		 * Undefined subscription: Keep vaulting in first-party, but don't add the capability.
 		 */
-		$result = $this->testee->data( [ 'PPCP' ], 'TOKEN' );
+		$result = $this->testee->data( [ 'PPCP' ], self::TOKEN );
 		$this->dccApplies->shouldNotHaveReceived( 'for_country_currency' );
 
 		$expected = $this->getBaseExpectedArray();
@@ -177,7 +190,7 @@ class PartnerReferralsDataTest extends TestCase {
 	 * @dataProvider flagCombinationsProvider
 	 */
 	public function testDataStructureWithFlags( bool $has_subscriptions, bool $has_cards, array $expected_changes ) : void {
-		$result   = $this->testee->data( [ 'PPCP' ], 'TOKEN', $has_subscriptions, $has_cards );
+		$result   = $this->testee->data( [ 'PPCP' ], self::TOKEN, $has_subscriptions, $has_cards );
 		$expected = $this->getBaseExpectedArray();
 
 		$expected['products'] = [ 'PPCP' ];
