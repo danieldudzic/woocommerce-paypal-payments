@@ -47,13 +47,14 @@ class PartnerReferralsData {
 	/**
 	 * Returns the data.
 	 *
-	 * @param string[] $products         The list of products to use ('PPCP', 'EXPRESS_CHECKOUT').
-	 *                                   Default is based on DCC availability.
-	 * @param string   $onboarding_token A security token to finalize the onboarding process.
+	 * @param string[] $products          The list of products to use ('PPCP', 'EXPRESS_CHECKOUT').
+	 *                                    Default is based on DCC availability.
+	 * @param string   $onboarding_token  A security token to finalize the onboarding process.
 	 * @param bool     $use_subscriptions If the merchant requires subscription features.
+	 * @param bool     $use_card_payments If the merchant wants to process credit card payments.
 	 * @return array
 	 */
-	public function data( array $products = array(), string $onboarding_token = '', bool $use_subscriptions = null ) : array {
+	public function data( array $products = array(), string $onboarding_token = '', bool $use_subscriptions = null, bool $use_card_payments = true ) : array {
 		if ( ! $products ) {
 			$products = array(
 				$this->dcc_applies->for_country_currency() ? 'PPCP' : 'EXPRESS_CHECKOUT',
@@ -109,7 +110,7 @@ class PartnerReferralsData {
 			'partner_config_override' => array(
 				'return_url'             => $return_url,
 				'return_url_description' => $return_url_label,
-				'show_add_credit_card'   => true,
+				'show_add_credit_card'   => $use_card_payments,
 			),
 			'products'                => $products,
 			'capabilities'            => $capabilities,
