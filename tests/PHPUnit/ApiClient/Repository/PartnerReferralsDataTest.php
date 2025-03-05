@@ -23,56 +23,35 @@ class PartnerReferralsDataTest extends TestCase {
 	 */
 	private const ADMIN_URL = 'https://example.com/wp-admin/';
 
-	/**
-	 * Ensure the default "products" are derived from the DccApplies response.
-	 */
-	public function testDefaultValues() {
-		$dccApplies = Mockery::mock( DccApplies::class );
-		when( 'admin_url' )->justReturn( '' );
-		when( 'add_query_arg' )->justReturn( '' );
+	private $testee;
+	private $dccApplies;
 
-		// Case 1 - PayPal Complete Payments.
+	public function setUp() : void {
+		parent::setUp();
 
-		$dccApplies->expects( 'for_country_currency' )->andReturn( true );
-		$testee = new PartnerReferralsData( $dccApplies );
-		$result = $testee->data();
+		$this->dccApplies = Mockery::mock( DccApplies::class );
+		$this->testee     = new PartnerReferralsData( $this->dccApplies );
 
-		$this->assertEquals( [ 'PPCP' ], $result['products'] );
-
-		// Case 2 - Express Checkout.
-
-		$dccApplies->expects( 'for_country_currency' )->andReturn( false );
-		$testee = new PartnerReferralsData( $dccApplies );
-		$result = $testee->data();
-
-		$this->assertEquals( [ 'EXPRESS_CHECKOUT' ], $result['products'] );
+		when( 'admin_url' )->alias( static fn( string $path ) => self::ADMIN_URL . $path );
+		when( 'add_query_arg' )->alias( static fn( $args, $url ) => $url );
 	}
 
 	/**
-	 * Ensure the generated API payload is stable and contains the expected values.
+	 * Base structure of the API payload. Each test should modify the returned
+	 * value of the method to meet its expectations.
+	 *
+	 * This avoids repeating the full structure, while also highlighting the
+	 * specific changes that different params will generate.
+	 *
+	 * @return array
 	 */
-	public function testDataStructure() {
-		$dccApplies = Mockery::mock( DccApplies::class );
-
-		when( 'admin_url' )->alias( function ( $path ) {
-			return self::ADMIN_URL . $path;
-		} );
-
-		when( 'add_query_arg' )->alias( function ( $args, $url ) {
-			return $url;
-		} );
-
-		$testee = new PartnerReferralsData( $dccApplies );
-		$result = $testee->data( [ 'PPCP' ], 'TOKEN' );
-		$dccApplies->shouldNotHaveReceived( 'for_country_currency' );
-
-		$expected = [
+	private function getBaseExpectedArray() : array {
+		return [
 			'partner_config_override' => [
 				'return_url'             => 'https://example.com/wp-admin/admin.php?page=wc-settings&tab=checkout&section=ppcp-gateway',
 				'return_url_description' => 'Return to your shop.',
 				'show_add_credit_card'   => true,
 			],
-			'products'                => [ 'PPCP' ],
 			'legal_consents'          => [
 				[
 					'type'    => 'SHARE_DATA_CONSENT',
@@ -89,10 +68,8 @@ class PartnerReferralsDataTest extends TestCase {
 							'first_party_details' => [
 								'features'     => [
 									'PAYMENT',
-									'FUTURE_PAYMENT',
 									'REFUND',
 									'ADVANCED_TRANSACTIONS_SEARCH',
-									'VAULT',
 									'TRACKING_SHIPMENT_READWRITE',
 								],
 								'seller_nonce' => self::DEFAULT_NONCE,
@@ -102,6 +79,49 @@ class PartnerReferralsDataTest extends TestCase {
 				],
 			],
 		];
+	}
+
+	/**
+	 * Ensure the default "products" are derived from the DccApplies response.
+	 */
+	public function testDefaultValues() : void {
+		/**
+		 * Case 1: The data() method gets no parameters, and the DccApplies check
+		 * returns TRUE. Onboarding payload should indicate "PPCP".
+		 */
+		$this->dccApplies->expects( 'for_country_currency' )->andReturn( true );
+		$result = $this->testee->data();
+		$this->assertEquals( [ 'PPCP' ], $result['products'] );
+
+		/**
+		 * Case 2: The data() method gets no parameters, and the DccApplies check
+		 * returns FALSE. Onboarding payload should indicate "EXPRESS_CHECKOUT".
+		 */
+		$this->dccApplies->expects( 'for_country_currency' )->andReturn( false );
+		$result = $this->testee->data();
+		$this->assertEquals( [ 'EXPRESS_CHECKOUT' ], $result['products'] );
+	}
+
+	/**
+	 * Ensure the generated API payload is stable and contains the expected values.
+	 *
+	 * The test only verifies the "products" and "token" arguments, as those are the
+	 * core params present in the legacy and new UI.
+	 */
+	public function testDataStructure() : void {
+		$result = $this->testee->data( [ 'PPCP' ], 'TOKEN' );
+		$this->dccApplies->shouldNotHaveReceived( 'for_country_currency' );
+
+		$expected = $this->getBaseExpectedArray();
+
+		$expected['products']     = [ 'PPCP' ];
+		$expected['capabilities'] = [];
+
+		$expected['operations'][0]['api_integration_preference']['rest_api_integration']['first_party_details']['features'][] = 'FUTURE_PAYMENT';
+		$expected['operations'][0]['api_integration_preference']['rest_api_integration']['first_party_details']['features'][] = 'VAULT';
+
+		$this->assertEquals( $expected, $result );
+	}
 
 		$this->assertEquals( $expected, $result );
 	}
