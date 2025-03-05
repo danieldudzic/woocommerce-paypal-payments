@@ -12,31 +12,6 @@ import { useSelect, useDispatch } from '@wordpress/data';
 import { createHooksForStore } from '../utils';
 import { PRODUCT_TYPES } from './configuration';
 import { STORE_NAME } from './constants';
-import { useMemo } from '@wordpress/element';
-
-/**
- * Single source of truth for access Redux details.
- *
- * This hook returns a stable API to access actions, selectors and special hooks to generate
- * getter- and setters for transient or persistent properties.
- *
- * @return {{select, dispatch, useTransient, usePersistent}} Store data API.
- */
-const useStoreData = () => {
-	const select = useSelect( ( selectors ) => selectors( STORE_NAME ), [] );
-	const dispatch = useDispatch( STORE_NAME );
-	const { useTransient, usePersistent } = createHooksForStore( STORE_NAME );
-
-	return useMemo(
-		() => ( {
-			select,
-			dispatch,
-			useTransient,
-			usePersistent,
-		} ),
-		[ select, dispatch, useTransient, usePersistent ]
-	);
-};
 
 const useHooks = () => {
 	const { useTransient, usePersistent } = createHooksForStore( STORE_NAME );
@@ -161,10 +136,9 @@ export const useNavigationState = () => {
 };
 
 export const useDetermineProducts = () => {
-	const { select } = useStoreData();
-	const { determineProductsAndCaps } = select;
-
-	return determineProductsAndCaps;
+	return useSelect( ( select ) => {
+		return select( STORE_NAME ).determineProductsAndCaps();
+	}, [] );
 };
 
 export const useFlags = () => {
