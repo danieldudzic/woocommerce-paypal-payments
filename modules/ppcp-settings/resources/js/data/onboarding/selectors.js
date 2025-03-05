@@ -58,8 +58,10 @@ export const determineProductsAndCaps = ( state ) => {
 	const { isCasualSeller, areOptionalPaymentMethodsEnabled, products } =
 		persistentData( state );
 	const { canUseVaulting, canUseCardPayments } = flags( state );
+	const cardPaymentsEligibleAndSelected =
+		canUseCardPayments && areOptionalPaymentMethodsEnabled;
 
-	if ( ! canUseCardPayments || ! areOptionalPaymentMethodsEnabled ) {
+	if ( ! cardPaymentsEligibleAndSelected ) {
 		/**
 		 * Branch 1: Credit Card Payments not available.
 		 * The store uses the Express-checkout product.
@@ -85,9 +87,7 @@ export const determineProductsAndCaps = ( state ) => {
 		}
 	}
 
-	if ( canUseCardPayments && areOptionalPaymentMethodsEnabled ) {
-		options.useCardPayments = true;
-	}
+	options.useCardPayments = cardPaymentsEligibleAndSelected;
 
 	if ( canUseVaulting ) {
 		apiModules.push( PAYPAL_PRODUCTS.VAULTING );
