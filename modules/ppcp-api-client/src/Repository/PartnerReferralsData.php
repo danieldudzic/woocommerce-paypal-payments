@@ -50,9 +50,10 @@ class PartnerReferralsData {
 	 * @param string[] $products         The list of products to use ('PPCP', 'EXPRESS_CHECKOUT').
 	 *                                   Default is based on DCC availability.
 	 * @param string   $onboarding_token A security token to finalize the onboarding process.
+	 * @param bool     $use_subscriptions If the merchant requires subscription features.
 	 * @return array
 	 */
-	public function data( array $products = array(), string $onboarding_token = '' ) : array {
+	public function data( array $products = array(), string $onboarding_token = '', bool $use_subscriptions = null ) : array {
 		if ( ! $products ) {
 			$products = array(
 				$this->dcc_applies->for_country_currency() ? 'PPCP' : 'EXPRESS_CHECKOUT',
@@ -77,14 +78,32 @@ class PartnerReferralsData {
 			__( 'Return to your shop.', 'woocommerce-paypal-payments' )
 		);
 
+		$capabilities         = array();
 		$first_party_features = array(
 			'PAYMENT',
-			'FUTURE_PAYMENT',
 			'REFUND',
 			'ADVANCED_TRANSACTIONS_SEARCH',
-			'VAULT',
 			'TRACKING_SHIPMENT_READWRITE',
 		);
+
+		if ( true === $use_subscriptions ) {
+			$capabilities[] = 'PAYPAL_WALLET_VAULTING_ADVANCED';
+		}
+
+		// Backwards compatibility. Keep those features in the legacy UI (null-value).
+		// Move this into the previous condition, once legacy code is removed.
+		if ( false !== $use_subscriptions ) {
+			$first_party_features[] = 'FUTURE_PAYMENT';
+			$first_party_features[] = 'VAULT';
+		}
+
+		if ( false === $use_subscriptions ) {
+			// Only use "ADVANCED_VAULTING" product for onboarding with subscriptions.
+			$products = array_filter(
+				$products,
+				static fn( $product ) => $product !== 'ADVANCED_VAULTING'
+			);
+		}
 
 		$payload = array(
 			'partner_config_override' => array(
@@ -93,6 +112,7 @@ class PartnerReferralsData {
 				'show_add_credit_card'   => true,
 			),
 			'products'                => $products,
+			'capabilities'            => $capabilities,
 			'legal_consents'          => array(
 				array(
 					'type'    => 'SHARE_DATA_CONSENT',
