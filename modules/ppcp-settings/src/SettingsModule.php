@@ -525,6 +525,14 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 		 */
 		add_filter(
 			'woocommerce_paypal_payments_disabled_funding_sources',
+			/**
+			 * Unsets the BCDC black button if merchant is eligible for ACDC.
+			 *
+			 * @param int[]|string[]|mixed $disable_funding The disabled funding sources.
+			 * @return int[]|string[]|mixed The disabled funding sources.
+			 *
+			 * @psalm-suppress MissingClosureParamType
+			 */
 			static function ( $disable_funding ) use ( $container ) {
 				if ( ! is_array( $disable_funding ) || in_array( 'card', $disable_funding, true ) ) {
 					return $disable_funding;
