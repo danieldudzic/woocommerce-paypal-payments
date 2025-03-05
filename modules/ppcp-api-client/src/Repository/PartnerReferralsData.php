@@ -18,6 +18,10 @@ class PartnerReferralsData {
 	/**
 	 * The DCC Applies Helper object.
 	 *
+	 * @deprecated Deprecates with the new UI. In this class, the products are
+	 *             always explicit, and should not be deducted from the
+	 *             DccApplies state at this point.
+	 *             Remove this with the legacy UI code.
 	 * @var DccApplies
 	 */
 	private DccApplies $dcc_applies;
