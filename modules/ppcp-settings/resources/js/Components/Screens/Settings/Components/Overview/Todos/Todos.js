@@ -15,8 +15,7 @@ const Todos = () => {
 	const [ isResetting, setIsResetting ] = useState( false );
 	const { todos, isReady: areTodosReady, dismissTodo } = useTodos();
 	// eslint-disable-next-line no-shadow
-	const { setActiveModal, setActiveHighlight } =
-		useDispatch( COMMON_STORE_NAME );
+	const { setActiveModal } = useDispatch( COMMON_STORE_NAME );
 	const { resetDismissedTodos, setDismissedTodos } =
 		useDispatch( TODOS_STORE_NAME );
 	const { createSuccessNotice } = useDispatch( noticesStore );
@@ -76,7 +75,6 @@ const Todos = () => {
 			<TodoSettingsBlock
 				todosData={ todos }
 				setActiveModal={ setActiveModal }
-				setActiveHighlight={ setActiveHighlight }
 				onDismissTodo={ dismissTodo }
 			/>
 		</SettingsCard>

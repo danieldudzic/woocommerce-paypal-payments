@@ -49,8 +49,6 @@ const useHooks = () => {
 
 	// Transient accessors.
 	const [ activeModal, setActiveModal ] = useTransient( 'activeModal' );
-	const [ activeHighlight, setActiveHighlight ] =
-		useTransient( 'activeHighlight' );
 
 	// Persistent accessors.
 	const [ isManualConnectionMode, setManualConnectionMode ] = usePersistent(
@@ -70,8 +68,6 @@ const useHooks = () => {
 	return {
 		activeModal,
 		setActiveModal,
-		activeHighlight,
-		setActiveHighlight,
 		isManualConnectionMode,
 		setManualConnectionMode: ( state ) => {
 			return savePersistent( setManualConnectionMode, state );
@@ -225,11 +221,6 @@ export const useMerchant = () => {
 export const useActiveModal = () => {
 	const { activeModal, setActiveModal } = useHooks();
 	return { activeModal, setActiveModal };
-};
-
-export const useActiveHighlight = () => {
-	const { activeHighlight, setActiveHighlight } = useHooks();
-	return { activeHighlight, setActiveHighlight };
 };
 
 /*

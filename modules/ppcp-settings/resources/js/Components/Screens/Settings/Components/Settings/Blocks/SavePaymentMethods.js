@@ -28,18 +28,18 @@ const SavePaymentMethods = () => {
 			className="ppcp--save-payment-methods"
 		>
 			<ControlToggleButton
+				id="ppcp-save-paypal-and-venmo"
 				label={ __(
 					'Save PayPal and Venmo',
 					'woocommerce-paypal-payments'
 				) }
 				description={ sprintf(
-					/* translators: 1: URL to Pay Later documentation, 2: URL to Alternative Payment Methods documentation */
+					/* translators: 1: URL to Pay Later documentation */
 					__(
-						'Securely store your customers\' PayPal accounts for a seamless checkout experience. <br />This will disable all <a target="_blank" rel="noreferrer" href="%1$s">Pay Later</a> features and <a target="_blank" rel="noreferrer" href="%2$s">Alternative Payment Methods</a> on your site.',
+						'Securely store your customers\' PayPal accounts for a seamless checkout experience. <br />This will disable the <a target="_blank" rel="noreferrer" href="%1$s">Pay Later</a> payment method on your site.',
 						'woocommerce-paypal-payments'
 					),
-					'https://woocommerce.com/document/woocommerce-paypal-payments/#pay-later',
-					'https://woocommerce.com/document/woocommerce-paypal-payments/#alternative-payment-methods'
+					'https://woocommerce.com/document/woocommerce-paypal-payments/#pay-later'
 				) }
 				value={
 					features.save_paypal_and_venmo.enabled

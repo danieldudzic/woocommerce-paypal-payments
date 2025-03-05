@@ -1,7 +1,5 @@
 import { ToggleControl, Icon, Button } from '@wordpress/components';
 import { cog } from '@wordpress/icons';
-import { useEffect } from '@wordpress/element';
-import { useActiveHighlight } from '../../../data/common/hooks';
 
 import SettingsBlock from '../SettingsBlock';
 import PaymentMethodIcon from '../PaymentMethodIcon';
@@ -16,26 +14,12 @@ const PaymentMethodItemBlock = ( {
 	disabledMessage,
 	warningMessages,
 } ) => {
-	const { activeHighlight, setActiveHighlight } = useActiveHighlight();
-	const isHighlighted = activeHighlight === paymentMethod.id;
 	const hasWarning =
 		warningMessages && Object.keys( warningMessages ).length > 0;
-
-	// Reset the active highlight after 2 seconds
-	useEffect( () => {
-		if ( isHighlighted ) {
-			const timer = setTimeout( () => {
-				setActiveHighlight( null );
-			}, 2000 );
-
-			return () => clearTimeout( timer );
-		}
-	}, [ isHighlighted, setActiveHighlight ] );
 
 	// Determine class names based on states
 	const methodItemClasses = [
 		'ppcp--method-item',
-		isHighlighted ? 'ppcp-highlight' : '',
 		isDisabled ? 'ppcp--method-item--disabled' : '',
 		hasWarning && ! isDisabled ? 'ppcp--method-item--warning' : '',
 	]

@@ -30,6 +30,7 @@ use WP_REST_Request;
 use WooCommerce\PayPalCommerce\Applepay\ApplePayGateway;
 use WooCommerce\PayPalCommerce\LocalAlternativePaymentMethods\EPSGateway;
 use WooCommerce\PayPalCommerce\Settings\Data\Definition\PaymentMethodsDefinition;
+use WooCommerce\PayPalCommerce\Settings\Data\Definition\PaymentMethodsDependenciesDefinition;
 
 /**
  * REST controller for the "Payment Methods" settings tab.
@@ -50,14 +51,21 @@ class PaymentRestEndpoint extends RestEndpoint {
 	 *
 	 * @var PaymentSettings
 	 */
-	protected PaymentSettings $settings;
+	protected PaymentSettings $payment_settings;
 
 	/**
 	 * The payment method details.
 	 *
 	 * @var PaymentMethodsDefinition
 	 */
-	protected PaymentMethodsDefinition $methods_definition;
+	protected PaymentMethodsDefinition $payment_methods_definition;
+
+	/**
+	 * The payment method dependencies.
+	 *
+	 * @var PaymentMethodsDependenciesDefinition
+	 */
+	protected PaymentMethodsDependenciesDefinition $payment_methods_dependencies;
 
 	/**
 	 * Field mapping for request to profile transformation.
@@ -86,12 +94,18 @@ class PaymentRestEndpoint extends RestEndpoint {
 	/**
 	 * Constructor.
 	 *
-	 * @param PaymentSettings          $settings           The settings instance.
-	 * @param PaymentMethodsDefinition $methods_definition Payment Method details.
+	 * @param PaymentSettings                      $payment_settings           The settings instance.
+	 * @param PaymentMethodsDefinition             $payment_methods_definition Payment Method details.
+	 * @param PaymentMethodsDependenciesDefinition $payment_methods_dependencies       The payment method dependencies.
 	 */
-	public function __construct( PaymentSettings $settings, PaymentMethodsDefinition $methods_definition ) {
-		$this->settings           = $settings;
-		$this->methods_definition = $methods_definition;
+	public function __construct(
+		PaymentSettings $payment_settings,
+		PaymentMethodsDefinition $payment_methods_definition,
+		PaymentMethodsDependenciesDefinition $payment_methods_dependencies
+	) {
+		$this->payment_settings             = $payment_settings;
+		$this->payment_methods_definition   = $payment_methods_definition;
+		$this->payment_methods_dependencies = $payment_methods_dependencies;
 	}
 
 	/**
@@ -100,7 +114,10 @@ class PaymentRestEndpoint extends RestEndpoint {
 	 * @return array[]
 	 */
 	protected function gateways() : array {
-		return $this->methods_definition->get_definitions();
+		$methods = $this->payment_methods_definition->get_definitions();
+
+		// Add dependency information to the methods.
+		return $this->payment_methods_dependencies->add_dependency_info_to_methods( $methods );
 	}
 
 	/**
@@ -147,45 +164,48 @@ class PaymentRestEndpoint extends RestEndpoint {
 	 * @return WP_REST_Response The current payment methods details.
 	 */
 	public function get_details() : WP_REST_Response {
-		$gateway_settings = array();
-		$all_methods      = $this->gateways();
+		$gateway_settings    = array();
+		$all_payment_methods = $this->gateways();
 
 		// First extract __meta if present.
-		if ( isset( $all_methods['__meta'] ) ) {
-			$gateway_settings['__meta'] = $all_methods['__meta'];
+		if ( isset( $all_payment_methods['__meta'] ) ) {
+			$gateway_settings['__meta'] = $all_payment_methods['__meta'];
 		}
 
-		foreach ( $all_methods as $key => $method ) {
+		foreach ( $all_payment_methods as $key => $payment_method ) {
 			// Skip the __meta key as we've already handled it.
 			if ( $key === '__meta' ) {
 				continue;
 			}
 
 			$gateway_settings[ $key ] = array(
-				'id'              => $method['id'],
-				'title'           => $method['title'],
-				'description'     => $method['description'],
-				'enabled'         => $method['enabled'],
-				'icon'            => $method['icon'],
-				'itemTitle'       => $method['itemTitle'],
-				'itemDescription' => $method['itemDescription'],
-				'warningMessages' => $method['warningMessages'],
+				'id'              => $payment_method['id'],
+				'title'           => $payment_method['title'],
+				'description'     => $payment_method['description'],
+				'enabled'         => $payment_method['enabled'],
+				'icon'            => $payment_method['icon'],
+				'itemTitle'       => $payment_method['itemTitle'],
+				'itemDescription' => $payment_method['itemDescription'],
+				'warningMessages' => $payment_method['warningMessages'],
 			);
 
-			if ( isset( $method['fields'] ) ) {
-				$gateway_settings[ $key ]['fields'] = $method['fields'];
+			if ( isset( $payment_method['fields'] ) ) {
+				$gateway_settings[ $key ]['fields'] = $payment_method['fields'];
 			}
 
-			// Preserve dependency information.
-			if ( isset( $method['depends_on'] ) ) {
-				$gateway_settings[ $key ]['depends_on'] = $method['depends_on'];
+			if ( isset( $payment_method['depends_on_payment_methods'] ) ) {
+				$gateway_settings[ $key ]['depends_on_payment_methods'] = $payment_method['depends_on_payment_methods'];
+			}
+
+			if ( isset( $payment_method['depends_on_settings'] ) ) {
+				$gateway_settings[ $key ]['depends_on_settings'] = $payment_method['depends_on_settings'];
 			}
 		}
 
-		$gateway_settings['paypalShowLogo']           = $this->settings->get_paypal_show_logo();
-		$gateway_settings['threeDSecure']             = $this->settings->get_three_d_secure();
-		$gateway_settings['fastlaneCardholderName']   = $this->settings->get_fastlane_cardholder_name();
-		$gateway_settings['fastlaneDisplayWatermark'] = $this->settings->get_fastlane_display_watermark();
+		$gateway_settings['paypalShowLogo']           = $this->payment_settings->get_paypal_show_logo();
+		$gateway_settings['threeDSecure']             = $this->payment_settings->get_three_d_secure();
+		$gateway_settings['fastlaneCardholderName']   = $this->payment_settings->get_fastlane_cardholder_name();
+		$gateway_settings['fastlaneDisplayWatermark'] = $this->payment_settings->get_fastlane_display_watermark();
 
 		return $this->return_success( apply_filters( 'woocommerce_paypal_payments_payment_methods', $gateway_settings ) );
 	}
@@ -202,21 +222,21 @@ class PaymentRestEndpoint extends RestEndpoint {
 		$all_methods  = $this->gateways();
 
 		foreach ( $all_methods as $key => $value ) {
-			$new_data = $request_data[ $key ];
+			$new_data = $request_data[ $key ] ?? null;
 			if ( ! $new_data ) {
 				continue;
 			}
 
 			if ( isset( $new_data['enabled'] ) ) {
-				$this->settings->toggle_method_state( $key, $new_data['enabled'] );
+				$this->payment_settings->toggle_method_state( $key, $new_data['enabled'] );
 			}
 
 			if ( isset( $new_data['title'] ) ) {
-				$this->settings->set_method_title( $key, sanitize_text_field( $new_data['title'] ) );
+				$this->payment_settings->set_method_title( $key, sanitize_text_field( $new_data['title'] ) );
 			}
 
 			if ( isset( $new_data['description'] ) ) {
-				$this->settings->set_method_description( $key, wp_kses_post( $new_data['description'] ) );
+				$this->payment_settings->set_method_description( $key, wp_kses_post( $new_data['description'] ) );
 			}
 		}
 
@@ -225,8 +245,8 @@ class PaymentRestEndpoint extends RestEndpoint {
 			$this->field_map
 		);
 
-		$this->settings->from_array( $wp_data );
-		$this->settings->save();
+		$this->payment_settings->from_array( $wp_data );
+		$this->payment_settings->save();
 
 		return $this->get_details();
 	}
