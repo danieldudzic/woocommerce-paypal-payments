@@ -78,53 +78,48 @@ class PartnerReferralsData {
 			__( 'Return to your shop.', 'woocommerce-paypal-payments' )
 		);
 
-		/**
-		 * Returns the partners referrals data.
-		 */
-		return apply_filters(
-			'ppcp_partner_referrals_data',
-			array(
-				'partner_config_override' => array(
-					/**
-					 * Returns the URL which will be opened at the end of onboarding.
-					 */
-					'return_url'             => $return_url,
-					/**
-					 * Returns the description of the URL which will be opened at the end of onboarding.
-					 */
-					'return_url_description' => $return_url_label,
-					'show_add_credit_card'   => true,
+		$first_party_features = array(
+			'PAYMENT',
+			'FUTURE_PAYMENT',
+			'REFUND',
+			'ADVANCED_TRANSACTIONS_SEARCH',
+			'VAULT',
+			'TRACKING_SHIPMENT_READWRITE',
+		);
+
+		$payload = array(
+			'partner_config_override' => array(
+				'return_url'             => $return_url,
+				'return_url_description' => $return_url_label,
+				'show_add_credit_card'   => true,
+			),
+			'products'                => $products,
+			'legal_consents'          => array(
+				array(
+					'type'    => 'SHARE_DATA_CONSENT',
+					'granted' => true,
 				),
-				'products'                => $products,
-				'legal_consents'          => array(
-					array(
-						'type'    => 'SHARE_DATA_CONSENT',
-						'granted' => true,
-					),
-				),
-				'operations'              => array(
-					array(
-						'operation'                  => 'API_INTEGRATION',
-						'api_integration_preference' => array(
-							'rest_api_integration' => array(
-								'integration_method'  => 'PAYPAL',
-								'integration_type'    => 'FIRST_PARTY',
-								'first_party_details' => array(
-									'features'     => array(
-										'PAYMENT',
-										'FUTURE_PAYMENT',
-										'REFUND',
-										'ADVANCED_TRANSACTIONS_SEARCH',
-										'VAULT',
-										'TRACKING_SHIPMENT_READWRITE',
-									),
-									'seller_nonce' => $this->nonce(),
-								),
+			),
+			'operations'              => array(
+				array(
+					'operation'                  => 'API_INTEGRATION',
+					'api_integration_preference' => array(
+						'rest_api_integration' => array(
+							'integration_method'  => 'PAYPAL',
+							'integration_type'    => 'FIRST_PARTY',
+							'first_party_details' => array(
+								'features'     => $first_party_features,
+								'seller_nonce' => $this->nonce(),
 							),
 						),
 					),
 				),
-			)
+			),
 		);
+
+		/**
+		 * Returns the partners referrals data.
+		 */
+		return apply_filters( 'ppcp_partner_referrals_data', $payload );
 	}
 }
