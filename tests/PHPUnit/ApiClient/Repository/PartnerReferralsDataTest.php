@@ -109,6 +109,9 @@ class PartnerReferralsDataTest extends TestCase {
 	 * core params present in the legacy and new UI.
 	 */
 	public function testDataStructure() : void {
+		/**
+		 * Undefined subscription: Keep vaulting in first-party, but don't add the capability.
+		 */
 		$result = $this->testee->data( [ 'PPCP' ], 'TOKEN' );
 		$this->dccApplies->shouldNotHaveReceived( 'for_country_currency' );
 
@@ -123,6 +126,37 @@ class PartnerReferralsDataTest extends TestCase {
 		$this->assertEquals( $expected, $result );
 	}
 
+	/**
+	 * Verify new onboarding-flags that are used by the new UI.
+	 */
+	public function testDataStructureWithFlags() : void {
+		/**
+		 * With subscriptions: Request full vaulting features.
+		 */
+		$result   = $this->testee->data( [ 'PPCP' ], 'TOKEN', true );
+		$expected = $this->getBaseExpectedArray();
+
+		$expected['products']     = [ 'PPCP' ];
+		$expected['capabilities'] = [ 'PAYPAL_WALLET_VAULTING_ADVANCED' ];
+
+		$expected['operations'][0]['api_integration_preference']['rest_api_integration']['first_party_details']['features'][] = 'FUTURE_PAYMENT';
+		$expected['operations'][0]['api_integration_preference']['rest_api_integration']['first_party_details']['features'][] = 'VAULT';
+
 		$this->assertEquals( $expected, $result );
+
+		/**
+		 * No subscriptions: Also means no vaulting!
+		 */
+		$result   = $this->testee->data( [ 'PPCP' ], 'TOKEN', false );
+		$expected = $this->getBaseExpectedArray();
+
+		$expected['products']     = [ 'PPCP' ];
+		$expected['capabilities'] = [];
+
+		$this->assertEquals( $expected, $result );
+
+		// Double-check that the features are not present.
+		$this->assertNotContains( 'FUTURE_PAYMENT', $expected['operations'][0]['api_integration_preference']['rest_api_integration']['first_party_details']['features'] );
+		$this->assertNotContains( 'VAULT', $expected['operations'][0]['api_integration_preference']['rest_api_integration']['first_party_details']['features'] );
 	}
 }
