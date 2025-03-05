@@ -67,7 +67,6 @@ class PartnerReferralsData {
 			'woocommerce_paypal_payments_partner_config_override_return_url',
 			admin_url( 'admin.php?page=wc-settings&tab=checkout&section=ppcp-gateway' )
 		);
-		$return_url = add_query_arg( array( 'ppcpToken' => $onboarding_token ), $return_url );
 
 		/**
 		 * Filter the label of the "Return to your shop" button.
@@ -118,8 +117,16 @@ class PartnerReferralsData {
 		);
 
 		/**
-		 * Returns the partners referrals data.
+		 * Filter the final partners referrals data collection.
 		 */
-		return apply_filters( 'ppcp_partner_referrals_data', $payload );
+		$payload = apply_filters( 'ppcp_partner_referrals_data', $payload );
+
+		// Add the nonce in the end, to maintain backwards compatibility of filters.
+		$payload['partner_config_override']['return_url'] = add_query_arg(
+			array( 'ppcpToken' => $onboarding_token ),
+			$payload['partner_config_override']['return_url']
+		);
+
+		return $payload;
 	}
 }
