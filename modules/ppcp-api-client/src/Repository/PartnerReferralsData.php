@@ -23,38 +23,12 @@ class PartnerReferralsData {
 	private DccApplies $dcc_applies;
 
 	/**
-	 * The list of products ('PPCP', 'EXPRESS_CHECKOUT').
-	 *
-	 * @var string[]
-	 */
-	private $products;
-
-	/**
 	 * PartnerReferralsData constructor.
 	 *
 	 * @param DccApplies $dcc_applies The DCC Applies helper.
 	 */
-	public function __construct(
-		DccApplies $dcc_applies
-	) {
+	public function __construct( DccApplies $dcc_applies ) {
 		$this->dcc_applies = $dcc_applies;
-		$this->products    = array(
-			$this->dcc_applies->for_country_currency() ? 'PPCP' : 'EXPRESS_CHECKOUT',
-		);
-	}
-
-	/**
-	 * Returns a new copy of this object with the given value set.
-	 *
-	 * @param string[] $products The list of products ('PPCP', 'EXPRESS_CHECKOUT').
-	 * @return static
-	 */
-	public function with_products( array $products ): self {
-		$obj = clone $this;
-
-		$obj->products = $products;
-
-		return $obj;
 	}
 
 	/**
@@ -69,9 +43,17 @@ class PartnerReferralsData {
 	/**
 	 * Returns the data.
 	 *
+	 * @param string[] $products The list of products to use ('PPCP', 'EXPRESS_CHECKOUT').
+	 *                           Default is based on DCC availability.
 	 * @return array
 	 */
-	public function data(): array {
+	public function data( array $products = array() ) : array {
+		if ( ! $products ) {
+			$products = array(
+				$this->dcc_applies->for_country_currency() ? 'PPCP' : 'EXPRESS_CHECKOUT',
+			);
+		}
+
 		/**
 		 * Returns the partners referrals data.
 		 */
@@ -95,7 +77,7 @@ class PartnerReferralsData {
 					),
 					'show_add_credit_card'   => true,
 				),
-				'products'                => $this->products,
+				'products'                => $products,
 				'legal_consents'          => array(
 					array(
 						'type'    => 'SHARE_DATA_CONSENT',
