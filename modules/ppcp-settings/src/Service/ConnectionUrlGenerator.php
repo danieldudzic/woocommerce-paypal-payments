@@ -202,9 +202,7 @@ class ConnectionUrlGenerator {
 	 * @return array The prepared referral data.
 	 */
 	protected function prepare_referral_data( array $products, string $onboarding_token ) : array {
-		$data = $this->referrals_data->data( $products );
-
-		return $this->referrals_data->append_onboarding_token( $data, $onboarding_token );
+		return $this->referrals_data->data( $products, $onboarding_token );
 	}
 
 	/**

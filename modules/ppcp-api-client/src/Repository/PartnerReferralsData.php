@@ -43,16 +43,36 @@ class PartnerReferralsData {
 	/**
 	 * Returns the data.
 	 *
-	 * @param string[] $products The list of products to use ('PPCP', 'EXPRESS_CHECKOUT').
-	 *                           Default is based on DCC availability.
+	 * @param string[] $products         The list of products to use ('PPCP', 'EXPRESS_CHECKOUT').
+	 *                                   Default is based on DCC availability.
+	 * @param string   $onboarding_token A security token to finalize the onboarding process.
 	 * @return array
 	 */
-	public function data( array $products = array() ) : array {
+	public function data( array $products = array(), string $onboarding_token = '' ) : array {
 		if ( ! $products ) {
 			$products = array(
 				$this->dcc_applies->for_country_currency() ? 'PPCP' : 'EXPRESS_CHECKOUT',
 			);
 		}
+
+		/**
+		 * Filter the return-URL, which is called at the end of the OAuth onboarding
+		 * process, when the merchant clicks the "Return to your shop" button.
+		 */
+		$return_url = apply_filters(
+			'woocommerce_paypal_payments_partner_config_override_return_url',
+			admin_url( 'admin.php?page=wc-settings&tab=checkout&section=ppcp-gateway' )
+		);
+		$return_url = add_query_arg( array( 'ppcpToken' => $onboarding_token ), $return_url );
+
+		/**
+		 * Filter the label of the "Return to your shop" button.
+		 * It's displayed on the very last page of the onboarding popup.
+		 */
+		$return_url_label = apply_filters(
+			'woocommerce_paypal_payments_partner_config_override_return_url_description',
+			__( 'Return to your shop.', 'woocommerce-paypal-payments' )
+		);
 
 		/**
 		 * Returns the partners referrals data.
@@ -64,17 +84,11 @@ class PartnerReferralsData {
 					/**
 					 * Returns the URL which will be opened at the end of onboarding.
 					 */
-					'return_url'             => apply_filters(
-						'woocommerce_paypal_payments_partner_config_override_return_url',
-						admin_url( 'admin.php?page=wc-settings&tab=checkout&section=ppcp-gateway' )
-					),
+					'return_url'             => $return_url,
 					/**
 					 * Returns the description of the URL which will be opened at the end of onboarding.
 					 */
-					'return_url_description' => apply_filters(
-						'woocommerce_paypal_payments_partner_config_override_return_url_description',
-						__( 'Return to your shop.', 'woocommerce-paypal-payments' )
-					),
+					'return_url_description' => $return_url_label,
 					'show_add_credit_card'   => true,
 				),
 				'products'                => $products,
@@ -108,19 +122,5 @@ class PartnerReferralsData {
 				),
 			)
 		);
-	}
-
-	/**
-	 * Append the validation token to the return_url
-	 *
-	 * @param array  $data  The referral data.
-	 * @param string $token The token to be appended.
-	 * @return array
-	 */
-	public function append_onboarding_token( array $data, string $token ) : array {
-		$data['partner_config_override']['return_url'] =
-			add_query_arg( 'ppcpToken', $token, $data['partner_config_override']['return_url'] );
-
-		return $data;
 	}
 }

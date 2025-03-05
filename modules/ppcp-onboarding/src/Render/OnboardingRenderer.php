@@ -118,9 +118,7 @@ class OnboardingRenderer {
 
 		$onboarding_url->init();
 
-		$data = $this->partner_referrals_data->data( $products );
-		$data = $this->partner_referrals_data
-			->append_onboarding_token( $data, $onboarding_url->token() ?: '' );
+		$data = $this->partner_referrals_data->data( $products, $onboarding_url->token() ?: '' );
 
 		$url = $is_production ? $this->production_partner_referrals->signup_link( $data ) : $this->sandbox_partner_referrals->signup_link( $data );
 		$url = add_query_arg( $args, $url );
