@@ -90,16 +90,38 @@ class PartnerReferralsDataTest extends TestCase {
 		return [
 			'with subscriptions and cards' => [
 				true, // With subscription?
+				true, // With cards?
 				[
-					'capabilities'       => [ 'PAYPAL_WALLET_VAULTING_ADVANCED' ],
-					'has_vault_features' => true,
+					'capabilities'         => [ 'PAYPAL_WALLET_VAULTING_ADVANCED' ],
+					'show_add_credit_card' => true,
+					'has_vault_features'   => true,
+				],
+			],
+			'with subscriptions, no cards' => [
+				true,  // With subscription?
+				false, // With cards?
+				[
+					'capabilities'         => [ 'PAYPAL_WALLET_VAULTING_ADVANCED' ],
+					'show_add_credit_card' => false,
+					'has_vault_features'   => true,
 				],
 			],
 			'no subscriptions, with cards' => [
 				false, // With subscription?
+				true,  // With cards?
 				[
-					'capabilities'       => [],
-					'has_vault_features' => false,
+					'capabilities'         => [],
+					'show_add_credit_card' => true,
+					'has_vault_features'   => false,
+				],
+			],
+			'no subscriptions, no cards'   => [
+				false, // With subscription?
+				false, // With cards?
+				[
+					'capabilities'         => [],
+					'show_add_credit_card' => false,
+					'has_vault_features'   => false,
 				],
 			],
 		];
@@ -156,13 +178,14 @@ class PartnerReferralsDataTest extends TestCase {
 	 *
 	 * @dataProvider flagCombinationsProvider
 	 */
-	public function testDataStructureWithFlags( bool $has_subscriptions, array $expected_changes ) : void {
-		$result   = $this->testee->data( [ 'PPCP' ], 'TOKEN', $has_subscriptions );
+	public function testDataStructureWithFlags( bool $has_subscriptions, bool $has_cards, array $expected_changes ) : void {
+		$result   = $this->testee->data( [ 'PPCP' ], 'TOKEN', $has_subscriptions, $has_cards );
 		$expected = $this->getBaseExpectedArray();
 
 		$expected['products'] = [ 'PPCP' ];
 
-		$expected['capabilities'] = $expected_changes['capabilities'];
+		$expected['capabilities']                                    = $expected_changes['capabilities'];
+		$expected['partner_config_override']['show_add_credit_card'] = $expected_changes['show_add_credit_card'];
 
 		if ( $expected_changes['has_vault_features'] ) {
 			$expected['operations'][0]['api_integration_preference']['rest_api_integration']['first_party_details']['features'][] = 'FUTURE_PAYMENT';
