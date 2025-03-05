@@ -110,7 +110,6 @@ class PartnerReferralsDataTest extends TestCase {
 				false, // With subscription?
 				true,  // With cards?
 				[
-					'capabilities'         => [],
 					'show_add_credit_card' => true,
 					'has_vault_features'   => false,
 				],
@@ -119,7 +118,6 @@ class PartnerReferralsDataTest extends TestCase {
 				false, // With subscription?
 				false, // With cards?
 				[
-					'capabilities'         => [],
 					'show_add_credit_card' => false,
 					'has_vault_features'   => false,
 				],
@@ -163,12 +161,12 @@ class PartnerReferralsDataTest extends TestCase {
 
 		$expected = $this->getBaseExpectedArray();
 
-		$expected['products']     = [ 'PPCP' ];
-		$expected['capabilities'] = [];
+		$expected['products'] = [ 'PPCP' ];
 
 		$expected['operations'][0]['api_integration_preference']['rest_api_integration']['first_party_details']['features'][] = 'FUTURE_PAYMENT';
 		$expected['operations'][0]['api_integration_preference']['rest_api_integration']['first_party_details']['features'][] = 'VAULT';
 
+		$this->assertArrayNotHasKey( 'capabilities', $expected );
 		$this->assertEquals( $expected, $result );
 	}
 
@@ -184,7 +182,12 @@ class PartnerReferralsDataTest extends TestCase {
 
 		$expected['products'] = [ 'PPCP' ];
 
-		$expected['capabilities']                                    = $expected_changes['capabilities'];
+		if ( isset( $expected_changes['capabilities'] ) ) {
+			$expected['capabilities'] = $expected_changes['capabilities'];
+		} else {
+			$this->assertArrayNotHasKey( 'capabilities', $expected );
+		}
+
 		$expected['partner_config_override']['show_add_credit_card'] = $expected_changes['show_add_credit_card'];
 
 		if ( $expected_changes['has_vault_features'] ) {
