@@ -85,13 +85,13 @@ export const determineProductsAndCaps = ( state ) => {
 		if ( products?.includes( PRODUCT_TYPES.SUBSCRIPTIONS ) ) {
 			options.useSubscriptions = true;
 		}
+
+		if ( canUseVaulting ) {
+			apiModules.push( PAYPAL_PRODUCTS.VAULTING );
+		}
 	}
 
 	options.useCardPayments = cardPaymentsEligibleAndSelected;
-
-	if ( canUseVaulting ) {
-		apiModules.push( PAYPAL_PRODUCTS.VAULTING );
-	}
 
 	return { products: apiModules, options };
 };
