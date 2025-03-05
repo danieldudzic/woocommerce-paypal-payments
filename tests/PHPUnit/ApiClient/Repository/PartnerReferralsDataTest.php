@@ -82,6 +82,30 @@ class PartnerReferralsDataTest extends TestCase {
 	}
 
 	/**
+	 * Data provider for testing flag combinations.
+	 *
+	 * @return array[] Test cases with [has_subscriptions, has_cards, expected_changes]
+	 */
+	public function flagCombinationsProvider() : array {
+		return [
+			'with subscriptions and cards' => [
+				true, // With subscription?
+				[
+					'capabilities'       => [ 'PAYPAL_WALLET_VAULTING_ADVANCED' ],
+					'has_vault_features' => true,
+				],
+			],
+			'no subscriptions, with cards' => [
+				false, // With subscription?
+				[
+					'capabilities'       => [],
+					'has_vault_features' => false,
+				],
+			],
+		];
+	}
+
+	/**
 	 * Ensure the default "products" are derived from the DccApplies response.
 	 */
 	public function testDefaultValues() : void {
@@ -127,36 +151,28 @@ class PartnerReferralsDataTest extends TestCase {
 	}
 
 	/**
-	 * Verify new onboarding-flags that are used by the new UI.
+	 * Test how different flag combinations affect the data structure.
+	 * Those flags are present in the new UI.
+	 *
+	 * @dataProvider flagCombinationsProvider
 	 */
-	public function testDataStructureWithFlags() : void {
-		/**
-		 * With subscriptions: Request full vaulting features.
-		 */
-		$result   = $this->testee->data( [ 'PPCP' ], 'TOKEN', true );
+	public function testDataStructureWithFlags( bool $has_subscriptions, array $expected_changes ) : void {
+		$result   = $this->testee->data( [ 'PPCP' ], 'TOKEN', $has_subscriptions );
 		$expected = $this->getBaseExpectedArray();
 
-		$expected['products']     = [ 'PPCP' ];
-		$expected['capabilities'] = [ 'PAYPAL_WALLET_VAULTING_ADVANCED' ];
+		$expected['products'] = [ 'PPCP' ];
 
-		$expected['operations'][0]['api_integration_preference']['rest_api_integration']['first_party_details']['features'][] = 'FUTURE_PAYMENT';
-		$expected['operations'][0]['api_integration_preference']['rest_api_integration']['first_party_details']['features'][] = 'VAULT';
+		$expected['capabilities'] = $expected_changes['capabilities'];
 
-		$this->assertEquals( $expected, $result );
-
-		/**
-		 * No subscriptions: Also means no vaulting!
-		 */
-		$result   = $this->testee->data( [ 'PPCP' ], 'TOKEN', false );
-		$expected = $this->getBaseExpectedArray();
-
-		$expected['products']     = [ 'PPCP' ];
-		$expected['capabilities'] = [];
+		if ( $expected_changes['has_vault_features'] ) {
+			$expected['operations'][0]['api_integration_preference']['rest_api_integration']['first_party_details']['features'][] = 'FUTURE_PAYMENT';
+			$expected['operations'][0]['api_integration_preference']['rest_api_integration']['first_party_details']['features'][] = 'VAULT';
+		} else {
+			// Double-check that the features are not present in our expected array
+			$this->assertNotContains( 'FUTURE_PAYMENT', $expected['operations'][0]['api_integration_preference']['rest_api_integration']['first_party_details']['features'] );
+			$this->assertNotContains( 'VAULT', $expected['operations'][0]['api_integration_preference']['rest_api_integration']['first_party_details']['features'] );
+		}
 
 		$this->assertEquals( $expected, $result );
-
-		// Double-check that the features are not present.
-		$this->assertNotContains( 'FUTURE_PAYMENT', $expected['operations'][0]['api_integration_preference']['rest_api_integration']['first_party_details']['features'] );
-		$this->assertNotContains( 'VAULT', $expected['operations'][0]['api_integration_preference']['rest_api_integration']['first_party_details']['features'] );
 	}
 }
