@@ -44,6 +44,7 @@ const defaultPersistent = Object.freeze( {
 	threeDSecure: 'no-3d-secure',
 	fastlaneCardholderName: false,
 	fastlaneDisplayWatermark: false,
+	__meta: false,
 } );
 
 // Reducer logic.
