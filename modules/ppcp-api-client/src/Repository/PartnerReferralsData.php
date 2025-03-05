@@ -142,6 +142,11 @@ class PartnerReferralsData {
 		 */
 		$payload = apply_filters( 'ppcp_partner_referrals_data', $payload );
 
+		// An empty array is not permitted.
+		if ( isset( $payload['capabilities'] ) && ! $payload['capabilities'] ) {
+			unset( $payload['capabilities'] );
+		}
+
 		// Add the nonce in the end, to maintain backwards compatibility of filters.
 		$payload['partner_config_override']['return_url'] = add_query_arg(
 			array( 'ppcpToken' => $onboarding_token ),
