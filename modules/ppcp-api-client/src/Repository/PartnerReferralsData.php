@@ -5,7 +5,7 @@
  * @package WooCommerce\PayPalCommerce\ApiClient\Repository
  */
 
-declare(strict_types=1);
+declare( strict_types = 1 );
 
 namespace WooCommerce\PayPalCommerce\ApiClient\Repository;
 
@@ -20,7 +20,7 @@ class PartnerReferralsData {
 	 *
 	 * @var DccApplies
 	 */
-	private $dcc_applies;
+	private DccApplies $dcc_applies;
 
 	/**
 	 * The list of products ('PPCP', 'EXPRESS_CHECKOUT').
@@ -62,7 +62,7 @@ class PartnerReferralsData {
 	 *
 	 * @return string
 	 */
-	public function nonce(): string {
+	public function nonce() : string {
 		return 'a1233wtergfsdt4365tzrshgfbaewa36AGa1233wtergfsdt4365tzrshgfbaewa36AG';
 	}
 
@@ -131,13 +131,14 @@ class PartnerReferralsData {
 	/**
 	 * Append the validation token to the return_url
 	 *
-	 * @param array  $data The referral data.
+	 * @param array  $data  The referral data.
 	 * @param string $token The token to be appended.
 	 * @return array
 	 */
-	public function append_onboarding_token( array $data, string $token ): array {
+	public function append_onboarding_token( array $data, string $token ) : array {
 		$data['partner_config_override']['return_url'] =
 			add_query_arg( 'ppcpToken', $token, $data['partner_config_override']['return_url'] );
+
 		return $data;
 	}
 }
