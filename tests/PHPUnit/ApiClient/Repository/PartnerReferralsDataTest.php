@@ -23,20 +23,48 @@ class PartnerReferralsDataTest extends TestCase {
 	 */
 	private const ADMIN_URL = 'https://example.com/wp-admin/';
 
+	/**
+	 * Ensure the default "products" are derived from the DccApplies response.
+	 */
+	public function testDefaultValues() {
+		$dccApplies = Mockery::mock( DccApplies::class );
+		when( 'admin_url' )->justReturn( '' );
+		when( 'add_query_arg' )->justReturn( '' );
+
+		// Case 1 - PayPal Complete Payments.
+
+		$dccApplies->expects( 'for_country_currency' )->andReturn( true );
+		$testee = new PartnerReferralsData( $dccApplies );
+		$result = $testee->data();
+
+		$this->assertEquals( [ 'PPCP' ], $result['products'] );
+
+		// Case 2 - Express Checkout.
+
+		$dccApplies->expects( 'for_country_currency' )->andReturn( false );
+		$testee = new PartnerReferralsData( $dccApplies );
+		$result = $testee->data();
+
+		$this->assertEquals( [ 'EXPRESS_CHECKOUT' ], $result['products'] );
+	}
 
 	/**
 	 * Ensure the generated API payload is stable and contains the expected values.
 	 */
 	public function testDataStructure() {
 		$dccApplies = Mockery::mock( DccApplies::class );
-		$dccApplies->expects( 'for_country_currency' )->andReturn( true );
 
 		when( 'admin_url' )->alias( function ( $path ) {
 			return self::ADMIN_URL . $path;
 		} );
 
+		when( 'add_query_arg' )->alias( function ( $args, $url ) {
+			return $url;
+		} );
+
 		$testee = new PartnerReferralsData( $dccApplies );
-		$result = $testee->data();
+		$result = $testee->data( [ 'PPCP' ], 'TOKEN' );
+		$dccApplies->shouldNotHaveReceived( 'for_country_currency' );
 
 		$expected = [
 			'partner_config_override' => [
