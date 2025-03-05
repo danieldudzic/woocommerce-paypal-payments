@@ -57,7 +57,7 @@ describe( 'determineProductsAndCaps selector [casual seller]', () => {
 				flags: { canUseCardPayments: false, canUseVaulting: true },
 			},
 			expected: {
-				products: [ 'EXPRESS_CHECKOUT', 'ADVANCED_VAULTING' ],
+				products: [ 'EXPRESS_CHECKOUT' ],
 				options: { useSubscriptions: false, useCardPayments: false },
 			},
 		},
@@ -72,7 +72,7 @@ describe( 'determineProductsAndCaps selector [casual seller]', () => {
 				flags: { canUseCardPayments: false, canUseVaulting: true },
 			},
 			expected: {
-				products: [ 'EXPRESS_CHECKOUT', 'ADVANCED_VAULTING' ],
+				products: [ 'EXPRESS_CHECKOUT' ],
 				options: { useSubscriptions: false, useCardPayments: false },
 			},
 		},
@@ -153,7 +153,7 @@ describe( 'determineProductsAndCaps selector [business seller]', () => {
 				flags: { canUseCardPayments: false, canUseVaulting: true },
 			},
 			expected: {
-				products: [ 'EXPRESS_CHECKOUT', 'ADVANCED_VAULTING' ],
+				products: [ 'EXPRESS_CHECKOUT' ],
 				options: { useSubscriptions: false, useCardPayments: false },
 			},
 		},
