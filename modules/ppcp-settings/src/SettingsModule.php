@@ -449,6 +449,32 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 			}
 		);
 
+		// Remove the Fastlane gateway if the customer is logged in, ensuring that we don't interfere with the Fastlane gateway status in the settings UI.
+		add_filter(
+			'woocommerce_available_payment_gateways',
+			/**
+			 * Param types removed to avoid third-party issues.
+			 *
+			 * @psalm-suppress MissingClosureParamType
+			 */
+			static function ( $methods ) use ( $container ) : array {
+				if ( ! is_array( $methods ) ) {
+					return $methods;
+				}
+
+				if ( is_user_logged_in() && ! is_admin() ) {
+					foreach ( $methods as $key => $method ) {
+						if ( $method instanceof WC_Payment_Gateway && $method->id === 'ppcp-axo-gateway' ) {
+							unset( $methods[ $key ] );
+							break;
+						}
+					}
+				}
+
+				return $methods;
+			}
+		);
+
 		add_filter(
 			'woocommerce_paypal_payments_gateway_title',
 			function ( string $title, WC_Payment_Gateway $gateway ) {
@@ -502,23 +528,25 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 			2
 		);
 
-		add_filter( 'woocommerce_paypal_payments_axo_gateway_should_update_enabled', '__return_false' );
-		add_filter(
-			'woocommerce_paypal_payments_axo_gateway_title',
-			function ( string $title, WC_Payment_Gateway $gateway ) {
-				return $gateway->get_option( 'title', $title );
-			},
-			10,
-			2
-		);
-		add_filter(
-			'woocommerce_paypal_payments_axo_gateway_description',
-			function ( string $description, WC_Payment_Gateway $gateway ) {
-				return $gateway->get_option( 'description', $description );
-			},
-			10,
-			2
-		);
+		if ( is_admin() ) {
+			add_filter( 'woocommerce_paypal_payments_axo_gateway_should_update_enabled', '__return_false' );
+			add_filter(
+				'woocommerce_paypal_payments_axo_gateway_title',
+				function ( string $title, WC_Payment_Gateway $gateway ) {
+					return $gateway->get_option( 'title', $title );
+				},
+				10,
+				2
+			);
+			add_filter(
+				'woocommerce_paypal_payments_axo_gateway_description',
+				function ( string $description, WC_Payment_Gateway $gateway ) {
+					return $gateway->get_option( 'description', $description );
+				},
+				10,
+				2
+			);
+		}
 
 		/**
 		 * Unsets the BCDC black button if merchant is eligible for ACDC.
