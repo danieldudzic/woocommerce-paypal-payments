@@ -19,10 +19,6 @@ const useHooks = () => {
 
 	// Read-only flags and derived state.
 	const flags = useSelect( ( select ) => select( STORE_NAME ).flags(), [] );
-	const determineProducts = useSelect(
-		( select ) => select( STORE_NAME ).determineProducts(),
-		[]
-	);
 
 	// Transient accessors.
 	const [ isReady ] = useTransient( 'isReady' );
@@ -80,7 +76,6 @@ const useHooks = () => {
 			);
 			return savePersistent( setProducts, validProducts );
 		},
-		determineProducts,
 	};
 };
 
@@ -141,9 +136,9 @@ export const useNavigationState = () => {
 };
 
 export const useDetermineProducts = () => {
-	const { determineProducts } = useHooks();
-
-	return determineProducts;
+	return useSelect( ( select ) => {
+		return select( STORE_NAME ).determineProductsAndCaps();
+	}, [] );
 };
 
 export const useFlags = () => {
