@@ -38,7 +38,7 @@ class PaymentMethodSettingsMapHelper {
 	 * @param string $old_key The key from the legacy settings.
 	 * @return mixed The value of the mapped setting, (null if not found).
 	 */
-	public function mapped_value( string $old_key): ?bool {
+	public function mapped_value( string $old_key ): ?bool {
 
 		$payment_method = $this->map()[ $old_key ] ?? false;
 
@@ -56,7 +56,7 @@ class PaymentMethodSettingsMapHelper {
 	 * @return bool True if the payment gateway with the given name is enabled, otherwise false.
 	 */
 	protected function is_gateway_enabled( string $gateway_name ): bool {
-		$gateway_settings = get_option( "woocommerce_{$gateway_name}_settings", [] );
+		$gateway_settings = get_option( "woocommerce_{$gateway_name}_settings", array() );
 		$gateway_enabled  = $gateway_settings['enabled'] ?? false;
 
 		return $gateway_enabled === 'yes';

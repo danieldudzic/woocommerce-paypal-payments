@@ -262,7 +262,7 @@ class StylingSettingsMapHelper {
 	 * @return int The enabled (1) or disabled (0) state.
 	 * @throws RuntimeException If an invalid button name is provided.
 	 */
-	protected function mapped_button_enabled_value( array $styling_models, string $button_name): ?int {
+	protected function mapped_button_enabled_value( array $styling_models, string $button_name ): ?int {
 		if ( ! in_array( $button_name, self::BUTTON_NAMES, true ) ) {
 			throw new RuntimeException( 'Wrong button name is provided.' );
 		}
@@ -309,8 +309,8 @@ class StylingSettingsMapHelper {
 	 * @return bool True if the payment gateway with the given name is enabled, otherwise false.
 	 */
 	protected function is_gateway_enabled( string $gateway_name ): bool {
-		$gateway_settings = get_option( "woocommerce_{$gateway_name}_settings", [] );
-		$gateway_enabled = $gateway_settings['enabled'] ?? false;
+		$gateway_settings = get_option( "woocommerce_{$gateway_name}_settings", array() );
+		$gateway_enabled  = $gateway_settings['enabled'] ?? false;
 
 		return $gateway_enabled === 'yes';
 	}
