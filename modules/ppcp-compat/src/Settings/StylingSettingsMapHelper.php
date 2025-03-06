@@ -89,13 +89,13 @@ class StylingSettingsMapHelper {
 				return $this->mapped_disabled_funding_value( $styling_models, $payment_settings );
 
 			case 'googlepay_button_enabled':
-				return $this->mapped_button_enabled_value( $styling_models, GooglePayGateway::ID, $payment_settings );
+				return $this->mapped_button_enabled_value( $styling_models, GooglePayGateway::ID );
 
 			case 'applepay_button_enabled':
-				return $this->mapped_button_enabled_value( $styling_models, ApplePayGateway::ID, $payment_settings );
+				return $this->mapped_button_enabled_value( $styling_models, ApplePayGateway::ID );
 
 			case 'pay_later_button_enabled':
-				return $this->mapped_button_enabled_value( $styling_models, 'pay-later', $payment_settings );
+				return $this->mapped_button_enabled_value( $styling_models, 'pay-later' );
 
 			default:
 				foreach ( $this->locations_map() as $old_location_name => $new_location_name ) {
@@ -257,28 +257,22 @@ class StylingSettingsMapHelper {
 	/**
 	 * Retrieves the mapped enabled or disabled button value from the new settings.
 	 *
-	 * @param LocationStylingDTO[]   $styling_models The list of location styling models.
-	 * @param string                 $button_name The button name (see {@link self::BUTTON_NAMES}).
-	 * @param AbstractDataModel|null $payment_settings The payment settings model.
+	 * @param LocationStylingDTO[] $styling_models The list of location styling models.
+	 * @param string               $button_name The button name (see {@link self::BUTTON_NAMES}).
 	 * @return int The enabled (1) or disabled (0) state.
 	 * @throws RuntimeException If an invalid button name is provided.
 	 */
-	protected function mapped_button_enabled_value( array $styling_models, string $button_name, ?AbstractDataModel $payment_settings ): ?int {
-		if ( is_null( $payment_settings ) ) {
-			return null;
-		}
-
+	protected function mapped_button_enabled_value( array $styling_models, string $button_name ): ?int {
 		if ( ! in_array( $button_name, self::BUTTON_NAMES, true ) ) {
 			throw new RuntimeException( 'Wrong button name is provided.' );
 		}
 
 		$locations_to_context_map = $this->current_context_to_new_button_location_map();
 		$current_context          = $locations_to_context_map[ $this->context() ] ?? '';
-		assert( $payment_settings instanceof PaymentSettings );
 
 		foreach ( $styling_models as $model ) {
 			if ( $model->enabled && $model->location === $current_context ) {
-				if ( in_array( $button_name, $model->methods, true ) && $payment_settings->is_method_enabled( $button_name ) ) {
+				if ( in_array( $button_name, $model->methods, true ) && $this->is_gateway_enabled( $button_name ) ) {
 					return 1;
 				}
 			}
@@ -306,5 +300,18 @@ class StylingSettingsMapHelper {
 		}
 
 		return 0;
+	}
+
+	/**
+	 * Checks if the payment gateway with the given name is enabled.
+	 *
+	 * @param string $gateway_name The gateway name.
+	 * @return bool True if the payment gateway with the given name is enabled, otherwise false.
+	 */
+	protected function is_gateway_enabled( string $gateway_name ): bool {
+		$gateway_settings = get_option( "woocommerce_{$gateway_name}_settings", array() );
+		$gateway_enabled  = $gateway_settings['enabled'] ?? false;
+
+		return $gateway_enabled === 'yes';
 	}
 }

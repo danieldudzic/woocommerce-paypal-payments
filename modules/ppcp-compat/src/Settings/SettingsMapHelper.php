@@ -75,6 +75,13 @@ class SettingsMapHelper {
 	protected GeneralSettingsMapHelper $general_settings_map_helper;
 
 	/**
+	 * A helper for mapping old and new payment method settings.
+	 *
+	 * @var PaymentMethodSettingsMapHelper
+	 */
+	protected PaymentMethodSettingsMapHelper $payment_method_settings_map_helper;
+
+	/**
 	 * Whether the new settings module is enabled.
 	 *
 	 * @var bool
@@ -84,12 +91,13 @@ class SettingsMapHelper {
 	/**
 	 * Constructor.
 	 *
-	 * @param SettingsMap[]                 $settings_map A list of settings maps containing key definitions.
-	 * @param StylingSettingsMapHelper      $styling_settings_map_helper A helper for mapping the old/new styling settings.
-	 * @param SettingsTabMapHelper          $settings_tab_map_helper A helper for mapping the old/new settings tab settings.
-	 * @param SubscriptionSettingsMapHelper $subscription_map_helper A helper for mapping old and new subscription settings.
-	 * @param GeneralSettingsMapHelper      $general_settings_map_helper A helper for mapping old and new general settings.
-	 * @param bool                          $new_settings_module_enabled Whether the new settings module is enabled.
+	 * @param SettingsMap[]                  $settings_map A list of settings maps containing key definitions.
+	 * @param StylingSettingsMapHelper       $styling_settings_map_helper A helper for mapping the old/new styling settings.
+	 * @param SettingsTabMapHelper           $settings_tab_map_helper A helper for mapping the old/new settings tab settings.
+	 * @param SubscriptionSettingsMapHelper  $subscription_map_helper A helper for mapping old and new subscription settings.
+	 * @param GeneralSettingsMapHelper       $general_settings_map_helper A helper for mapping old and new general settings.
+	 * @param PaymentMethodSettingsMapHelper $payment_method_settings_map_helper A helper for mapping old and new payment method settings.
+	 * @param bool                           $new_settings_module_enabled Whether the new settings module is enabled.
 	 * @throws RuntimeException When an old key has multiple mappings.
 	 */
 	public function __construct(
@@ -98,15 +106,17 @@ class SettingsMapHelper {
 		SettingsTabMapHelper $settings_tab_map_helper,
 		SubscriptionSettingsMapHelper $subscription_map_helper,
 		GeneralSettingsMapHelper $general_settings_map_helper,
+		PaymentMethodSettingsMapHelper $payment_method_settings_map_helper,
 		bool $new_settings_module_enabled
 	) {
 		$this->validate_settings_map( $settings_map );
-		$this->settings_map                = $settings_map;
-		$this->styling_settings_map_helper = $styling_settings_map_helper;
-		$this->settings_tab_map_helper     = $settings_tab_map_helper;
-		$this->subscription_map_helper     = $subscription_map_helper;
-		$this->general_settings_map_helper = $general_settings_map_helper;
-		$this->new_settings_module_enabled = $new_settings_module_enabled;
+		$this->settings_map                       = $settings_map;
+		$this->styling_settings_map_helper        = $styling_settings_map_helper;
+		$this->settings_tab_map_helper            = $settings_tab_map_helper;
+		$this->subscription_map_helper            = $subscription_map_helper;
+		$this->general_settings_map_helper        = $general_settings_map_helper;
+		$this->payment_method_settings_map_helper = $payment_method_settings_map_helper;
+		$this->new_settings_module_enabled        = $new_settings_module_enabled;
 	}
 
 	/**
@@ -202,6 +212,9 @@ class SettingsMapHelper {
 				return $old_key === 'subscriptions_mode'
 				? $this->subscription_map_helper->mapped_value( $old_key, $this->model_cache[ $model_id ] )
 				: $this->settings_tab_map_helper->mapped_value( $old_key, $this->model_cache[ $model_id ] );
+
+			case $model instanceof PaymentSettings:
+				return $this->payment_method_settings_map_helper->mapped_value( $old_key );
 
 			default:
 				return $this->model_cache[ $model_id ][ $new_key ] ?? null;

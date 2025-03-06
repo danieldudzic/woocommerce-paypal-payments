@@ -104,6 +104,6 @@ class DisabledFundingSources {
 			$disable_funding = $all_sources;
 		}
 
-		return $disable_funding;
+		return apply_filters( 'woocommerce_paypal_payments_disabled_funding_sources', $disable_funding );
 	}
 }
