@@ -30,7 +30,7 @@ const ACTIVITIES = {
 export const useHandleOnboardingButton = ( isSandbox ) => {
 	const { sandboxOnboardingUrl } = CommonHooks.useSandbox();
 	const { productionOnboardingUrl } = CommonHooks.useProduction();
-	const products = OnboardingHooks.useDetermineProducts();
+	const { products, options } = OnboardingHooks.useDetermineProducts();
 	const { startActivity } = CommonHooks.useBusyState();
 	const { authenticateWithOAuth } = CommonHooks.useAuthentication();
 	const [ onboardingUrl, setOnboardingUrl ] = useState( '' );
@@ -43,7 +43,7 @@ export const useHandleOnboardingButton = ( isSandbox ) => {
 			if ( isSandbox ) {
 				res = await sandboxOnboardingUrl();
 			} else {
-				res = await productionOnboardingUrl( products );
+				res = await productionOnboardingUrl( products, options );
 			}
 
 			if ( res.success && res.data ) {

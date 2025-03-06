@@ -41,8 +41,6 @@ const useHooks = () => {
 	const { useTransient, usePersistent, dispatch, select } = useStoreData();
 	const {
 		persist,
-		sandboxOnboardingUrl,
-		productionOnboardingUrl,
 		authenticateWithCredentials,
 		authenticateWithOAuth,
 		startWebhookSimulation,
@@ -53,7 +51,6 @@ const useHooks = () => {
 	const [ activeModal, setActiveModal ] = useTransient( 'activeModal' );
 
 	// Persistent accessors.
-	const [ isSandboxMode, setSandboxMode ] = usePersistent( 'useSandbox' );
 	const [ isManualConnectionMode, setManualConnectionMode ] = usePersistent(
 		'useManualConnection'
 	);
@@ -71,16 +68,10 @@ const useHooks = () => {
 	return {
 		activeModal,
 		setActiveModal,
-		isSandboxMode,
-		setSandboxMode: ( state ) => {
-			return savePersistent( setSandboxMode, state );
-		},
 		isManualConnectionMode,
 		setManualConnectionMode: ( state ) => {
 			return savePersistent( setManualConnectionMode, state );
 		},
-		sandboxOnboardingUrl,
-		productionOnboardingUrl,
 		authenticateWithCredentials,
 		authenticateWithOAuth,
 		wooSettings,
@@ -105,13 +96,23 @@ export const useStore = () => {
 };
 
 export const useSandbox = () => {
-	const { isSandboxMode, setSandboxMode, sandboxOnboardingUrl } = useHooks();
+	const { dispatch, usePersistent } = useStoreData();
+	const [ isSandboxMode, setSandboxMode ] = usePersistent( 'useSandbox' );
+	const { sandboxOnboardingUrl, persist } = dispatch;
 
-	return { isSandboxMode, setSandboxMode, sandboxOnboardingUrl };
+	return {
+		isSandboxMode,
+		setSandboxMode: ( state ) => {
+			setSandboxMode( state );
+			return persist();
+		},
+		sandboxOnboardingUrl,
+	};
 };
 
 export const useProduction = () => {
-	const { productionOnboardingUrl } = useHooks();
+	const { dispatch } = useStoreData();
+	const { productionOnboardingUrl } = dispatch;
 
 	return { productionOnboardingUrl };
 };
