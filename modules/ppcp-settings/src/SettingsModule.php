@@ -28,6 +28,7 @@ use WooCommerce\PayPalCommerce\Settings\Data\OnboardingProfile;
 use WooCommerce\PayPalCommerce\Settings\Data\TodosModel;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\RestEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Handler\ConnectionListener;
+use WooCommerce\PayPalCommerce\Settings\Service\GatewayRedirectService;
 use WooCommerce\PayPalCommerce\Vendor\Inpsyde\Modularity\Module\ExecutableModule;
 use WooCommerce\PayPalCommerce\Vendor\Inpsyde\Modularity\Module\ModuleClassNameIdTrait;
 use WooCommerce\PayPalCommerce\Vendor\Inpsyde\Modularity\Module\ServiceModule;
@@ -576,6 +577,11 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 				return $disable_funding;
 			}
 		);
+
+		// Redirect payment method links in the WC Payment Gateway to the new UI Payment Methods tab.
+		$gateway_redirect_service = $container->get( 'settings.service.gateway-redirect' );
+		assert( $gateway_redirect_service instanceof GatewayRedirectService );
+		$gateway_redirect_service->register();
 
 		return true;
 	}

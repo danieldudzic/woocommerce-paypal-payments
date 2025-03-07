@@ -1,3 +1,4 @@
+import { useEffect } from '@wordpress/element';
 import SettingsCard from '../../../../ReusableComponents/SettingsCard';
 import { PaymentMethodsBlock } from '../../../../ReusableComponents/SettingsBlocks';
 import usePaymentDependencyState from '../../../../../hooks/usePaymentDependencyState';
@@ -6,20 +7,20 @@ import PaymentDependencyMessage from './PaymentDependencyMessage';
 import SettingDependencyMessage from './SettingDependencyMessage';
 import SpinnerOverlay from '../../../../ReusableComponents/SpinnerOverlay';
 import { PaymentHooks, SettingsHooks } from '../../../../../data';
+import { useNavigation } from '../../../../../hooks/useNavigation';
 
 /**
  * Renders a payment method card with dependency handling
  *
- * @param {Object}               props                 - Component props
- * @param {string}               props.id              - Unique identifier for the card
- * @param {string}               props.title           - Title of the payment method card
- * @param {string}               props.description     - Description of the payment method
- * @param {string}               props.icon            - Icon path for the payment method
- * @param {Array}                props.methods         - List of payment methods to display
- * @param {Object}               props.methodsMap      - Map of all payment methods by ID
- * @param {Function}             props.onTriggerModal  - Callback when a method is clicked
- * @param {boolean}              props.isDisabled      - Whether the entire card is disabled
- * @param {(string|JSX.Element)} props.disabledMessage - Message to show when disabled
+ * @param {Object}   props                - Component props
+ * @param {string}   props.id             - Unique identifier for the card
+ * @param {string}   props.title          - Title of the payment method card
+ * @param {string}   props.description    - Description of the payment method
+ * @param {string}   props.icon           - Icon path for the payment method
+ * @param {Array}    props.methods        - List of payment methods to display
+ * @param {Object}   props.methodsMap     - Map of all payment methods by ID
+ * @param {Function} props.onTriggerModal - Callback when a method is clicked
+ * @param {boolean}  props.isDisabled     - Whether the entire card is disabled
  * @return {JSX.Element} The rendered component
  */
 const PaymentMethodCard = ( {
@@ -34,6 +35,7 @@ const PaymentMethodCard = ( {
 } ) => {
 	const { isReady: isPaymentStoreReady } = PaymentHooks.useStore();
 	const { isReady: isSettingsStoreReady } = SettingsHooks.useStore();
+	const { handleHighlightFromUrl } = useNavigation();
 
 	const paymentDependencies = usePaymentDependencyState(
 		methods,
@@ -41,6 +43,12 @@ const PaymentMethodCard = ( {
 	);
 
 	const settingDependencies = useSettingDependencyState( methods );
+
+	useEffect( () => {
+		if ( isPaymentStoreReady && isSettingsStoreReady ) {
+			handleHighlightFromUrl();
+		}
+	}, [ handleHighlightFromUrl, isPaymentStoreReady, isSettingsStoreReady ] );
 
 	if ( ! isPaymentStoreReady || ! isSettingsStoreReady ) {
 		return <SpinnerOverlay asModal={ true } />;

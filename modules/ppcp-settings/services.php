@@ -37,6 +37,7 @@ use WooCommerce\PayPalCommerce\Settings\Handler\ConnectionListener;
 use WooCommerce\PayPalCommerce\Settings\Service\AuthenticationManager;
 use WooCommerce\PayPalCommerce\Settings\Service\ConnectionUrlGenerator;
 use WooCommerce\PayPalCommerce\Settings\Service\FeaturesEligibilityService;
+use WooCommerce\PayPalCommerce\Settings\Service\GatewayRedirectService;
 use WooCommerce\PayPalCommerce\Settings\Service\OnboardingUrlManager;
 use WooCommerce\PayPalCommerce\Settings\Service\TodosEligibilityService;
 use WooCommerce\PayPalCommerce\Settings\Service\TodosSortingAndFilteringService;
@@ -565,5 +566,8 @@ return array(
 		return new TodosSortingAndFilteringService(
 			$container->get( 'settings.data.todos' )
 		);
+	},
+	'settings.service.gateway-redirect'            => static function (): GatewayRedirectService {
+		return new GatewayRedirectService();
 	},
 );
