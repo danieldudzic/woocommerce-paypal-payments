@@ -567,7 +567,7 @@ return array(
 			$container->get( 'settings.data.todos' )
 		);
 	},
-	'settings.service.gateway-redirect' => static function (): GatewayRedirectService {
+	'settings.service.gateway-redirect'            => static function (): GatewayRedirectService {
 		return new GatewayRedirectService();
 	},
 );

@@ -85,9 +85,14 @@ class GatewayRedirectService {
 
 		// Get current URL parameters.
 		// phpcs:disable WordPress.Security.NonceVerification.Recommended
-		$page = isset( $_GET['page'] ) ? $this->sanitize_get_param( $_GET['page'] ) : '';
-		$tab = isset( $_GET['tab'] ) ? $this->sanitize_get_param( $_GET['tab'] ) : '';
+		// phpcs:disable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		// phpcs:disable WordPress.Security.ValidatedSanitizedInput.MissingUnslash
+		// The sanitize_get_param method handles unslashing and sanitization internally.
+		$page    = isset( $_GET['page'] ) ? $this->sanitize_get_param( $_GET['page'] ) : '';
+		$tab     = isset( $_GET['tab'] ) ? $this->sanitize_get_param( $_GET['tab'] ) : '';
 		$section = isset( $_GET['section'] ) ? $this->sanitize_get_param( $_GET['section'] ) : '';
+		// phpcs:enable WordPress.Security.ValidatedSanitizedInput.MissingUnslash
+		// phpcs:enable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 
 		// Check if we're on a WooCommerce settings page and checkout tab.
