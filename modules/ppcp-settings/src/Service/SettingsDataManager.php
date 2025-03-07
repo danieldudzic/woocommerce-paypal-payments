@@ -171,6 +171,19 @@ class SettingsDataManager {
 
 		$this->onboarding_profile->set_setup_done( true );
 		$this->onboarding_profile->save();
+
+		/**
+		 * Fires after the core merchant configuration was applied.
+		 *
+		 * This action indicates that a merchant completed the onboarding wizard.
+		 * The flags contain several choices which the merchant took during the
+		 * onboarding wizard, and provide additional context on which defaults
+		 * should be applied for the new merchant.
+		 *
+		 * Other modules or integrations can use this hook to initialize
+		 * additional plugin settings on first merchant login.
+		 */
+		do_action( 'woocommerce_paypal_payments_apply_default_configuration', $flags );
 	}
 
 	/**
