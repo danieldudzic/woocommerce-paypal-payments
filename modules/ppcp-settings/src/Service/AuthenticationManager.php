@@ -449,20 +449,20 @@ class AuthenticationManager {
 			$response = $this->rest_service->get_response( $endpoint );
 
 			if ( ! $response['success'] ) {
-				$this->logger->warning( 'Failed to load merchant details!', $response );
+				$this->enrichment_failed( 'Server failed to provide data', $response );
 
 				return;
 			}
 
 			$details = $response['data'];
 		} catch ( Throwable $exception ) {
-			$this->logger->warning( 'Could not determine merchant country: ' . $exception->getMessage() );
+			$this->enrichment_failed( $exception->getMessage() );
 
 			return;
 		}
 
 		if ( ! isset( $details['country'] ) ) {
-			$this->logger->warning( 'Missing country in merchant details' );
+			$this->enrichment_failed( 'Missing country in merchant details' );
 
 			return;
 		}
@@ -476,6 +476,26 @@ class AuthenticationManager {
 		// Persist the changes.
 		$this->common_settings->set_merchant_data( $connection );
 		$this->common_settings->save();
+	}
+
+	/**
+	 * When the `enrich_merchant_details()` call fails, this method might
+	 * set up a cron task to retry the attempt after some time.
+	 *
+	 * @param string $reason  Reason for the failure, will be logged.
+	 * @param mixed  $details Optional. Additional details to log.
+	 * @return void
+	 */
+	private function enrichment_failed( string $reason, $details = null ) : void {
+		$this->logger->warning(
+			'Failed to enrich merchant details: ' . $reason,
+			array(
+				'reason'  => $reason,
+				'details' => $details,
+			)
+		);
+
+		// TODO: Schedule a cron task to retry the enrichment, e.g. with wp_schedule_single_event().
 	}
 
 	/**
