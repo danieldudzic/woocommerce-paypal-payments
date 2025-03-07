@@ -446,9 +446,24 @@ class AuthenticationManager {
 
 		try {
 			$endpoint = CommonRestEndpoint::seller_account_route( true );
-			$details  = $this->rest_service->get_response( $endpoint );
+			$response = $this->rest_service->get_response( $endpoint );
+
+			if ( ! $response['success'] ) {
+				$this->logger->warning( 'Failed to load merchant details!', $response );
+
+				return;
+			}
+
+			$details = $response['data'];
 		} catch ( Throwable $exception ) {
 			$this->logger->warning( 'Could not determine merchant country: ' . $exception->getMessage() );
+
+			return;
+		}
+
+		if ( ! isset( $details['country'] ) ) {
+			$this->logger->warning( 'Missing country in merchant details' );
+
 			return;
 		}
 
