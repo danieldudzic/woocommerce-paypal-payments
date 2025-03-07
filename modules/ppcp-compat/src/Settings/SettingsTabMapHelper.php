@@ -41,6 +41,7 @@ class SettingsTabMapHelper {
 			'intent'                      => '',
 			'vault_enabled_dcc'           => 'save_card_details',
 			'blocks_final_review_enabled' => 'enable_pay_now',
+			'logging_enabled'             => 'enable_logging',
 		);
 	}
 
