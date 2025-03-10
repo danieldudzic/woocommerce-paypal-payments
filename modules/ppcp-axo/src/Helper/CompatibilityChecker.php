@@ -1,7 +1,7 @@
 <?php
 /**
- * Settings notice generator.
- * Generates the settings notices.
+ * Fastlane compatibility checker.
+ * Detects compatibility issues and generates relevant notices.
  *
  * @package WooCommerce\PayPalCommerce\Axo\Helper
  */
@@ -15,9 +15,9 @@ use WooCommerce\PayPalCommerce\WcGateway\Settings\Settings;
 use WooCommerce\PayPalCommerce\WcGateway\Exception\NotFoundException;
 
 /**
- * Class SettingsNoticeGenerator
+ * Class FastlaneCompatibilityChecker
  */
-class SettingsNoticeGenerator {
+class CompatibilityChecker {
 	/**
 	 * The list of Fastlane incompatible plugin names.
 	 *
@@ -26,12 +26,88 @@ class SettingsNoticeGenerator {
 	protected array $incompatible_plugin_names;
 
 	/**
-	 * SettingsNoticeGenerator constructor.
+	 * Stores the result of checkout compatibility checks.
+	 *
+	 * @var array
+	 */
+	protected array $checkout_compatibility;
+
+	/**
+	 * Stores whether DCC is enabled.
+	 *
+	 * @var bool|null
+	 */
+	protected ?bool $is_dcc_enabled = null;
+
+	/**
+	 * FastlaneCompatibilityChecker constructor.
 	 *
 	 * @param string[] $incompatible_plugin_names The list of Fastlane incompatible plugin names.
 	 */
 	public function __construct( array $incompatible_plugin_names ) {
 		$this->incompatible_plugin_names = $incompatible_plugin_names;
+		$this->checkout_compatibility    = array(
+			'has_elementor_checkout' => null,
+			'has_classic_checkout'   => null,
+			'has_block_checkout'     => null,
+		);
+	}
+
+	/**
+	 * Checks if the checkout uses Elementor.
+	 *
+	 * @return bool Whether the checkout uses Elementor.
+	 */
+	protected function has_elementor_checkout(): bool {
+		if ( $this->checkout_compatibility['has_elementor_checkout'] === null ) {
+			$this->checkout_compatibility['has_elementor_checkout'] = CartCheckoutDetector::has_elementor_checkout();
+		}
+
+		return $this->checkout_compatibility['has_elementor_checkout'];
+	}
+
+	/**
+	 * Checks if the checkout uses classic checkout.
+	 *
+	 * @return bool Whether the checkout uses classic checkout.
+	 */
+	protected function has_classic_checkout(): bool {
+		if ( $this->checkout_compatibility['has_classic_checkout'] === null ) {
+			$this->checkout_compatibility['has_classic_checkout'] = CartCheckoutDetector::has_classic_checkout();
+		}
+
+		return $this->checkout_compatibility['has_classic_checkout'];
+	}
+
+	/**
+	 * Checks if the checkout uses block checkout.
+	 *
+	 * @return bool Whether the checkout uses block checkout.
+	 */
+	protected function has_block_checkout(): bool {
+		if ( $this->checkout_compatibility['has_block_checkout'] === null ) {
+			$this->checkout_compatibility['has_block_checkout'] = CartCheckoutDetector::has_block_checkout();
+		}
+
+		return $this->checkout_compatibility['has_block_checkout'];
+	}
+
+	/**
+	 * Checks if DCC is enabled.
+	 *
+	 * @param Settings $settings The plugin settings container.
+	 * @return bool Whether DCC is enabled.
+	 */
+	protected function is_dcc_enabled( Settings $settings ): bool {
+		if ( $this->is_dcc_enabled === null ) {
+			try {
+				$this->is_dcc_enabled = $settings->has( 'dcc_enabled' ) && $settings->get( 'dcc_enabled' );
+			} catch ( NotFoundException $ignored ) {
+				$this->is_dcc_enabled = false;
+			}
+		}
+
+		return $this->is_dcc_enabled;
 	}
 
 	/**
@@ -60,21 +136,53 @@ class SettingsNoticeGenerator {
 	}
 
 	/**
+	 * Check if there aren't any incompatibilities that would prevent Fastlane from working properly.
+	 *
+	 * @return bool Whether the setup is compatible.
+	 */
+	public function is_fastlane_compatible(): bool {
+		// Check for incompatible plugins.
+		if ( ! empty( $this->incompatible_plugin_names ) ) {
+			return false;
+		}
+
+		// Check for checkout page incompatibilities.
+		if ( $this->has_elementor_checkout() ) {
+			return false;
+		}
+
+		if ( ! $this->has_classic_checkout() && ! $this->has_block_checkout() ) {
+			return false;
+		}
+
+		// No incompatibilities found.
+		return true;
+	}
+
+	/**
 	 * Generates the checkout notice.
 	 *
 	 * @param bool $raw_message Whether to return raw message without HTML wrappers.
 	 * @return string
 	 */
 	public function generate_checkout_notice( bool $raw_message = false ): string {
+		$notice_content = '';
+
+		// Check for checkout incompatibilities.
+		$has_checkout_incompatibility = $this->has_elementor_checkout() ||
+			( ! $this->has_classic_checkout() && ! $this->has_block_checkout() );
+
+		if ( ! $has_checkout_incompatibility ) {
+			return '';
+		}
+
 		$checkout_page_link       = esc_url( get_edit_post_link( wc_get_page_id( 'checkout' ) ) ?? '' );
 		$block_checkout_docs_link = __(
 			'https://woocommerce.com/document/woocommerce-store-editing/customizing-cart-and-checkout/#using-the-cart-and-checkout-blocks',
 			'woocommerce-paypal-payments'
 		);
 
-		$notice_content = '';
-
-		if ( CartCheckoutDetector::has_elementor_checkout() ) {
+		if ( $this->has_elementor_checkout() ) {
 			$notice_content = sprintf(
 			/* translators: %1$s: URL to the Checkout edit page. %2$s: URL to the block checkout docs. */
 				__(
@@ -84,7 +192,7 @@ class SettingsNoticeGenerator {
 				esc_url( $checkout_page_link ),
 				esc_url( $block_checkout_docs_link )
 			);
-		} elseif ( ! CartCheckoutDetector::has_classic_checkout() && ! CartCheckoutDetector::has_block_checkout() ) {
+		} elseif ( ! $this->has_classic_checkout() && ! $this->has_block_checkout() ) {
 			$notice_content = sprintf(
 			/* translators: %1$s: URL to the Checkout edit page. %2$s: URL to the block checkout docs. */
 				__(
@@ -132,22 +240,14 @@ class SettingsNoticeGenerator {
 	 * @return string
 	 */
 	public function generate_settings_conflict_notice( Settings $settings, bool $raw_message = false ) : string {
-		$notice_content = '';
-		$is_dcc_enabled = false;
-
-		try {
-			$is_dcc_enabled = $settings->has( 'dcc_enabled' ) && $settings->get( 'dcc_enabled' );
-			// phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
-		} catch ( NotFoundException $ignored ) {
-			// Never happens.
+		if ( $this->is_dcc_enabled( $settings ) ) {
+			return '';
 		}
 
-		if ( ! $is_dcc_enabled ) {
-			$notice_content = __(
-				'<span class="highlight">Warning:</span> To enable Fastlane and accelerate payments, the <strong>Advanced Card Processing</strong> payment method must also be enabled.',
-				'woocommerce-paypal-payments'
-			);
-		}
+		$notice_content = __(
+			'<span class="highlight">Warning:</span> To enable Fastlane and accelerate payments, the <strong>Advanced Card Processing</strong> payment method must also be enabled.',
+			'woocommerce-paypal-payments'
+		);
 
 		return $this->render_notice( $notice_content, true, $raw_message );
 	}
