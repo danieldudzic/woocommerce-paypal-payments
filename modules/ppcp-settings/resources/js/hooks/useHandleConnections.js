@@ -28,23 +28,19 @@ const ACTIVITIES = {
 };
 
 export const useHandleOnboardingButton = ( isSandbox ) => {
-	const { sandboxOnboardingUrl } = CommonHooks.useSandbox();
-	const { productionOnboardingUrl } = CommonHooks.useProduction();
+	const { onboardingUrl } = isSandbox
+		? CommonHooks.useSandbox()
+		: CommonHooks.useProduction();
 	const { products, options } = OnboardingHooks.useDetermineProducts();
 	const { startActivity } = CommonHooks.useBusyState();
 	const { authenticateWithOAuth } = CommonHooks.useAuthentication();
-	const [ onboardingUrl, setOnboardingUrl ] = useState( '' );
+	const [ onboardingUrlState, setOnboardingUrl ] = useState( '' );
 	const [ scriptLoaded, setScriptLoaded ] = useState( false );
 	const timerRef = useRef( null );
 
 	useEffect( () => {
 		const fetchOnboardingUrl = async () => {
-			let res;
-			if ( isSandbox ) {
-				res = await sandboxOnboardingUrl();
-			} else {
-				res = await productionOnboardingUrl( products, options );
-			}
+			const res = await onboardingUrl( products, options, isSandbox );
 
 			if ( res.success && res.data ) {
 				setOnboardingUrl( res.data );
@@ -54,15 +50,10 @@ export const useHandleOnboardingButton = ( isSandbox ) => {
 		};
 
 		fetchOnboardingUrl();
-	}, [ isSandbox, productionOnboardingUrl, products, sandboxOnboardingUrl ] );
+	}, [ isSandbox, products, options, onboardingUrl ] );
 
 	useEffect( () => {
-		/**
-		 * The partner.js script initializes all onboarding buttons in the onload event.
-		 * When no buttons are present, a JS error is displayed; i.e. we should load this script
-		 * only when the button is ready (with a valid href and data-attributes).
-		 */
-		if ( ! onboardingUrl ) {
+		if ( ! onboardingUrlState ) {
 			return;
 		}
 
@@ -75,14 +66,6 @@ export const useHandleOnboardingButton = ( isSandbox ) => {
 		document.body.appendChild( script );
 
 		return () => {
-			/**
-			 * When the component is unmounted, remove the partner.js script, as well as the
-			 * dynamic scripts it loaded (signup-js and rampConfig-js)
-			 *
-			 * This is important, as the onboarding button is only initialized during the onload
-			 * event of those scripts; i.e. we need to load the scripts again, when the button is
-			 * rendered again.
-			 */
 			const onboardingScripts = [
 				'partner-js',
 				'signup-js',
@@ -97,20 +80,11 @@ export const useHandleOnboardingButton = ( isSandbox ) => {
 				}
 			} );
 		};
-	}, [ onboardingUrl ] );
+	}, [ onboardingUrlState ] );
 
 	const setCompleteHandler = useCallback(
 		( environment ) => {
 			const onComplete = async ( authCode, sharedId ) => {
-				/**
-				 * Until now, the full page is blocked by PayPal's semi-transparent, black overlay.
-				 * But at this point, the overlay is removed, while we process the sharedId and
-				 * authCode via a REST call.
-				 *
-				 * Note: The REST response is irrelevant, since PayPal will most likely refresh this
-				 * frame before the REST endpoint returns a value. Using "withActivity" is more of a
-				 * visual cue to the user that something is still processing in the background.
-				 */
 				startActivity(
 					ACTIVITIES.OAUTH_VERIFY,
 					'Validating the connection details'
@@ -119,7 +93,7 @@ export const useHandleOnboardingButton = ( isSandbox ) => {
 				await authenticateWithOAuth(
 					sharedId,
 					authCode,
-					'sandbox' === environment
+					environment === 'sandbox'
 				);
 			};
 
@@ -132,7 +106,6 @@ export const useHandleOnboardingButton = ( isSandbox ) => {
 				MiniBrowser.onOnboardComplete = onComplete;
 			};
 
-			// Ensure the onComplete handler is not removed by a PayPal init script.
 			timerRef.current = setInterval( addHandler, 250 );
 		},
 		[ authenticateWithOAuth, startActivity ]
@@ -148,7 +121,7 @@ export const useHandleOnboardingButton = ( isSandbox ) => {
 	}, [] );
 
 	return {
-		onboardingUrl,
+		onboardingUrl: onboardingUrlState,
 		scriptLoaded,
 		setCompleteHandler,
 		removeCompleteHandler,

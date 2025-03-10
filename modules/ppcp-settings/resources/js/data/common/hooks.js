@@ -98,23 +98,23 @@ export const useStore = () => {
 export const useSandbox = () => {
 	const { dispatch, usePersistent } = useStoreData();
 	const [ isSandboxMode, setSandboxMode ] = usePersistent( 'useSandbox' );
-	const { sandboxOnboardingUrl, persist } = dispatch;
+	const { onboardingUrl } = dispatch;
 
 	return {
 		isSandboxMode,
 		setSandboxMode: ( state ) => {
 			setSandboxMode( state );
-			return persist();
+			return dispatch.persist();
 		},
-		sandboxOnboardingUrl,
+		onboardingUrl,
 	};
 };
 
 export const useProduction = () => {
 	const { dispatch } = useStoreData();
-	const { productionOnboardingUrl } = dispatch;
+	const { onboardingUrl } = dispatch;
 
-	return { productionOnboardingUrl };
+	return { onboardingUrl };
 };
 
 export const useAuthentication = () => {
