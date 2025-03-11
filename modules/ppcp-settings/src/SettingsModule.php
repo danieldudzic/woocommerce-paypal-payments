@@ -14,6 +14,7 @@ use WooCommerce\PayPalCommerce\ApiClient\Endpoint\PartnersEndpoint;
 use WooCommerce\PayPalCommerce\ApiClient\Exception\PayPalApiException;
 use WooCommerce\PayPalCommerce\ApiClient\Helper\DccApplies;
 use WooCommerce\PayPalCommerce\Applepay\Assets\AppleProductStatus;
+use WooCommerce\PayPalCommerce\Axo\Gateway\AxoGateway;
 use WooCommerce\PayPalCommerce\Googlepay\Helper\ApmProductStatus;
 use WooCommerce\PayPalCommerce\LocalAlternativePaymentMethods\BancontactGateway;
 use WooCommerce\PayPalCommerce\LocalAlternativePaymentMethods\BlikGateway;
@@ -43,6 +44,8 @@ use WooCommerce\PayPalCommerce\Settings\Service\SettingsDataManager;
 use WooCommerce\PayPalCommerce\Settings\DTO\ConfigurationFlagsDTO;
 use WooCommerce\PayPalCommerce\Settings\Enum\ProductChoicesEnum;
 use WooCommerce\PayPalCommerce\Settings\Data\GeneralSettings;
+use WooCommerce\PayPalCommerce\Settings\Data\PaymentSettings;
+use WooCommerce\PayPalCommerce\Axo\Helper\CompatibilityChecker;
 
 /**
  * Class SettingsModule
@@ -575,6 +578,24 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 				}
 
 				return $disable_funding;
+			}
+		);
+
+		// Enable Fastlane after onboarding if the store is compatible.
+		add_action(
+			'woocommerce_paypal_payments_apply_default_configuration',
+			static function () use ( $container ) {
+				$compatibility_checker = $container->get( 'axo.helpers.compatibility-checker' );
+				assert( $compatibility_checker instanceof CompatibilityChecker );
+
+				$payment_settings = $container->get( 'settings.data.payment' );
+				assert( $payment_settings instanceof PaymentSettings );
+
+				if ( $compatibility_checker->is_fastlane_compatible() ) {
+					$payment_settings->toggle_method_state( AxoGateway::ID, true );
+				}
+
+				$payment_settings->save();
 			}
 		);
 
