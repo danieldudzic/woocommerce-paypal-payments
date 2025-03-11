@@ -40,7 +40,7 @@ class CompatibilityChecker {
 	protected ?bool $is_dcc_enabled = null;
 
 	/**
-	 * FastlaneCompatibilityChecker constructor.
+	 * CompatibilityChecker constructor.
 	 *
 	 * @param string[] $incompatible_plugin_names The list of Fastlane incompatible plugin names.
 	 */
