@@ -203,6 +203,10 @@ class PartnerReferralsDataTest extends TestCase {
 
 		$expected['partner_config_override']['show_add_credit_card'] = $expected_changes['show_add_credit_card'];
 
+		if ( $has_subscriptions ) {
+			$expected['operations'][0]['api_integration_preference']['rest_api_integration']['first_party_details']['features'][] = 'BILLING_AGREEMENT';
+		}
+
 		if ( $expected_changes['has_vault_features'] ) {
 			$expected['operations'][0]['api_integration_preference']['rest_api_integration']['first_party_details']['features'][] = 'FUTURE_PAYMENT';
 			$expected['operations'][0]['api_integration_preference']['rest_api_integration']['first_party_details']['features'][] = 'VAULT';
