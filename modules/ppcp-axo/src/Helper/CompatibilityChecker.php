@@ -15,7 +15,7 @@ use WooCommerce\PayPalCommerce\WcGateway\Settings\Settings;
 use WooCommerce\PayPalCommerce\WcGateway\Exception\NotFoundException;
 
 /**
- * Class FastlaneCompatibilityChecker
+ * Class CompatibilityChecker
  */
 class CompatibilityChecker {
 	/**
