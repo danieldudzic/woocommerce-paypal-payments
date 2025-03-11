@@ -106,6 +106,7 @@ class FeaturesDefinition {
 						'action'   => array(
 							'type' => 'tab',
 							'tab'  => 'settings',
+							'section' => 'ppcp-save-paypal-and-venmo',
 						),
 						'showWhen' => 'enabled',
 						'class'    => 'small-button',
@@ -207,7 +208,7 @@ class FeaturesDefinition {
 						'action'   => array(
 							'type'      => 'tab',
 							'tab'       => 'payment_methods',
-							'section'   => 'ppcp-card-payments-card',
+							'section'   => 'ppcp-googlepay',
 							'highlight' => 'ppcp-googlepay',
 							'modal'     => 'ppcp-googlepay',
 						),
