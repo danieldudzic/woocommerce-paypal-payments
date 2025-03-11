@@ -88,7 +88,8 @@ class PartnerReferralsData {
 		);
 
 		if ( true === $use_subscriptions ) {
-			$capabilities[] = 'PAYPAL_WALLET_VAULTING_ADVANCED';
+			$capabilities[]         = 'PAYPAL_WALLET_VAULTING_ADVANCED';
+			$first_party_features[] = 'BILLING_AGREEMENT';
 		}
 
 		// Backwards compatibility. Keep those features in the legacy UI (null-value).
