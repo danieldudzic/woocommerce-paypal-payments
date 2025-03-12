@@ -167,7 +167,8 @@ return array(
 			$container->get( 'api.endpoint.payment-tokens' ),
 			$container->get( 'woocommerce.logger.woocommerce' ),
 			$container->get( 'button.handle-shipping-in-paypal' ),
-			$container->get( 'button.helper.disabled-funding-sources' )
+			$container->get( 'button.helper.disabled-funding-sources' ),
+			$container->get( 'wcgateway.configuration.dcc' )
 		);
 	},
 	'button.url'                                  => static function ( ContainerInterface $container ): string {
