@@ -26,14 +26,14 @@ class DisabledFundingSources {
 	 *
 	 * @var Settings
 	 */
-	private $settings;
+	private Settings $settings;
 
 	/**
 	 * All existing funding sources.
 	 *
 	 * @var array
 	 */
-	private $all_funding_sources;
+	private array $all_funding_sources;
 
 	/**
 	 * DisabledFundingSources constructor.
