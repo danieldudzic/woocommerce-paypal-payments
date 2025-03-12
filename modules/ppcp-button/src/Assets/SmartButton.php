@@ -1455,20 +1455,6 @@ document.querySelector("#payment").before(document.querySelector(".ppcp-messages
 			$disabled_funding_sources[] = 'paylater';
 		}
 
-		$disabled_funding_sources = array_filter(
-			$disabled_funding_sources,
-			/**
-			 * Make sure paypal is not sent in disable funding.
-			 *
-			 * @param string $funding_source The funding_source.
-			 *
-			 * @psalm-suppress MissingClosureParamType
-			 */
-			function( $funding_source ) {
-				return $funding_source !== 'paypal';
-			}
-		);
-
 		if ( count( $disabled_funding_sources ) > 0 ) {
 			$params['disable-funding'] = implode( ',', array_unique( $disabled_funding_sources ) );
 		}
