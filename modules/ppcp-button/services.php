@@ -343,7 +343,8 @@ return array(
 	'button.helper.disabled-funding-sources'      => static function ( ContainerInterface $container ): DisabledFundingSources {
 		return new DisabledFundingSources(
 			$container->get( 'wcgateway.settings' ),
-			$container->get( 'wcgateway.all-funding-sources' )
+			$container->get( 'wcgateway.all-funding-sources' ),
+			$container->get( 'wcgateway.configuration.dcc' )
 		);
 	},
 	'button.is-logged-in'                         => static function ( ContainerInterface $container ): bool {

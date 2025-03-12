@@ -13,6 +13,7 @@ use WooCommerce\PayPalCommerce\WcGateway\Exception\NotFoundException;
 use WooCommerce\PayPalCommerce\WcGateway\Gateway\CardButtonGateway;
 use WooCommerce\PayPalCommerce\WcGateway\Settings\Settings;
 use WooCommerce\PayPalCommerce\WcSubscriptions\FreeTrialHandlerTrait;
+use WooCommerce\PayPalCommerce\WcGateway\Helper\DCCGatewayConfiguration;
 
 /**
  * Class DisabledFundingSources
@@ -36,14 +37,23 @@ class DisabledFundingSources {
 	private array $all_funding_sources;
 
 	/**
+	 * Provides details about the DCC configuration.
+	 *
+	 * @var DCCGatewayConfiguration
+	 */
+	private DCCGatewayConfiguration $dcc_configuration;
+
+	/**
 	 * DisabledFundingSources constructor.
 	 *
-	 * @param Settings $settings            The settings.
-	 * @param array    $all_funding_sources All existing funding sources.
+	 * @param Settings                $settings            The settings.
+	 * @param array                   $all_funding_sources All existing funding sources.
+	 * @param DCCGatewayConfiguration $dcc_configuration   DCC gateway configuration.
 	 */
-	public function __construct( Settings $settings, array $all_funding_sources ) {
+	public function __construct( Settings $settings, array $all_funding_sources, DCCGatewayConfiguration $dcc_configuration ) {
 		$this->settings            = $settings;
 		$this->all_funding_sources = $all_funding_sources;
+		$this->dcc_configuration   = $dcc_configuration;
 	}
 
 	/**
@@ -140,20 +150,18 @@ class DisabledFundingSources {
 	 * @return array
 	 */
 	private function get_payment_method_flags() : array {
-		try {
-			$is_dcc_enabled = $this->settings->get( 'dcc_enabled' );
-		} catch ( NotFoundException $exception ) {
-			$is_dcc_enabled = false;
-		}
+		$is_dcc_enabled     = $this->dcc_configuration->is_enabled();
+		$available_gateways = WC()->payment_gateways->get_available_payment_gateways();
 
-		$available_gateways      = WC()->payment_gateways->get_available_payment_gateways();
+		// TODO: This check does not make much sense in the new UI. The gateway is always available when the "dcc_enabled" flag is true.
 		$is_card_gateway_enabled = isset( $available_gateways[ CardButtonGateway::ID ] );
-		$is_using_cards          = $is_dcc_enabled || $is_card_gateway_enabled;
 
 		return array(
-			'is_dcc_enabled'          => $is_dcc_enabled,
-			'is_card_gateway_enabled' => $is_card_gateway_enabled,
-			'is_using_cards'          => $is_using_cards,
+			// Whether the new Advanced Card Processing gateway is active.
+			'is_dcc_enabled' => $is_dcc_enabled,
+
+			// Whether card payments are generally used (DCC or BCDC).
+			'is_using_cards' => $is_dcc_enabled || $is_card_gateway_enabled,
 		);
 	}
 
@@ -167,17 +175,13 @@ class DisabledFundingSources {
 	 */
 	private function apply_context_rules( array $disable_funding, array $context_flags, array $payment_flags ) : array {
 		if ( $context_flags['is_block_context'] && $payment_flags['is_dcc_enabled'] ) {
-			// Rule 1: Block checkout with DCC - do not load ACDC.
-			if ( ! in_array( 'card', $disable_funding, true ) ) {
-				$disable_funding[] = 'card';
-			}
+			// Rule 1: Block checkout with DCC - do not load card payments.
+			$disable_funding[] = 'card';
 		} elseif ( ! $context_flags['is_checkout_page'] ) {
-			// Rule 2: Non-checkout pages - do not load ACDC.
-			if ( ! in_array( 'card', $disable_funding, true ) ) {
-				$disable_funding[] = 'card';
-			}
+			// Rule 2: Non-checkout pages - do not load card payments.
+			$disable_funding[] = 'card';
 		} elseif ( $context_flags['is_classic_checkout'] && $payment_flags['is_using_cards'] ) {
-			// Rule 3: Standard checkout with card methods - load ACDC.
+			// Rule 3: Standard checkout with card methods - load card payments.
 			$disable_funding = array_filter(
 				$disable_funding,
 				static fn( string $funding_source ) => $funding_source !== 'card'
@@ -225,9 +229,11 @@ class DisabledFundingSources {
 		);
 
 		// Make sure "paypal" is never disabled in the funding-sources.
-		return array_filter(
+		$disable_funding = array_filter(
 			$disable_funding,
 			static fn( string $funding_source ) => $funding_source !== 'paypal'
 		);
+
+		return array_unique( $disable_funding );
 	}
 }

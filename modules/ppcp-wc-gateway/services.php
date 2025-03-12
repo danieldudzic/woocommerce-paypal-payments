@@ -333,7 +333,8 @@ return array(
 			$container->get( 'settings.flag.is-connected' ),
 			$container->get( 'wcgateway.settings' ),
 			$container->get( 'wcgateway.is-wc-payments-page' ),
-			$container->get( 'wcgateway.is-ppcp-settings-page' )
+			$container->get( 'wcgateway.is-ppcp-settings-page' ),
+			$container->get( 'wcgateway.configuration.dcc' )
 		);
 	},
 	'wcgateway.notice.card-button-without-paypal'          => static function ( ContainerInterface $container ): GatewayWithoutPayPalAdminNotice {
@@ -343,6 +344,7 @@ return array(
 			$container->get( 'wcgateway.settings' ),
 			$container->get( 'wcgateway.is-wc-payments-page' ),
 			$container->get( 'wcgateway.is-ppcp-settings-page' ),
+			$container->get( 'wcgateway.configuration.dcc' ),
 			$container->get( 'wcgateway.settings.status' )
 		);
 	},
