@@ -53,19 +53,22 @@ class CardFieldsModule implements ServiceModule, ExtendingModule, ExecutableModu
 		 */
 		add_filter(
 			'woocommerce_paypal_payments_sdk_components_hook',
-			function( $components ) use ( $c ) {
-				if ( ! $c->get( 'wcgateway.configuration.dcc' )->is_enabled() ) {
+			static function( $components ) use ( $c ) {
+				$dcc_config = $c->get( 'wcgateway.configuration.dcc' );
+				assert( $dcc_config instanceof DCCGatewayConfiguration );
+
+				if ( ! $dcc_config->is_enabled() ) {
 					return $components;
 				}
-				if ( in_array( 'hosted-fields', $components, true ) ) {
-					$key = array_search( 'hosted-fields', $components, true );
-					if ( $key !== false ) {
-						unset( $components[ $key ] );
-					}
-				}
+
+				// Enable the new "card-fields" component.
 				$components[] = 'card-fields';
 
-				return $components;
+				// Ensure the older "hosted-fields" component is not loaded.
+				return array_filter(
+					$components,
+					static fn( string $component ) => $component !== 'hosted-fields'
+				);
 			}
 		);
 
