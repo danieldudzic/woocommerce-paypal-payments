@@ -2,106 +2,87 @@
 
 namespace WooCommerce\PayPalCommerce\Tests\E2e;
 
+use WC_Product_Simple;
 use WooCommerce\PayPalCommerce\PayPalSubscriptions\RenewalHandler;
 
-class PayPalSubscriptionsRenewalTest extends TestCase
-{
-	public function test_parent_order()
-	{
-		$c = $this->getContainer();
-		$handler = new RenewalHandler($c->get('woocommerce.logger.woocommerce'));
+class PayPalSubscriptionsRenewalTest extends TestCase {
+	public function test_renewal_order_is_not_created_just_after_receiving_webhook() {
+		$c       = $this->getContainer();
+		$handler = new RenewalHandler( $c->get( 'woocommerce.logger.woocommerce' ) );
 
 		// Simulates receiving webhook 1 minute after subscription start.
-		$subscription = $this->createSubscription('-1 minute');
+		$subscription = $this->createSubscription( '-1 minute' );
 
-		$handler->process([$subscription], 'TRANSACTION-ID');
+		$handler->process( [ $subscription ], 'TRANSACTION-ID' );
 		$renewal = $subscription->get_related_orders( 'ids', array( 'renewal' ) );
-		$this->assertEquals(count($renewal), 0);
+		$this->assertEquals( count( $renewal ), 0 );
 	}
 
-	public function test_renewal_order()
-	{
-		$c = $this->getContainer();
-		$handler = new RenewalHandler($c->get('woocommerce.logger.woocommerce'));
+	public function test_renewal_order_is_created_when_receiving_webhook_nine_hours_later() {
+		$c       = $this->getContainer();
+		$handler = new RenewalHandler( $c->get( 'woocommerce.logger.woocommerce' ) );
 
 		// Simulates receiving webhook 9 hours after subscription start.
-		$subscription = $this->createSubscription('-9 hour');
+		$subscription = $this->createSubscription( '-9 hour' );
 
-		$handler->process([$subscription], 'TRANSACTION-ID');
+		$handler->process( [ $subscription ], 'TRANSACTION-ID' );
 		$renewal = $subscription->get_related_orders( 'ids', array( 'renewal' ) );
-		$this->assertEquals(count($renewal), 1);
+		$this->assertEquals( count( $renewal ), 1 );
 	}
 
-	private function createSubscription(string $startDate)
-	{
-		$args = [
-			'method' => 'POST',
-			'headers' => [
-				'Authorization' => 'Basic ' . base64_encode( 'admin:admin' ),
-				'Content-Type' => 'application/json',
+	private function createSubscription( string $startDate ) {
+		$order = wc_create_order( [
+			'customer_id'    => 1,
+			'set_paid'       => true,
+			'payment_method' => 'ppcp-gateway',
+			'billing'        => [
+				'first_name' => 'John',
+				'last_name'  => 'Doe',
+				'address_1'  => '969 Market',
+				'address_2'  => '',
+				'city'       => 'San Francisco',
+				'state'      => 'CA',
+				'postcode'   => '94103',
+				'country'    => 'US',
+				'email'      => 'john.doe@example.com',
+				'phone'      => '(555) 555-5555'
 			],
-			'body' => wp_json_encode([
-				'customer_id' => 1,
-				'set_paid' => true,
-				'payment_method' => 'ppcp-gateway',
-				'billing' => [
-					'first_name' => 'John',
-					'last_name' => 'Doe',
-					'address_1' => '969 Market',
-					'address_2' => '',
-					'city' => 'San Francisco',
-					'state' => 'CA',
-					'postcode' => '94103',
-					'country' => 'US',
-					'email' => 'john.doe@example.com',
-					'phone' => '(555) 555-5555'
-				],
-				'line_items' => [
-					[
-						'product_id' => 156,
-						'quantity' => 1
-					]
-				],
-			]),
-		];
-
-		$response = wp_remote_request(
-			'https://woocommerce-paypal-payments.ddev.site/wp-json/wc/v3/orders',
-			$args
-		);
-
-		$body = json_decode( $response['body'] );
-
-		$args = [
-			'method' => 'POST',
-			'headers' => [
-				'Authorization' => 'Basic ' . base64_encode( 'admin:admin' ),
-				'Content-Type' => 'application/json',
+			'line_items'     => [
+				[
+					'product_id' => 42,
+					'quantity'   => 1
+				]
 			],
-			'body' => wp_json_encode([
-				'start_date' => gmdate( 'Y-m-d H:i:s', strtotime($startDate) ),
-				'parent_id' => $body->id,
-				'customer_id' => 1,
-				'status' => 'active',
-				'billing_period' => 'day',
-				'billing_interval' => 1,
-				'payment_method' => 'ppcp-gateway',
-				'line_items' => [
-					[
-						'product_id' => $_ENV['PAYPAL_SUBSCRIPTIONS_PRODUCT_ID'],
-						'quantity' => 1
-					]
-				],
-			]),
-		];
+		] );
 
-		$response = wp_remote_request(
-			'https://woocommerce-paypal-payments.ddev.site/wp-json/wc/v3/subscriptions?per_page=1',
-			$args
-		);
+		$product = new WC_Product_Simple();
+		$product->set_props([
+			'name'          => 'Dummy Product',
+			'regular_price' => 10,
+			'price'         => 10,
+			'sku'           => 'DUMMY SKU',
+			'manage_stock'  => false,
+			'tax_status'    => 'taxable',
+			'downloadable'  => false,
+			'virtual'       => false,
+			'stock_status'  => 'instock',
+			'weight'        => '1.1',
+		]);
 
-		$body = json_decode( $response['body'] );
-
-		return wcs_get_subscription($body->id);
+		return wcs_create_subscription([
+			'start_date' => gmdate( 'Y-m-d H:i:s', strtotime($startDate) ),
+			'parent_id' => $order->get_id(),
+			'customer_id' => 1,
+			'status' => 'active',
+			'billing_period' => 'day',
+			'billing_interval' => 1,
+			'payment_method' => 'ppcp-gateway',
+			'line_items' => [
+				[
+					'product_id' => $product->get_id(),
+					'quantity' => 1
+				]
+			],
+		]);
 	}
 }
