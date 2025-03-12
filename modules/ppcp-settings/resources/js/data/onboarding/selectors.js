@@ -67,6 +67,14 @@ export const determineProductsAndCaps = ( state ) => {
 		 * The store uses the Express-checkout product.
 		 */
 		apiModules.push( PAYPAL_PRODUCTS.BCDC );
+
+		if ( products?.includes( PRODUCT_TYPES.SUBSCRIPTIONS ) ) {
+			options.useSubscriptions = true;
+		}
+
+		if ( canUseVaulting ) {
+			apiModules.push( PAYPAL_PRODUCTS.VAULTING );
+		}
 	} else if ( isCasualSeller ) {
 		/**
 		 * Branch 2: Merchant has no business.
