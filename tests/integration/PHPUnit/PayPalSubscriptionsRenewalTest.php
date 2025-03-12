@@ -1,6 +1,6 @@
 <?php
 
-namespace WooCommerce\PayPalCommerce\Tests\E2e;
+namespace WooCommerce\PayPalCommerce\Tests\Integration;
 
 use WC_Product_Simple;
 use WooCommerce\PayPalCommerce\PayPalSubscriptions\RenewalHandler;

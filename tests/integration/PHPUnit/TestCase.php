@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace WooCommerce\PayPalCommerce\Tests\E2e;
+namespace WooCommerce\PayPalCommerce\Tests\Integration;
 
 use WooCommerce\PayPalCommerce\PPCP;
 use WooCommerce\PayPalCommerce\Vendor\Psr\Container\ContainerInterface;
