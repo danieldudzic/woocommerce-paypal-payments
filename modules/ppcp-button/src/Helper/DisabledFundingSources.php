@@ -58,11 +58,13 @@ class DisabledFundingSources {
 			? $this->settings->get( 'disable_funding' )
 			: array();
 
-		$is_dcc_enabled = $this->settings->has( 'dcc_enabled' ) && $this->settings->get( 'dcc_enabled' );
+		$is_dcc_enabled   = $this->settings->has( 'dcc_enabled' ) && $this->settings->get( 'dcc_enabled' );
+		$is_checkout      = is_checkout();
+		$is_block_context = in_array( $context, array( 'checkout-block', 'cart-block' ), true );
 
 		if (
-			! is_checkout()
-			|| ( $is_dcc_enabled && in_array( $context, array( 'checkout-block', 'cart-block' ), true ) )
+			! $is_checkout
+			|| ( $is_dcc_enabled && $is_block_context )
 		) {
 			$disable_funding[] = 'card';
 		}
