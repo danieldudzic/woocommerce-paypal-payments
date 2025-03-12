@@ -2,6 +2,10 @@
 /**
  * Encapsulates all configuration details for "Credit & Debit Card" gateway.
  *
+ * The DCC gateway is also referred to as ACDC or "Advanced Card Processing".
+ * When active, we load the newer "card-fields" SDK component, instead of the
+ * old "hosted-fields" component.
+ *
  * @package WooCommerce\PayPalCommerce\WcGateway\Helper
  */
 
@@ -18,6 +22,8 @@ use WooCommerce\PayPalCommerce\Axo\Helper\PropertiesDictionary;
  *
  * This class should not implement business logic, but only provide a convenient
  * way to access gateway settings by wrapping the Settings instance.
+ *
+ * DI container: 'wcgateway.configuration.dcc'
  */
 class DCCGatewayConfiguration {
 	/**
@@ -74,9 +80,8 @@ class DCCGatewayConfiguration {
 	/**
 	 * Initializes the gateway details based on the provided Settings instance.
 	 *
-	 * @throws NotFoundException If an expected gateway setting is not found.
-	 *
 	 * @param Settings $settings Plugin settings instance.
+	 * @throws NotFoundException If an expected gateway setting is not found.
 	 */
 	public function __construct( Settings $settings ) {
 		$this->settings = $settings;
