@@ -394,7 +394,7 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 					unset( $payment_methods[ OXXO::ID ] );
 				}
 
-				// Unset Pay Unon Invoice if merchant country is not Germany.
+				// Unset Pay Upon Invoice if merchant country is not Germany.
 				if ( 'DE' !== $merchant_country ) {
 					unset( $payment_methods[ PayUponInvoiceGateway::ID ] );
 				}
