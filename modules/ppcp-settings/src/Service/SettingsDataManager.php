@@ -266,12 +266,7 @@ class SettingsDataManager {
 
 		if ( $flags->is_business_seller && $flags->use_subscriptions ) {
 			$this->payment_settings->set_save_paypal_and_venmo( true );
-
-			if ( $flags->use_card_payments ) {
-				$this->payment_settings->set_save_card_details( true );
-			} else {
-				$this->payment_settings->set_save_card_details( false );
-			}
+			$this->payment_settings->set_save_card_details( true );
 		}
 
 		$this->payment_settings->save();
