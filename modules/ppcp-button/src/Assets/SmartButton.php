@@ -1575,6 +1575,7 @@ document.querySelector("#payment").before(document.querySelector(".ppcp-messages
 		if ( $this->dcc_is_enabled() ) {
 			$components[] = 'hosted-fields';
 		}
+
 		/**
 		 * Filter to add further components from the extensions.
 		 *
@@ -1597,24 +1598,27 @@ document.querySelector("#payment").before(document.querySelector(".ppcp-messages
 	 *
 	 * @return bool
 	 */
-	private function dcc_is_enabled(): bool {
-		if ( ! is_checkout() ) {
+	private function dcc_is_enabled() : bool {
+		// Card payments are only available on the checkout page, and for certain seller countries.
+		if ( ! is_checkout() || ! $this->dcc_applies->for_country_currency() ) {
 			return false;
 		}
-		if ( ! $this->dcc_applies->for_country_currency() ) {
-			return false;
-		}
-		$keys = array(
-			'client_id',
-			'client_secret',
-			'dcc_enabled',
-		);
-		foreach ( $keys as $key ) {
-			if ( ! $this->settings->has( $key ) || ! $this->settings->get( $key ) ) {
+
+		try {
+			// Bail, if the merchant is not fully onboarded yet.
+			if (
+				! $this->settings->get( 'client_id' )
+				|| ! $this->settings->get( 'client_secret' )
+			) {
 				return false;
 			}
+
+			// The actual condition that must be met.
+			return (bool) $this->settings->get( 'dcc_enabled' );
+		} catch ( NotFoundException $e ) {
+			// Bail, if the settings DB entries are missing.
+			return false;
 		}
-		return true;
 	}
 
 	/**
