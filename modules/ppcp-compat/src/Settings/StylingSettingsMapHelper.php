@@ -27,7 +27,7 @@ class StylingSettingsMapHelper {
 
 	use ContextTrait;
 
-	protected const BUTTON_NAMES = array( GooglePayGateway::ID, ApplePayGateway::ID, 'pay-later' );
+	protected const BUTTON_NAMES = array( GooglePayGateway::ID, ApplePayGateway::ID );
 
 	/**
 	 * Maps old setting keys to new setting style names.
