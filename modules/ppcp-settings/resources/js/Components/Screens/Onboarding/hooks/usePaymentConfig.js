@@ -28,6 +28,7 @@ const defaultConfig = {
 
 	// Extended: Items on right side for ACDC-flow.
 	extendedMethods: [
+		{ name: 'CardFields', Component: CardFields },
 		{ name: 'DigitalWallets', Component: DigitalWallets },
 		{ name: 'APMs', Component: AlternativePaymentMethods },
 	],
@@ -41,6 +42,26 @@ const defaultConfig = {
 		'with additional application',
 		'woocommerce-paypal-payments'
 	),
+
+	// PayPal Checkout description.
+	paypalCheckoutDescription: __(
+		'Our all-in-one checkout solution lets you offer PayPal, Pay Later options, and more to help maximise conversion',
+		'woocommerce-paypal-payments'
+	),
+
+	// Icon groups.
+	bcdcIcons: [ 'paypal', 'visa', 'mastercard', 'amex', 'discover' ],
+	acdcIcons: [
+		'paypal',
+		'visa',
+		'mastercard',
+		'amex',
+		'discover',
+		'apple-pay',
+		'google-pay',
+		'ideal',
+		'bancontact',
+	],
 };
 
 const countrySpecificConfigs = {
@@ -60,16 +81,51 @@ const countrySpecificConfigs = {
 			{ name: 'APMs', Component: AlternativePaymentMethods },
 			{ name: 'Fastlane', Component: Fastlane },
 		],
+		paypalCheckoutDescription: __(
+			'Our all-in-one checkout solution lets you offer PayPal, Venmo, Pay Later options, and more to help maximise conversion',
+			'woocommerce-paypal-payments'
+		),
 		optionalTitle: __( 'Expanded Checkout', 'woocommerce-paypal-payments' ),
 		optionalDescription: __(
 			'Accept debit/credit cards, PayPal, Apple Pay, Google Pay, and more. Note: Additional application required for more methods',
 			'woocommerce-paypal-payments'
 		),
+		bcdcIcons: [
+			'paypal',
+			'venmo',
+			'visa',
+			'mastercard',
+			'amex',
+			'discover',
+		],
+		acdcIcons: [
+			'paypal',
+			'venmo',
+			'visa',
+			'mastercard',
+			'amex',
+			'discover',
+			'apple-pay',
+			'google-pay',
+			'ideal',
+			'bancontact',
+		],
 	},
 	GB: {
 		includedMethods: [
 			{ name: 'PayWithPayPal', Component: PayWithPayPal },
 			{ name: 'PayInThree', Component: PayInThree },
+		],
+		extendedMethods: [
+			{ name: 'CardFields', Component: CardFields },
+			{ name: 'DigitalWallets', Component: DigitalWallets },
+			{ name: 'APMs', Component: AlternativePaymentMethods },
+		],
+	},
+	MX: {
+		extendedMethods: [
+			{ name: 'CardFields', Component: CardFields },
+			{ name: 'APMs', Component: AlternativePaymentMethods },
 		],
 	},
 };
@@ -80,21 +136,11 @@ const filterMethods = ( methods, conditions ) => {
 	);
 };
 
-export const usePaymentConfig = (
-	country,
-	isPayLater,
-	useAcdc,
-	isFastlane
-) => {
+export const usePaymentConfig = ( country, useAcdc, isFastlane ) => {
 	return useMemo( () => {
 		const countryConfig = countrySpecificConfigs[ country ] || {};
 		const config = { ...defaultConfig, ...countryConfig };
 		const learnMoreConfig = learnMoreLinks[ country ] || {};
-
-		// Filter the "left side" list. PayLater is conditional.
-		const includedMethods = filterMethods( config.includedMethods, [
-			( method ) => isPayLater || method.name !== 'PayLater',
-		] );
 
 		// Determine the "right side" items: Either BCDC or ACDC items.
 		const optionalMethods = useAcdc
@@ -108,9 +154,10 @@ export const usePaymentConfig = (
 
 		return {
 			...config,
-			includedMethods,
 			optionalMethods: availableOptionalMethods,
 			learnMoreConfig,
+			acdcIcons: config.acdcIcons,
+			bcdcIcons: config.bcdcIcons,
 		};
-	}, [ country, isPayLater, useAcdc, isFastlane ] );
+	}, [ country, useAcdc, isFastlane ] );
 };
