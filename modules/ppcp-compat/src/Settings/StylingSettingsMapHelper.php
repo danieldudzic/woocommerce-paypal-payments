@@ -95,7 +95,7 @@ class StylingSettingsMapHelper {
 				return $this->mapped_button_enabled_value( $styling_models, ApplePayGateway::ID );
 
 			case 'pay_later_button_enabled':
-				return $this->mapped_button_enabled_value( $styling_models, 'pay-later' );
+				return $this->mapped_pay_later_button_enabled_value( $styling_models, $payment_settings );
 
 			default:
 				foreach ( $this->locations_map() as $old_location_name => $new_location_name ) {
