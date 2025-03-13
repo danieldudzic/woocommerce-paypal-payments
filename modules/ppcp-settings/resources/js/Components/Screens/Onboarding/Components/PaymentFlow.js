@@ -8,7 +8,6 @@ import { usePaymentConfig } from '../hooks/usePaymentConfig';
 const PaymentFlow = ( {
 	useAcdc,
 	isFastlane,
-	isPayLater,
 	storeCountry,
 	onlyOptional = false,
 } ) => {
@@ -18,7 +17,8 @@ const PaymentFlow = ( {
 		optionalTitle,
 		optionalDescription,
 		learnMoreConfig,
-	} = usePaymentConfig( storeCountry, isPayLater, useAcdc, isFastlane );
+		paypalCheckoutDescription,
+	} = usePaymentConfig( storeCountry, useAcdc, isFastlane );
 
 	if ( onlyOptional ) {
 		return (
@@ -34,6 +34,7 @@ const PaymentFlow = ( {
 			<DefaultMethodsSection
 				methods={ includedMethods }
 				learnMoreConfig={ learnMoreConfig }
+				paypalCheckoutDescription={ paypalCheckoutDescription }
 			/>
 
 			<OptionalMethodsSection
@@ -48,10 +49,17 @@ const PaymentFlow = ( {
 
 export default PaymentFlow;
 
-const DefaultMethodsSection = ( { methods, learnMoreConfig } ) => {
+const DefaultMethodsSection = ( {
+	methods,
+	learnMoreConfig,
+	paypalCheckoutDescription,
+} ) => {
 	return (
 		<div className="ppcp-r-welcome-docs__col">
-			<PayPalCheckout learnMore={ learnMoreConfig.PayPalCheckout } />
+			<PayPalCheckout
+				learnMore={ learnMoreConfig.PayPalCheckout }
+				description={ paypalCheckoutDescription }
+			/>
 			<BadgeBox
 				title={ __(
 					'Included in PayPal Checkout',
