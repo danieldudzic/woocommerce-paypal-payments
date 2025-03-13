@@ -10,8 +10,6 @@ declare( strict_types = 1 );
 namespace WooCommerce\PayPalCommerce\Settings;
 
 use WC_Payment_Gateway;
-use WooCommerce\PayPalCommerce\ApiClient\Endpoint\PartnersEndpoint;
-use WooCommerce\PayPalCommerce\ApiClient\Exception\PayPalApiException;
 use WooCommerce\PayPalCommerce\ApiClient\Helper\DccApplies;
 use WooCommerce\PayPalCommerce\Applepay\Assets\AppleProductStatus;
 use WooCommerce\PayPalCommerce\Axo\Gateway\AxoGateway;
@@ -37,6 +35,7 @@ use WooCommerce\PayPalCommerce\Vendor\Psr\Container\ContainerInterface;
 use WooCommerce\PayPalCommerce\WcGateway\Gateway\CardButtonGateway;
 use WooCommerce\PayPalCommerce\WcGateway\Gateway\CreditCardGateway;
 use WooCommerce\PayPalCommerce\WcGateway\Gateway\OXXO\OXXO;
+use WooCommerce\PayPalCommerce\WcGateway\Gateway\PayPalGateway;
 use WooCommerce\PayPalCommerce\WcGateway\Gateway\PayUponInvoice\PayUponInvoiceGateway;
 use WooCommerce\PayPalCommerce\WcGateway\Helper\DCCProductStatus;
 use WooCommerce\PayPalCommerce\WcGateway\Settings\Settings;
@@ -427,7 +426,7 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 			 *
 			 * @psalm-suppress MissingClosureParamType
 			 */
-			static function ( $methods ) use ( $container ) : array {
+			function ( $methods ) use ( $container ) : array {
 				if ( ! is_array( $methods ) ) {
 					return $methods;
 				}
@@ -449,8 +448,29 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 				$methods[] = $applepay_gateway;
 				$methods[] = $axo_gateway;
 
+				$is_payments_page = $container->get( 'wcgateway.is-wc-payments-page' );
+
+				if ( $is_payments_page ) {
+					$methods = array_filter(
+						$methods,
+						function ( $method ): bool {
+							if ( ! is_object( $method ) || $method->id === PayPalGateway::ID ) {
+								return true;
+							}
+
+							if ( ! $this->is_gateway_enabled( $method->id ) ) {
+								return false;
+							}
+
+							return true;
+						}
+					);
+				}
+
+
 				return $methods;
-			}
+			},
+			99
 		);
 
 		// Remove the Fastlane gateway if the customer is logged in, ensuring that we don't interfere with the Fastlane gateway status in the settings UI.
@@ -625,5 +645,18 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 	 */
 	protected function render_content() : void {
 		echo '<div id="ppcp-settings-container"></div>';
+	}
+
+	/**
+	 * Checks if the payment gateway with the given name is enabled.
+	 *
+	 * @param string $gateway_name The gateway name.
+	 * @return bool True if the payment gateway with the given name is enabled, otherwise false.
+	 */
+	protected function is_gateway_enabled( string $gateway_name ): bool {
+		$gateway_settings = get_option( "woocommerce_{$gateway_name}_settings", array() );
+		$gateway_enabled  = $gateway_settings['enabled'] ?? false;
+
+		return $gateway_enabled === 'yes';
 	}
 }
