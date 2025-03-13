@@ -467,7 +467,6 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 					);
 				}
 
-
 				return $methods;
 			},
 			99
