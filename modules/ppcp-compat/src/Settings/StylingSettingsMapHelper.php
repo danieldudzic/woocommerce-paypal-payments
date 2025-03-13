@@ -255,6 +255,33 @@ class StylingSettingsMapHelper {
 	}
 
 	/**
+	 * Retrieves the mapped enabled or disabled PayLater button value from the new settings.
+	 *
+	 * @param LocationStylingDTO[]   $styling_models The list of location styling models.
+	 * @param AbstractDataModel|null $payment_settings The payment settings model.
+	 * @return int|null The enabled (1) or disabled (0) state or null if it should fall back to old settings value.
+	 */
+	protected function mapped_pay_later_button_enabled_value( array $styling_models, ?AbstractDataModel $payment_settings ): ?int {
+
+		if ( ! $payment_settings instanceof PaymentSettings ) {
+			return null;
+		}
+
+		$locations_to_context_map = $this->current_context_to_new_button_location_map();
+		$current_context          = $locations_to_context_map[ $this->context() ] ?? '';
+
+		foreach ( $styling_models as $model ) {
+			if ( $model->enabled && $model->location === $current_context ) {
+				if ( in_array( 'pay-later', $model->methods, true ) && $payment_settings->get_paylater_enabled() ) {
+					return 1;
+				}
+			}
+		}
+
+		return 0;
+	}
+
+	/**
 	 * Retrieves the mapped enabled or disabled button value from the new settings.
 	 *
 	 * @param LocationStylingDTO[] $styling_models The list of location styling models.
