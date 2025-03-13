@@ -116,11 +116,6 @@ const countrySpecificConfigs = {
 			{ name: 'PayWithPayPal', Component: PayWithPayPal },
 			{ name: 'PayInThree', Component: PayInThree },
 		],
-		extendedMethods: [
-			{ name: 'CardFields', Component: CardFields },
-			{ name: 'DigitalWallets', Component: DigitalWallets },
-			{ name: 'APMs', Component: AlternativePaymentMethods },
-		],
 	},
 	MX: {
 		extendedMethods: [
