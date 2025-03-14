@@ -10,7 +10,6 @@ declare( strict_types = 1 );
 namespace WooCommerce\PayPalCommerce\Button\Helper;
 
 use WooCommerce\PayPalCommerce\WcGateway\Exception\NotFoundException;
-use WooCommerce\PayPalCommerce\WcGateway\Gateway\CardButtonGateway;
 use WooCommerce\PayPalCommerce\WcGateway\Settings\Settings;
 use WooCommerce\PayPalCommerce\WcSubscriptions\FreeTrialHandlerTrait;
 use WooCommerce\PayPalCommerce\WcGateway\Helper\CardPaymentsConfiguration;
@@ -70,19 +69,14 @@ class DisabledFundingSources {
 			return $this->sanitize_and_filter_sources( $disable_funding );
 		}
 
-		$disable_funding = $this->get_sources_from_settings();
-		$payment_flags   = $this->get_payment_method_flags();
-		$context_flags   = $this->get_context_flags( $context );
+		$disable_funding  = $this->get_sources_from_settings();
+		$is_block_context = in_array( $context, array( 'checkout-block', 'cart-block' ), true );
 
 		// Apply rules based on context and payment methods.
-		$disable_funding = $this->apply_context_rules(
-			$disable_funding,
-			$context_flags,
-			$payment_flags
-		);
+		$disable_funding = $this->apply_context_rules( $disable_funding );
 
 		// Apply special rules for block checkout.
-		if ( $context_flags['is_block_context'] ) {
+		if ( $is_block_context ) {
 			$disable_funding = $this->apply_block_checkout_rules( $disable_funding );
 		}
 
@@ -96,9 +90,7 @@ class DisabledFundingSources {
 	 */
 	private function get_sources_from_settings() : array {
 		try {
-			return $this->settings->has( 'disable_funding' )
-				? $this->settings->get( 'disable_funding' )
-				: array();
+			return $this->settings->get( 'disable_funding' );
 		} catch ( NotFoundException $exception ) {
 			return array();
 		}
@@ -113,10 +105,11 @@ class DisabledFundingSources {
 	 * @return array
 	 */
 	private function get_sources_for_free_trial() : array {
+		// Disable all sources.
 		$disable_funding = array_keys( $this->all_funding_sources );
-		$payment_flags   = $this->get_payment_method_flags();
 
-		if ( $payment_flags['is_using_cards'] ) {
+		if ( is_checkout() && $this->dcc_configuration->is_bcdc_enabled() ) {
+			// If BCDC is used, re-enable card payments.
 			$disable_funding = array_filter(
 				$disable_funding,
 				static fn( string $funding_source ) => $funding_source !== 'card'
@@ -124,72 +117,27 @@ class DisabledFundingSources {
 		}
 
 		return $disable_funding;
-	}
-
-	/**
-	 * Gets context flags based on the current page and context.
-	 *
-	 * @param string $context The context.
-	 * @return array
-	 */
-	private function get_context_flags( string $context ) : array {
-		$is_checkout_page    = is_checkout();
-		$is_block_context    = in_array( $context, array( 'checkout-block', 'cart-block' ), true );
-		$is_classic_checkout = $is_checkout_page && ! $is_block_context;
-
-		return array(
-			'is_checkout_page'    => $is_checkout_page,
-			'is_block_context'    => $is_block_context,
-			'is_classic_checkout' => $is_classic_checkout,
-		);
-	}
-
-	/**
-	 * Gets payment method availability flags.
-	 *
-	 * @return array
-	 */
-	private function get_payment_method_flags() : array {
-		$is_dcc_enabled     = $this->dcc_configuration->is_enabled();
-		$available_gateways = WC()->payment_gateways->get_available_payment_gateways();
-
-		// TODO: This check does not make much sense in the new UI. The gateway is always available when the "dcc_enabled" flag is true.
-		// Review and adjust when removing #legacy-ui code.
-		$is_card_gateway_enabled = isset( $available_gateways[ CardButtonGateway::ID ] );
-
-		return array(
-			// Whether the new Advanced Card Processing gateway is active.
-			'is_dcc_enabled' => $is_dcc_enabled,
-
-			// Whether card payments are generally used (DCC or BCDC).
-			'is_using_cards' => $is_dcc_enabled || $is_card_gateway_enabled,
-		);
 	}
 
 	/**
 	 * Applies rules based on context and payment methods.
 	 *
 	 * @param array $disable_funding The current disabled funding sources.
-	 * @param array $context_flags   Context flags.
-	 * @param array $payment_flags   Payment method flags.
 	 * @return array
 	 */
-	private function apply_context_rules( array $disable_funding, array $context_flags, array $payment_flags ) : array {
-		if ( $context_flags['is_block_context'] && $payment_flags['is_dcc_enabled'] ) {
-			// Rule 1: Block checkout with DCC - do not load card payments.
+	private function apply_context_rules( array $disable_funding ) : array {
+		if ( ! is_checkout() || ! $this->dcc_configuration->is_bcdc_enabled() ) {
+			// Non-checkout pages, or BCDC disabled: Don't load card payments.
 			$disable_funding[] = 'card';
-		} elseif ( ! $context_flags['is_checkout_page'] ) {
-			// Rule 2: Non-checkout pages - do not load card payments.
-			$disable_funding[] = 'card';
-		} elseif ( $context_flags['is_classic_checkout'] && $payment_flags['is_using_cards'] ) {
-			// Rule 3: Standard checkout with card methods - load card payments.
-			$disable_funding = array_filter(
-				$disable_funding,
-				static fn( string $funding_source ) => $funding_source !== 'card'
-			);
+
+			return $disable_funding;
 		}
 
-		return $disable_funding;
+		// A checkout page and BCDC is enabled: Load card payments.
+		return array_filter(
+			$disable_funding,
+			static fn( string $funding_source ) => $funding_source !== 'card'
+		);
 	}
 
 	/**
