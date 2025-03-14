@@ -428,7 +428,8 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 			 * @psalm-suppress MissingClosureParamType
 			 */
 			function ( $methods ) use ( $container ) : array {
-				if ( ! is_array( $methods ) ) {
+				$is_onboarded = $container->get( 'api.merchant_id' ) !== '';
+				if ( ! is_array( $methods ) || ! $is_onboarded ) {
 					return $methods;
 				}
 
