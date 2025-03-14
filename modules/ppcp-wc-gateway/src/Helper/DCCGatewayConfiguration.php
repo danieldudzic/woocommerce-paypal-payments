@@ -54,6 +54,13 @@ class DCCGatewayConfiguration {
 	private Settings $settings;
 
 	/**
+	 * Indicates whether the merchant uses ACDC (true) or BCDC (false).
+	 *
+	 * @var bool
+	 */
+	private bool $use_acdc = false;
+
+	/**
 	 * Whether the Credit Card gateway is enabled.
 	 *
 	 * @var bool
@@ -193,14 +200,42 @@ class DCCGatewayConfiguration {
 	}
 
 	/**
-	 * Whether the "Advanced Card Payments" gateway is enabled.
+	 * Indicated whether the merchant is in ACDC mode.
+	 *
+	 * @return bool
+	 */
+	public function use_acdc() : bool {
+		return $this->use_acdc;
+	}
+
+	/**
+	 * Whether card payments are enabled.
 	 *
 	 * Requires PayPal features to be enabled.
 	 *
+	 * @internal Use "is_acdc_enabled()" or "is_bcdc_enabled()" instead.
 	 * @return bool
 	 */
 	public function is_enabled() : bool {
 		return $this->is_enabled;
+	}
+
+	/**
+	 * True, if the card payments are enabled and the merchant is in ACDC mode.
+	 *
+	 * @return bool
+	 */
+	public function is_acdc_enabled() : bool {
+		return $this->is_enabled() && $this->use_acdc();
+	}
+
+	/**
+	 * True, if card payments are enabled and the merchant is in BCDC mode.
+	 *
+	 * @return bool
+	 */
+	public function is_bcdc_enabled() : bool {
+		return $this->is_enabled() && ! $this->use_acdc();
 	}
 
 	/**
