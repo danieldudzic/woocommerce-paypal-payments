@@ -154,6 +154,7 @@ class DisabledFundingSources {
 		$available_gateways = WC()->payment_gateways->get_available_payment_gateways();
 
 		// TODO: This check does not make much sense in the new UI. The gateway is always available when the "dcc_enabled" flag is true.
+		// Review and adjust when removing #legacy-ui code.
 		$is_card_gateway_enabled = isset( $available_gateways[ CardButtonGateway::ID ] );
 
 		return array(
