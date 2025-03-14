@@ -46,14 +46,9 @@ class CardFieldsModule implements ServiceModule, ExtendingModule, ExecutableModu
 			return true;
 		}
 
-		/**
-		 * Param types removed to avoid third-party issues.
-		 *
-		 * @psalm-suppress MissingClosureParamType
-		 */
 		add_filter(
 			'woocommerce_paypal_payments_sdk_components_hook',
-			static function( $components ) use ( $c ) {
+			static function( array $components ) use ( $c ) {
 				$dcc_config = $c->get( 'wcgateway.configuration.card-configuration' );
 				assert( $dcc_config instanceof CardPaymentsConfiguration );
 
