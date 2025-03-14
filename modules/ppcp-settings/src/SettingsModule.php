@@ -428,30 +428,27 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 			 * @psalm-suppress MissingClosureParamType
 			 */
 			function ( $methods ) use ( $container ) : array {
-				if ( ! is_array( $methods ) ) {
+				$is_onboarded = $container->get( 'api.merchant_id' ) !== '';
+				if ( ! is_array( $methods ) || ! $is_onboarded ) {
 					return $methods;
 				}
 
-				$is_onboarded = $container->get( 'api.merchant_id' ) !== '';
+				$card_button_gateway = $container->get( 'wcgateway.card-button-gateway' );
+				assert( $card_button_gateway instanceof CardButtonGateway );
 
-				if ( $is_onboarded ) {
-					$card_button_gateway = $container->get( 'wcgateway.card-button-gateway' );
-					assert( $card_button_gateway instanceof CardButtonGateway );
+				$googlepay_gateway = $container->get( 'googlepay.wc-gateway' );
+				assert( $googlepay_gateway instanceof WC_Payment_Gateway );
 
-					$googlepay_gateway = $container->get( 'googlepay.wc-gateway' );
-					assert( $googlepay_gateway instanceof WC_Payment_Gateway );
+				$applepay_gateway = $container->get( 'applepay.wc-gateway' );
+				assert( $applepay_gateway instanceof WC_Payment_Gateway );
 
-					$applepay_gateway = $container->get( 'applepay.wc-gateway' );
-					assert( $applepay_gateway instanceof WC_Payment_Gateway );
+				$axo_gateway = $container->get( 'axo.gateway' );
+				assert( $axo_gateway instanceof WC_Payment_Gateway );
 
-					$axo_gateway = $container->get( 'axo.gateway' );
-					assert( $axo_gateway instanceof WC_Payment_Gateway );
-
-					$methods[] = $card_button_gateway;
-					$methods[] = $googlepay_gateway;
-					$methods[] = $applepay_gateway;
-					$methods[] = $axo_gateway;
-				}
+				$methods[] = $card_button_gateway;
+				$methods[] = $googlepay_gateway;
+				$methods[] = $applepay_gateway;
+				$methods[] = $axo_gateway;
 
 				$is_payments_page = $container->get( 'wcgateway.is-wc-payments-page' );
 				$all_gateway_ids  = $container->get( 'settings.config.all-gateway-ids' );
