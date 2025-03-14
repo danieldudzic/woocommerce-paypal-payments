@@ -16,6 +16,7 @@ namespace WooCommerce\PayPalCommerce\WcGateway\Helper;
 use WooCommerce\PayPalCommerce\WcGateway\Settings\Settings;
 use WooCommerce\PayPalCommerce\WcGateway\Exception\NotFoundException;
 use WooCommerce\PayPalCommerce\Axo\Helper\PropertiesDictionary;
+use WooCommerce\PayPalCommerce\ApiClient\Helper\DccApplies;
 
 /**
  * A configuration proxy service that provides details about credit card gateway
@@ -51,6 +52,13 @@ class CardPaymentsConfiguration {
 	 * @var Settings
 	 */
 	private Settings $settings;
+
+	/**
+	 * Helper to determine availability of DCC features.
+	 *
+	 * @var DccApplies
+	 */
+	private DccApplies $dcc_applies;
 
 	/**
 	 * This classes lazily resolves settings on first access. This flag indicates
@@ -116,10 +124,12 @@ class CardPaymentsConfiguration {
 	 *
 	 * @param ConnectionState $connection_state Connection state instance.
 	 * @param Settings        $settings         Plugin settings instance.
+	 * @param DccApplies      $dcc_applies      DCC eligibility helper.
 	 */
-	public function __construct( ConnectionState $connection_state, Settings $settings ) {
+	public function __construct( ConnectionState $connection_state, Settings $settings, DccApplies $dcc_applies ) {
 		$this->connection_state = $connection_state;
 		$this->settings         = $settings;
+		$this->dcc_applies      = $dcc_applies;
 
 		$this->is_resolved = false;
 	}
@@ -215,6 +225,10 @@ class CardPaymentsConfiguration {
 		}
 
 		$this->is_enabled = $is_dcc_enabled;
+
+		if ( $this->dcc_applies->for_country_currency() ) {
+			$this->use_acdc = true;
+		}
 
 		/**
 		 * Changing this to true (and hiding the watermark) has potential legal

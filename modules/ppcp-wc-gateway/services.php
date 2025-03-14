@@ -1363,13 +1363,11 @@ return array(
 	},
 
 	'wcgateway.configuration.card-configuration'           => static function ( ContainerInterface $container ) : CardPaymentsConfiguration {
-		$connection_state = $container->get( 'settings.connection-state' );
-		assert( $connection_state instanceof ConnectionState );
-
-		$settings = $container->get( 'wcgateway.settings' );
-		assert( $settings instanceof Settings );
-
-		return new CardPaymentsConfiguration( $connection_state, $settings );
+		return new CardPaymentsConfiguration(
+			$container->get( 'settings.connection-state' ),
+			$container->get( 'wcgateway.settings' ),
+			$container->get( 'api.helpers.dccapplies' )
+		);
 	},
 
 	'wcgateway.helper.dcc-product-status'                  => static function ( ContainerInterface $container ) : DCCProductStatus {
