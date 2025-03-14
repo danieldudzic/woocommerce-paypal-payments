@@ -54,7 +54,7 @@ class CardFieldsModule implements ServiceModule, ExtendingModule, ExecutableModu
 		add_filter(
 			'woocommerce_paypal_payments_sdk_components_hook',
 			static function( $components ) use ( $c ) {
-				$dcc_config = $c->get( 'wcgateway.configuration.dcc' );
+				$dcc_config = $c->get( 'wcgateway.configuration.card-configuration' );
 				assert( $dcc_config instanceof DCCGatewayConfiguration );
 
 				if ( ! $dcc_config->is_enabled() ) {
@@ -81,7 +81,7 @@ class CardFieldsModule implements ServiceModule, ExtendingModule, ExecutableModu
 			 * @psalm-suppress MissingClosureParamType
 			 */
 			function( $default_fields, $id ) use ( $c ) {
-				if ( ! $c->get( 'wcgateway.configuration.dcc' )->is_enabled() ) {
+				if ( ! $c->get( 'wcgateway.configuration.card-configuration' )->is_enabled() ) {
 					return $default_fields;
 				}
 				if ( CreditCardGateway::ID === $id && apply_filters( 'woocommerce_paypal_payments_enable_cardholder_name_field', false ) ) {
@@ -116,7 +116,7 @@ class CardFieldsModule implements ServiceModule, ExtendingModule, ExecutableModu
 		add_filter(
 			'ppcp_create_order_request_body_data',
 			function( array $data, string $payment_method ) use ( $c ): array {
-				if ( ! $c->get( 'wcgateway.configuration.dcc' )->is_enabled() ) {
+				if ( ! $c->get( 'wcgateway.configuration.card-configuration' )->is_enabled() ) {
 					return $data;
 				}
 				// phpcs:ignore WordPress.Security.NonceVerification.Missing

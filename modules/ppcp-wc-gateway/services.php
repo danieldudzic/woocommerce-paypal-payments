@@ -118,7 +118,7 @@ return array(
 			$container->get( 'wcgateway.settings.render' ),
 			$container->get( 'wcgateway.order-processor' ),
 			$container->get( 'wcgateway.settings' ),
-			$container->get( 'wcgateway.configuration.dcc' ),
+			$container->get( 'wcgateway.configuration.card-configuration' ),
 			$container->get( 'wcgateway.credit-card-icons' ),
 			$container->get( 'wcgateway.url' ),
 			$container->get( 'session.handler' ),
@@ -335,7 +335,7 @@ return array(
 			$container->get( 'wcgateway.settings' ),
 			$container->get( 'wcgateway.is-wc-payments-page' ),
 			$container->get( 'wcgateway.is-ppcp-settings-page' ),
-			$container->get( 'wcgateway.configuration.dcc' )
+			$container->get( 'wcgateway.configuration.card-configuration' )
 		);
 	},
 	'wcgateway.notice.card-button-without-paypal'          => static function ( ContainerInterface $container ): GatewayWithoutPayPalAdminNotice {
@@ -345,7 +345,7 @@ return array(
 			$container->get( 'wcgateway.settings' ),
 			$container->get( 'wcgateway.is-wc-payments-page' ),
 			$container->get( 'wcgateway.is-ppcp-settings-page' ),
-			$container->get( 'wcgateway.configuration.dcc' ),
+			$container->get( 'wcgateway.configuration.card-configuration' ),
 			$container->get( 'wcgateway.settings.status' )
 		);
 	},
@@ -464,7 +464,7 @@ return array(
 			assert( $settings instanceof Settings );
 
 			$axo_available = $container->has( 'axo.available' ) && $container->get( 'axo.available' );
-			$dcc_configuration = $container->get( 'wcgateway.configuration.dcc' );
+			$dcc_configuration = $container->get( 'wcgateway.configuration.card-configuration' );
 			assert( $dcc_configuration instanceof DCCGatewayConfiguration );
 
 			if ( $axo_available && $dcc_configuration->use_fastlane() ) {
@@ -687,7 +687,7 @@ return array(
 		$subscription_helper = $container->get( 'wc-subscriptions.helper' );
 		assert( $subscription_helper instanceof SubscriptionHelper );
 
-		$dcc_configuration = $container->get( 'wcgateway.configuration.dcc' );
+		$dcc_configuration = $container->get( 'wcgateway.configuration.card-configuration' );
 		assert( $dcc_configuration instanceof DCCGatewayConfiguration );
 
 		$fields              = array(
@@ -1362,7 +1362,7 @@ return array(
 		return new TransactionUrlProvider( $sandbox_url_base, $live_url_base );
 	},
 
-	'wcgateway.configuration.dcc'                          => static function ( ContainerInterface $container ) : DCCGatewayConfiguration {
+	'wcgateway.configuration.card-configuration'           => static function ( ContainerInterface $container ) : DCCGatewayConfiguration {
 		$connection_state = $container->get( 'settings.connection-state' );
 		assert( $connection_state instanceof ConnectionState );
 

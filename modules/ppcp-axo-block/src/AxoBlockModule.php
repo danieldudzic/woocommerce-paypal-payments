@@ -188,7 +188,7 @@ class AxoBlockModule implements ServiceModule, ExtendingModule, ExecutableModule
 			return;
 		}
 
-		$dcc_configuration = $c->get( 'wcgateway.configuration.dcc' );
+		$dcc_configuration = $c->get( 'wcgateway.configuration.card-configuration' );
 		if ( ! $dcc_configuration->use_fastlane() ) {
 			return;
 		}

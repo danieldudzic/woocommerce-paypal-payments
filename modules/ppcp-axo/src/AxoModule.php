@@ -98,7 +98,7 @@ class AxoModule implements ServiceModule, ExtendingModule, ExecutableModule {
 					return $methods;
 				}
 
-				$dcc_configuration = $c->get( 'wcgateway.configuration.dcc' );
+				$dcc_configuration = $c->get( 'wcgateway.configuration.card-configuration' );
 				assert( $dcc_configuration instanceof DCCGatewayConfiguration );
 
 				if ( ! $dcc_configuration->is_enabled() ) {
@@ -164,7 +164,7 @@ class AxoModule implements ServiceModule, ExtendingModule, ExecutableModule {
 				$listener = $c->get( 'wcgateway.settings.listener' );
 				assert( $listener instanceof SettingsListener );
 
-				$dcc_configuration = $c->get( 'wcgateway.configuration.dcc' );
+				$dcc_configuration = $c->get( 'wcgateway.configuration.card-configuration' );
 				assert( $dcc_configuration instanceof DCCGatewayConfiguration );
 
 				$listener->filter_settings(
@@ -247,7 +247,7 @@ class AxoModule implements ServiceModule, ExtendingModule, ExecutableModule {
 				add_filter(
 					'woocommerce_paypal_payments_sdk_components_hook',
 					function( $components ) use ( $c ) {
-						$dcc_configuration = $c->get( 'wcgateway.configuration.dcc' );
+						$dcc_configuration = $c->get( 'wcgateway.configuration.card-configuration' );
 						assert( $dcc_configuration instanceof DCCGatewayConfiguration );
 
 						if ( ! $dcc_configuration->use_fastlane() ) {
@@ -262,7 +262,7 @@ class AxoModule implements ServiceModule, ExtendingModule, ExecutableModule {
 					'wp_head',
 					function () use ( $c ) {
 						// Add meta tag to allow feature-detection of the site's AXO payment state.
-						$dcc_configuration = $c->get( 'wcgateway.configuration.dcc' );
+						$dcc_configuration = $c->get( 'wcgateway.configuration.card-configuration' );
 						assert( $dcc_configuration instanceof DCCGatewayConfiguration );
 
 						if ( $dcc_configuration->use_fastlane() ) {
@@ -403,7 +403,7 @@ class AxoModule implements ServiceModule, ExtendingModule, ExecutableModule {
 	 * @return bool
 	 */
 	private function should_render_fastlane( ContainerInterface $c ): bool {
-		$dcc_configuration = $c->get( 'wcgateway.configuration.dcc' );
+		$dcc_configuration = $c->get( 'wcgateway.configuration.card-configuration' );
 		assert( $dcc_configuration instanceof DCCGatewayConfiguration );
 
 		$subscription_helper = $c->get( 'wc-subscriptions.helper' );

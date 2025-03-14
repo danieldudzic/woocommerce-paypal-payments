@@ -195,7 +195,7 @@ class WCGatewayModule implements ServiceModule, ExtendingModule, ExecutableModul
 				$settings = $c->get( 'wcgateway.settings' );
 				assert( $settings instanceof Settings );
 
-				$dcc_configuration = $c->get( 'wcgateway.configuration.dcc' );
+				$dcc_configuration = $c->get( 'wcgateway.configuration.card-configuration' );
 				assert( $dcc_configuration instanceof DCCGatewayConfiguration );
 
 				$assets = new SettingsPageAssets(
@@ -614,7 +614,7 @@ class WCGatewayModule implements ServiceModule, ExtendingModule, ExecutableModul
 					return $methods;
 				}
 
-				$dcc_configuration = $container->get( 'wcgateway.configuration.dcc' );
+				$dcc_configuration = $container->get( 'wcgateway.configuration.card-configuration' );
 				assert( $dcc_configuration instanceof DCCGatewayConfiguration );
 
 				$standard_card_button = get_option( 'woocommerce_ppcp-card-button-gateway_settings' );

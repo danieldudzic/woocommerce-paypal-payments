@@ -115,7 +115,7 @@ return array(
 			}
 
 			$no_smart_buttons  = ! $settings_status->is_smart_button_enabled_for_location( $context );
-			$dcc_configuration = $container->get( 'wcgateway.configuration.dcc' );
+			$dcc_configuration = $container->get( 'wcgateway.configuration.card-configuration' );
 			assert( $dcc_configuration instanceof DCCGatewayConfiguration );
 
 			if ( $no_smart_buttons && ! $dcc_configuration->is_enabled() ) {
@@ -168,7 +168,7 @@ return array(
 			$container->get( 'woocommerce.logger.woocommerce' ),
 			$container->get( 'button.handle-shipping-in-paypal' ),
 			$container->get( 'button.helper.disabled-funding-sources' ),
-			$container->get( 'wcgateway.configuration.dcc' )
+			$container->get( 'wcgateway.configuration.card-configuration' )
 		);
 	},
 	'button.url'                                  => static function ( ContainerInterface $container ): string {
@@ -345,7 +345,7 @@ return array(
 		return new DisabledFundingSources(
 			$container->get( 'wcgateway.settings' ),
 			$container->get( 'wcgateway.all-funding-sources' ),
-			$container->get( 'wcgateway.configuration.dcc' )
+			$container->get( 'wcgateway.configuration.card-configuration' )
 		);
 	},
 	'button.is-logged-in'                         => static function ( ContainerInterface $container ): bool {

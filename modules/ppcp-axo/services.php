@@ -41,7 +41,7 @@ return array(
 	'axo.helpers.compatibility-checker'      => static function ( ContainerInterface $container ) : CompatibilityChecker {
 		return new CompatibilityChecker(
 			$container->get( 'axo.fastlane-incompatible-plugin-names' ),
-			$container->get( 'wcgateway.configuration.dcc' )
+			$container->get( 'wcgateway.configuration.card-configuration' )
 		);
 	},
 
@@ -83,7 +83,7 @@ return array(
 		return new AxoGateway(
 			$container->get( 'wcgateway.settings.render' ),
 			$container->get( 'wcgateway.settings' ),
-			$container->get( 'wcgateway.configuration.dcc' ),
+			$container->get( 'wcgateway.configuration.card-configuration' ),
 			$container->get( 'wcgateway.url' ),
 			$container->get( 'session.handler' ),
 			$container->get( 'wcgateway.order-processor' ),
@@ -228,7 +228,7 @@ return array(
 	},
 
 	'axo.smart-button-location-notice'       => static function ( ContainerInterface $container ) : string {
-		$dcc_configuration = $container->get( 'wcgateway.configuration.dcc' );
+		$dcc_configuration = $container->get( 'wcgateway.configuration.card-configuration' );
 		assert( $dcc_configuration instanceof DCCGatewayConfiguration );
 
 		if ( $dcc_configuration->use_fastlane() ) {
