@@ -18,12 +18,25 @@ use WooCommerce\PayPalCommerce\WcGateway\Exception\NotFoundException;
 use WooCommerce\PayPalCommerce\Axo\Helper\PropertiesDictionary;
 
 /**
- * A simple DTO that provides access to the DCC/AXO gateway settings.
+ * A configuration proxy service that provides details about credit card gateway
+ * configuration.
  *
- * This class should not implement business logic, but only provide a convenient
- * way to access gateway settings by wrapping the Settings instance.
+ * Terminology:
+ * - DCC or ACDC refers to the new "Advanced Card Processing" integration.
+ * - BCDC is the older "Credit and Debit Cards" integration.
+ * - AXO is Fastlane, which is an improved UI for ACDC.
+ *
+ * Technical implementation via the JS SDK:
+ *
+ * a. Funding source
+ *   - All card payment options require the funding-source "card"
+ * b. Components
+ *   - ACDC and AXO use "card-fields"
+ *   - BCDC uses "hosted-fields"
  *
  * DI service: 'wcgateway.configuration.dcc'
+ *
+ * @todo: Rename this class to CardPaymentsConfiguration!
  */
 class DCCGatewayConfiguration {
 	/**
