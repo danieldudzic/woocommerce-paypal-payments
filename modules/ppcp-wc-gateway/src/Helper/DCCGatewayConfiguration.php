@@ -127,6 +127,18 @@ class DCCGatewayConfiguration {
 		$this->show_name_on_card       = $show_on_card_options[0];
 		$this->hide_fastlane_watermark = false;
 
+		/**
+		 * Allow modules or other plugins to disable card payments for this shop.
+		 */
+		$disable_card_payments = apply_filters(
+			'woocommerce_paypal_payments_card_payments_disabled',
+			false
+		);
+
+		if ( $disable_card_payments ) {
+			return;
+		}
+
 		if ( ! $this->connection_state->is_connected() ) {
 			return;
 		}
