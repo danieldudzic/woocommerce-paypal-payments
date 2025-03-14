@@ -140,7 +140,7 @@ class CardPaymentsConfiguration {
 	 * @return void
 	 */
 	private function ensure_resolved_values() : void {
-		if ( ! $this->is_resolved ) {
+		if ( $this->is_resolved ) {
 			return;
 		}
 
