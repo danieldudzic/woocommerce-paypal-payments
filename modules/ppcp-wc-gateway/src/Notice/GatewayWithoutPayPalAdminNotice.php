@@ -77,7 +77,7 @@ class GatewayWithoutPayPalAdminNotice {
 	 * ConnectAdminNotice constructor.
 	 *
 	 * @param string                  $id                    The gateway ID.
-	 * @param bool                    $is_connected          Whether onboading was completed.
+	 * @param bool                    $is_connected          Whether onboarding was completed.
 	 * @param ContainerInterface      $settings              The settings.
 	 * @param bool                    $is_payments_page      Whether the current page is the WC payment page.
 	 * @param bool                    $is_ppcp_settings_page Whether the current page is the PPCP settings page.
