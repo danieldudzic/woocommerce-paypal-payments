@@ -6,7 +6,7 @@
  * @package WooCommerce\PayPalCommerce\Axo\Helper
  */
 
-declare(strict_types=1);
+declare( strict_types = 1 );
 
 namespace WooCommerce\PayPalCommerce\Axo\Helper;
 
@@ -45,7 +45,8 @@ class CompatibilityChecker {
 	/**
 	 * CompatibilityChecker constructor.
 	 *
-	 * @param string[]                $incompatible_plugin_names The list of Fastlane incompatible plugin names.
+	 * @param string[]                $incompatible_plugin_names The list of Fastlane incompatible
+	 *                                                           plugin names.
 	 * @param DCCGatewayConfiguration $dcc_configuration         DCC gateway configuration.
 	 */
 	public function __construct( array $incompatible_plugin_names, DCCGatewayConfiguration $dcc_configuration ) {
@@ -64,7 +65,7 @@ class CompatibilityChecker {
 	 *
 	 * @return bool Whether the checkout uses Elementor.
 	 */
-	protected function has_elementor_checkout(): bool {
+	protected function has_elementor_checkout() : bool {
 		if ( $this->checkout_compatibility['has_elementor_checkout'] === null ) {
 			$this->checkout_compatibility['has_elementor_checkout'] = CartCheckoutDetector::has_elementor_checkout();
 		}
@@ -77,7 +78,7 @@ class CompatibilityChecker {
 	 *
 	 * @return bool Whether the checkout uses classic checkout.
 	 */
-	protected function has_classic_checkout(): bool {
+	protected function has_classic_checkout() : bool {
 		if ( $this->checkout_compatibility['has_classic_checkout'] === null ) {
 			$this->checkout_compatibility['has_classic_checkout'] = CartCheckoutDetector::has_classic_checkout();
 		}
@@ -90,7 +91,7 @@ class CompatibilityChecker {
 	 *
 	 * @return bool Whether the checkout uses block checkout.
 	 */
-	protected function has_block_checkout(): bool {
+	protected function has_block_checkout() : bool {
 		if ( $this->checkout_compatibility['has_block_checkout'] === null ) {
 			$this->checkout_compatibility['has_block_checkout'] = CartCheckoutDetector::has_block_checkout();
 		}
@@ -101,8 +102,9 @@ class CompatibilityChecker {
 	/**
 	 * Generates the full HTML of the notification.
 	 *
-	 * @param string $message    HTML of the inner message contents.
-	 * @param bool   $is_error   Whether the provided message is an error. Affects the notice color.
+	 * @param string $message     HTML of the inner message contents.
+	 * @param bool   $is_error    Whether the provided message is an error. Affects the notice
+	 *                            color.
 	 * @param bool   $raw_message Whether to return raw message without HTML wrappers.
 	 *
 	 * @return string The full HTML code of the notification, or an empty string, or raw message.
@@ -124,11 +126,12 @@ class CompatibilityChecker {
 	}
 
 	/**
-	 * Check if there aren't any incompatibilities that would prevent Fastlane from working properly.
+	 * Check if there aren't any incompatibilities that would prevent Fastlane from working
+	 * properly.
 	 *
 	 * @return bool Whether the setup is compatible.
 	 */
-	public function is_fastlane_compatible(): bool {
+	public function is_fastlane_compatible() : bool {
 		// Check for incompatible plugins.
 		if ( ! empty( $this->incompatible_plugin_names ) ) {
 			return false;
@@ -153,7 +156,7 @@ class CompatibilityChecker {
 	 * @param bool $raw_message Whether to return raw message without HTML wrappers.
 	 * @return string
 	 */
-	public function generate_checkout_notice( bool $raw_message = false ): string {
+	public function generate_checkout_notice( bool $raw_message = false ) : string {
 		$notice_content = '';
 
 		// Check for checkout incompatibilities.
@@ -201,7 +204,7 @@ class CompatibilityChecker {
 	 * @param bool $raw_message Whether to return raw message without HTML wrappers.
 	 * @return string
 	 */
-	public function generate_incompatible_plugins_notice( bool $raw_message = false ): string {
+	public function generate_incompatible_plugins_notice( bool $raw_message = false ) : string {
 		if ( empty( $this->incompatible_plugin_names ) ) {
 			return '';
 		}
@@ -223,7 +226,7 @@ class CompatibilityChecker {
 	/**
 	 * Generates a warning notice with instructions on conflicting plugin-internal settings.
 	 *
-	 * @param bool     $raw_message Whether to return raw message without HTML wrappers.
+	 * @param bool $raw_message Whether to return raw message without HTML wrappers.
 	 * @return string
 	 */
 	public function generate_settings_conflict_notice( bool $raw_message = false ) : string {
