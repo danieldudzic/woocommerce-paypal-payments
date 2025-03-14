@@ -59,29 +59,18 @@ const StepPaymentMethods = () => {
 export default StepPaymentMethods;
 
 const PaymentStepTitle = () => {
-	const { storeCountry } = CommonHooks.useWooSettings();
-
-	if ( 'US' === storeCountry ) {
-		return __(
-			'Add Expanded Checkout for More Ways to Pay',
-			'woocommerce-paypal-payments'
-		);
-	}
-
-	return __(
-		'Add optional payment methods to your Checkout',
-		'woocommerce-paypal-payments'
-	);
+	return __( 'Add Credit and Debit Cards', 'woocommerce-paypal-payments' );
 };
 
 const OptionalMethodDescription = () => {
+	const { isCasualSeller } = OnboardingHooks.useBusiness();
 	const { storeCountry, storeCurrency } = CommonHooks.useWooSettings();
 	const { canUseCardPayments } = OnboardingHooks.useFlags();
 
 	return (
 		<PaymentFlow
 			onlyOptional={ true }
-			useAcdc={ canUseCardPayments }
+			useAcdc={ ! isCasualSeller && canUseCardPayments }
 			isFastlane={ true }
 			isPayLater={ true }
 			storeCountry={ storeCountry }
