@@ -137,34 +137,36 @@ return array(
 
 		return new ConnectionState( $is_connected, $environment );
 	},
+	/**
+	 * Returns details about the connected environment (production/sandbox).
+	 *
+	 * @deprecated Directly use 'settings.connection-state' instead of this.
+	 */
 	'settings.environment'                         => static function ( ContainerInterface $container ) : Environment {
-		// We should remove this service in favor of directly using `settings.connection-state`.
 		$state = $container->get( 'settings.connection-state' );
 		assert( $state instanceof ConnectionState );
 
 		return $state->get_environment();
 	},
 	/**
-	 * Checks if valid merchant connection details are stored in the DB.
+	 * Checks if the onboarding process is completed and the merchant API can be used.
+	 * This service only resolves the connection status once per request.
+	 *
+	 * @deprecated Use 'settings.connection-state' instead.
 	 */
 	'settings.flag.is-connected'                   => static function ( ContainerInterface $container ) : bool {
-		/*
-		 * This service only resolves the connection status once per request.
-		 * We should remove this service in favor of directly using `settings.connection-state`.
-		 */
 		$state = $container->get( 'settings.connection-state' );
 		assert( $state instanceof ConnectionState );
 
 		return $state->is_connected();
 	},
 	/**
-	 * Checks if the merchant is connected to a sandbox environment.
+	 * Determines whether the merchant is connected to a sandbox account.
+	 * This service only resolves the sandbox flag once per request.
+	 *
+	 * @deprecated Use 'settings.connection-state' instead.
 	 */
 	'settings.flag.is-sandbox'                     => static function ( ContainerInterface $container ) : bool {
-		/*
-		 * This service only resolves the sandbox flag once per request.
-		 * We should remove this service in favor of directly using `settings.connection-state`.
-		 */
 		$state = $container->get( 'settings.connection-state' );
 		assert( $state instanceof ConnectionState );
 
