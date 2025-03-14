@@ -224,11 +224,23 @@ class CardPaymentsConfiguration {
 			return;
 		}
 
-		$this->is_enabled = $is_dcc_enabled;
+		/**
+		 * Filters the "Card Payments Enabled" status. This allows other modules
+		 * to override the flag.
+		 */
+		$this->is_enabled = (bool) apply_filters(
+			'woocommerce_paypal_payments_is_card_payment_enabled',
+			$is_dcc_enabled
+		);
 
-		if ( $this->dcc_applies->for_country_currency() ) {
-			$this->use_acdc = true;
-		}
+		/**
+		 * Filters the "ACDC" state. When a filter callback sets this to false
+		 * the plugin assumes to be in BCDC mode.
+		 */
+		$this->use_acdc = (bool) apply_filters(
+			'woocommerce_paypal_payments_is_acdc_active',
+			$this->dcc_applies->for_country_currency()
+		);
 
 		/**
 		 * Changing this to true (and hiding the watermark) has potential legal
