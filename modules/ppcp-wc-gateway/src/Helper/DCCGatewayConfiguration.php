@@ -30,6 +30,7 @@ use WooCommerce\PayPalCommerce\Axo\Helper\PropertiesDictionary;
  *
  * a. Funding source
  *   - All card payment options require the funding-source "card"
+ *
  * b. Components
  *   - ACDC and AXO use "card-fields"
  *   - BCDC uses "hosted-fields"
@@ -52,6 +53,14 @@ class DCCGatewayConfiguration {
 	 * @var Settings
 	 */
 	private Settings $settings;
+
+	/**
+	 * This classes lazily resolves settings on first access. This flag indicates
+	 * whether the setting values were resolved, or still need to be evaluated.
+	 *
+	 * @var bool
+	 */
+	public bool $is_resolved = false;
 
 	/**
 	 * Indicates whether the merchant uses ACDC (true) or BCDC (false).
@@ -114,16 +123,38 @@ class DCCGatewayConfiguration {
 		$this->connection_state = $connection_state;
 		$this->settings         = $settings;
 
-		$this->refresh();
+		$this->is_resolved = false;
 	}
 
 	/**
-	 * Refreshes the gateway configuration based on the current settings.
+	 * Marks the current settings as "outdated". The next time a setting is accessed
+	 * it will be resolved using the current settings.
 	 *
-	 * This method should be used sparingly, usually only on the settings page
-	 * when changes in gateway settings must be reflected immediately.
+	 * @return void
 	 */
 	public function refresh() : void {
+		$this->is_resolved = false;
+	}
+
+	/**
+	 * Ensures the internally cached flags correctly reflect the current settings.
+	 *
+	 * @return void
+	 */
+	private function ensure_resolved_values() : void {
+		if ( ! $this->is_resolved ) {
+			return;
+		}
+
+		$this->resolve();
+
+		$this->is_resolved = true;
+	}
+
+	/**
+	 * Refreshes the internal gateway configuration based on the current settings.
+	 */
+	private function resolve() : void {
 		$show_on_card_options = array_keys( PropertiesDictionary::cardholder_name_options() );
 		$show_on_card_value   = null;
 
@@ -205,6 +236,8 @@ class DCCGatewayConfiguration {
 	 * @return bool
 	 */
 	public function use_acdc() : bool {
+		$this->ensure_resolved_values();
+
 		return $this->use_acdc;
 	}
 
@@ -217,11 +250,19 @@ class DCCGatewayConfiguration {
 	 * @return bool
 	 */
 	public function is_enabled() : bool {
+		$this->ensure_resolved_values();
+
 		return $this->is_enabled;
 	}
 
 	/**
 	 * True, if the card payments are enabled and the merchant is in ACDC mode.
+	 *
+	 * If this returns false, the following payment methods are unavailable:
+	 * - Advanced Card Processing
+	 * - Fastlane
+	 * - Google Pay
+	 * - Apple Pay
 	 *
 	 * @return bool
 	 */
@@ -247,7 +288,7 @@ class DCCGatewayConfiguration {
 	 * @return bool
 	 */
 	public function use_fastlane() : bool {
-		return $this->use_fastlane;
+		return $this->is_acdc_enabled() && $this->use_fastlane;
 	}
 
 	/**
@@ -258,6 +299,7 @@ class DCCGatewayConfiguration {
 	 * @return string Display title of the gateway.
 	 */
 	public function gateway_title( string $fallback = '' ) : string {
+		$this->ensure_resolved_values();
 		if ( $this->gateway_title ) {
 			return $this->gateway_title;
 		}
@@ -273,6 +315,7 @@ class DCCGatewayConfiguration {
 	 * @return string Display description of the gateway.
 	 */
 	public function gateway_description( string $fallback = '' ) : string {
+		$this->ensure_resolved_values();
 		if ( $this->gateway_description ) {
 			return $this->gateway_description;
 		}
@@ -292,6 +335,8 @@ class DCCGatewayConfiguration {
 	 * @return string ['yes'|'no']
 	 */
 	public function show_name_on_card() : string {
+		$this->ensure_resolved_values();
+
 		return $this->show_name_on_card;
 	}
 
@@ -304,6 +349,8 @@ class DCCGatewayConfiguration {
 	 * @retun bool True means, the default watermark is displayed to customers.
 	 */
 	public function show_fastlane_watermark() : bool {
+		$this->ensure_resolved_values();
+
 		return ! $this->hide_fastlane_watermark;
 	}
 }
