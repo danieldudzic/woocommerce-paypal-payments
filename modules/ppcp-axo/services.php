@@ -196,10 +196,7 @@ return array(
 		$compatibility_checker = $container->get( 'axo.helpers.compatibility-checker' );
 		assert( $compatibility_checker instanceof CompatibilityChecker );
 
-		$settings = $container->get( 'wcgateway.settings' );
-		assert( $settings instanceof Settings );
-
-		return $compatibility_checker->generate_settings_conflict_notice( $settings );
+		return $compatibility_checker->generate_settings_conflict_notice();
 	},
 
 	'axo.checkout-config-notice'             => static function ( ContainerInterface $container ) : string {

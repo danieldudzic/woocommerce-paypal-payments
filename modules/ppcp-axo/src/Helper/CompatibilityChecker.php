@@ -223,11 +223,10 @@ class CompatibilityChecker {
 	/**
 	 * Generates a warning notice with instructions on conflicting plugin-internal settings.
 	 *
-	 * @param Settings $settings The plugin settings container, which is checked for conflicting values.
 	 * @param bool     $raw_message Whether to return raw message without HTML wrappers.
 	 * @return string
 	 */
-	public function generate_settings_conflict_notice( Settings $settings, bool $raw_message = false ) : string {
+	public function generate_settings_conflict_notice( bool $raw_message = false ) : string {
 		if ( $this->dcc_configuration->is_enabled() ) {
 			return '';
 		}
