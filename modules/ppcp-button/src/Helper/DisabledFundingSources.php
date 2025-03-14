@@ -225,7 +225,7 @@ class DisabledFundingSources {
 		 * Filters the final list of disabled funding sources.
 		 */
 		$disable_funding = apply_filters(
-			'woocommerce_paypal_payments_disabled_funding_sources',
+			'woocommerce_paypal_payments_sdk_disabled_funding_hook',
 			$disable_funding
 		);
 

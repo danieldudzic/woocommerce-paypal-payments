@@ -73,6 +73,24 @@ class CardFieldsModule implements ServiceModule, ExtendingModule, ExecutableModu
 		);
 
 		add_filter(
+			'woocommerce_paypal_payments_sdk_disabled_funding_hook',
+			static function ( array $disable_funding ) use ( $c ) {
+				$dcc_config = $c->get( 'wcgateway.configuration.card-configuration' );
+				assert( $dcc_config instanceof CardPaymentsConfiguration );
+
+				if ( ! $dcc_config->is_acdc_enabled() ) {
+					return $disable_funding;
+				}
+
+				// For ACDC payments we need the funding source "card"!
+				return array_filter(
+					$disable_funding,
+					static fn( string $funding_source ) => $funding_source !== 'card'
+				);
+			}
+		);
+
+		add_filter(
 			'woocommerce_credit_card_form_fields',
 			/**
 			 * Return/Param types removed to avoid third-party issues.
