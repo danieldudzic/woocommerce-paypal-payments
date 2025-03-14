@@ -80,11 +80,11 @@ class DCCGatewayConfiguration {
 	/**
 	 * Initializes the gateway details based on the provided Settings instance.
 	 *
-	 * @param Settings $settings Plugin settings instance.
+	 * @param Settings        $settings         Plugin settings instance.
 	 * @throws NotFoundException If an expected gateway setting is not found.
 	 */
 	public function __construct( Settings $settings ) {
-		$this->settings = $settings;
+		$this->settings         = $settings;
 
 		$this->refresh();
 	}
@@ -94,42 +94,57 @@ class DCCGatewayConfiguration {
 	 *
 	 * This method should be used sparingly, usually only on the settings page
 	 * when changes in gateway settings must be reflected immediately.
-	 *
-	 * @throws NotFoundException If an expected gateway setting is not found.
 	 */
 	public function refresh() : void {
-		$is_paypal_enabled = $this->settings->has( 'enabled' )
-			&& filter_var( $this->settings->get( 'enabled' ), FILTER_VALIDATE_BOOLEAN );
-		$is_dcc_enabled    = $this->settings->has( 'dcc_enabled' )
-			&& filter_var( $this->settings->get( 'dcc_enabled' ), FILTER_VALIDATE_BOOLEAN );
-		$is_axo_enabled    = $this->settings->has( 'axo_enabled' )
-			&& filter_var( $this->settings->get( 'axo_enabled' ), FILTER_VALIDATE_BOOLEAN );
+		$show_on_card_options = array_keys( PropertiesDictionary::cardholder_name_options() );
+		$show_on_card_value   = null;
+
+		$this->is_enabled          = false;
+		$this->use_fastlane        = false;
+		$this->gateway_title       = '';
+		$this->gateway_description = '';
+		$this->show_name_on_card   = $show_on_card_options[0];
+
+		try {
+			/*
+			 * In case one of the following three settings is missing in the DB the
+			 * Settings instance throws an exception and all features are set to "not available".
+			 */
+			$is_paypal_enabled = filter_var( $this->settings->get( 'enabled' ), FILTER_VALIDATE_BOOLEAN );
+			$is_dcc_enabled    = filter_var( $this->settings->get( 'dcc_enabled' ), FILTER_VALIDATE_BOOLEAN );
+			$is_axo_enabled    = filter_var( $this->settings->get( 'axo_enabled' ), FILTER_VALIDATE_BOOLEAN );
+
+			if ( $this->settings->has( 'dcc_gateway_title' ) ) {
+				$this->gateway_title = $this->settings->get( 'dcc_gateway_title' );
+			}
+			if ( $this->settings->has( 'dcc_gateway_description' ) ) {
+				$this->gateway_description = $this->settings->get( 'dcc_gateway_description' );
+			}
+
+			if ( $this->settings->has( 'dcc_name_on_card' ) ) {
+				$show_on_card_value = $this->settings->get( 'dcc_name_on_card' );
+			} elseif ( $this->settings->has( 'axo_name_on_card' ) ) {
+				// Legacy. The AXO gateway setting was replaced by the DCC setting.
+				$show_on_card_value = $this->settings->get( 'axo_name_on_card' );
+			}
+			if ( in_array( $show_on_card_value, $show_on_card_options, true ) ) {
+				$this->show_name_on_card = $show_on_card_value;
+			}
+		} catch ( NotFoundException $exception ) {
+			// A setting is missing in the DB, disable card payments.
+			$is_paypal_enabled = false;
+			$is_dcc_enabled    = false;
+			$is_axo_enabled    = false;
+		}
 
 		$this->is_enabled   = $is_paypal_enabled && $is_dcc_enabled;
 		$this->use_fastlane = $this->is_enabled && $is_axo_enabled;
 
-		$this->gateway_title       = $this->settings->has( 'dcc_gateway_title' ) ?
-			$this->settings->get( 'dcc_gateway_title' ) : '';
-		$this->gateway_description = $this->settings->has( 'dcc_gateway_description' ) ?
-			$this->settings->get( 'dcc_gateway_description' ) : '';
-
-		$show_on_card = '';
-		if ( $this->settings->has( 'dcc_name_on_card' ) ) {
-			$show_on_card = $this->settings->get( 'dcc_name_on_card' );
-		} elseif ( $this->settings->has( 'axo_name_on_card' ) ) {
-			// Legacy. The AXO gateway setting was replaced by the DCC setting.
-			$show_on_card = $this->settings->get( 'axo_name_on_card' );
-		}
-		$valid_options = array_keys( PropertiesDictionary::cardholder_name_options() );
-
-		$this->show_name_on_card = in_array( $show_on_card, $valid_options, true )
-			? $show_on_card
-			: $valid_options[0];
-
 		/**
-		 * Moved from setting "axo_privacy" to a hook-only filter:
 		 * Changing this to true (and hiding the watermark) has potential legal
 		 * consequences, and therefore is generally discouraged.
+		 *
+		 * @since 2024-09-26 - replace the UI checkbox "axo_privacy" with a filter.
 		 */
 		$this->hide_fastlane_watermark = add_filter(
 			'woocommerce_paypal_payments_fastlane_watermark_enabled',
@@ -138,12 +153,11 @@ class DCCGatewayConfiguration {
 	}
 
 	/**
-	 * Whether the Credit Card gateway is enabled.
+	 * Whether the "Advanced Card Payments" gateway is enabled.
 	 *
 	 * Requires PayPal features to be enabled.
 	 *
 	 * @return bool
-	 * @todo Some classes still directly access `$settings->get('dcc_enabled')`
 	 */
 	public function is_enabled() : bool {
 		return $this->is_enabled;
@@ -153,7 +167,7 @@ class DCCGatewayConfiguration {
 	 * Whether to prefer Fastlane instead of the default Credit Card UI, if
 	 * available in the shop's region.
 	 *
-	 * Requires PayPal features and the Credit Card gateway to be enabled.
+	 * Requires PayPal features and the "Advanced Card Payments" gateway to be enabled.
 	 *
 	 * @return bool
 	 */
