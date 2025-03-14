@@ -450,12 +450,12 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 				$methods[] = $axo_gateway;
 
 				$is_payments_page = $container->get( 'wcgateway.is-wc-payments-page' );
-				$all_gateway_ids = $container->get( 'settings.config.all-gateway-ids' );
+				$all_gateway_ids  = $container->get( 'settings.config.all-gateway-ids' );
 
 				if ( $is_payments_page ) {
 					$methods = array_filter(
 						$methods,
-						function ( $method ) use( $all_gateway_ids ): bool {
+						function ( $method ) use ( $all_gateway_ids ): bool {
 							if ( ! is_object( $method )
 								|| $method->id === PayPalGateway::ID
 								|| in_array( $method->id, $all_gateway_ids, true )
