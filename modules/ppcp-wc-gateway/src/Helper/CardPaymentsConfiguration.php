@@ -269,6 +269,7 @@ class CardPaymentsConfiguration {
 
 	/**
 	 * True, if the card payments are enabled and the merchant is in ACDC mode.
+	 * This also unlocks card payments on block pages.
 	 *
 	 * If this returns false, the following payment methods are unavailable:
 	 * - Advanced Card Processing
@@ -284,6 +285,9 @@ class CardPaymentsConfiguration {
 
 	/**
 	 * True, if card payments are enabled and the merchant is in BCDC mode.
+	 *
+	 * The BCDC integration is not supported by block checkout:
+	 * When this returns true, disable card payments on block pages.
 	 *
 	 * @return bool
 	 */
