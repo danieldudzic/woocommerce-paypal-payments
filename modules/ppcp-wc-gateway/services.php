@@ -84,6 +84,7 @@ use WooCommerce\PayPalCommerce\WcGateway\Settings\SettingsRenderer;
 use WooCommerce\PayPalCommerce\Axo\Helper\PropertiesDictionary;
 use WooCommerce\PayPalCommerce\Applepay\ApplePayGateway;
 use WooCommerce\PayPalCommerce\WcGateway\Helper\DCCGatewayConfiguration;
+use WooCommerce\PayPalCommerce\WcGateway\Helper\ConnectionState;
 
 return array(
 	'wcgateway.paypal-gateway'                             => static function ( ContainerInterface $container ): PayPalGateway {
@@ -1362,10 +1363,13 @@ return array(
 	},
 
 	'wcgateway.configuration.dcc'                          => static function ( ContainerInterface $container ) : DCCGatewayConfiguration {
+		$connection_state = $container->get( 'settings.connection-state' );
+		assert( $connection_state instanceof ConnectionState );
+
 		$settings = $container->get( 'wcgateway.settings' );
 		assert( $settings instanceof Settings );
 
-		return new DCCGatewayConfiguration( $settings );
+		return new DCCGatewayConfiguration( $connection_state, $settings );
 	},
 
 	'wcgateway.helper.dcc-product-status'                  => static function ( ContainerInterface $container ) : DCCProductStatus {

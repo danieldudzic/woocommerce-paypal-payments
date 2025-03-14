@@ -27,6 +27,13 @@ use WooCommerce\PayPalCommerce\Axo\Helper\PropertiesDictionary;
  */
 class DCCGatewayConfiguration {
 	/**
+	 * The connection state.
+	 *
+	 * @var ConnectionState
+	 */
+	private ConnectionState $connection_state;
+
+	/**
 	 * The plugin settings instance.
 	 *
 	 * @var Settings
@@ -80,10 +87,11 @@ class DCCGatewayConfiguration {
 	/**
 	 * Initializes the gateway details based on the provided Settings instance.
 	 *
+	 * @param ConnectionState $connection_state Connection state instance.
 	 * @param Settings        $settings         Plugin settings instance.
-	 * @throws NotFoundException If an expected gateway setting is not found.
 	 */
-	public function __construct( Settings $settings ) {
+	public function __construct( ConnectionState $connection_state, Settings $settings ) {
+		$this->connection_state = $connection_state;
 		$this->settings         = $settings;
 
 		$this->refresh();
@@ -99,11 +107,16 @@ class DCCGatewayConfiguration {
 		$show_on_card_options = array_keys( PropertiesDictionary::cardholder_name_options() );
 		$show_on_card_value   = null;
 
-		$this->is_enabled          = false;
-		$this->use_fastlane        = false;
-		$this->gateway_title       = '';
-		$this->gateway_description = '';
-		$this->show_name_on_card   = $show_on_card_options[0];
+		$this->is_enabled              = false;
+		$this->use_fastlane            = false;
+		$this->gateway_title           = '';
+		$this->gateway_description     = '';
+		$this->show_name_on_card       = $show_on_card_options[0];
+		$this->hide_fastlane_watermark = false;
+
+		if ( ! $this->connection_state->is_connected() ) {
+			return;
+		}
 
 		try {
 			/*
