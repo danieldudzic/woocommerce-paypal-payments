@@ -720,9 +720,7 @@ document.querySelector("#payment").before(document.querySelector(".ppcp-messages
 	 * Whether DCC fields can be rendered.
 	 */
 	public function can_render_dcc() : bool {
-		return $this->dcc_configuration->is_enabled()
-			&& $this->settings->has( 'client_id' ) && $this->settings->get( 'client_id' )
-			&& $this->dcc_applies->for_country_currency()
+		return $this->dcc_configuration->is_acdc_enabled()
 			&& in_array(
 				$this->context(),
 				apply_filters( 'woocommerce_paypal_payments_can_render_dcc_contexts', array( 'checkout', 'pay-now', 'add-payment-method' ) ),
@@ -1126,7 +1124,7 @@ document.querySelector("#payment").before(document.querySelector(".ppcp-messages
 			'client_id'                               => $this->client_id,
 			'currency'                                => $this->currency->get(),
 			'data_client_id'                          => array(
-				'set_attribute'                => ( is_checkout() && $this->dcc_is_enabled() ) || $this->can_save_vault_token(),
+				'set_attribute'                => $this->dcc_is_enabled() || $this->can_save_vault_token(),
 				'endpoint'                     => \WC_AJAX::get_endpoint( DataClientIdEndpoint::ENDPOINT ),
 				'nonce'                        => wp_create_nonce( DataClientIdEndpoint::nonce() ),
 				'user'                         => get_current_user_id(),
@@ -1595,31 +1593,12 @@ document.querySelector("#payment").before(document.querySelector(".ppcp-messages
 	}
 
 	/**
-	 * Whether DCC is enabled or not.
+	 * Whether ACDC is available on the current page.
 	 *
 	 * @return bool
 	 */
 	private function dcc_is_enabled() : bool {
-		// Card payments are only available on the checkout page, and for certain seller countries.
-		if ( ! is_checkout() || ! $this->dcc_applies->for_country_currency() ) {
-			return false;
-		}
-
-		try {
-			// Bail, if the merchant is not fully onboarded yet.
-			if (
-				! $this->settings->get( 'client_id' )
-				|| ! $this->settings->get( 'client_secret' )
-			) {
-				return false;
-			}
-
-			// The actual condition that must be met.
-			return $this->dcc_configuration->is_enabled();
-		} catch ( NotFoundException $e ) {
-			// Bail, if the settings DB entries are missing.
-			return false;
-		}
+		return is_checkout() && $this->dcc_configuration->is_acdc_enabled();
 	}
 
 	/**
