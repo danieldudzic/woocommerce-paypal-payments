@@ -13,7 +13,7 @@ use WooCommerce\PayPalCommerce\WcGateway\Exception\NotFoundException;
 use WooCommerce\PayPalCommerce\WcGateway\Gateway\CardButtonGateway;
 use WooCommerce\PayPalCommerce\WcGateway\Settings\Settings;
 use WooCommerce\PayPalCommerce\WcSubscriptions\FreeTrialHandlerTrait;
-use WooCommerce\PayPalCommerce\WcGateway\Helper\DCCGatewayConfiguration;
+use WooCommerce\PayPalCommerce\WcGateway\Helper\CardPaymentsConfiguration;
 
 /**
  * Class DisabledFundingSources
@@ -39,18 +39,18 @@ class DisabledFundingSources {
 	/**
 	 * Provides details about the DCC configuration.
 	 *
-	 * @var DCCGatewayConfiguration
+	 * @var CardPaymentsConfiguration
 	 */
-	private DCCGatewayConfiguration $dcc_configuration;
+	private CardPaymentsConfiguration $dcc_configuration;
 
 	/**
 	 * DisabledFundingSources constructor.
 	 *
-	 * @param Settings                $settings            The settings.
-	 * @param array                   $all_funding_sources All existing funding sources.
-	 * @param DCCGatewayConfiguration $dcc_configuration   DCC gateway configuration.
+	 * @param Settings                  $settings            The settings.
+	 * @param array                     $all_funding_sources All existing funding sources.
+	 * @param CardPaymentsConfiguration $dcc_configuration   DCC gateway configuration.
 	 */
-	public function __construct( Settings $settings, array $all_funding_sources, DCCGatewayConfiguration $dcc_configuration ) {
+	public function __construct( Settings $settings, array $all_funding_sources, CardPaymentsConfiguration $dcc_configuration ) {
 		$this->settings            = $settings;
 		$this->all_funding_sources = $all_funding_sources;
 		$this->dcc_configuration   = $dcc_configuration;

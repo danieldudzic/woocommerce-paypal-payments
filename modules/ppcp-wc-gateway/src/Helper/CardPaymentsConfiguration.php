@@ -36,10 +36,8 @@ use WooCommerce\PayPalCommerce\Axo\Helper\PropertiesDictionary;
  *   - BCDC uses "hosted-fields"
  *
  * DI service: 'wcgateway.configuration.card-configuration'
- *
- * @todo: Rename this class to CardPaymentsConfiguration!
  */
-class DCCGatewayConfiguration {
+class CardPaymentsConfiguration {
 	/**
 	 * The connection state.
 	 *

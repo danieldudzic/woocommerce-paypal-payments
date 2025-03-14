@@ -8,7 +8,7 @@ use WC_Payment_Gateways;
 use WooCommerce;
 use WooCommerce\PayPalCommerce\TestCase;
 use WooCommerce\PayPalCommerce\WcGateway\Settings\Settings;
-use WooCommerce\PayPalCommerce\WcGateway\Helper\DCCGatewayConfiguration;
+use WooCommerce\PayPalCommerce\WcGateway\Helper\CardPaymentsConfiguration;
 use function Brain\Monkey\Functions\when;
 
 class DisabledFundingSourcesTest extends TestCase
@@ -21,7 +21,7 @@ class DisabledFundingSourcesTest extends TestCase
 		parent::setUp();
 
 		$this->settings = Mockery::mock(Settings::class);
-		$this->dcc_configuration = Mockery::mock(DCCGatewayConfiguration::class);
+		$this->dcc_configuration = Mockery::mock(CardPaymentsConfiguration::class);
 	}
 
 	/**

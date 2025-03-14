@@ -13,7 +13,7 @@ namespace WooCommerce\PayPalCommerce\Axo\Helper;
 use WooCommerce\PayPalCommerce\WcGateway\Helper\CartCheckoutDetector;
 use WooCommerce\PayPalCommerce\WcGateway\Settings\Settings;
 use WooCommerce\PayPalCommerce\WcGateway\Exception\NotFoundException;
-use WooCommerce\PayPalCommerce\WcGateway\Helper\DCCGatewayConfiguration;
+use WooCommerce\PayPalCommerce\WcGateway\Helper\CardPaymentsConfiguration;
 
 /**
  * Class CompatibilityChecker
@@ -38,18 +38,18 @@ class CompatibilityChecker {
 	/**
 	 * Provides details about the DCC configuration.
 	 *
-	 * @var DCCGatewayConfiguration
+	 * @var CardPaymentsConfiguration
 	 */
-	private DCCGatewayConfiguration $dcc_configuration;
+	private CardPaymentsConfiguration $dcc_configuration;
 
 	/**
 	 * CompatibilityChecker constructor.
 	 *
-	 * @param string[]                $incompatible_plugin_names The list of Fastlane incompatible
-	 *                                                           plugin names.
-	 * @param DCCGatewayConfiguration $dcc_configuration         DCC gateway configuration.
+	 * @param string[]                  $incompatible_plugin_names The list of Fastlane incompatible
+	 *                                                             plugin names.
+	 * @param CardPaymentsConfiguration $dcc_configuration         DCC gateway configuration.
 	 */
-	public function __construct( array $incompatible_plugin_names, DCCGatewayConfiguration $dcc_configuration ) {
+	public function __construct( array $incompatible_plugin_names, CardPaymentsConfiguration $dcc_configuration ) {
 		$this->incompatible_plugin_names = $incompatible_plugin_names;
 		$this->dcc_configuration         = $dcc_configuration;
 

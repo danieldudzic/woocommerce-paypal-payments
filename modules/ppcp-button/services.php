@@ -37,7 +37,7 @@ use WooCommerce\PayPalCommerce\Button\Helper\MessagesApply;
 use WooCommerce\PayPalCommerce\Button\Helper\ThreeDSecure;
 use WooCommerce\PayPalCommerce\WcGateway\Helper\Environment;
 use WooCommerce\PayPalCommerce\WcGateway\Helper\SettingsStatus;
-use WooCommerce\PayPalCommerce\WcGateway\Helper\DCCGatewayConfiguration;
+use WooCommerce\PayPalCommerce\WcGateway\Helper\CardPaymentsConfiguration;
 
 return array(
 	'button.client_id'                            => static function ( ContainerInterface $container ): string {
@@ -116,7 +116,7 @@ return array(
 
 			$no_smart_buttons  = ! $settings_status->is_smart_button_enabled_for_location( $context );
 			$dcc_configuration = $container->get( 'wcgateway.configuration.card-configuration' );
-			assert( $dcc_configuration instanceof DCCGatewayConfiguration );
+			assert( $dcc_configuration instanceof CardPaymentsConfiguration );
 
 			if ( $no_smart_buttons && ! $dcc_configuration->is_enabled() ) {
 				// Smart buttons disabled, and also not using advanced card payments.

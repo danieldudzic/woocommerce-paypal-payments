@@ -54,7 +54,7 @@ use WooCommerce\PayPalCommerce\WcGateway\Helper\SettingsStatus;
 use WooCommerce\PayPalCommerce\WcGateway\Settings\Settings;
 use WC_Shipping_Method;
 use WC_Cart;
-use WooCommerce\PayPalCommerce\WcGateway\Helper\DCCGatewayConfiguration;
+use WooCommerce\PayPalCommerce\WcGateway\Helper\CardPaymentsConfiguration;
 
 /**
  * Class SmartButton
@@ -241,38 +241,38 @@ class SmartButton implements SmartButtonInterface {
 	/**
 	 * Provides details about the DCC configuration.
 	 *
-	 * @var DCCGatewayConfiguration
+	 * @var CardPaymentsConfiguration
 	 */
-	private DCCGatewayConfiguration $dcc_configuration;
+	private CardPaymentsConfiguration $dcc_configuration;
 
 	/**
 	 * SmartButton constructor.
 	 *
-	 * @param string                  $module_url                        The URL to the module.
-	 * @param string                  $version                           The assets version.
-	 * @param SessionHandler          $session_handler                   The Session handler.
-	 * @param Settings                $settings                          The Settings.
-	 * @param PayerFactory            $payer_factory                     The Payer factory.
-	 * @param string                  $client_id                         The client ID.
-	 * @param RequestData             $request_data                      The Request Data helper.
-	 * @param DccApplies              $dcc_applies                       The DCC applies helper.
-	 * @param SubscriptionHelper      $subscription_helper               The subscription helper.
-	 * @param MessagesApply           $messages_apply                    The Messages apply helper.
-	 * @param Environment             $environment                       The environment object.
-	 * @param PaymentTokenRepository  $payment_token_repository          The payment token repository.
-	 * @param SettingsStatus          $settings_status                   The Settings status helper.
-	 * @param CurrencyGetter          $currency                          The getter of the 3-letter currency code of the shop.
-	 * @param array                   $all_funding_sources               All existing funding sources.
-	 * @param bool                    $basic_checkout_validation_enabled Whether the basic JS validation of the form iss enabled.
-	 * @param bool                    $early_validation_enabled          Whether to execute WC validation of the checkout form.
-	 * @param array                   $pay_now_contexts                  The contexts that should have the Pay Now button.
-	 * @param string[]                $funding_sources_without_redirect  The sources that do not cause issues about redirecting (on mobile, ...) and sometimes not returning back.
-	 * @param bool                    $vault_v3_enabled                  Whether Vault v3 module is enabled.
-	 * @param PaymentTokensEndpoint   $payment_tokens_endpoint           Payment tokens endpoint.
-	 * @param LoggerInterface         $logger                            The logger.
-	 * @param bool                    $should_handle_shipping_in_paypal  Whether the shipping should be handled in PayPal.
-	 * @param DisabledFundingSources  $disabled_funding_sources          List of funding sources to be disabled.
-	 * @param DCCGatewayConfiguration $dcc_configuration                 The DCC Gateway Configuration.
+	 * @param string                    $module_url                        The URL to the module.
+	 * @param string                    $version                           The assets version.
+	 * @param SessionHandler            $session_handler                   The Session handler.
+	 * @param Settings                  $settings                          The Settings.
+	 * @param PayerFactory              $payer_factory                     The Payer factory.
+	 * @param string                    $client_id                         The client ID.
+	 * @param RequestData               $request_data                      The Request Data helper.
+	 * @param DccApplies                $dcc_applies                       The DCC applies helper.
+	 * @param SubscriptionHelper        $subscription_helper               The subscription helper.
+	 * @param MessagesApply             $messages_apply                    The Messages apply helper.
+	 * @param Environment               $environment                       The environment object.
+	 * @param PaymentTokenRepository    $payment_token_repository          The payment token repository.
+	 * @param SettingsStatus            $settings_status                   The Settings status helper.
+	 * @param CurrencyGetter            $currency                          The getter of the 3-letter currency code of the shop.
+	 * @param array                     $all_funding_sources               All existing funding sources.
+	 * @param bool                      $basic_checkout_validation_enabled Whether the basic JS validation of the form iss enabled.
+	 * @param bool                      $early_validation_enabled          Whether to execute WC validation of the checkout form.
+	 * @param array                     $pay_now_contexts                  The contexts that should have the Pay Now button.
+	 * @param string[]                  $funding_sources_without_redirect  The sources that do not cause issues about redirecting (on mobile, ...) and sometimes not returning back.
+	 * @param bool                      $vault_v3_enabled                  Whether Vault v3 module is enabled.
+	 * @param PaymentTokensEndpoint     $payment_tokens_endpoint           Payment tokens endpoint.
+	 * @param LoggerInterface           $logger                            The logger.
+	 * @param bool                      $should_handle_shipping_in_paypal  Whether the shipping should be handled in PayPal.
+	 * @param DisabledFundingSources    $disabled_funding_sources          List of funding sources to be disabled.
+	 * @param CardPaymentsConfiguration $dcc_configuration                 The DCC Gateway Configuration.
 	 */
 	public function __construct(
 		string $module_url,
@@ -299,7 +299,7 @@ class SmartButton implements SmartButtonInterface {
 		LoggerInterface $logger,
 		bool $should_handle_shipping_in_paypal,
 		DisabledFundingSources $disabled_funding_sources,
-		DCCGatewayConfiguration $dcc_configuration
+		CardPaymentsConfiguration $dcc_configuration
 	) {
 		$this->module_url                        = $module_url;
 		$this->version                           = $version;

@@ -13,7 +13,7 @@ use WC_Payment_Gateway;
 use WooCommerce\PayPalCommerce\AdminNotices\Entity\Message;
 use WooCommerce\PayPalCommerce\Vendor\Psr\Container\ContainerInterface;
 use WooCommerce\PayPalCommerce\WcGateway\Helper\SettingsStatus;
-use WooCommerce\PayPalCommerce\WcGateway\Helper\DCCGatewayConfiguration;
+use WooCommerce\PayPalCommerce\WcGateway\Helper\CardPaymentsConfiguration;
 
 /**
  * Creates the admin message about the gateway being enabled without the PayPal gateway.
@@ -69,20 +69,20 @@ class GatewayWithoutPayPalAdminNotice {
 	/**
 	 * Provides details about the DCC configuration.
 	 *
-	 * @var DCCGatewayConfiguration
+	 * @var CardPaymentsConfiguration
 	 */
-	private DCCGatewayConfiguration $dcc_configuration;
+	private CardPaymentsConfiguration $dcc_configuration;
 
 	/**
 	 * ConnectAdminNotice constructor.
 	 *
-	 * @param string                  $id                    The gateway ID.
-	 * @param bool                    $is_connected          Whether onboarding was completed.
-	 * @param ContainerInterface      $settings              The settings.
-	 * @param bool                    $is_payments_page      Whether the current page is the WC payment page.
-	 * @param bool                    $is_ppcp_settings_page Whether the current page is the PPCP settings page.
-	 * @param DCCGatewayConfiguration $dcc_configuration     DCC gateway configuration.
-	 * @param SettingsStatus|null     $settings_status       The Settings status helper.
+	 * @param string                    $id                    The gateway ID.
+	 * @param bool                      $is_connected          Whether onboarding was completed.
+	 * @param ContainerInterface        $settings              The settings.
+	 * @param bool                      $is_payments_page      Whether the current page is the WC payment page.
+	 * @param bool                      $is_ppcp_settings_page Whether the current page is the PPCP settings page.
+	 * @param CardPaymentsConfiguration $dcc_configuration     DCC gateway configuration.
+	 * @param SettingsStatus|null       $settings_status       The Settings status helper.
 	 */
 	public function __construct(
 		string $id,
@@ -90,7 +90,7 @@ class GatewayWithoutPayPalAdminNotice {
 		ContainerInterface $settings,
 		bool $is_payments_page,
 		bool $is_ppcp_settings_page,
-		DCCGatewayConfiguration $dcc_configuration,
+		CardPaymentsConfiguration $dcc_configuration,
 		?SettingsStatus $settings_status = null
 	) {
 		$this->id                    = $id;

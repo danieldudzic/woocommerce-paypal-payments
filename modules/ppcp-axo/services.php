@@ -17,7 +17,7 @@ use WooCommerce\PayPalCommerce\Vendor\Psr\Container\ContainerInterface;
 use WooCommerce\PayPalCommerce\WcGateway\Gateway\CreditCardGateway;
 use WooCommerce\PayPalCommerce\WcGateway\Gateway\PayPalGateway;
 use WooCommerce\PayPalCommerce\WcGateway\Settings\Settings;
-use WooCommerce\PayPalCommerce\WcGateway\Helper\DCCGatewayConfiguration;
+use WooCommerce\PayPalCommerce\WcGateway\Helper\CardPaymentsConfiguration;
 use WooCommerce\PayPalCommerce\ApiClient\Helper\CurrencyGetter;
 
 return array(
@@ -229,7 +229,7 @@ return array(
 
 	'axo.smart-button-location-notice'       => static function ( ContainerInterface $container ) : string {
 		$dcc_configuration = $container->get( 'wcgateway.configuration.card-configuration' );
-		assert( $dcc_configuration instanceof DCCGatewayConfiguration );
+		assert( $dcc_configuration instanceof CardPaymentsConfiguration );
 
 		if ( $dcc_configuration->use_fastlane() ) {
 			$fastlane_settings_url = admin_url(

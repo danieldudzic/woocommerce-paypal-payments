@@ -30,7 +30,7 @@ use WooCommerce\PayPalCommerce\WcGateway\Helper\CartCheckoutDetector;
 use WooCommerce\PayPalCommerce\WcGateway\Settings\SettingsListener;
 use WooCommerce\PayPalCommerce\WcSubscriptions\Helper\SubscriptionHelper;
 use WC_Payment_Gateways;
-use WooCommerce\PayPalCommerce\WcGateway\Helper\DCCGatewayConfiguration;
+use WooCommerce\PayPalCommerce\WcGateway\Helper\CardPaymentsConfiguration;
 
 /**
  * Class AxoModule
@@ -99,7 +99,7 @@ class AxoModule implements ServiceModule, ExtendingModule, ExecutableModule {
 				}
 
 				$dcc_configuration = $c->get( 'wcgateway.configuration.card-configuration' );
-				assert( $dcc_configuration instanceof DCCGatewayConfiguration );
+				assert( $dcc_configuration instanceof CardPaymentsConfiguration );
 
 				if ( ! $dcc_configuration->is_enabled() ) {
 					return $methods;
@@ -165,7 +165,7 @@ class AxoModule implements ServiceModule, ExtendingModule, ExecutableModule {
 				assert( $listener instanceof SettingsListener );
 
 				$dcc_configuration = $c->get( 'wcgateway.configuration.card-configuration' );
-				assert( $dcc_configuration instanceof DCCGatewayConfiguration );
+				assert( $dcc_configuration instanceof CardPaymentsConfiguration );
 
 				$listener->filter_settings(
 					$dcc_configuration->use_fastlane(),
@@ -248,7 +248,7 @@ class AxoModule implements ServiceModule, ExtendingModule, ExecutableModule {
 					'woocommerce_paypal_payments_sdk_components_hook',
 					function( $components ) use ( $c ) {
 						$dcc_configuration = $c->get( 'wcgateway.configuration.card-configuration' );
-						assert( $dcc_configuration instanceof DCCGatewayConfiguration );
+						assert( $dcc_configuration instanceof CardPaymentsConfiguration );
 
 						if ( ! $dcc_configuration->use_fastlane() ) {
 							return $components;
@@ -263,7 +263,7 @@ class AxoModule implements ServiceModule, ExtendingModule, ExecutableModule {
 					function () use ( $c ) {
 						// Add meta tag to allow feature-detection of the site's AXO payment state.
 						$dcc_configuration = $c->get( 'wcgateway.configuration.card-configuration' );
-						assert( $dcc_configuration instanceof DCCGatewayConfiguration );
+						assert( $dcc_configuration instanceof CardPaymentsConfiguration );
 
 						if ( $dcc_configuration->use_fastlane() ) {
 							// phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
@@ -404,7 +404,7 @@ class AxoModule implements ServiceModule, ExtendingModule, ExecutableModule {
 	 */
 	private function should_render_fastlane( ContainerInterface $c ): bool {
 		$dcc_configuration = $c->get( 'wcgateway.configuration.card-configuration' );
-		assert( $dcc_configuration instanceof DCCGatewayConfiguration );
+		assert( $dcc_configuration instanceof CardPaymentsConfiguration );
 
 		$subscription_helper = $c->get( 'wc-subscriptions.helper' );
 		assert( $subscription_helper instanceof SubscriptionHelper );

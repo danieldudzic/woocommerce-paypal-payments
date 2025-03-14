@@ -83,7 +83,7 @@ use WooCommerce\PayPalCommerce\WcGateway\Settings\SettingsListener;
 use WooCommerce\PayPalCommerce\WcGateway\Settings\SettingsRenderer;
 use WooCommerce\PayPalCommerce\Axo\Helper\PropertiesDictionary;
 use WooCommerce\PayPalCommerce\Applepay\ApplePayGateway;
-use WooCommerce\PayPalCommerce\WcGateway\Helper\DCCGatewayConfiguration;
+use WooCommerce\PayPalCommerce\WcGateway\Helper\CardPaymentsConfiguration;
 use WooCommerce\PayPalCommerce\WcGateway\Helper\ConnectionState;
 
 return array(
@@ -465,7 +465,7 @@ return array(
 
 			$axo_available = $container->has( 'axo.available' ) && $container->get( 'axo.available' );
 			$dcc_configuration = $container->get( 'wcgateway.configuration.card-configuration' );
-			assert( $dcc_configuration instanceof DCCGatewayConfiguration );
+			assert( $dcc_configuration instanceof CardPaymentsConfiguration );
 
 			if ( $axo_available && $dcc_configuration->use_fastlane() ) {
 				return '';
@@ -688,7 +688,7 @@ return array(
 		assert( $subscription_helper instanceof SubscriptionHelper );
 
 		$dcc_configuration = $container->get( 'wcgateway.configuration.card-configuration' );
-		assert( $dcc_configuration instanceof DCCGatewayConfiguration );
+		assert( $dcc_configuration instanceof CardPaymentsConfiguration );
 
 		$fields              = array(
 			'checkout_settings_heading'   => array(
@@ -1362,14 +1362,14 @@ return array(
 		return new TransactionUrlProvider( $sandbox_url_base, $live_url_base );
 	},
 
-	'wcgateway.configuration.card-configuration'           => static function ( ContainerInterface $container ) : DCCGatewayConfiguration {
+	'wcgateway.configuration.card-configuration'           => static function ( ContainerInterface $container ) : CardPaymentsConfiguration {
 		$connection_state = $container->get( 'settings.connection-state' );
 		assert( $connection_state instanceof ConnectionState );
 
 		$settings = $container->get( 'wcgateway.settings' );
 		assert( $settings instanceof Settings );
 
-		return new DCCGatewayConfiguration( $connection_state, $settings );
+		return new CardPaymentsConfiguration( $connection_state, $settings );
 	},
 
 	'wcgateway.helper.dcc-product-status'                  => static function ( ContainerInterface $container ) : DCCProductStatus {
