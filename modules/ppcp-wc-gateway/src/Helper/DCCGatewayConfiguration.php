@@ -120,11 +120,13 @@ class DCCGatewayConfiguration {
 		$show_on_card_options = array_keys( PropertiesDictionary::cardholder_name_options() );
 		$show_on_card_value   = null;
 
+		// Reset all flags, disable everything.
+		$this->use_acdc                = false;
 		$this->is_enabled              = false;
 		$this->use_fastlane            = false;
 		$this->gateway_title           = '';
 		$this->gateway_description     = '';
-		$this->show_name_on_card       = $show_on_card_options[0];
+		$this->show_name_on_card       = $show_on_card_options[0]; // 'no'.
 		$this->hide_fastlane_watermark = false;
 
 		/**
@@ -144,13 +146,15 @@ class DCCGatewayConfiguration {
 		}
 
 		try {
-			/*
-			 * In case one of the following three settings is missing in the DB the
-			 * Settings instance throws an exception and all features are set to "not available".
-			 */
 			$is_paypal_enabled = filter_var( $this->settings->get( 'enabled' ), FILTER_VALIDATE_BOOLEAN );
-			$is_dcc_enabled    = filter_var( $this->settings->get( 'dcc_enabled' ), FILTER_VALIDATE_BOOLEAN );
-			$is_axo_enabled    = filter_var( $this->settings->get( 'axo_enabled' ), FILTER_VALIDATE_BOOLEAN );
+
+			// When the core payment logic of the plugin is disabled, we cannot handle card payments.
+			if ( ! $is_paypal_enabled ) {
+				return;
+			}
+
+			$is_dcc_enabled     = filter_var( $this->settings->get( 'dcc_enabled' ), FILTER_VALIDATE_BOOLEAN );
+			$this->use_fastlane = filter_var( $this->settings->get( 'axo_enabled' ), FILTER_VALIDATE_BOOLEAN );
 
 			if ( $this->settings->has( 'dcc_gateway_title' ) ) {
 				$this->gateway_title = $this->settings->get( 'dcc_gateway_title' );
@@ -171,13 +175,10 @@ class DCCGatewayConfiguration {
 			}
 		} catch ( NotFoundException $exception ) {
 			// A setting is missing in the DB, disable card payments.
-			$is_paypal_enabled = false;
-			$is_dcc_enabled    = false;
-			$is_axo_enabled    = false;
+			return;
 		}
 
-		$this->is_enabled   = $is_paypal_enabled && $is_dcc_enabled;
-		$this->use_fastlane = $this->is_enabled && $is_axo_enabled;
+		$this->is_enabled = $is_dcc_enabled;
 
 		/**
 		 * Changing this to true (and hiding the watermark) has potential legal
