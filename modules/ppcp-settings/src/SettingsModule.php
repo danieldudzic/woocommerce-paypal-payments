@@ -458,7 +458,7 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 						function ( $method ) use ( $all_gateway_ids ): bool {
 							if ( ! is_object( $method )
 								|| $method->id === PayPalGateway::ID
-								|| in_array( $method->id, $all_gateway_ids, true )
+								|| ! in_array( $method->id, $all_gateway_ids, true )
 							) {
 								return true;
 							}
