@@ -52,7 +52,7 @@ class CardFieldsModule implements ServiceModule, ExtendingModule, ExecutableModu
 				$dcc_config = $c->get( 'wcgateway.configuration.card-configuration' );
 				assert( $dcc_config instanceof CardPaymentsConfiguration );
 
-				if ( ! $dcc_config->is_enabled() ) {
+				if ( ! $dcc_config->is_acdc_enabled() ) {
 					return $components;
 				}
 
