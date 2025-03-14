@@ -39,7 +39,10 @@ return array(
 	},
 
 	'axo.helpers.compatibility-checker'      => static function ( ContainerInterface $container ) : CompatibilityChecker {
-		return new CompatibilityChecker( $container->get( 'axo.fastlane-incompatible-plugin-names' ) );
+		return new CompatibilityChecker(
+			$container->get( 'axo.fastlane-incompatible-plugin-names' ),
+			$container->get( 'wcgateway.configuration.dcc' )
+		);
 	},
 
 	// If AXO is configured and onboarded.
@@ -221,9 +224,8 @@ return array(
 	},
 
 	'axo.incompatible-plugins-notice.raw'    => static function ( ContainerInterface $container ) : string {
-		$settings_notice_generator = new CompatibilityChecker(
-			$container->get( 'axo.fastlane-incompatible-plugin-names' )
-		);
+		$settings_notice_generator = $container->get( 'axo.helpers.compatibility-checker' );
+		assert( $settings_notice_generator instanceof CompatibilityChecker );
 
 		return $settings_notice_generator->generate_incompatible_plugins_notice( true );
 	},

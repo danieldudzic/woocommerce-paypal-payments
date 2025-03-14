@@ -13,6 +13,7 @@ namespace WooCommerce\PayPalCommerce\Axo\Helper;
 use WooCommerce\PayPalCommerce\WcGateway\Helper\CartCheckoutDetector;
 use WooCommerce\PayPalCommerce\WcGateway\Settings\Settings;
 use WooCommerce\PayPalCommerce\WcGateway\Exception\NotFoundException;
+use WooCommerce\PayPalCommerce\WcGateway\Helper\DCCGatewayConfiguration;
 
 /**
  * Class CompatibilityChecker
@@ -35,20 +36,23 @@ class CompatibilityChecker {
 	protected array $checkout_compatibility;
 
 	/**
-	 * Stores whether DCC is enabled.
+	 * Provides details about the DCC configuration.
 	 *
-	 * @var bool|null
+	 * @var DCCGatewayConfiguration
 	 */
-	protected ?bool $is_dcc_enabled = null;
+	private DCCGatewayConfiguration $dcc_configuration;
 
 	/**
 	 * CompatibilityChecker constructor.
 	 *
-	 * @param string[] $incompatible_plugin_names The list of Fastlane incompatible plugin names.
+	 * @param string[]                $incompatible_plugin_names The list of Fastlane incompatible plugin names.
+	 * @param DCCGatewayConfiguration $dcc_configuration         DCC gateway configuration.
 	 */
-	public function __construct( array $incompatible_plugin_names ) {
+	public function __construct( array $incompatible_plugin_names, DCCGatewayConfiguration $dcc_configuration ) {
 		$this->incompatible_plugin_names = $incompatible_plugin_names;
-		$this->checkout_compatibility    = array(
+		$this->dcc_configuration         = $dcc_configuration;
+
+		$this->checkout_compatibility = array(
 			'has_elementor_checkout' => null,
 			'has_classic_checkout'   => null,
 			'has_block_checkout'     => null,
@@ -92,24 +96,6 @@ class CompatibilityChecker {
 		}
 
 		return $this->checkout_compatibility['has_block_checkout'];
-	}
-
-	/**
-	 * Checks if DCC is enabled.
-	 *
-	 * @param Settings $settings The plugin settings container.
-	 * @return bool Whether DCC is enabled.
-	 */
-	protected function is_dcc_enabled( Settings $settings ): bool {
-		if ( $this->is_dcc_enabled === null ) {
-			try {
-				$this->is_dcc_enabled = $settings->has( 'dcc_enabled' ) && $settings->get( 'dcc_enabled' );
-			} catch ( NotFoundException $ignored ) {
-				$this->is_dcc_enabled = false;
-			}
-		}
-
-		return $this->is_dcc_enabled;
 	}
 
 	/**
@@ -242,7 +228,7 @@ class CompatibilityChecker {
 	 * @return string
 	 */
 	public function generate_settings_conflict_notice( Settings $settings, bool $raw_message = false ) : string {
-		if ( $this->is_dcc_enabled( $settings ) ) {
+		if ( $this->dcc_configuration->is_enabled() ) {
 			return '';
 		}
 
