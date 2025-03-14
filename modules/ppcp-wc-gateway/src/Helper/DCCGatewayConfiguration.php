@@ -23,7 +23,7 @@ use WooCommerce\PayPalCommerce\Axo\Helper\PropertiesDictionary;
  * This class should not implement business logic, but only provide a convenient
  * way to access gateway settings by wrapping the Settings instance.
  *
- * DI container: 'wcgateway.configuration.dcc'
+ * DI service: 'wcgateway.configuration.dcc'
  */
 class DCCGatewayConfiguration {
 	/**

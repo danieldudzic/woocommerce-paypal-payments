@@ -16,6 +16,8 @@ use WooCommerce\PayPalCommerce\WcGateway\Exception\NotFoundException;
 
 /**
  * Class CompatibilityChecker
+ *
+ * DI service: 'axo.helpers.compatibility-checker'
  */
 class CompatibilityChecker {
 	/**
