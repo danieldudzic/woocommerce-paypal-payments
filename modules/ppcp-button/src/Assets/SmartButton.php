@@ -1113,6 +1113,7 @@ document.querySelector("#payment").before(document.querySelector(".ppcp-messages
 	 */
 	public function script_data(): array {
 		$is_free_trial_cart = $this->is_free_trial_cart();
+		$is_acdc_enabled    = $this->dcc_configuration->is_acdc_enabled();
 
 		$url_params = $this->url_params();
 
@@ -1124,7 +1125,7 @@ document.querySelector("#payment").before(document.querySelector(".ppcp-messages
 			'client_id'                               => $this->client_id,
 			'currency'                                => $this->currency->get(),
 			'data_client_id'                          => array(
-				'set_attribute'                => $this->dcc_is_enabled() || $this->can_save_vault_token(),
+				'set_attribute'                => ( is_checkout() && $is_acdc_enabled ) || $this->can_save_vault_token(),
 				'endpoint'                     => \WC_AJAX::get_endpoint( DataClientIdEndpoint::ENDPOINT ),
 				'nonce'                        => wp_create_nonce( DataClientIdEndpoint::nonce() ),
 				'user'                         => get_current_user_id(),
@@ -1559,7 +1560,6 @@ document.querySelector("#payment").before(document.querySelector(".ppcp-messages
 	 * The JS SKD components we need to load.
 	 *
 	 * @return array
-	 * @throws NotFoundException If a setting was not found.
 	 */
 	private function components(): array {
 		$components = array();
@@ -1571,7 +1571,9 @@ document.querySelector("#payment").before(document.querySelector(".ppcp-messages
 		if ( $this->should_load_messages() ) {
 			$components[] = 'messages';
 		}
-		if ( $this->dcc_is_enabled() ) {
+
+		// Card payments are only available on a checkout page.
+		if ( is_checkout() && $this->dcc_configuration->is_bcdc_enabled() ) {
 			$components[] = 'hosted-fields';
 		}
 
@@ -1590,15 +1592,6 @@ document.querySelector("#payment").before(document.querySelector(".ppcp-messages
 				$this->context()
 			)
 		);
-	}
-
-	/**
-	 * Whether ACDC is available on the current page.
-	 *
-	 * @return bool
-	 */
-	private function dcc_is_enabled() : bool {
-		return is_checkout() && $this->dcc_configuration->is_acdc_enabled();
 	}
 
 	/**
