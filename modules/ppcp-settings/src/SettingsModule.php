@@ -23,6 +23,7 @@ use WooCommerce\PayPalCommerce\LocalAlternativePaymentMethods\MyBankGateway;
 use WooCommerce\PayPalCommerce\LocalAlternativePaymentMethods\P24Gateway;
 use WooCommerce\PayPalCommerce\LocalAlternativePaymentMethods\TrustlyGateway;
 use WooCommerce\PayPalCommerce\Settings\Ajax\SwitchSettingsUiEndpoint;
+use WooCommerce\PayPalCommerce\Settings\Data\Definition\PaymentMethodsDefinition;
 use WooCommerce\PayPalCommerce\Settings\Data\OnboardingProfile;
 use WooCommerce\PayPalCommerce\Settings\Data\TodosModel;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\RestEndpoint;
@@ -449,12 +450,16 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 				$methods[] = $axo_gateway;
 
 				$is_payments_page = $container->get( 'wcgateway.is-wc-payments-page' );
+				$all_gateway_ids  = $container->get( 'settings.config.all-gateway-ids' );
 
 				if ( $is_payments_page ) {
 					$methods = array_filter(
 						$methods,
-						function ( $method ): bool {
-							if ( ! is_object( $method ) || $method->id === PayPalGateway::ID ) {
+						function ( $method ) use ( $all_gateway_ids ): bool {
+							if ( ! is_object( $method )
+								|| $method->id === PayPalGateway::ID
+								|| ! in_array( $method->id, $all_gateway_ids, true )
+							) {
 								return true;
 							}
 
