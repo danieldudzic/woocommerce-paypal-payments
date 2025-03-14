@@ -431,22 +431,26 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 					return $methods;
 				}
 
-				$card_button_gateway = $container->get( 'wcgateway.card-button-gateway' );
-				assert( $card_button_gateway instanceof CardButtonGateway );
+				$is_onboarded = $container->get( 'api.merchant_id' ) !== '';
 
-				$googlepay_gateway = $container->get( 'googlepay.wc-gateway' );
-				assert( $googlepay_gateway instanceof WC_Payment_Gateway );
+				if ( $is_onboarded ) {
+					$card_button_gateway = $container->get( 'wcgateway.card-button-gateway' );
+					assert( $card_button_gateway instanceof CardButtonGateway );
 
-				$applepay_gateway = $container->get( 'applepay.wc-gateway' );
-				assert( $applepay_gateway instanceof WC_Payment_Gateway );
+					$googlepay_gateway = $container->get( 'googlepay.wc-gateway' );
+					assert( $googlepay_gateway instanceof WC_Payment_Gateway );
 
-				$axo_gateway = $container->get( 'axo.gateway' );
-				assert( $axo_gateway instanceof WC_Payment_Gateway );
+					$applepay_gateway = $container->get( 'applepay.wc-gateway' );
+					assert( $applepay_gateway instanceof WC_Payment_Gateway );
 
-				$methods[] = $card_button_gateway;
-				$methods[] = $googlepay_gateway;
-				$methods[] = $applepay_gateway;
-				$methods[] = $axo_gateway;
+					$axo_gateway = $container->get( 'axo.gateway' );
+					assert( $axo_gateway instanceof WC_Payment_Gateway );
+
+					$methods[] = $card_button_gateway;
+					$methods[] = $googlepay_gateway;
+					$methods[] = $applepay_gateway;
+					$methods[] = $axo_gateway;
+				}
 
 				$is_payments_page = $container->get( 'wcgateway.is-wc-payments-page' );
 
