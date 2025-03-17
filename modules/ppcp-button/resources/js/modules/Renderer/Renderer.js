@@ -65,8 +65,7 @@ class Renderer {
 				this.renderButtons(
 					settings.button.wrapper,
 					settings.button.style,
-					contextConfig,
-					hasEnabledSeparateGateways
+					contextConfig
 				);
 			}
 		} else {
@@ -85,7 +84,6 @@ class Renderer {
 					settings.button.wrapper,
 					style,
 					contextConfig,
-					hasEnabledSeparateGateways,
 					fundingSource
 				);
 			}
@@ -105,26 +103,15 @@ class Renderer {
 				data.wrapper,
 				data.style,
 				contextConfig,
-				hasEnabledSeparateGateways,
 				fundingSource
 			);
 		}
 	}
 
-	renderButtons(
-		wrapper,
-		style,
-		contextConfig,
-		hasEnabledSeparateGateways,
-		fundingSource = null
-	) {
+	renderButtons( wrapper, style, contextConfig, fundingSource = null ) {
 		if (
 			! document.querySelector( wrapper ) ||
-			this.isAlreadyRendered(
-				wrapper,
-				fundingSource,
-				hasEnabledSeparateGateways
-			)
+			this.isAlreadyRendered( wrapper, fundingSource )
 		) {
 			// Try to render registered buttons again in case they were removed from the DOM by an external source.
 			widgetBuilder.renderButtons( [ wrapper, fundingSource ] );
