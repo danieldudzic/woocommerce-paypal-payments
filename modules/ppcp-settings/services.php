@@ -556,7 +556,8 @@ return array(
 		return new FeaturesDefinition(
 			$container->get( 'settings.service.features_eligibilities' ),
 			$container->get( 'settings.data.general' ),
-			$merchant_capabilities
+			$merchant_capabilities,
+			$container->get( 'settings.data.settings' )
 		);
 	},
 	'settings.service.features_eligibilities'      => static function( ContainerInterface $container ): FeaturesEligibilityService {
