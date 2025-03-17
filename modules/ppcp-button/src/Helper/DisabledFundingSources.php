@@ -62,25 +62,31 @@ class DisabledFundingSources {
 	 * @return string[] List of disabled sources
 	 */
 	public function sources( string $context ) : array {
+		$block_contexts = array( 'checkout-block', 'cart-block' );
+		$flags          = array(
+			'context'          => $context,
+			'is_block_context' => in_array( $context, $block_contexts, true ),
+			'is_free_trial'    => $this->is_free_trial_cart(),
+		);
+
 		// Free trials have a shorter, special funding-source rule.
-		if ( $this->is_free_trial_cart() ) {
+		if ( $flags['is_free_trial'] ) {
 			$disable_funding = $this->get_sources_for_free_trial();
 
-			return $this->sanitize_and_filter_sources( $disable_funding );
+			return $this->sanitize_and_filter_sources( $disable_funding, $flags );
 		}
 
-		$disable_funding  = $this->get_sources_from_settings();
-		$is_block_context = in_array( $context, array( 'checkout-block', 'cart-block' ), true );
+		$disable_funding = $this->get_sources_from_settings();
 
 		// Apply rules based on context and payment methods.
 		$disable_funding = $this->apply_context_rules( $disable_funding );
 
 		// Apply special rules for block checkout.
-		if ( $is_block_context ) {
+		if ( $flags['is_block_context'] ) {
 			$disable_funding = $this->apply_block_checkout_rules( $disable_funding );
 		}
 
-		return $this->sanitize_and_filter_sources( $disable_funding );
+		return $this->sanitize_and_filter_sources( $disable_funding, $flags );
 	}
 
 	/**
@@ -166,15 +172,24 @@ class DisabledFundingSources {
 	 * Filters the disabled "funding-sources" list and returns a sanitized array.
 	 *
 	 * @param array $disable_funding The disabled funding sources.
+	 * @param array $flags           Decision flags.
 	 * @return string[]
 	 */
-	private function sanitize_and_filter_sources( array $disable_funding ) : array {
+	private function sanitize_and_filter_sources( array $disable_funding, array $flags ) : array {
 		/**
 		 * Filters the final list of disabled funding sources.
+		 *
+		 * @param array $diabled_funding The filter value, funding sources to be disabled.
+		 * @param array $flags           Decision flags to provide more context to filters.
 		 */
 		$disable_funding = apply_filters(
 			'woocommerce_paypal_payments_sdk_disabled_funding_hook',
-			$disable_funding
+			$disable_funding,
+			array(
+				'context'          => (string) ( $flags['context'] ?? '' ),
+				'is_block_context' => (bool) ( $flags['is_block_context'] ?? false ),
+				'is_free_trial'    => (bool) ( $flags['is_free_trial'] ?? false ),
+			)
 		);
 
 		// Make sure "paypal" is never disabled in the funding-sources.
