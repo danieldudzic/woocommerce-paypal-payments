@@ -9,12 +9,27 @@ import BusyStateWrapper from '../../../ReusableComponents/BusyStateWrapper';
 import OnboardingHeader from '../Components/OnboardingHeader';
 import WelcomeDocs from '../Components/WelcomeDocs';
 import AdvancedOptionsForm from '../Components/AdvancedOptionsForm';
+import { usePaymentConfig } from '../hooks/usePaymentConfig';
 
 const StepWelcome = ( { setStep, currentStep } ) => {
 	const { storeCountry } = CommonHooks.useWooSettings();
-	const { canUseCardPayments, canUseFastlane, canUsePayLater } =
-		OnboardingHooks.useFlags();
-	const nonAcdcIcons = [ 'paypal', 'visa', 'mastercard', 'amex', 'discover' ];
+	const { canUseCardPayments, canUseFastlane } = OnboardingHooks.useFlags();
+
+	const { acdcIcons, bcdcIcons } = usePaymentConfig(
+		storeCountry,
+		canUseCardPayments,
+		canUseFastlane
+	);
+
+	const onboardingHeaderDescription = canUseCardPayments
+		? __(
+				'Your all-in-one integration for PayPal checkout solutions that enable buyers to pay via PayPal, Pay Later, all major credit/debit cards, Apple Pay, Google Pay, and more.',
+				'woocommerce-paypal-payments'
+		  )
+		: __(
+				'Your all-in-one integration for PayPal checkout solutions that enable buyers to pay via PayPal, Pay Later, all major credit/debit cards, and more.',
+				'woocommerce-paypal-payments'
+		  );
 
 	return (
 		<div className="ppcp-r-page-welcome">
@@ -23,19 +38,16 @@ const StepWelcome = ( { setStep, currentStep } ) => {
 					'Welcome to PayPal Payments',
 					'woocommerce-paypal-payments'
 				) }
-				description={ __(
-					'Your all-in-one integration for PayPal checkout solutions that enable buyers to pay via PayPal, Pay Later, all major credit/debit cards, Apple Pay, Google Pay, and more.',
-					'woocommerce-paypal-payments'
-				) }
+				description={ onboardingHeaderDescription }
 			/>
 			<div className="ppcp-r-inner-container">
 				<WelcomeFeatures />
 				<PaymentMethodIcons
-					icons={ canUseCardPayments ? 'all' : nonAcdcIcons }
+					icons={ canUseCardPayments ? acdcIcons : bcdcIcons }
 				/>
 				<p className="ppcp-r-button__description">
 					{ __(
-						`Click the button below to be guided through connecting your existing PayPal account or creating a new one.You will be able to choose the payment options that are right for your store.`,
+						'Click the button below to be guided through connecting your existing PayPal account or creating a new one. You will be able to choose the payment options that are right for your store.',
 						'woocommerce-paypal-payments'
 					) }
 				</p>
@@ -56,7 +68,6 @@ const StepWelcome = ( { setStep, currentStep } ) => {
 			<WelcomeDocs
 				useAcdc={ canUseCardPayments }
 				isFastlane={ canUseFastlane }
-				isPayLater={ canUsePayLater }
 				storeCountry={ storeCountry }
 			/>
 			<Separator text={ __( 'or', 'woocommerce-paypal-payments' ) } />

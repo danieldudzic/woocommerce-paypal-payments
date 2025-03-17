@@ -71,7 +71,7 @@ class SettingsModel extends AbstractDataModel {
 			'soft_descriptor'        => '',
 
 			// Enum-type string values.
-			'subtotal_adjustment'    => 'skip_details', // Options: [correction|no_details].
+			'subtotal_adjustment'    => 'correction', // Options: [correction|no_details].
 			'landing_page'           => 'any',          // Options: [any|login|guest_checkout].
 			'button_language'        => '',             // empty or a language locale code.
 
