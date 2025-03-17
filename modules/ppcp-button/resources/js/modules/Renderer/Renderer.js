@@ -133,10 +133,7 @@ class Renderer {
 						this.onSmartButtonClick( data, actions );
 					}
 
-					venmoButtonClicked = false;
-					if ( data.fundingSource === 'venmo' ) {
-						venmoButtonClicked = true;
-					}
+					venmoButtonClicked = data.fundingSource === 'venmo';
 				},
 				onInit: ( data, actions ) => {
 					if ( this.onSmartButtonsInit ) {
@@ -219,10 +216,7 @@ class Renderer {
 
 		this.renderedSources.add( wrapper + ( fundingSource ?? '' ) );
 
-		if (
-			typeof paypal !== 'undefined' &&
-			typeof paypal.Buttons !== 'undefined'
-		) {
+		if ( window.paypal?.Buttons ) {
 			widgetBuilder.registerButtons(
 				[ wrapper, fundingSource ],
 				buttonsOptions()
@@ -239,6 +233,7 @@ class Renderer {
 		const needShipping =
 			this.defaultSettings.needShipping ||
 			this.defaultSettings.context === 'product';
+
 		return (
 			this.defaultSettings.should_handle_shipping_in_paypal &&
 			needShipping
@@ -261,6 +256,7 @@ class Renderer {
 		this.onButtonsInitListeners[ wrapper ] = reset
 			? []
 			: this.onButtonsInitListeners[ wrapper ] || [];
+
 		this.onButtonsInitListeners[ wrapper ].push( handler );
 	}
 
@@ -272,12 +268,11 @@ class Renderer {
 
 		if ( this.onButtonsInitListeners[ wrapper ] ) {
 			for ( const handler of this.onButtonsInitListeners[ wrapper ] ) {
-				if ( typeof handler === 'function' ) {
-					handler( {
-						wrapper,
-						...this.buttonsOptions[ wrapper ],
-					} );
+				if ( typeof handler !== 'function' ) {
+					continue;
 				}
+
+				handler( { wrapper, ...this.buttonsOptions[ wrapper ] } );
 			}
 		}
 	}
@@ -286,10 +281,11 @@ class Renderer {
 		if ( ! this.buttonsOptions[ wrapper ] ) {
 			return;
 		}
+
 		try {
 			this.buttonsOptions[ wrapper ].actions.disable();
 		} catch ( err ) {
-			console.log( 'Failed to disable buttons: ' + err );
+			console.warn( 'Failed to disable buttons: ' + err );
 		}
 	}
 
@@ -297,10 +293,11 @@ class Renderer {
 		if ( ! this.buttonsOptions[ wrapper ] ) {
 			return;
 		}
+
 		try {
 			this.buttonsOptions[ wrapper ].actions.enable();
 		} catch ( err ) {
-			console.log( 'Failed to enable buttons: ' + err );
+			console.warn( 'Failed to enable buttons: ' + err );
 		}
 	}
 }
