@@ -156,7 +156,7 @@ If you encounter issues with the PayPal buttons not appearing after an update, p
 
 == Changelog ==
 
-= 3.0.0 - xxxx-xx-xx =
+= 3.0.0 - 2025-03-17 =
 * Enhancement - Redesigned settings UI for new users #2908
 * Enhancement - Enable Fastlane by default on new store setups when eligible #3199
 * Enhancement - Enable support for advanced card payments and features for Hong Kong & Singapore #3089
