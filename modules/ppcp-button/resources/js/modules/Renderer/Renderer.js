@@ -54,7 +54,7 @@ class Renderer {
 
 		const enabledSeparateGateways = Object.fromEntries(
 			Object.entries( settings.separate_buttons ).filter(
-				( [ s, data ] ) => document.querySelector( data.wrapper )
+				( [ , data ] ) => document.querySelector( data.wrapper )
 			)
 		);
 		const hasEnabledSeparateGateways =
@@ -70,10 +70,12 @@ class Renderer {
 				);
 			}
 		} else {
+			const allFundingSources = paypal.getFundingSources();
+			const separateFunding = allFundingSources.filter(
+				( s ) => ! ( s in enabledSeparateGateways )
+			);
 			// render each button separately
-			for ( const fundingSource of paypal
-				.getFundingSources()
-				.filter( ( s ) => ! ( s in enabledSeparateGateways ) ) ) {
+			for ( const fundingSource of separateFunding ) {
 				const style = normalizeStyleForFundingSource(
 					settings.button.style,
 					fundingSource
@@ -161,29 +163,29 @@ class Renderer {
 			if ( this.shouldEnableShippingCallback() ) {
 				options.onShippingOptionsChange = ( data, actions ) => {
 					const shippingOptionsChange =
-					! this.isVenmoButtonClickedWhenVaultingIsEnabled(
-						venmoButtonClicked
-					)
-						? handleShippingOptionsChange(
-								data,
-								actions,
-								this.defaultSettings
-						  )
-						: null;
+						! this.isVenmoButtonClickedWhenVaultingIsEnabled(
+							venmoButtonClicked
+						)
+							? handleShippingOptionsChange(
+									data,
+									actions,
+									this.defaultSettings
+							  )
+							: null;
 
 					return shippingOptionsChange;
 				};
 				options.onShippingAddressChange = ( data, actions ) => {
 					const shippingAddressChange =
-					! this.isVenmoButtonClickedWhenVaultingIsEnabled(
-						venmoButtonClicked
-					)
-						? handleShippingAddressChange(
-								data,
-								actions,
-								this.defaultSettings
-						  )
-						: null;
+						! this.isVenmoButtonClickedWhenVaultingIsEnabled(
+							venmoButtonClicked
+						)
+							? handleShippingAddressChange(
+									data,
+									actions,
+									this.defaultSettings
+							  )
+							: null;
 
 					return shippingAddressChange;
 				};
@@ -246,7 +248,7 @@ class Renderer {
 		return venmoButtonClicked && this.defaultSettings.vaultingEnabled;
 	};
 
-    shouldEnableShippingCallback = () => {
+	shouldEnableShippingCallback = () => {
 		const needShipping =
 			this.defaultSettings.needShipping ||
 			this.defaultSettings.context === 'product';
@@ -254,7 +256,7 @@ class Renderer {
 			this.defaultSettings.should_handle_shipping_in_paypal &&
 			needShipping
 		);
-    };
+	};
 
 	isAlreadyRendered( wrapper, fundingSource ) {
 		return this.renderedSources.has( wrapper + ( fundingSource ?? '' ) );
