@@ -342,66 +342,7 @@ class SmartButton implements SmartButtonInterface {
 		}
 
 		if ( $this->dcc_configuration->is_enabled() ) {
-			add_action(
-				$this->checkout_dcc_button_renderer_hook(),
-				array( $this, 'dcc_renderer' ),
-				11
-			);
-
-			add_action(
-				$this->pay_order_renderer_hook(),
-				array( $this, 'dcc_renderer' ),
-				11
-			);
-
-			$subscription_helper = $this->subscription_helper;
-			add_filter(
-				'woocommerce_credit_card_form_fields',
-				function ( array $default_fields, $id ) use ( $subscription_helper ) : array {
-					if (
-						is_user_logged_in()
-						&& $this->settings->has( 'vault_enabled_dcc' )
-						&& $this->settings->get( 'vault_enabled_dcc' )
-						&& CreditCardGateway::ID === $id
-						&& apply_filters( 'woocommerce_paypal_payments_should_render_card_custom_fields', true )
-					) {
-
-						$default_fields['card-vault'] = sprintf(
-							'<p class="form-row form-row-wide"><label for="ppcp-credit-card-vault"><input class="ppcp-credit-card-vault" type="checkbox" id="ppcp-credit-card-vault" name="vault">%s</label></p>',
-							esc_html__( 'Save your Credit Card', 'woocommerce-paypal-payments' )
-						);
-						if ( $subscription_helper->cart_contains_subscription() || $subscription_helper->order_pay_contains_subscription() ) {
-							$default_fields['card-vault'] = '';
-						}
-
-						$tokens = $this->payment_token_repository->all_for_user_id( get_current_user_id() );
-						if ( $tokens && $this->payment_token_repository->tokens_contains_card( $tokens ) ) {
-							$output = sprintf(
-								'<p class="form-row form-row-wide"><label>%1$s</label><select id="saved-credit-card" name="saved_credit_card"><option value="">%2$s</option>',
-								esc_html__( 'Or select a saved Credit Card payment', 'woocommerce-paypal-payments' ),
-								esc_html__( 'Choose a saved payment', 'woocommerce-paypal-payments' )
-							);
-							foreach ( $tokens as $token ) {
-								if ( isset( $token->source()->card ) ) {
-									$output .= sprintf(
-										'<option value="%1$s">%2$s ...%3$s</option>',
-										$token->id(),
-										$token->source()->card->brand,
-										$token->source()->card->last_digits
-									);
-								}
-							}
-							$output .= '</select></p>';
-
-							$default_fields['saved-credit-card'] = $output;
-						}
-					}
-
-					return $default_fields;
-				},
-				10,
-				2
-			);
+			$this->render_dcc_wrapper();
 		}
 
 		if ( $this->is_free_trial_cart() ) {
@@ -438,6 +379,74 @@ class SmartButton implements SmartButtonInterface {
 		$this->sanitize_woocommerce_filters();
 
 		return true;
+	}
+
+	/**
+	 * Registers hooks and callbacks that are only relevant for DCC (ACDC) payments.
+	 *
+	 * @return void
+	 */
+	private function render_dcc_wrapper(): void {
+		add_action(
+			$this->checkout_dcc_button_renderer_hook(),
+			array( $this, 'dcc_renderer' ),
+			11
+		);
+
+		add_action(
+			$this->pay_order_renderer_hook(),
+			array( $this, 'dcc_renderer' ),
+			11
+		);
+
+		$subscription_helper = $this->subscription_helper;
+		add_filter(
+			'woocommerce_credit_card_form_fields',
+			function ( array $default_fields, $id ) use ( $subscription_helper ) : array {
+				if (
+					CreditCardGateway::ID === $id
+					&& is_user_logged_in()
+					&& $this->settings->has( 'vault_enabled_dcc' )
+					&& $this->settings->get( 'vault_enabled_dcc' )
+					&& apply_filters( 'woocommerce_paypal_payments_should_render_card_custom_fields', true )
+				) {
+
+					$default_fields['card-vault'] = sprintf(
+						'<p class="form-row form-row-wide"><label for="ppcp-credit-card-vault"><input class="ppcp-credit-card-vault" type="checkbox" id="ppcp-credit-card-vault" name="vault">%s</label></p>',
+						esc_html__( 'Save your Credit Card', 'woocommerce-paypal-payments' )
+					);
+					if ( $subscription_helper->cart_contains_subscription() || $subscription_helper->order_pay_contains_subscription() ) {
+						$default_fields['card-vault'] = '';
+					}
+
+					$tokens = $this->payment_token_repository->all_for_user_id( get_current_user_id() );
+					if ( $tokens && $this->payment_token_repository->tokens_contains_card( $tokens ) ) {
+						$output = sprintf(
+							'<p class="form-row form-row-wide"><label>%1$s</label><select id="saved-credit-card" name="saved_credit_card"><option value="">%2$s</option>',
+							esc_html__( 'Or select a saved Credit Card payment', 'woocommerce-paypal-payments' ),
+							esc_html__( 'Choose a saved payment', 'woocommerce-paypal-payments' )
+						);
+						foreach ( $tokens as $token ) {
+							if ( isset( $token->source()->card ) ) {
+								$output .= sprintf(
+									'<option value="%1$s">%2$s ...%3$s</option>',
+									$token->id(),
+									$token->source()->card->brand,
+									$token->source()->card->last_digits
+								);
+							}
+						}
+						$output .= '</select></p>';
+
+						$default_fields['saved-credit-card'] = $output;
+					}
+				}
+
+				return $default_fields;
+			},
+			10,
+			2
+		);
 	}
 
 	/**
