@@ -83,7 +83,7 @@ class ScriptDataHandler {
 	 *
 	 * @param string $hook_suffix The current admin page.
 	 */
-	public function localize_scripts( $hook_suffix ) {
+	public function localize_scripts( string $hook_suffix ): void {
 		/**
 		 * Param types removed to avoid third-party issues.
 		 *
@@ -130,9 +130,6 @@ class ScriptDataHandler {
 			$style_asset_file['dependencies'],
 			$style_asset_file['version']
 		);
-
-		$settings = $this->settings;
-		assert( $settings instanceof Settings );
 
 		wp_enqueue_style( 'ppcp-admin-settings' );
 
@@ -211,7 +208,7 @@ class ScriptDataHandler {
 			);
 			$script_data['PcpPayLaterConfigurator'] = array(
 				'config'           => array(),
-				'merchantClientId' => $settings->get( 'client_id' ),
+				'merchantClientId' => $this->settings->get( 'client_id' ),
 				'partnerClientId'  => $this->merchant_id,
 				'bnCode'           => PPCP_PAYPAL_BN_CODE,
 			);

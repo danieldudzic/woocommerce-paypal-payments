@@ -151,7 +151,7 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 
 		add_action(
 			'admin_enqueue_scripts',
-			function ( $hook_suffix ) use ( $container ) : void {
+			function ( string $hook_suffix ) use ( $container ) : void {
 				$script_data_handler = $container->get( 'settings.service.script-data-handler' );
 				$script_data_handler->localize_scripts( $hook_suffix );
 			}
