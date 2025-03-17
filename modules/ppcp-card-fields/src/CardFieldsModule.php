@@ -69,7 +69,11 @@ class CardFieldsModule implements ServiceModule, ExtendingModule, ExecutableModu
 
 		add_filter(
 			'woocommerce_paypal_payments_sdk_disabled_funding_hook',
-			static function ( array $disable_funding ) use ( $c ) {
+			static function ( array $disable_funding, array $flags ) use ( $c ) {
+				if ( true === $flags['is_block_context'] ) {
+					return $disable_funding;
+				}
+
 				$dcc_config = $c->get( 'wcgateway.configuration.card-configuration' );
 				assert( $dcc_config instanceof CardPaymentsConfiguration );
 
@@ -82,7 +86,9 @@ class CardFieldsModule implements ServiceModule, ExtendingModule, ExecutableModu
 					$disable_funding,
 					static fn( string $funding_source ) => $funding_source !== 'card'
 				);
-			}
+			},
+			10,
+			2
 		);
 
 		add_filter(
