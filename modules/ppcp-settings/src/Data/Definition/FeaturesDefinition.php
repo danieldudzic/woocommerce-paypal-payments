@@ -104,8 +104,8 @@ class FeaturesDefinition {
 						'type'     => 'secondary',
 						'text'     => __( 'Configure', 'woocommerce-paypal-payments' ),
 						'action'   => array(
-							'type' => 'tab',
-							'tab'  => 'settings',
+							'type'    => 'tab',
+							'tab'     => 'settings',
 							'section' => 'ppcp-save-paypal-and-venmo',
 						),
 						'showWhen' => 'enabled',
