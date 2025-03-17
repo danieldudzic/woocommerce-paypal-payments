@@ -14,6 +14,7 @@
 * Fix - Error in continuation mode due to wrong gateway selection on Checkout block #2996
 * Fix - Error in error in PayLaterConfigurator #2989
 * Tweak - Removed currency requirement for Vault v3 #2919
+* Tweak - Update plugin author from WooCommerce to PayPal
 
 = 2.9.6 - 2025-01-06 =
 * Fix - NOT_ENABLED_TO_VAULT_PAYMENT_SOURCE on PayPal transactions when using ACDC Vaulting without PayPal Vault approval #2955
