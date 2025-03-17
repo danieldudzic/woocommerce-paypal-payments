@@ -21,6 +21,16 @@ const StepWelcome = ( { setStep, currentStep } ) => {
 		canUseFastlane
 	);
 
+	const onboardingHeaderDescription = canUseCardPayments
+		? __(
+				'Your all-in-one integration for PayPal checkout solutions that enable buyers to pay via PayPal, Pay Later, all major credit/debit cards, Apple Pay, Google Pay, and more.',
+				'woocommerce-paypal-payments'
+		  )
+		: __(
+				'Your all-in-one integration for PayPal checkout solutions that enable buyers to pay via PayPal, Pay Later, all major credit/debit cards, and more.',
+				'woocommerce-paypal-payments'
+		  );
+
 	return (
 		<div className="ppcp-r-page-welcome">
 			<OnboardingHeader
@@ -28,10 +38,7 @@ const StepWelcome = ( { setStep, currentStep } ) => {
 					'Welcome to PayPal Payments',
 					'woocommerce-paypal-payments'
 				) }
-				description={ __(
-					'Your all-in-one integration for PayPal checkout solutions that enable buyers to pay via PayPal, Pay Later, all major credit/debit cards, Apple Pay, Google Pay, and more.',
-					'woocommerce-paypal-payments'
-				) }
+				description={ onboardingHeaderDescription }
 			/>
 			<div className="ppcp-r-inner-container">
 				<WelcomeFeatures />
