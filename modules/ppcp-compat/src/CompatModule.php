@@ -508,6 +508,18 @@ class CompatModule implements ServiceModule, ExtendingModule, ExecutableModule {
 			return;
 		}
 
-		// Add filters here...
+		add_filter(
+			'woocommerce_paypal_payments_is_acdc_active',
+			static function ( bool $is_acdc ) use ( $container ) : bool {
+				$settings = $container->get( 'wcgateway.settings' );
+				assert( $settings instanceof Settings );
+
+				try {
+					return (bool) $settings->get( 'dcc_enabled' );
+				} catch ( NotFoundException $exception ) {
+					return $is_acdc;
+				}
+			}
+		);
 	}
 }
