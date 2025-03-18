@@ -17,6 +17,7 @@ use WP_REST_Response;
 use WP_REST_Request;
 use WooCommerce\PayPalCommerce\Settings\Data\TodosModel;
 use WooCommerce\PayPalCommerce\Settings\Data\Definition\TodosDefinition;
+use WooCommerce\PayPalCommerce\Settings\Service\TodosSortingAndFilteringService;
 
 /**
  * REST controller for the "Things To Do" items in the Overview tab.
@@ -55,20 +56,30 @@ class TodosRestEndpoint extends RestEndpoint {
 	protected SettingsRestEndpoint $settings;
 
 	/**
+	 * The todos sorting service.
+	 *
+	 * @var TodosSortingAndFilteringService
+	 */
+	protected TodosSortingAndFilteringService $sorting_service;
+
+	/**
 	 * TodosRestEndpoint constructor.
 	 *
-	 * @param TodosModel           $todos The todos model instance.
-	 * @param TodosDefinition      $todos_definition The todos definition instance.
-	 * @param SettingsRestEndpoint $settings The settings endpoint instance.
+	 * @param TodosModel                      $todos The todos model instance.
+	 * @param TodosDefinition                 $todos_definition The todos definition instance.
+	 * @param SettingsRestEndpoint            $settings The settings endpoint instance.
+	 * @param TodosSortingAndFilteringService $sorting_service The todos sorting service.
 	 */
 	public function __construct(
 		TodosModel $todos,
 		TodosDefinition $todos_definition,
-		SettingsRestEndpoint $settings
+		SettingsRestEndpoint $settings,
+		TodosSortingAndFilteringService $sorting_service
 	) {
 		$this->todos            = $todos;
 		$this->todos_definition = $todos_definition;
 		$this->settings         = $settings;
+		$this->sorting_service  = $sorting_service;
 	}
 
 	/**
@@ -77,7 +88,7 @@ class TodosRestEndpoint extends RestEndpoint {
 	public function register_routes(): void {
 		// GET/POST /todos - Get todos list and update dismissed todos.
 		register_rest_route(
-			$this->namespace,
+			static::NAMESPACE,
 			'/' . $this->rest_base,
 			array(
 				array(
@@ -95,7 +106,7 @@ class TodosRestEndpoint extends RestEndpoint {
 
 		// POST /todos/reset - Reset dismissed todos.
 		register_rest_route(
-			$this->namespace,
+			static::NAMESPACE,
 			'/' . $this->rest_base . '/reset',
 			array(
 				'methods'             => WP_REST_Server::EDITABLE,
@@ -106,7 +117,7 @@ class TodosRestEndpoint extends RestEndpoint {
 
 		// POST /todos/complete - Mark todo as completed on click.
 		register_rest_route(
-			$this->namespace,
+			static::NAMESPACE,
 			'/' . $this->rest_base . '/complete',
 			array(
 				'methods'             => WP_REST_Server::EDITABLE,
@@ -146,9 +157,11 @@ class TodosRestEndpoint extends RestEndpoint {
 			}
 		}
 
+		$filtered_todos = $this->sorting_service->apply_all_priority_filters( $todos );
+
 		return $this->return_success(
 			array(
-				'todos'                 => $todos,
+				'todos'                 => $filtered_todos,
 				'dismissedTodos'        => $dismissed_ids,
 				'completedOnClickTodos' => $completed_onclick_ids,
 			)

@@ -75,15 +75,6 @@ export const setActiveModal = ( activeModal ) =>
 	setTransient( 'activeModal', activeModal );
 
 /**
- * Transient. Sets the active settings highlight.
- *
- * @param {string} activeHighlight
- * @return {Action} The action.
- */
-export const setActiveHighlight = ( activeHighlight ) =>
-	setTransient( 'activeHighlight', activeHighlight );
-
-/**
  * Persistent. Sets the sandbox mode on or off.
  *
  * @param {boolean} useSandbox
@@ -109,6 +100,17 @@ export const setManualConnectionMode = ( useManualConnection ) =>
  */
 export const setWebhooks = ( webhooks ) =>
 	setPersistent( 'webhooks', webhooks );
+
+/**
+ * Replace merchant details in the store.
+ *
+ * @param {Object} merchant - The new merchant details.
+ * @return {Action} The action.
+ */
+export const setMerchant = ( merchant ) => ( {
+	type: ACTION_TYPES.SET_MERCHANT,
+	payload: { merchant },
+} );
 
 /**
  * Reset merchant details in the store.

@@ -28,45 +28,40 @@ export function persist() {
 }
 
 /**
- * Side effect. Fetches the ISU-login URL for a sandbox account.
+ * Thunk action creator. Forces a data refresh from the REST API, replacing the current Redux values.
  *
  * @return {Function} The thunk function.
  */
-export function sandboxOnboardingUrl() {
-	return async () => {
-		try {
-			return apiFetch( {
-				path: REST_CONNECTION_URL_PATH,
-				method: 'POST',
-				data: {
-					useSandbox: true,
-					products: [ 'EXPRESS_CHECKOUT' ],
-				},
-			} );
-		} catch ( e ) {
-			return {
-				success: false,
-				error: e,
-			};
-		}
+export function refresh() {
+	return ( { dispatch, select } ) => {
+		dispatch.invalidateResolutionForStore();
+
+		select.persistentData();
 	};
 }
 
 /**
- * Side effect. Fetches the ISU-login URL for a production account.
+ * Side effect. Fetches the ISU-login URL for an account.
  *
- * @param {string[]} products Which products/features to display in the ISU popup.
+ * @param {string[]} [products=[]] Which products/features to display in the ISU popup.
+ * @param {Object}   [options={}]  Options to customize the onboarding workflow.
+ * @param            isSandbox     True if is sandbox, otherwise false.
  * @return {Function} The thunk function.
  */
-export function productionOnboardingUrl( products = [] ) {
+export function onboardingUrl(
+	products = [],
+	options = {},
+	isSandbox = false
+) {
 	return async () => {
 		try {
 			return apiFetch( {
 				path: REST_CONNECTION_URL_PATH,
 				method: 'POST',
 				data: {
-					useSandbox: false,
+					useSandbox: isSandbox,
 					products,
+					options,
 				},
 			} );
 		} catch ( e ) {
@@ -153,13 +148,17 @@ export function authenticateWithOAuth( sharedId, authCode, useSandbox ) {
 /**
  * Side effect. Checks webhook simulation.
  *
+ * @param {boolean} fullReset When true, all plugin settings are reset to initial values.
  * @return {Function} The thunk function.
  */
-export function disconnectMerchant() {
+export function disconnectMerchant( fullReset = false ) {
 	return async () => {
 		return await apiFetch( {
 			path: REST_DISCONNECT_MERCHANT_PATH,
 			method: 'POST',
+			data: {
+				reset: fullReset,
+			},
 		} );
 	};
 }

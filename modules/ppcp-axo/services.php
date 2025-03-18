@@ -12,7 +12,7 @@ namespace WooCommerce\PayPalCommerce\Axo;
 use WooCommerce\PayPalCommerce\Axo\Assets\AxoManager;
 use WooCommerce\PayPalCommerce\Axo\Gateway\AxoGateway;
 use WooCommerce\PayPalCommerce\Axo\Helper\ApmApplies;
-use WooCommerce\PayPalCommerce\Axo\Helper\SettingsNoticeGenerator;
+use WooCommerce\PayPalCommerce\Axo\Helper\CompatibilityChecker;
 use WooCommerce\PayPalCommerce\Vendor\Psr\Container\ContainerInterface;
 use WooCommerce\PayPalCommerce\WcGateway\Gateway\CreditCardGateway;
 use WooCommerce\PayPalCommerce\WcGateway\Gateway\PayPalGateway;
@@ -38,8 +38,8 @@ return array(
 		);
 	},
 
-	'axo.helpers.settings-notice-generator'  => static function ( ContainerInterface $container ) : SettingsNoticeGenerator {
-		return new SettingsNoticeGenerator( $container->get( 'axo.fastlane-incompatible-plugin-names' ) );
+	'axo.helpers.compatibility-checker'      => static function ( ContainerInterface $container ) : CompatibilityChecker {
+		return new CompatibilityChecker( $container->get( 'axo.fastlane-incompatible-plugin-names' ) );
 	},
 
 	// If AXO is configured and onboarded.
@@ -66,7 +66,7 @@ return array(
 			$container->get( 'ppcp.asset-version' ),
 			$container->get( 'session.handler' ),
 			$container->get( 'wcgateway.settings' ),
-			$container->get( 'onboarding.environment' ),
+			$container->get( 'settings.environment' ),
 			$container->get( 'axo.insights' ),
 			$container->get( 'wcgateway.settings.status' ),
 			$container->get( 'api.shop.currency.getter' ),
@@ -89,7 +89,7 @@ return array(
 			$container->get( 'api.factory.purchase-unit' ),
 			$container->get( 'api.factory.shipping-preference' ),
 			$container->get( 'wcgateway.transaction-url-provider' ),
-			$container->get( 'onboarding.environment' ),
+			$container->get( 'settings.environment' ),
 			$container->get( 'woocommerce.logger.woocommerce' )
 		);
 	},
@@ -190,27 +190,42 @@ return array(
 		);
 	},
 	'axo.settings-conflict-notice'           => static function ( ContainerInterface $container ) : string {
-		$settings_notice_generator = $container->get( 'axo.helpers.settings-notice-generator' );
-		assert( $settings_notice_generator instanceof SettingsNoticeGenerator );
+		$compatibility_checker = $container->get( 'axo.helpers.compatibility-checker' );
+		assert( $compatibility_checker instanceof CompatibilityChecker );
 
 		$settings = $container->get( 'wcgateway.settings' );
 		assert( $settings instanceof Settings );
 
-		return $settings_notice_generator->generate_settings_conflict_notice( $settings );
+		return $compatibility_checker->generate_settings_conflict_notice( $settings );
 	},
 
 	'axo.checkout-config-notice'             => static function ( ContainerInterface $container ) : string {
-		$settings_notice_generator = $container->get( 'axo.helpers.settings-notice-generator' );
-		assert( $settings_notice_generator instanceof SettingsNoticeGenerator );
+		$compatibility_checker = $container->get( 'axo.helpers.compatibility-checker' );
+		assert( $compatibility_checker instanceof CompatibilityChecker );
 
-		return $settings_notice_generator->generate_checkout_notice();
+		return $compatibility_checker->generate_checkout_notice();
+	},
+
+	'axo.checkout-config-notice.raw'         => static function ( ContainerInterface $container ) : string {
+		$compatibility_checker = $container->get( 'axo.helpers.compatibility-checker' );
+		assert( $compatibility_checker instanceof CompatibilityChecker );
+
+		return $compatibility_checker->generate_checkout_notice( true );
 	},
 
 	'axo.incompatible-plugins-notice'        => static function ( ContainerInterface $container ) : string {
-		$settings_notice_generator = $container->get( 'axo.helpers.settings-notice-generator' );
-		assert( $settings_notice_generator instanceof SettingsNoticeGenerator );
+		$settings_notice_generator = $container->get( 'axo.helpers.compatibility-checker' );
+		assert( $settings_notice_generator instanceof CompatibilityChecker );
 
 		return $settings_notice_generator->generate_incompatible_plugins_notice();
+	},
+
+	'axo.incompatible-plugins-notice.raw'    => static function ( ContainerInterface $container ) : string {
+		$settings_notice_generator = new CompatibilityChecker(
+			$container->get( 'axo.fastlane-incompatible-plugin-names' )
+		);
+
+		return $settings_notice_generator->generate_incompatible_plugins_notice( true );
 	},
 
 	'axo.smart-button-location-notice'       => static function ( ContainerInterface $container ) : string {

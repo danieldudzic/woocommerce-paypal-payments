@@ -12,6 +12,8 @@ namespace WooCommerce\PayPalCommerce\Settings\Service;
 use JsonException;
 use Throwable;
 use Psr\Log\LoggerInterface;
+use WooCommerce\PayPalCommerce\ApiClient\Endpoint\PartnersEndpoint;
+use WooCommerce\PayPalCommerce\ApiClient\Exception\PayPalApiException;
 use WooCommerce\PayPalCommerce\ApiClient\Exception\RuntimeException;
 use WooCommerce\PayPalCommerce\ApiClient\Authentication\PayPalBearer;
 use WooCommerce\PayPalCommerce\ApiClient\Endpoint\LoginSeller;
@@ -24,6 +26,8 @@ use WooCommerce\WooCommerce\Logging\Logger\NullLogger;
 use WooCommerce\PayPalCommerce\Settings\DTO\MerchantConnectionDTO;
 use WooCommerce\PayPalCommerce\Webhooks\WebhookRegistrar;
 use WooCommerce\PayPalCommerce\Settings\Enum\SellerTypeEnum;
+use WooCommerce\PayPalCommerce\WcGateway\Helper\ConnectionState;
+use WooCommerce\PayPalCommerce\Settings\Endpoint\CommonRestEndpoint;
 
 /**
  * Class that manages the connection to PayPal.
@@ -65,26 +69,46 @@ class AuthenticationManager {
 	private PartnerReferralsData $referrals_data;
 
 	/**
+	 * The connection state manager.
+	 *
+	 * @var ConnectionState
+	 */
+	private ConnectionState $connection_state;
+
+	/**
+	 * Internal REST service, to consume own REST handlers in a separate request.
+	 *
+	 * @var InternalRestService
+	 */
+	private InternalRestService $rest_service;
+
+	/**
 	 * Constructor.
 	 *
-	 * @param GeneralSettings      $common_settings Data model that stores the connection details.
-	 * @param EnvironmentConfig    $connection_host API host for direct authentication.
-	 * @param EnvironmentConfig    $login_endpoint  API handler to fetch merchant credentials.
-	 * @param PartnerReferralsData $referrals_data  Partner referrals data.
-	 * @param ?LoggerInterface     $logger          Logging instance.
+	 * @param GeneralSettings      $common_settings  Data model that stores the connection details.
+	 * @param EnvironmentConfig    $connection_host  API host for direct authentication.
+	 * @param EnvironmentConfig    $login_endpoint   API handler to fetch merchant credentials.
+	 * @param PartnerReferralsData $referrals_data   Partner referrals data.
+	 * @param ConnectionState      $connection_state Connection state manager.
+	 * @param InternalRestService  $rest_service     Allows calling internal REST endpoints.
+	 * @param ?LoggerInterface     $logger           Logging instance.
 	 */
 	public function __construct(
 		GeneralSettings $common_settings,
 		EnvironmentConfig $connection_host,
 		EnvironmentConfig $login_endpoint,
 		PartnerReferralsData $referrals_data,
+		ConnectionState $connection_state,
+		InternalRestService $rest_service,
 		?LoggerInterface $logger = null
 	) {
-		$this->common_settings = $common_settings;
-		$this->connection_host = $connection_host;
-		$this->login_endpoint  = $login_endpoint;
-		$this->referrals_data  = $referrals_data;
-		$this->logger          = $logger ?: new NullLogger();
+		$this->common_settings  = $common_settings;
+		$this->connection_host  = $connection_host;
+		$this->login_endpoint   = $login_endpoint;
+		$this->referrals_data   = $referrals_data;
+		$this->connection_state = $connection_state;
+		$this->rest_service     = $rest_service;
+		$this->logger           = $logger ?: new NullLogger();
 	}
 
 	/**
@@ -111,6 +135,9 @@ class AuthenticationManager {
 
 		$this->common_settings->reset_merchant_data();
 		$this->common_settings->save();
+
+		// Update the connection status and clear the environment flags.
+		$this->connection_state->disconnect();
 
 		/**
 		 * Broadcast, that the plugin disconnected from PayPal. This allows other
@@ -162,6 +189,7 @@ class AuthenticationManager {
 	 * PayPal account using a client ID and secret.
 	 *
 	 * Part of the "Direct Connection" (Manual Connection) flow.
+	 * This connection type is only available to business merchants.
 	 *
 	 * @param bool   $use_sandbox   Whether to use the sandbox mode.
 	 * @param string $client_id     The client ID.
@@ -188,6 +216,7 @@ class AuthenticationManager {
 			$client_secret,
 			$payee['merchant_id'],
 			$payee['email_address'],
+			'',
 			SellerTypeEnum::BUSINESS
 		);
 
@@ -403,6 +432,73 @@ class AuthenticationManager {
 	}
 
 	/**
+	 * Fetches additional details about the connected merchant from PayPal
+	 * and stores them in the DB.
+	 *
+	 * This process only works after persisting basic connection details.
+	 *
+	 * @return void
+	 */
+	private function enrich_merchant_details() : void {
+		if ( ! $this->common_settings->is_merchant_connected() ) {
+			return;
+		}
+
+		try {
+			$endpoint = CommonRestEndpoint::seller_account_route( true );
+			$response = $this->rest_service->get_response( $endpoint );
+
+			if ( ! $response['success'] ) {
+				$this->enrichment_failed( 'Server failed to provide data', $response );
+
+				return;
+			}
+
+			$details = $response['data'];
+		} catch ( Throwable $exception ) {
+			$this->enrichment_failed( $exception->getMessage() );
+
+			return;
+		}
+
+		if ( ! isset( $details['country'] ) ) {
+			$this->enrichment_failed( 'Missing country in merchant details' );
+
+			return;
+		}
+
+		// Request the merchant details via a PayPal API request.
+		$connection = $this->common_settings->get_merchant_data();
+
+		// Enrich the connection details with additional details.
+		$connection->merchant_country = $details['country'];
+
+		// Persist the changes.
+		$this->common_settings->set_merchant_data( $connection );
+		$this->common_settings->save();
+	}
+
+	/**
+	 * When the `enrich_merchant_details()` call fails, this method might
+	 * set up a cron task to retry the attempt after some time.
+	 *
+	 * @param string $reason  Reason for the failure, will be logged.
+	 * @param mixed  $details Optional. Additional details to log.
+	 * @return void
+	 */
+	private function enrichment_failed( string $reason, $details = null ) : void {
+		$this->logger->warning(
+			'Failed to enrich merchant details: ' . $reason,
+			array(
+				'reason'  => $reason,
+				'details' => $details,
+			)
+		);
+
+		// TODO: Schedule a cron task to retry the enrichment, e.g. with wp_schedule_single_event().
+	}
+
+	/**
 	 * Stores the provided details in the data model.
 	 *
 	 * @param MerchantConnectionDTO $connection Connection details to persist.
@@ -419,6 +515,12 @@ class AuthenticationManager {
 
 		if ( $this->common_settings->is_merchant_connected() ) {
 			$this->logger->info( 'Merchant successfully connected to PayPal' );
+
+			// Update the connection status and set the environment flags.
+			$this->connection_state->connect( $connection->is_sandbox );
+
+			// At this point, we can use the PayPal API to get more details about the seller.
+			$this->enrich_merchant_details();
 
 			/**
 			 * Request to flush caches before authenticating the merchant, to

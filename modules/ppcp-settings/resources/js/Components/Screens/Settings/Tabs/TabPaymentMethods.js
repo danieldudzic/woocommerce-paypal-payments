@@ -1,16 +1,22 @@
 import { __ } from '@wordpress/i18n';
 import { useCallback } from '@wordpress/element';
 
-import SettingsCard from '../../../ReusableComponents/SettingsCard';
-import { PaymentMethodsBlock } from '../../../ReusableComponents/SettingsBlocks';
-import { PaymentHooks } from '../../../../data';
+import { CommonHooks, OnboardingHooks, PaymentHooks } from '../../../../data';
 import { useActiveModal } from '../../../../data/common/hooks';
 import Modal from '../Components/Payment/Modal';
+import PaymentMethodCard from '../Components/Payment/PaymentMethodCard';
 
 const TabPaymentMethods = () => {
 	const methods = PaymentHooks.usePaymentMethods();
-	const { setPersistent, changePaymentSettings } = PaymentHooks.useStore();
+	const store = PaymentHooks.useStore();
+	const { setPersistent, changePaymentSettings } = store;
 	const { activeModal, setActiveModal } = useActiveModal();
+
+	// Get all methods as a map for dependency checking
+	const methodsMap = {};
+	methods.all.forEach( ( method ) => {
+		methodsMap[ method.id ] = method;
+	} );
 
 	const getActiveMethod = () => {
 		if ( ! activeModal ) {
@@ -45,6 +51,9 @@ const TabPaymentMethods = () => {
 		[ changePaymentSettings, setActiveModal, setPersistent ]
 	);
 
+	const merchant = CommonHooks.useMerchant();
+	const { canUseCardPayments } = OnboardingHooks.useFlags();
+
 	return (
 		<div className="ppcp-r-payment-methods">
 			<PaymentMethodCard
@@ -57,21 +66,25 @@ const TabPaymentMethods = () => {
 				icon="icon-checkout-standard.svg"
 				methods={ methods.paypal }
 				onTriggerModal={ setActiveModal }
+				methodsMap={ methodsMap }
 			/>
-			<PaymentMethodCard
-				id="ppcp-card-payments-card"
-				title={ __(
-					'Online Card Payments',
-					'woocommerce-paypal-payments'
-				) }
-				description={ __(
-					'Select your preferred card payment options for efficient payment processing.',
-					'woocommerce-paypal-payments'
-				) }
-				icon="icon-checkout-online-methods.svg"
-				methods={ methods.cardPayment }
-				onTriggerModal={ setActiveModal }
-			/>
+			{ merchant.isBusinessSeller && canUseCardPayments && (
+				<PaymentMethodCard
+					id="ppcp-card-payments-card"
+					title={ __(
+						'Online Card Payments',
+						'woocommerce-paypal-payments'
+					) }
+					description={ __(
+						'Select your preferred card payment options for efficient payment processing.',
+						'woocommerce-paypal-payments'
+					) }
+					icon="icon-checkout-online-methods.svg"
+					methods={ methods.cardPayment }
+					onTriggerModal={ setActiveModal }
+					methodsMap={ methodsMap }
+				/>
+			) }
 			<PaymentMethodCard
 				id="ppcp-alternative-payments-card"
 				title={ __(
@@ -85,6 +98,7 @@ const TabPaymentMethods = () => {
 				icon="icon-checkout-alternative-methods.svg"
 				methods={ methods.apm }
 				onTriggerModal={ setActiveModal }
+				methodsMap={ methodsMap }
 			/>
 
 			{ activeModal && (
@@ -99,25 +113,3 @@ const TabPaymentMethods = () => {
 };
 
 export default TabPaymentMethods;
-
-const PaymentMethodCard = ( {
-	id,
-	title,
-	description,
-	icon,
-	methods,
-	onTriggerModal,
-} ) => (
-	<SettingsCard
-		id={ id }
-		title={ title }
-		description={ description }
-		icon={ icon }
-		contentContainer={ false }
-	>
-		<PaymentMethodsBlock
-			paymentMethods={ methods }
-			onTriggerModal={ onTriggerModal }
-		/>
-	</SettingsCard>
-);

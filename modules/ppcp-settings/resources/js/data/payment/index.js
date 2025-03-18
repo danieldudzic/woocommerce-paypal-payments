@@ -7,6 +7,8 @@ import * as actions from './actions';
 import * as hooks from './hooks';
 import * as resolvers from './resolvers';
 import { initTodoSync } from '../sync/todo-state-sync';
+import { initPaymentDependencySync } from '../sync/payment-methods-sync';
+import { initSettingBasedPaymentMethodsSync } from '../sync/setting-based-payment-methods-sync';
 
 /**
  * Initializes and registers the settings store with WordPress data layer.
@@ -24,8 +26,12 @@ export const initStore = () => {
 
 	register( store );
 
-	// Initialize todo sync after store registration. Potentially should be moved elsewhere.
+	// Initialize todo sync after store registration.
 	initTodoSync();
+
+	// Initialize payment method dependency sync.
+	initPaymentDependencySync();
+	initSettingBasedPaymentMethodsSync();
 
 	return Boolean( wp.data.select( STORE_NAME ) );
 };

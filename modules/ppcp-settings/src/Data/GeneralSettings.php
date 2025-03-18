@@ -74,6 +74,7 @@ class GeneralSettings extends AbstractDataModel {
 			'sandbox_merchant'      => false,
 			'merchant_id'           => '',
 			'merchant_email'        => '',
+			'merchant_country'      => '',
 			'client_id'             => '',
 			'client_secret'         => '',
 			'seller_type'           => 'unknown',
@@ -138,6 +139,7 @@ class GeneralSettings extends AbstractDataModel {
 		$this->data['sandbox_merchant']   = $connection->is_sandbox;
 		$this->data['merchant_id']        = sanitize_text_field( $connection->merchant_id );
 		$this->data['merchant_email']     = sanitize_email( $connection->merchant_email );
+		$this->data['merchant_country']   = sanitize_text_field( $connection->merchant_country );
 		$this->data['client_id']          = sanitize_text_field( $connection->client_id );
 		$this->data['client_secret']      = sanitize_text_field( $connection->client_secret );
 		$this->data['seller_type']        = sanitize_text_field( $connection->seller_type );
@@ -156,6 +158,7 @@ class GeneralSettings extends AbstractDataModel {
 			$this->data['client_secret'],
 			$this->data['merchant_id'],
 			$this->data['merchant_email'],
+			$this->data['merchant_country'],
 			$this->data['seller_type']
 		);
 	}
@@ -171,6 +174,7 @@ class GeneralSettings extends AbstractDataModel {
 		$this->data['sandbox_merchant']   = $defaults['sandbox_merchant'];
 		$this->data['merchant_id']        = $defaults['merchant_id'];
 		$this->data['merchant_email']     = $defaults['merchant_email'];
+		$this->data['merchant_country']   = $defaults['merchant_country'];
 		$this->data['client_id']          = $defaults['client_id'];
 		$this->data['client_secret']      = $defaults['client_secret'];
 		$this->data['seller_type']        = $defaults['seller_type'];
@@ -238,5 +242,19 @@ class GeneralSettings extends AbstractDataModel {
 	 */
 	public function get_merchant_email() : string {
 		return $this->data['merchant_email'];
+	}
+
+	/**
+	 * Gets the currently connected merchant's country.
+	 *
+	 * @return string
+	 */
+	public function get_merchant_country() : string {
+		// When we don't know the merchant's real country, we assume it's the Woo store-country.
+		if ( empty( $this->data['merchant_country'] ) ) {
+			return $this->woo_settings['country'];
+		}
+
+		return $this->data['merchant_country'];
 	}
 }

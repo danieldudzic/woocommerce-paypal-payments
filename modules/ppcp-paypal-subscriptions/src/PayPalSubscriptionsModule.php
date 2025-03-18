@@ -374,7 +374,7 @@ class PayPalSubscriptionsModule implements ServiceModule, ExtendingModule, Execu
 			function( $subscription ) use ( $c ) {
 				$subscription_id = $subscription->get_meta( 'ppcp_subscription' ) ?? '';
 				if ( $subscription_id ) {
-					$environment = $c->get( 'onboarding.environment' );
+					$environment = $c->get( 'settings.environment' );
 					$host        = $environment->current_environment_is( Environment::SANDBOX ) ? 'https://www.sandbox.paypal.com' : 'https://www.paypal.com';
 					?>
 					<tr>
@@ -488,7 +488,7 @@ class PayPalSubscriptionsModule implements ServiceModule, ExtendingModule, Execu
 							return;
 						}
 
-						$environment = $c->get( 'onboarding.environment' );
+						$environment = $c->get( 'settings.environment' );
 						echo '<div class="options_group subscription_pricing show_if_subscription hidden">';
 						$this->render_paypal_subscription_fields( $product, $environment );
 						echo '</div>';
@@ -522,7 +522,7 @@ class PayPalSubscriptionsModule implements ServiceModule, ExtendingModule, Execu
 							return;
 						}
 
-						$environment = $c->get( 'onboarding.environment' );
+						$environment = $c->get( 'settings.environment' );
 						$this->render_paypal_subscription_fields( $product, $environment );
 
 					}

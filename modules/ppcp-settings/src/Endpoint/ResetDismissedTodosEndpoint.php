@@ -54,7 +54,7 @@ class ResetDismissedTodosEndpoint extends RestEndpoint {
 		 * POST wc/v3/wc_paypal/reset-dismissed-todos
 		 */
 		register_rest_route(
-			$this->namespace,
+			static::NAMESPACE,
 			'/' . $this->rest_base,
 			array(
 				'methods'             => WP_REST_Server::EDITABLE,

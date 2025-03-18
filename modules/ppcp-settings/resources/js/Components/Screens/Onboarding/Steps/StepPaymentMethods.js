@@ -59,33 +59,18 @@ const StepPaymentMethods = () => {
 export default StepPaymentMethods;
 
 const PaymentStepTitle = () => {
-	const { storeCountry } = CommonHooks.useWooSettings();
-
-	if ( 'US' === storeCountry ) {
-		return __(
-			'Add Expanded Checkout for More Ways to Pay',
-			'woocommerce-paypal-payments'
-		);
-	}
-
-	return __(
-		'Add optional payment methods to your Checkout',
-		'woocommerce-paypal-payments'
-	);
+	return __( 'Add Credit and Debit Cards', 'woocommerce-paypal-payments' );
 };
 
 const OptionalMethodDescription = () => {
-	const { storeCountry, storeCurrency } = CommonHooks.useWooSettings();
 	const { isCasualSeller } = OnboardingHooks.useBusiness();
+	const { storeCountry, storeCurrency } = CommonHooks.useWooSettings();
+	const { canUseCardPayments } = OnboardingHooks.useFlags();
 
-	/**
-	 * Casual sellers = Personal accounts. Those accounts have no ACDC-capabilities, but should get
-	 *   the choice for BCDC-payments.
-	 */
 	return (
 		<PaymentFlow
 			onlyOptional={ true }
-			useAcdc={ ! isCasualSeller }
+			useAcdc={ ! isCasualSeller && canUseCardPayments }
 			isFastlane={ true }
 			isPayLater={ true }
 			storeCountry={ storeCountry }

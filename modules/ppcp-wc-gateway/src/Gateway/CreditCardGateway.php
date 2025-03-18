@@ -19,7 +19,6 @@ use WooCommerce\PayPalCommerce\ApiClient\Endpoint\PaymentTokensEndpoint;
 use WooCommerce\PayPalCommerce\ApiClient\Exception\PayPalApiException;
 use WooCommerce\PayPalCommerce\ApiClient\Exception\RuntimeException;
 use WooCommerce\PayPalCommerce\WcGateway\Helper\Environment;
-use WooCommerce\PayPalCommerce\Onboarding\State;
 use WooCommerce\PayPalCommerce\Session\SessionHandler;
 use WooCommerce\PayPalCommerce\Vaulting\PaymentTokenRepository;
 use WooCommerce\PayPalCommerce\Vaulting\VaultedCreditCardHandler;
@@ -110,13 +109,6 @@ class CreditCardGateway extends \WC_Payment_Gateway_CC {
 	private $refund_processor;
 
 	/**
-	 * The state.
-	 *
-	 * @var State
-	 */
-	protected $state;
-
-	/**
 	 * Service to get transaction url for an order.
 	 *
 	 * @var TransactionUrlProvider
@@ -204,7 +196,6 @@ class CreditCardGateway extends \WC_Payment_Gateway_CC {
 	 * @param string                   $module_url The URL to the module.
 	 * @param SessionHandler           $session_handler The Session Handler.
 	 * @param RefundProcessor          $refund_processor The refund processor.
-	 * @param State                    $state The state.
 	 * @param TransactionUrlProvider   $transaction_url_provider Service able to provide view transaction url base.
 	 * @param SubscriptionHelper       $subscription_helper The subscription helper.
 	 * @param PaymentsEndpoint         $payments_endpoint The payments endpoint.
@@ -226,7 +217,6 @@ class CreditCardGateway extends \WC_Payment_Gateway_CC {
 		string $module_url,
 		SessionHandler $session_handler,
 		RefundProcessor $refund_processor,
-		State $state,
 		TransactionUrlProvider $transaction_url_provider,
 		SubscriptionHelper $subscription_helper,
 		PaymentsEndpoint $payments_endpoint,
@@ -247,7 +237,6 @@ class CreditCardGateway extends \WC_Payment_Gateway_CC {
 		$this->module_url                  = $module_url;
 		$this->session_handler             = $session_handler;
 		$this->refund_processor            = $refund_processor;
-		$this->state                       = $state;
 		$this->transaction_url_provider    = $transaction_url_provider;
 		$this->subscription_helper         = $subscription_helper;
 		$this->payments_endpoint           = $payments_endpoint;

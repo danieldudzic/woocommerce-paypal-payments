@@ -475,7 +475,7 @@ class AxoModule implements ServiceModule, ExtendingModule, ExecutableModule {
 	 * @return void
 	 */
 	private function add_feature_detection_tag( bool $axo_enabled ) {
-		$show_tag = is_checkout() || is_cart() || is_shop();
+		$show_tag = is_home() || is_checkout() || is_cart() || is_shop();
 
 		if ( ! $show_tag ) {
 			return;
