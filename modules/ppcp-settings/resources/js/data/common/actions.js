@@ -75,15 +75,6 @@ export const setActiveModal = ( activeModal ) =>
 	setTransient( 'activeModal', activeModal );
 
 /**
- * Transient. Sets the active settings highlight.
- *
- * @param {string} activeHighlight
- * @return {Action} The action.
- */
-export const setActiveHighlight = ( activeHighlight ) =>
-	setTransient( 'activeHighlight', activeHighlight );
-
-/**
  * Persistent. Sets the sandbox mode on or off.
  *
  * @param {boolean} useSandbox

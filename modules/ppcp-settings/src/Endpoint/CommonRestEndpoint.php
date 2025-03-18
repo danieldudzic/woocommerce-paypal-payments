@@ -9,11 +9,11 @@ declare( strict_types = 1 );
 
 namespace WooCommerce\PayPalCommerce\Settings\Endpoint;
 
+use Exception;
 use WP_REST_Server;
 use WP_REST_Response;
 use WP_REST_Request;
 use WooCommerce\PayPalCommerce\Settings\Data\GeneralSettings;
-use WooCommerce\PayPalCommerce\Settings\Service\InternalRestService;
 use WooCommerce\PayPalCommerce\ApiClient\Endpoint\PartnersEndpoint;
 
 /**
@@ -257,9 +257,17 @@ class CommonRestEndpoint extends RestEndpoint {
 	 * @return WP_REST_Response Seller details, provided by PayPal's API.
 	 */
 	public function get_seller_account_info() : WP_REST_Response {
-		$seller_status = $this->partners_endpoint->seller_status();
+		try {
+			$seller_status = $this->partners_endpoint->seller_status();
 
-		return $this->return_success( array( 'country' => $seller_status->country() ) );
+			$seller_data = array(
+				'country' => $seller_status->country(),
+			);
+
+			return $this->return_success( $seller_data );
+		} catch ( Exception $ex ) {
+			return $this->return_error( $ex->getMessage() );
+		}
 	}
 
 	/**

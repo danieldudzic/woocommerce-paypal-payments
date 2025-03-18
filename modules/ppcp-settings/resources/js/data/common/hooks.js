@@ -41,8 +41,6 @@ const useHooks = () => {
 	const { useTransient, usePersistent, dispatch, select } = useStoreData();
 	const {
 		persist,
-		sandboxOnboardingUrl,
-		productionOnboardingUrl,
 		authenticateWithCredentials,
 		authenticateWithOAuth,
 		startWebhookSimulation,
@@ -51,11 +49,8 @@ const useHooks = () => {
 
 	// Transient accessors.
 	const [ activeModal, setActiveModal ] = useTransient( 'activeModal' );
-	const [ activeHighlight, setActiveHighlight ] =
-		useTransient( 'activeHighlight' );
 
 	// Persistent accessors.
-	const [ isSandboxMode, setSandboxMode ] = usePersistent( 'useSandbox' );
 	const [ isManualConnectionMode, setManualConnectionMode ] = usePersistent(
 		'useManualConnection'
 	);
@@ -73,18 +68,10 @@ const useHooks = () => {
 	return {
 		activeModal,
 		setActiveModal,
-		activeHighlight,
-		setActiveHighlight,
-		isSandboxMode,
-		setSandboxMode: ( state ) => {
-			return savePersistent( setSandboxMode, state );
-		},
 		isManualConnectionMode,
 		setManualConnectionMode: ( state ) => {
 			return savePersistent( setManualConnectionMode, state );
 		},
-		sandboxOnboardingUrl,
-		productionOnboardingUrl,
 		authenticateWithCredentials,
 		authenticateWithOAuth,
 		wooSettings,
@@ -109,15 +96,25 @@ export const useStore = () => {
 };
 
 export const useSandbox = () => {
-	const { isSandboxMode, setSandboxMode, sandboxOnboardingUrl } = useHooks();
+	const { dispatch, usePersistent } = useStoreData();
+	const [ isSandboxMode, setSandboxMode ] = usePersistent( 'useSandbox' );
+	const { onboardingUrl } = dispatch;
 
-	return { isSandboxMode, setSandboxMode, sandboxOnboardingUrl };
+	return {
+		isSandboxMode,
+		setSandboxMode: ( state ) => {
+			setSandboxMode( state );
+			return dispatch.persist();
+		},
+		onboardingUrl,
+	};
 };
 
 export const useProduction = () => {
-	const { productionOnboardingUrl } = useHooks();
+	const { dispatch } = useStoreData();
+	const { onboardingUrl } = dispatch;
 
-	return { productionOnboardingUrl };
+	return { onboardingUrl };
 };
 
 export const useAuthentication = () => {
@@ -224,11 +221,6 @@ export const useMerchant = () => {
 export const useActiveModal = () => {
 	const { activeModal, setActiveModal } = useHooks();
 	return { activeModal, setActiveModal };
-};
-
-export const useActiveHighlight = () => {
-	const { activeHighlight, setActiveHighlight } = useHooks();
-	return { activeHighlight, setActiveHighlight };
 };
 
 /*

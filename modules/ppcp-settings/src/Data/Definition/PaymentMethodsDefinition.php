@@ -41,13 +41,6 @@ class PaymentMethodsDefinition {
 	private PaymentSettings $settings;
 
 	/**
-	 * Payment method dependencies definition.
-	 *
-	 * @var PaymentMethodsDependenciesDefinition
-	 */
-	private PaymentMethodsDependenciesDefinition $dependencies_definition;
-
-	/**
 	 * Conflict notices for Axo gateway.
 	 *
 	 * @var array
@@ -64,18 +57,15 @@ class PaymentMethodsDefinition {
 	/**
 	 * Constructor.
 	 *
-	 * @param PaymentSettings                      $settings Payment methods data model.
-	 * @param PaymentMethodsDependenciesDefinition $dependencies_definition Payment dependencies definition.
-	 * @param array                                $axo_conflicts_notices Conflicts notices for Axo.
+	 * @param PaymentSettings $settings Payment methods data model.
+	 * @param array           $axo_conflicts_notices Conflicts notices for Axo.
 	 */
 	public function __construct(
 		PaymentSettings $settings,
-		PaymentMethodsDependenciesDefinition $dependencies_definition,
 		array $axo_conflicts_notices = array()
 	) {
-		$this->settings                = $settings;
-		$this->dependencies_definition = $dependencies_definition;
-		$this->axo_conflicts_notices   = $axo_conflicts_notices;
+		$this->settings              = $settings;
+		$this->axo_conflicts_notices = $axo_conflicts_notices;
 	}
 
 	/**
@@ -94,26 +84,16 @@ class PaymentMethodsDefinition {
 		$result            = array();
 		foreach ( $all_methods as $method ) {
 			$method_id = $method['id'];
-			// Add dependency info if applicable.
-			$depends_on = $this->dependencies_definition->get_parent_methods( $method_id );
-			if ( ! empty( $depends_on ) ) {
-				$method['depends_on'] = $depends_on;
-			}
+
 			$result[ $method_id ] = $this->build_method_definition(
 				$method_id,
 				$method['title'],
 				$method['description'],
 				$method['icon'],
 				$method['fields'] ?? array(),
-				$depends_on,
-				$method['warningMessages'] ?? array()
+				$method['warningMessages'] ?? array(),
 			);
 		}
-		// Add dependency maps to metadata.
-		$result['__meta'] = array(
-			'dependencies' => $this->dependencies_definition->get_dependencies(),
-			'dependents'   => $this->dependencies_definition->get_dependents_map(),
-		);
 		return $result;
 	}
 
@@ -121,14 +101,13 @@ class PaymentMethodsDefinition {
 	 * Returns a new payment method configuration array that contains all
 	 * common attributes which must be present in every method definition.
 	 *
-	 * @param string      $gateway_id  The payment method ID.
-	 * @param string      $title       Admin-side payment method title.
-	 * @param string      $description Admin-side info about the payment method.
-	 * @param string      $icon        Admin-side icon of the payment method.
-	 * @param array|false $fields      Optional. Additional fields to display in the edit modal.
-	 *                                 Setting this to false omits all fields.
-	 * @param array       $depends_on  Optional. IDs of payment methods that this depends on.
-	 * @param array       $warning_messages Optional. Warning messages to display in the UI.
+	 * @param string      $gateway_id                 The payment method ID.
+	 * @param string      $title                      Admin-side payment method title.
+	 * @param string      $description                Admin-side info about the payment method.
+	 * @param string      $icon                       Admin-side icon of the payment method.
+	 * @param array|false $fields                     Optional. Additional fields to display in the edit modal.
+	 *                                                Setting this to false omits all fields.
+	 * @param array       $warning_messages           Optional. Warning messages to display in the UI.
 	 * @return array Payment method definition.
 	 */
 	private function build_method_definition(
@@ -136,8 +115,7 @@ class PaymentMethodsDefinition {
 		string $title,
 		string $description,
 		string $icon,
-		$fields = array(),
-		array $depends_on = array(),
+			   $fields = array(),
 		array $warning_messages = array()
 	) : array {
 		$gateway = $this->wc_gateways[ $gateway_id ] ?? null;
@@ -155,11 +133,6 @@ class PaymentMethodsDefinition {
 			'itemDescription' => $description,
 			'warningMessages' => $warning_messages,
 		);
-
-		// Add dependency information if provided - ensure it's included directly in the config.
-		if ( ! empty( $depends_on ) ) {
-			$config['depends_on'] = $depends_on;
-		}
 
 		if ( is_array( $fields ) ) {
 			$config['fields'] = array_merge(

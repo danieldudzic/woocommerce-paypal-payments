@@ -1,6 +1,6 @@
 <?php
 
-namespace WooCommerce\PayPalCommerce\Tests\E2e;
+namespace WooCommerce\PayPalCommerce\Tests\Integration;
 
 use WooCommerce\PayPalCommerce\ApiClient\Endpoint\Orders;
 

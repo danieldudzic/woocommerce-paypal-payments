@@ -32,6 +32,6 @@ require WP_ROOT_DIR . '/wp-admin/includes/class-wp-importer.php';
 require WP_ROOT_DIR . '/wp-content/plugins/woocommerce/includes/admin/importers/class-wc-tax-rate-importer.php';
 
 $taxImporter = new WC_Tax_Rate_Importer();
-$taxImporter->import(E2E_TESTS_ROOT_DIR . '/data/tax_rates.csv');
+$taxImporter->import(INTEGRATION_TESTS_ROOT_DIR . '/data/tax_rates.csv');
 
 echo PHP_EOL;

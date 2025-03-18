@@ -4,7 +4,7 @@ Tags: woocommerce, paypal, payments, ecommerce, credit card
 Requires at least: 6.5
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 2.9.6
+Stable tag: 3.0.0
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -113,7 +113,7 @@ If you like this extension, please [leave a review on WordPress.org](https://wor
 To install and configure WooCommerce PayPal Payments, you will need:
 
 * WordPress Version 6.3 or newer (installed)
-* WooCommerce Version 6.9 or newer (installed and activated)
+* WooCommerce Version 9.6 or newer (installed and activated)
 * PHP Version 7.4 or newer
 * PayPal business **or** personal account
 
@@ -155,6 +155,22 @@ If you encounter issues with the PayPal buttons not appearing after an update, p
 6. Main settings screen.
 
 == Changelog ==
+
+= 3.0.0 - 2025-03-17 =
+* Enhancement - Redesigned settings UI for new users #2908
+* Enhancement - Enable Fastlane by default on new store setups when eligible #3199
+* Enhancement - Enable support for advanced card payments and features for Hong Kong & Singapore #3089
+* Fix - Dependency conflict with more recent psr/log versions on PHP8+ #2993
+* Fix - PayPal Checkout Gateway subscription migration layer not renewing subscriptions #2699
+* Fix - Fatal error when gateway settings initialized too early by third-party plugin #2766
+* Fix - Next Payment date for Subscriptions not updating when processing a PayPal Subscriptions renewal order #2959
+* Fix - Changing the subscription payment method to ACDC triggers error #2891
+* Fix - Standard Card button not appearing in standalone gateway for free trial subscription products #2935
+* Fix - Validation error when using Trustly payment method #3031
+* Fix - Error in continuation mode due to wrong gateway selection on Checkout block #2996
+* Fix - Error in error in PayLaterConfigurator #2989
+* Tweak - Removed currency requirement for Vault v3 #2919
+* Tweak - Update plugin author from WooCommerce to PayPal
 
 = 2.9.6 - 2025-01-06 =
 * Fix - NOT_ENABLED_TO_VAULT_PAYMENT_SOURCE on PayPal transactions when using ACDC Vaulting without PayPal Vault approval #2955

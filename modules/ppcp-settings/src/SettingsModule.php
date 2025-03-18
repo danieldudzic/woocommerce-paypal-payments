@@ -10,10 +10,9 @@ declare( strict_types = 1 );
 namespace WooCommerce\PayPalCommerce\Settings;
 
 use WC_Payment_Gateway;
-use WooCommerce\PayPalCommerce\ApiClient\Endpoint\PartnersEndpoint;
-use WooCommerce\PayPalCommerce\ApiClient\Exception\PayPalApiException;
 use WooCommerce\PayPalCommerce\ApiClient\Helper\DccApplies;
 use WooCommerce\PayPalCommerce\Applepay\Assets\AppleProductStatus;
+use WooCommerce\PayPalCommerce\Axo\Gateway\AxoGateway;
 use WooCommerce\PayPalCommerce\Googlepay\Helper\ApmProductStatus;
 use WooCommerce\PayPalCommerce\LocalAlternativePaymentMethods\BancontactGateway;
 use WooCommerce\PayPalCommerce\LocalAlternativePaymentMethods\BlikGateway;
@@ -24,10 +23,12 @@ use WooCommerce\PayPalCommerce\LocalAlternativePaymentMethods\MyBankGateway;
 use WooCommerce\PayPalCommerce\LocalAlternativePaymentMethods\P24Gateway;
 use WooCommerce\PayPalCommerce\LocalAlternativePaymentMethods\TrustlyGateway;
 use WooCommerce\PayPalCommerce\Settings\Ajax\SwitchSettingsUiEndpoint;
+use WooCommerce\PayPalCommerce\Settings\Data\Definition\PaymentMethodsDefinition;
 use WooCommerce\PayPalCommerce\Settings\Data\OnboardingProfile;
 use WooCommerce\PayPalCommerce\Settings\Data\TodosModel;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\RestEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Handler\ConnectionListener;
+use WooCommerce\PayPalCommerce\Settings\Service\GatewayRedirectService;
 use WooCommerce\PayPalCommerce\Vendor\Inpsyde\Modularity\Module\ExecutableModule;
 use WooCommerce\PayPalCommerce\Vendor\Inpsyde\Modularity\Module\ModuleClassNameIdTrait;
 use WooCommerce\PayPalCommerce\Vendor\Inpsyde\Modularity\Module\ServiceModule;
@@ -35,6 +36,7 @@ use WooCommerce\PayPalCommerce\Vendor\Psr\Container\ContainerInterface;
 use WooCommerce\PayPalCommerce\WcGateway\Gateway\CardButtonGateway;
 use WooCommerce\PayPalCommerce\WcGateway\Gateway\CreditCardGateway;
 use WooCommerce\PayPalCommerce\WcGateway\Gateway\OXXO\OXXO;
+use WooCommerce\PayPalCommerce\WcGateway\Gateway\PayPalGateway;
 use WooCommerce\PayPalCommerce\WcGateway\Gateway\PayUponInvoice\PayUponInvoiceGateway;
 use WooCommerce\PayPalCommerce\WcGateway\Helper\DCCProductStatus;
 use WooCommerce\PayPalCommerce\WcGateway\Settings\Settings;
@@ -42,6 +44,8 @@ use WooCommerce\PayPalCommerce\Settings\Service\SettingsDataManager;
 use WooCommerce\PayPalCommerce\Settings\DTO\ConfigurationFlagsDTO;
 use WooCommerce\PayPalCommerce\Settings\Enum\ProductChoicesEnum;
 use WooCommerce\PayPalCommerce\Settings\Data\GeneralSettings;
+use WooCommerce\PayPalCommerce\Settings\Data\PaymentSettings;
+use WooCommerce\PayPalCommerce\Axo\Helper\CompatibilityChecker;
 
 /**
  * Class SettingsModule
@@ -423,8 +427,9 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 			 *
 			 * @psalm-suppress MissingClosureParamType
 			 */
-			static function ( $methods ) use ( $container ) : array {
-				if ( ! is_array( $methods ) ) {
+			function ( $methods ) use ( $container ) : array {
+				$is_onboarded = $container->get( 'api.merchant_id' ) !== '';
+				if ( ! is_array( $methods ) || ! $is_onboarded ) {
 					return $methods;
 				}
 
@@ -444,6 +449,56 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 				$methods[] = $googlepay_gateway;
 				$methods[] = $applepay_gateway;
 				$methods[] = $axo_gateway;
+
+				$is_payments_page = $container->get( 'wcgateway.is-wc-payments-page' );
+				$all_gateway_ids  = $container->get( 'settings.config.all-gateway-ids' );
+
+				if ( $is_payments_page ) {
+					$methods = array_filter(
+						$methods,
+						function ( $method ) use ( $all_gateway_ids ): bool {
+							if ( ! is_object( $method )
+								|| $method->id === PayPalGateway::ID
+								|| ! in_array( $method->id, $all_gateway_ids, true )
+							) {
+								return true;
+							}
+
+							if ( ! $this->is_gateway_enabled( $method->id ) ) {
+								return false;
+							}
+
+							return true;
+						}
+					);
+				}
+
+				return $methods;
+			},
+			99
+		);
+
+		// Remove the Fastlane gateway if the customer is logged in, ensuring that we don't interfere with the Fastlane gateway status in the settings UI.
+		add_filter(
+			'woocommerce_available_payment_gateways',
+			/**
+			 * Param types removed to avoid third-party issues.
+			 *
+			 * @psalm-suppress MissingClosureParamType
+			 */
+			static function ( $methods ) use ( $container ) : array {
+				if ( ! is_array( $methods ) ) {
+					return $methods;
+				}
+
+				if ( is_user_logged_in() && ! is_admin() ) {
+					foreach ( $methods as $key => $method ) {
+						if ( $method instanceof WC_Payment_Gateway && $method->id === 'ppcp-axo-gateway' ) {
+							unset( $methods[ $key ] );
+							break;
+						}
+					}
+				}
 
 				return $methods;
 			}
@@ -502,23 +557,77 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 			2
 		);
 
-		add_filter( 'woocommerce_paypal_payments_axo_gateway_should_update_enabled', '__return_false' );
+		if ( is_admin() ) {
+			add_filter( 'woocommerce_paypal_payments_axo_gateway_should_update_enabled', '__return_false' );
+			add_filter(
+				'woocommerce_paypal_payments_axo_gateway_title',
+				function ( string $title, WC_Payment_Gateway $gateway ) {
+					return $gateway->get_option( 'title', $title );
+				},
+				10,
+				2
+			);
+			add_filter(
+				'woocommerce_paypal_payments_axo_gateway_description',
+				function ( string $description, WC_Payment_Gateway $gateway ) {
+					return $gateway->get_option( 'description', $description );
+				},
+				10,
+				2
+			);
+		}
+
+		/**
+		 * Unsets the BCDC black button if merchant is eligible for ACDC.
+		 */
 		add_filter(
-			'woocommerce_paypal_payments_axo_gateway_title',
-			function ( string $title, WC_Payment_Gateway $gateway ) {
-				return $gateway->get_option( 'title', $title );
-			},
-			10,
-			2
+			'woocommerce_paypal_payments_disabled_funding_sources',
+			/**
+			 * Unsets the BCDC black button if merchant is eligible for ACDC.
+			 *
+			 * @param int[]|string[]|mixed $disable_funding The disabled funding sources.
+			 * @return int[]|string[]|mixed The disabled funding sources.
+			 *
+			 * @psalm-suppress MissingClosureParamType
+			 */
+			static function ( $disable_funding ) use ( $container ) {
+				if ( ! is_array( $disable_funding ) || in_array( 'card', $disable_funding, true ) ) {
+					return $disable_funding;
+				}
+
+				$dcc_product_status = $container->get( 'wcgateway.helper.dcc-product-status' );
+				assert( $dcc_product_status instanceof DCCProductStatus );
+
+				if ( $dcc_product_status->is_active() ) {
+					$disable_funding[] = 'card';
+				}
+
+				return $disable_funding;
+			}
 		);
-		add_filter(
-			'woocommerce_paypal_payments_axo_gateway_description',
-			function ( string $description, WC_Payment_Gateway $gateway ) {
-				return $gateway->get_option( 'description', $description );
-			},
-			10,
-			2
+
+		// Enable Fastlane after onboarding if the store is compatible.
+		add_action(
+			'woocommerce_paypal_payments_apply_default_configuration',
+			static function () use ( $container ) {
+				$compatibility_checker = $container->get( 'axo.helpers.compatibility-checker' );
+				assert( $compatibility_checker instanceof CompatibilityChecker );
+
+				$payment_settings = $container->get( 'settings.data.payment' );
+				assert( $payment_settings instanceof PaymentSettings );
+
+				if ( $compatibility_checker->is_fastlane_compatible() ) {
+					$payment_settings->toggle_method_state( AxoGateway::ID, true );
+				}
+
+				$payment_settings->save();
+			}
 		);
+
+		// Redirect payment method links in the WC Payment Gateway to the new UI Payment Methods tab.
+		$gateway_redirect_service = $container->get( 'settings.service.gateway-redirect' );
+		assert( $gateway_redirect_service instanceof GatewayRedirectService );
+		$gateway_redirect_service->register();
 
 		return true;
 	}
@@ -541,5 +650,18 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 	 */
 	protected function render_content() : void {
 		echo '<div id="ppcp-settings-container"></div>';
+	}
+
+	/**
+	 * Checks if the payment gateway with the given name is enabled.
+	 *
+	 * @param string $gateway_name The gateway name.
+	 * @return bool True if the payment gateway with the given name is enabled, otherwise false.
+	 */
+	protected function is_gateway_enabled( string $gateway_name ): bool {
+		$gateway_settings = get_option( "woocommerce_{$gateway_name}_settings", array() );
+		$gateway_enabled  = $gateway_settings['enabled'] ?? false;
+
+		return $gateway_enabled === 'yes';
 	}
 }

@@ -1,11 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace WooCommerce\PayPalCommerce\Tests\E2e\Validation;
+namespace WooCommerce\PayPalCommerce\Tests\Integration\Validation;
 
 use WooCommerce\PayPalCommerce\Button\Exception\ValidationException;
 use WooCommerce\PayPalCommerce\Button\Validation\CheckoutFormValidator;
-use WooCommerce\PayPalCommerce\Tests\E2e\TestCase;
+use WooCommerce\PayPalCommerce\Tests\Integration\TestCase;
 
 class ValidationTest extends TestCase
 {

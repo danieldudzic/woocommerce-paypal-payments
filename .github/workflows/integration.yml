@@ -1,4 +1,4 @@
-name: e2e tests
+name: Integration tests
 
 on: workflow_dispatch
 
@@ -7,8 +7,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        php-versions: ['7.4', '8.2']
-        wc-versions: ['6.9.4', '7.7.2']
+        php-versions: ['7.4']
+        wc-versions: ['9.7.1']
 
     name: PHP ${{ matrix.php-versions }} WC ${{ matrix.wc-versions }}
     steps:
@@ -30,10 +30,10 @@ jobs:
       run: ddev orchestrate -f
 
     - name: Create config
-      run: cp -n .env.e2e.example .env.e2e
+      run: cp -n .env.integration.example .env.integration
 
     - name: Setup tests
-      run: ddev php tests/e2e/PHPUnit/setup.php
+      run: ddev php tests/integration/PHPUnit/setup.php
 
     - name: Run PHPUnit
-      run: ddev exec phpunit -c tests/e2e/phpunit.xml.dist
+      run: ddev exec phpunit -c tests/integration/phpunit.xml.dist

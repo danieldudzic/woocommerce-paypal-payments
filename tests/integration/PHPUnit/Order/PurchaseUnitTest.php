@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace WooCommerce\PayPalCommerce\Tests\E2e\Order;
+namespace WooCommerce\PayPalCommerce\Tests\Integration\Order;
 
 use Exception;
 use WC_Cart;
@@ -15,7 +15,7 @@ use WC_Product;
 use WC_Product_Simple;
 use WC_Session;
 use WooCommerce\PayPalCommerce\ApiClient\Factory\PurchaseUnitFactory;
-use WooCommerce\PayPalCommerce\Tests\E2e\TestCase;
+use WooCommerce\PayPalCommerce\Tests\Integration\TestCase;
 
 class PurchaseUnitTest extends TestCase
 {

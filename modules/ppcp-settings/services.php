@@ -10,7 +10,18 @@ declare( strict_types = 1 );
 namespace WooCommerce\PayPalCommerce\Settings;
 
 use WooCommerce\PayPalCommerce\ApiClient\Helper\Cache;
+use WooCommerce\PayPalCommerce\Applepay\ApplePayGateway;
+use WooCommerce\PayPalCommerce\Axo\Gateway\AxoGateway;
 use WooCommerce\PayPalCommerce\Button\Helper\MessagesApply;
+use WooCommerce\PayPalCommerce\Googlepay\GooglePayGateway;
+use WooCommerce\PayPalCommerce\LocalAlternativePaymentMethods\BancontactGateway;
+use WooCommerce\PayPalCommerce\LocalAlternativePaymentMethods\BlikGateway;
+use WooCommerce\PayPalCommerce\LocalAlternativePaymentMethods\EPSGateway;
+use WooCommerce\PayPalCommerce\LocalAlternativePaymentMethods\IDealGateway;
+use WooCommerce\PayPalCommerce\LocalAlternativePaymentMethods\MultibancoGateway;
+use WooCommerce\PayPalCommerce\LocalAlternativePaymentMethods\MyBankGateway;
+use WooCommerce\PayPalCommerce\LocalAlternativePaymentMethods\P24Gateway;
+use WooCommerce\PayPalCommerce\LocalAlternativePaymentMethods\TrustlyGateway;
 use WooCommerce\PayPalCommerce\Settings\Ajax\SwitchSettingsUiEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Data\Definition\FeaturesDefinition;
 use WooCommerce\PayPalCommerce\Settings\Data\Definition\PaymentMethodsDependenciesDefinition;
@@ -37,6 +48,7 @@ use WooCommerce\PayPalCommerce\Settings\Handler\ConnectionListener;
 use WooCommerce\PayPalCommerce\Settings\Service\AuthenticationManager;
 use WooCommerce\PayPalCommerce\Settings\Service\ConnectionUrlGenerator;
 use WooCommerce\PayPalCommerce\Settings\Service\FeaturesEligibilityService;
+use WooCommerce\PayPalCommerce\Settings\Service\GatewayRedirectService;
 use WooCommerce\PayPalCommerce\Settings\Service\OnboardingUrlManager;
 use WooCommerce\PayPalCommerce\Settings\Service\TodosEligibilityService;
 use WooCommerce\PayPalCommerce\Settings\Service\TodosSortingAndFilteringService;
@@ -45,6 +57,11 @@ use WooCommerce\PayPalCommerce\Settings\Service\DataSanitizer;
 use WooCommerce\PayPalCommerce\Settings\Service\SettingsDataManager;
 use WooCommerce\PayPalCommerce\Settings\Data\Definition\PaymentMethodsDefinition;
 use WooCommerce\PayPalCommerce\PayLaterConfigurator\Factory\ConfigFactory;
+use WooCommerce\PayPalCommerce\WcGateway\Gateway\CardButtonGateway;
+use WooCommerce\PayPalCommerce\WcGateway\Gateway\CreditCardGateway;
+use WooCommerce\PayPalCommerce\WcGateway\Gateway\OXXO\OXXO;
+use WooCommerce\PayPalCommerce\WcGateway\Gateway\PayPalGateway;
+use WooCommerce\PayPalCommerce\WcGateway\Gateway\PayUponInvoice\PayUponInvoiceGateway;
 use WooCommerce\PayPalCommerce\WcGateway\Settings\Settings;
 use WooCommerce\PayPalCommerce\PayLaterConfigurator\Endpoint\SaveConfig;
 use WooCommerce\PayPalCommerce\WcGateway\Helper\Environment;
@@ -181,7 +198,8 @@ return array(
 	'settings.rest.payment'                        => static function ( ContainerInterface $container ) : PaymentRestEndpoint {
 		return new PaymentRestEndpoint(
 			$container->get( 'settings.data.payment' ),
-			$container->get( 'settings.data.definition.methods' )
+			$container->get( 'settings.data.definition.methods' ),
+			$container->get( 'settings.data.definition.method_dependencies' )
 		);
 	},
 	'settings.rest.styling'                        => static function ( ContainerInterface $container ) : StylingRestEndpoint {
@@ -380,12 +398,11 @@ return array(
 
 		return new PaymentMethodsDefinition(
 			$container->get( 'settings.data.payment' ),
-			$container->get( 'settings.data.definition.method_dependencies' ),
 			$axo_notices
 		);
 	},
 	'settings.data.definition.method_dependencies' => static function ( ContainerInterface $container ) : PaymentMethodsDependenciesDefinition {
-		return new PaymentMethodsDependenciesDefinition();
+		return new PaymentMethodsDependenciesDefinition( $container->get( 'wcgateway.settings' ) );
 	},
 	'settings.service.pay_later_status'            => static function ( ContainerInterface $container ) : array {
 		$pay_later_endpoint = $container->get( 'settings.rest.pay_later_messaging' );
@@ -539,7 +556,8 @@ return array(
 		return new FeaturesDefinition(
 			$container->get( 'settings.service.features_eligibilities' ),
 			$container->get( 'settings.data.general' ),
-			$merchant_capabilities
+			$merchant_capabilities,
+			$container->get( 'settings.data.settings' )
 		);
 	},
 	'settings.service.features_eligibilities'      => static function( ContainerInterface $container ): FeaturesEligibilityService {
@@ -564,6 +582,34 @@ return array(
 	'settings.service.todos_sorting'               => static function ( ContainerInterface $container ) : TodosSortingAndFilteringService {
 		return new TodosSortingAndFilteringService(
 			$container->get( 'settings.data.todos' )
+		);
+	},
+	'settings.service.gateway-redirect'            => static function (): GatewayRedirectService {
+		return new GatewayRedirectService();
+	},
+	/**
+	 * Returns a list of all payment gateway IDs created by this plugin.
+	 *
+	 * @returns string[] The list of all gateway IDs.
+	 */
+	'settings.config.all-gateway-ids'              => static function (): array {
+		return array(
+			PayPalGateway::ID,
+			CardButtonGateway::ID,
+			CreditCardGateway::ID,
+			AxoGateway::ID,
+			ApplePayGateway::ID,
+			GooglePayGateway::ID,
+			BancontactGateway::ID,
+			BlikGateway::ID,
+			EPSGateway::ID,
+			IDealGateway::ID,
+			MyBankGateway::ID,
+			P24Gateway::ID,
+			TrustlyGateway::ID,
+			MultibancoGateway::ID,
+			PayUponInvoiceGateway::ID,
+			OXXO::ID,
 		);
 	},
 );
