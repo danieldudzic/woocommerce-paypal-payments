@@ -214,7 +214,9 @@ class Renderer {
 				}
 			);
 
-		this.renderedSources.add( wrapper + ( fundingSource ?? '' ) );
+		this.renderedSources.add(
+			wrapper + ( fundingSource ? fundingSource : '' )
+		);
 
 		if ( window.paypal?.Buttons ) {
 			widgetBuilder.registerButtons(
