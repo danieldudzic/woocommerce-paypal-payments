@@ -255,10 +255,10 @@ class AxoGateway extends WC_Payment_Gateway {
 			$order = $this->create_paypal_order( $wc_order, $token );
 
 			/**
-			 * This filter controls if the method 'precess()' from OrderProcessor will be called.
+			 * This filter controls if the method 'process()' from OrderProcessor will be called.
 			 * So you can implement your own for example on subscriptions
 			 *
-			 * - true bool controls execution of 'OrderProcessor::precess()'
+			 * - true bool controls execution of 'OrderProcessor::process()'
 			 * - $this \WC_Payment_Gateway
 			 * - $wc_order \WC_Order
 			 */
