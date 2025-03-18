@@ -30,11 +30,13 @@ use WooCommerce\PayPalCommerce\ApiClient\Helper\DccApplies;
  * Technical implementation via the JS SDK:
  *
  * a. Funding source
- *   - All card payment options require the funding-source "card"
+ *   - When the funding-source "card" controls the black "Debit or Credit Cards" button:
+ *     It's hidden when the funding-source is disabled, and displayed otherwise.
+ *     See implementation in class `DisabledFundingSources`.
  *
  * b. Components
- *   - ACDC and AXO use "card-fields"
- *   - BCDC uses "hosted-fields"
+ *   - "card-fields" is used by ACDC and AXO.
+ *   - The component "hosted-fields" is mentioned in the code, but unclear where/when it's used.
  *
  * DI service: 'wcgateway.configuration.card-configuration'
  */
