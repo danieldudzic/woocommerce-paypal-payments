@@ -145,8 +145,8 @@ class DisabledFundingSources {
 	 * @return array
 	 */
 	private function apply_context_rules( array $disable_funding ) : array {
-		if ( ! is_checkout() || $this->dcc_configuration->is_acdc_enabled() ) {
-			// Non-checkout pages, or ACDC enabled: Don't load card button.
+		if ( ! is_checkout() || $this->dcc_configuration->use_acdc() ) {
+			// Non-checkout pages, or ACDC capability: Don't load card button.
 			$disable_funding[] = 'card';
 
 			return $disable_funding;
