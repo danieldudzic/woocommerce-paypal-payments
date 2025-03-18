@@ -96,10 +96,23 @@ class DisabledFundingSources {
 	 */
 	private function get_sources_from_settings() : array {
 		try {
-			return $this->settings->get( 'disable_funding' );
+			// Settings field present in the legacy UI.
+			$disabled_funding = $this->settings->get( 'disable_funding' );
 		} catch ( NotFoundException $exception ) {
-			return array();
+			$disabled_funding = array();
 		}
+
+		/**
+		 * Filters the list of disabled funding methods. In the legacy UI, this
+		 * list was accessible via a settings field.
+		 *
+		 * This filter allows merchants to programmatically disable funding sources
+		 * in the new UI.
+		 */
+		return (array) apply_filters(
+			'woocommerce_paypal_payments_disabled_funding',
+			$disabled_funding
+		);
 	}
 
 	/**
