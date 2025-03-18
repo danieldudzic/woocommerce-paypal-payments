@@ -46,6 +46,6 @@ return array(
 
 	'expose-namespaces'       => array(), // list<string|regex>.
 	'expose-constants'        => array(),  // list<string|regex>.
-	'expose-classes'          => array(),    // list<string|regex>.
+	'expose-classes'          => array( 'Stringable' ),    // list<string|regex>.
 	'expose-functions'        => array(),  // list<string|regex>.
 );
