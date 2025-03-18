@@ -152,11 +152,7 @@ class DisabledFundingSources {
 			return $disable_funding;
 		}
 
-		// A checkout page without ACDC: Load card button.
-		return array_filter(
-			$disable_funding,
-			static fn( string $funding_source ) => $funding_source !== 'card'
-		);
+		return $disable_funding;
 	}
 
 	/**
