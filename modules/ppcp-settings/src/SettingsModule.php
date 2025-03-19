@@ -158,14 +158,14 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 		 */
 		add_action(
 			'woocommerce_paypal_payments_gateway_migrate',
-			static function () use ( $container ) {
+			function () use ( $container ) {
 				$detector = $container->get( 'settings.service.branded-experience-activation-detector' );
 				assert( $detector instanceof ActivationDetector );
 
 				$general_settings = $container->get( 'settings.data.general' );
 				assert( $general_settings instanceof GeneralSettings );
 
-				self::get_and_persist_branded_experience_path( $detector, $general_settings );
+				$this->get_and_persist_branded_experience_path( $detector, $general_settings );
 			}
 		);
 
