@@ -23,11 +23,11 @@ use WooCommerce\PayPalCommerce\LocalAlternativePaymentMethods\MyBankGateway;
 use WooCommerce\PayPalCommerce\LocalAlternativePaymentMethods\P24Gateway;
 use WooCommerce\PayPalCommerce\LocalAlternativePaymentMethods\TrustlyGateway;
 use WooCommerce\PayPalCommerce\Settings\Ajax\SwitchSettingsUiEndpoint;
-use WooCommerce\PayPalCommerce\Settings\Data\Definition\PaymentMethodsDefinition;
 use WooCommerce\PayPalCommerce\Settings\Data\OnboardingProfile;
 use WooCommerce\PayPalCommerce\Settings\Data\TodosModel;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\RestEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Handler\ConnectionListener;
+use WooCommerce\PayPalCommerce\Settings\Service\BrandedExperience\ActivationDetector;
 use WooCommerce\PayPalCommerce\Settings\Service\GatewayRedirectService;
 use WooCommerce\PayPalCommerce\Vendor\Inpsyde\Modularity\Module\ExecutableModule;
 use WooCommerce\PayPalCommerce\Vendor\Inpsyde\Modularity\Module\ModuleClassNameIdTrait;
@@ -144,10 +144,29 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 			return true;
 		}
 
+		/**
+		 * This hook is fired when the plugin is updated.
+		 */
 		add_action(
 			'woocommerce_paypal_payments_gateway_migrate_on_update',
 			static fn() => ! get_option( SwitchSettingsUiEndpoint::OPTION_NAME_SHOULD_USE_OLD_UI )
 				&& update_option( SwitchSettingsUiEndpoint::OPTION_NAME_SHOULD_USE_OLD_UI, 'yes' )
+		);
+
+		/**
+		 * This hook is fired when the plugin is installed or updated.
+		 */
+		add_action(
+			'woocommerce_paypal_payments_gateway_migrate',
+			static function () use ( $container ) {
+				$detector = $container->get( 'settings.service.branded-experience-activation-detector' );
+				assert( $detector instanceof ActivationDetector );
+
+				$general_settings = $container->get( 'settings.data.general' );
+				assert( $general_settings instanceof GeneralSettings );
+
+				self::get_and_persist_branded_experience_path( $detector, $general_settings );
+			}
 		);
 
 		add_action(
@@ -663,5 +682,18 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 		$gateway_enabled  = $gateway_settings['enabled'] ?? false;
 
 		return $gateway_enabled === 'yes';
+	}
+
+	/**
+	 * Get and persist the branded experience path.
+	 *
+	 * @param ActivationDetector $detector The branded experience path detector.
+	 * @param GeneralSettings    $general_settings The general settings data model.
+	 *
+	 * @return void
+	 */
+	private function get_and_persist_branded_experience_path( ActivationDetector $detector, GeneralSettings $general_settings ): void {
+		$general_settings->set_installation_path( $detector->detect_activation_path() );
+		$general_settings->save();
 	}
 }

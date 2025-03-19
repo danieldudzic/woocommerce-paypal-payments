@@ -1,20 +1,20 @@
 <?php
 declare( strict_types=1 );
 
-namespace WooCommerce\PayPalCommerce\Settings;
+namespace PHPUnit\Settings\Service\BrandedExperience;
 
-use WooCommerce\PayPalCommerce\Settings\Service\BrandedExperienceActivationDetector;
+use WooCommerce\PayPalCommerce\Settings\Service\BrandedExperience\ActivationDetector;
 use WooCommerce\PayPalCommerce\TestCase;
-use function Brain\Monkey\Functions\when;
 use function Brain\Monkey\Functions\expect;
+use function Brain\Monkey\Functions\when;
 
-class BrandedExperienceActivationDetectorTest extends TestCase {
+class ActivationDetectorTest extends TestCase {
 
 	public function test_returns_direct_if_not_attached_via_woocommerce_paths() {
 		when( 'get_option' )->justReturn( [] );
-		$detector = new BrandedExperienceActivationDetector();
+		$detector = new ActivationDetector();
 
-		$this->assertEquals( 'direct', $detector->detect_activation_path() );
+		$this->assertEquals( ActivationDetector::DIRECT, $detector->detect_activation_path() );
 	}
 
 	public function test_returns_core_profiler_if_attached_via_core_profiler() {
@@ -26,9 +26,9 @@ class BrandedExperienceActivationDetectorTest extends TestCase {
 				],
 			] );
 
-		$detector = new BrandedExperienceActivationDetector();
+		$detector = new ActivationDetector();
 
-		$this->assertEquals( 'core-profiler', $detector->detect_activation_path() );
+		$this->assertEquals( ActivationDetector::CORE_PROFILER, $detector->detect_activation_path() );
 	}
 
 	public function test_returns_payment_settings_if_attached_via_payments_settings_page() {
@@ -44,8 +44,8 @@ class BrandedExperienceActivationDetectorTest extends TestCase {
 				],
 			] );
 
-		$detector = new BrandedExperienceActivationDetector();
+		$detector = new ActivationDetector();
 
-		$this->assertEquals( 'payment-settings', $detector->detect_activation_path() );
+		$this->assertEquals( ActivationDetector::PAYMENT_SETTINGS, $detector->detect_activation_path() );
 	}
 }

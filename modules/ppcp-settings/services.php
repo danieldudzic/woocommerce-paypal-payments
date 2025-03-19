@@ -46,6 +46,7 @@ use WooCommerce\PayPalCommerce\Settings\Endpoint\StylingRestEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\TodosRestEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Handler\ConnectionListener;
 use WooCommerce\PayPalCommerce\Settings\Service\AuthenticationManager;
+use WooCommerce\PayPalCommerce\Settings\Service\BrandedExperience\ActivationDetector;
 use WooCommerce\PayPalCommerce\Settings\Service\ConnectionUrlGenerator;
 use WooCommerce\PayPalCommerce\Settings\Service\FeaturesEligibilityService;
 use WooCommerce\PayPalCommerce\Settings\Service\GatewayRedirectService;
@@ -611,5 +612,8 @@ return array(
 			PayUponInvoiceGateway::ID,
 			OXXO::ID,
 		);
+	},
+	'settings.service.branded-experience-activation-detector' => static function (): ActivationDetector {
+		return new ActivationDetector();
 	},
 );

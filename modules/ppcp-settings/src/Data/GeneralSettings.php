@@ -78,6 +78,9 @@ class GeneralSettings extends AbstractDataModel {
 			'client_id'             => '',
 			'client_secret'         => '',
 			'seller_type'           => 'unknown',
+
+			// Branded experience installation path.
+			'installation_path'     => '',
 		);
 	}
 
@@ -256,5 +259,25 @@ class GeneralSettings extends AbstractDataModel {
 		}
 
 		return $this->data['merchant_country'];
+	}
+
+	/**
+	 * Sets the branded experience installation path.
+	 *
+	 * @param string $installation_path The branded experience installation path.
+	 *
+	 * @return void
+	 */
+	public function set_installation_path( string $installation_path ) : void {
+		$this->data['installation_path'] = $installation_path;
+	}
+
+	/**
+	 * Gets branded experience installation path.
+	 *
+	 * @return string
+	 */
+	public function get_installation_path() : string {
+		return $this->data['installation_path'];
 	}
 }
