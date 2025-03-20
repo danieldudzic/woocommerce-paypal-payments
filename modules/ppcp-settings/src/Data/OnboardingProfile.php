@@ -222,6 +222,11 @@ class OnboardingProfile extends AbstractDataModel {
 	 */
 	public function set_gateways_synced( bool $synced ): void {
 		$this->data['gateways_synced'] = $synced;
+
+		// If enabling the flag, trigger the action.
+		if ( $synced ) {
+			do_action( 'woocommerce_paypal_payments_sync_gateways' );
+		}
 	}
 
 	/**

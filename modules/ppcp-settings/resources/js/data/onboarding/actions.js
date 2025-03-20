@@ -127,7 +127,7 @@ export const updateGatewaysRefreshed = ( refreshed = true ) =>
  */
 export function syncGateways() {
 	return async ( { dispatch } ) => {
-		dispatch( { type: ACTION_TYPES.SYNC_GATEWAYS } );
+		dispatch( setPersistent( 'gatewaysSynced', true ) );
 		await dispatch( persist() );
 		return { success: true };
 	};
@@ -135,7 +135,7 @@ export function syncGateways() {
 
 export function refreshGateways() {
 	return async ( { dispatch } ) => {
-		dispatch( { type: ACTION_TYPES.REFRESH_GATEWAYS } );
+		dispatch( setPersistent( 'gatewaysRefreshed', true ) );
 		await dispatch( persist() );
 		return { success: true };
 	};

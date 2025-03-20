@@ -4,21 +4,24 @@ import apiFetch from '@wordpress/api-fetch';
 import { STORE_NAME as PAYMENT_STORE_NAME } from '../data/payment';
 import { OnboardingHooks } from '../data';
 import { STORE_NAME as ONBOARDING_STORE_NAME } from '../data/onboarding';
+
 /**
- * Custom hook for refreshing payment gateway data
+ * Custom hook for refreshing payment gateway data.
  *
  * @return {Object} Refresh API including the refresh function and state
  */
 export const usePaymentGatewayRefresh = () => {
 	const paymentDispatch = useDispatch( PAYMENT_STORE_NAME );
+	const onboardingDispatch = useDispatch( ONBOARDING_STORE_NAME );
 	const { gatewaysRefreshed } = OnboardingHooks.useGatewayRefresh();
 	const { gatewaysSynced } = OnboardingHooks.useGatewaySync();
-	const { refreshGateways } = useDispatch( ONBOARDING_STORE_NAME );
+	const { refreshGateways } = onboardingDispatch;
 	const { hydrate, refresh, reset } = paymentDispatch;
+
 	const [ refreshCompleted, setRefreshCompleted ] = useState( false );
 	const [ isRefreshing, setIsRefreshing ] = useState( false );
 	const [ refreshError, setRefreshError ] = useState( null );
-	// Only refresh if gateways are synced (post-onboarding payment method toggling happened & Redux data loaded correctly).
+	// Only refresh if gateways are synced.
 	const isReadyToRefresh = gatewaysSynced;
 
 	/**
@@ -34,34 +37,41 @@ export const usePaymentGatewayRefresh = () => {
 				reason: 'already-refreshing',
 			};
 		}
+
 		if ( ! isReadyToRefresh ) {
-			return { success: false, skipped: true, reason: 'not-ready' };
+			return {
+				success: false,
+				skipped: true,
+				reason: 'not-ready',
+			};
 		}
+
 		setIsRefreshing( true );
 		setRefreshError( null );
+
 		try {
 			// Reset payment store if available.
 			if ( typeof reset === 'function' ) {
 				await reset();
 			}
+
 			// Fetch payment data.
 			const response = await apiFetch( {
 				path: `/wc/v3/wc_paypal/payment`,
 				method: 'GET',
 			} );
-			// Update store with fetched data.
+
+			// Update store with data.
 			hydrate( response );
+
 			// Refresh payment store if available.
 			if ( typeof refresh === 'function' ) {
 				await refresh();
 			}
-			// Update gateways_refreshed flag in database.
-			await apiFetch( {
-				path: '/wc/v3/wc_paypal/onboarding/refresh-gateways',
-				method: 'POST',
-			} );
+
 			// Update Redux state to mark gateways as refreshed.
-			await refreshGateways();
+			const result = await refreshGateways();
+
 			setRefreshCompleted( true );
 			return { success: true };
 		} catch ( error ) {
@@ -87,8 +97,8 @@ export const usePaymentGatewayRefresh = () => {
 			! isRefreshing &&
 			! refreshCompleted
 		) {
-			refreshPaymentGateways().catch( ( error ) => {
-				// Error handling is managed through state.
+			refreshPaymentGateways().catch( () => {
+				// Silent catch to prevent unhandled promise rejections.
 			} );
 		}
 	}, [
