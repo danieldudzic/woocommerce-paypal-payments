@@ -18,6 +18,7 @@ use WooCommerce\PayPalCommerce\ApiClient\Endpoint\PaymentTokensEndpoint;
 use WooCommerce\PayPalCommerce\ApiClient\Factory\CardAuthenticationResultFactory;
 use WooCommerce\PayPalCommerce\ApiClient\Helper\CurrencyGetter;
 use WooCommerce\PayPalCommerce\ApiClient\Helper\FailureRegistry;
+use WooCommerce\PayPalCommerce\ApiClient\Helper\PartnerAttribution;
 use WooCommerce\PayPalCommerce\Common\Pattern\SingletonDecorator;
 use WooCommerce\PayPalCommerce\ApiClient\Endpoint\BillingSubscriptions;
 use WooCommerce\PayPalCommerce\ApiClient\Endpoint\CatalogProducts;
@@ -962,5 +963,19 @@ return array(
 		}
 
 		return CONNECT_WOO_URL;
+	},
+	/**
+	 * BN Codes mapping for different installation paths.
+	 *
+	 * @returns array<string, string> The map of installation paths to BN Codes.
+	 */
+	'api.bn-codes'                                   => static function (): array {
+		return array(
+			'core-profiler'    => 'WooPPCP_Ecom_PS_CoreProfiler',
+			'payment-settings' => 'WooPPCP_Ecom_PS_PaymentSettings',
+		);
+	},
+	'api.helper.partner-attribution'                 => static function ( ContainerInterface $container ) : PartnerAttribution {
+		return new PartnerAttribution( 'ppcp_bn_code', $container->get( 'api.bn-codes' ) );
 	},
 );
