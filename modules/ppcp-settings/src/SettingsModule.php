@@ -57,7 +57,7 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 	 * Returns whether the old settings UI should be loaded.
 	 */
 	public static function should_use_the_old_ui() : bool {
-		// New merchants should never see the legacy UI.
+		// New merchants should never see the #legacy-ui.
 		$show_new_ux = '1' === get_option( 'woocommerce-ppcp-is-new-merchant' );
 
 		if ( $show_new_ux ) {
@@ -394,7 +394,7 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 					unset( $payment_methods[ OXXO::ID ] );
 				}
 
-				// Unset Pay Unon Invoice if merchant country is not Germany.
+				// Unset Pay Upon Invoice if merchant country is not Germany.
 				if ( 'DE' !== $merchant_country ) {
 					unset( $payment_methods[ PayUponInvoiceGateway::ID ] );
 				}
@@ -576,35 +576,6 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 				2
 			);
 		}
-
-		/**
-		 * Unsets the BCDC black button if merchant is eligible for ACDC.
-		 */
-		add_filter(
-			'woocommerce_paypal_payments_disabled_funding_sources',
-			/**
-			 * Unsets the BCDC black button if merchant is eligible for ACDC.
-			 *
-			 * @param int[]|string[]|mixed $disable_funding The disabled funding sources.
-			 * @return int[]|string[]|mixed The disabled funding sources.
-			 *
-			 * @psalm-suppress MissingClosureParamType
-			 */
-			static function ( $disable_funding ) use ( $container ) {
-				if ( ! is_array( $disable_funding ) || in_array( 'card', $disable_funding, true ) ) {
-					return $disable_funding;
-				}
-
-				$dcc_product_status = $container->get( 'wcgateway.helper.dcc-product-status' );
-				assert( $dcc_product_status instanceof DCCProductStatus );
-
-				if ( $dcc_product_status->is_active() ) {
-					$disable_funding[] = 'card';
-				}
-
-				return $disable_funding;
-			}
-		);
 
 		// Enable Fastlane after onboarding if the store is compatible.
 		add_action(
