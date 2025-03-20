@@ -13,9 +13,9 @@ namespace WooCommerce\PayPalCommerce\Settings\Service\BrandedExperience;
  * Class that includes detection logic for Branded Experience.
  */
 class ActivationDetector {
-	const CORE_PROFILER    = 'core-profiler';
-	const PAYMENT_SETTINGS = 'payment-settings';
-	const DIRECT           = 'direct';
+	public const CORE_PROFILER    = 'core-profiler';
+	public const PAYMENT_SETTINGS = 'payment-settings';
+	public const DIRECT           = 'direct';
 
 	/**
 	 * Detects from which path the plugin was installed.
