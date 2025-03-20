@@ -83,7 +83,8 @@ use WooCommerce\PayPalCommerce\WcGateway\Settings\SettingsListener;
 use WooCommerce\PayPalCommerce\WcGateway\Settings\SettingsRenderer;
 use WooCommerce\PayPalCommerce\Axo\Helper\PropertiesDictionary;
 use WooCommerce\PayPalCommerce\Applepay\ApplePayGateway;
-use WooCommerce\PayPalCommerce\WcGateway\Helper\DCCGatewayConfiguration;
+use WooCommerce\PayPalCommerce\WcGateway\Helper\CardPaymentsConfiguration;
+use WooCommerce\PayPalCommerce\WcGateway\Helper\ConnectionState;
 
 return array(
 	'wcgateway.paypal-gateway'                             => static function ( ContainerInterface $container ): PayPalGateway {
@@ -117,7 +118,7 @@ return array(
 			$container->get( 'wcgateway.settings.render' ),
 			$container->get( 'wcgateway.order-processor' ),
 			$container->get( 'wcgateway.settings' ),
-			$container->get( 'wcgateway.configuration.dcc' ),
+			$container->get( 'wcgateway.configuration.card-configuration' ),
 			$container->get( 'wcgateway.credit-card-icons' ),
 			$container->get( 'wcgateway.url' ),
 			$container->get( 'session.handler' ),
@@ -333,7 +334,8 @@ return array(
 			$container->get( 'settings.flag.is-connected' ),
 			$container->get( 'wcgateway.settings' ),
 			$container->get( 'wcgateway.is-wc-payments-page' ),
-			$container->get( 'wcgateway.is-ppcp-settings-page' )
+			$container->get( 'wcgateway.is-ppcp-settings-page' ),
+			$container->get( 'wcgateway.configuration.card-configuration' )
 		);
 	},
 	'wcgateway.notice.card-button-without-paypal'          => static function ( ContainerInterface $container ): GatewayWithoutPayPalAdminNotice {
@@ -343,6 +345,7 @@ return array(
 			$container->get( 'wcgateway.settings' ),
 			$container->get( 'wcgateway.is-wc-payments-page' ),
 			$container->get( 'wcgateway.is-ppcp-settings-page' ),
+			$container->get( 'wcgateway.configuration.card-configuration' ),
 			$container->get( 'wcgateway.settings.status' )
 		);
 	},
@@ -461,8 +464,8 @@ return array(
 			assert( $settings instanceof Settings );
 
 			$axo_available = $container->has( 'axo.available' ) && $container->get( 'axo.available' );
-			$dcc_configuration = $container->get( 'wcgateway.configuration.dcc' );
-			assert( $dcc_configuration instanceof DCCGatewayConfiguration );
+			$dcc_configuration = $container->get( 'wcgateway.configuration.card-configuration' );
+			assert( $dcc_configuration instanceof CardPaymentsConfiguration );
 
 			if ( $axo_available && $dcc_configuration->use_fastlane() ) {
 				return '';
@@ -684,8 +687,8 @@ return array(
 		$subscription_helper = $container->get( 'wc-subscriptions.helper' );
 		assert( $subscription_helper instanceof SubscriptionHelper );
 
-		$dcc_configuration = $container->get( 'wcgateway.configuration.dcc' );
-		assert( $dcc_configuration instanceof DCCGatewayConfiguration );
+		$dcc_configuration = $container->get( 'wcgateway.configuration.card-configuration' );
+		assert( $dcc_configuration instanceof CardPaymentsConfiguration );
 
 		$fields              = array(
 			'checkout_settings_heading'   => array(
@@ -1359,11 +1362,12 @@ return array(
 		return new TransactionUrlProvider( $sandbox_url_base, $live_url_base );
 	},
 
-	'wcgateway.configuration.dcc'                          => static function ( ContainerInterface $container ) : DCCGatewayConfiguration {
-		$settings = $container->get( 'wcgateway.settings' );
-		assert( $settings instanceof Settings );
-
-		return new DCCGatewayConfiguration( $settings );
+	'wcgateway.configuration.card-configuration'           => static function ( ContainerInterface $container ) : CardPaymentsConfiguration {
+		return new CardPaymentsConfiguration(
+			$container->get( 'settings.connection-state' ),
+			$container->get( 'wcgateway.settings' ),
+			$container->get( 'api.helpers.dccapplies' )
+		);
 	},
 
 	'wcgateway.helper.dcc-product-status'                  => static function ( ContainerInterface $container ) : DCCProductStatus {

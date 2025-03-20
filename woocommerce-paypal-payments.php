@@ -235,7 +235,7 @@ define( 'PPCP_PAYPAL_BN_CODE', 'Woo_PPCP' );
 		 * Set new merchant flag on plugin install.
 		 *
 		 * When installing the plugin for the first time, we direct the user to
-		 * the new UI without a data migration, and fully hide the legacy UI.
+		 * the new UI without a data migration, and fully hide the #legacy-ui.
 		 *
 		 * @param string|false $version String with previous installed plugin version.
 		 *                              Boolean false on first installation on a new site.

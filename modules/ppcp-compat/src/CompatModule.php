@@ -10,7 +10,6 @@ declare(strict_types=1);
 namespace WooCommerce\PayPalCommerce\Compat;
 
 use Exception;
-use Psr\Log\LoggerInterface;
 use WC_Cart;
 use WC_Order;
 use WC_Order_Item_Product;
@@ -88,6 +87,8 @@ class CompatModule implements ServiceModule, ExtendingModule, ExecutableModule {
 		}
 
 		add_action( 'woocommerce_paypal_payments_gateway_migrate', static fn() => delete_transient( 'ppcp_has_ppec_subscriptions' ) );
+
+		$this->legacy_ui_card_payment_mapping( $c );
 
 		return true;
 	}
@@ -489,6 +490,36 @@ class CompatModule implements ServiceModule, ExtendingModule, ExecutableModule {
 			},
 			10,
 			2
+		);
+	}
+
+	/**
+	 * Responsible to keep the credit card payment configuration backwards
+	 * compatible with the legacy UI.
+	 *
+	 * This method can be removed with the #legacy-ui code.
+	 *
+	 * @param ContainerInterface $container DI container instance.
+	 * @return void
+	 */
+	protected function legacy_ui_card_payment_mapping( ContainerInterface $container ) : void {
+		$new_ui = $container->get( 'wcgateway.settings.admin-settings-enabled' );
+		if ( $new_ui ) {
+			return;
+		}
+
+		add_filter(
+			'woocommerce_paypal_payments_is_acdc_active',
+			static function ( bool $is_acdc ) use ( $container ) : bool {
+				$settings = $container->get( 'wcgateway.settings' );
+				assert( $settings instanceof Settings );
+
+				try {
+					return (bool) $settings->get( 'dcc_enabled' );
+				} catch ( NotFoundException $exception ) {
+					return $is_acdc;
+				}
+			}
 		);
 	}
 }

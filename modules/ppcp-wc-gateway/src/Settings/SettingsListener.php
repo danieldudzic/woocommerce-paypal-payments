@@ -263,7 +263,7 @@ class SettingsListener {
 		// phpcs:enable WordPress.Security.NonceVerification.Missing
 		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 
-		// This method is only used for legacy UI, `settings->set` is valid here.
+		// This method is only used for #legacy-ui, `settings->set` is valid here.
 
 		$this->settings->set( 'merchant_id', $merchant_id );
 		$this->settings->set( 'merchant_email', $merchant_email );
@@ -367,7 +367,7 @@ class SettingsListener {
 			return;
 		}
 
-		// This method is only used for legacy UI, `settings->set` is valid here.
+		// This method is only used for #legacy-ui, `settings->set` is valid here.
 
 		try {
 			$token = $this->bearer->bearer();
@@ -777,7 +777,7 @@ class SettingsListener {
 			return;
 		}
 
-		// This method is only used for legacy UI, `settings->set` is valid here.
+		// This method is only used for #legacy-ui, `settings->set` is valid here.
 
 		$existing_setting_value = $this->settings->has( $setting_slug ) ? $this->settings->get( $setting_slug ) : null;
 
