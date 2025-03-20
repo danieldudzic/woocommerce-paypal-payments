@@ -611,7 +611,7 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 		// Enable Fastlane after onboarding if the store is compatible.
 		add_action(
 			'woocommerce_paypal_payments_toggle_payment_gateways',
-			function( $payment_methods, $flags ) use ( $container ) {
+			function( PaymentSettings $payment_methods, ConfigurationFlagsDTO $flags ) use ( $container ) {
 				if ( $flags->is_business_seller && $flags->use_card_payments ) {
 					$compatibility_checker = $container->get( 'axo.helpers.compatibility-checker' );
 					assert( $compatibility_checker instanceof CompatibilityChecker );
