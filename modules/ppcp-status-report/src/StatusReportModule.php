@@ -95,6 +95,17 @@ class StatusReportModule implements ServiceModule, ExtendingModule, ExecutableMo
 						),
 					),
 					array(
+						'label'          => esc_html__( 'New UI active', 'woocommerce-paypal-payments' ),
+						'exported_label' => 'New UI active',
+						'description'    => esc_html__( 'Whether the new Settings UI is active or not.', 'woocommerce-paypal-payments' ),
+						'value'          => $this->bool_to_html(
+							apply_filters(
+								'woocommerce.feature-flags.woocommerce_paypal_payments.settings_enabled',
+								'1' === get_option( 'woocommerce-ppcp-is-new-merchant' ) || getenv( 'PCP_SETTINGS_ENABLED' ) === '1'
+							)
+						),
+					),
+					array(
 						'label'          => esc_html__( 'Shop country code', 'woocommerce-paypal-payments' ),
 						'exported_label' => 'Shop country code',
 						'description'    => esc_html__( 'Country / State value on Settings / General / Store Address.', 'woocommerce-paypal-payments' ),
