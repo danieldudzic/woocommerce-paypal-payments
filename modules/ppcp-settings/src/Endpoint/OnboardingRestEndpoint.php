@@ -224,11 +224,8 @@ class OnboardingRestEndpoint extends RestEndpoint {
 		 * Execute the sync action.
 		 */
 		do_action( 'woocommerce_paypal_payments_sync_gateways' );
-
 		// Update gateways_synced in the profile.
-		$data                    = $this->profile->to_array();
-		$data['gateways_synced'] = true;
-		$this->profile->from_array( $data );
+		$this->profile->set_gateways_synced( true );
 		$this->profile->save();
 
 		return $this->return_success(
@@ -247,9 +244,7 @@ class OnboardingRestEndpoint extends RestEndpoint {
 	 */
 	public function refresh_gateways( WP_REST_Request $request ) : WP_REST_Response {
 		// Update gateways_refreshed in the profile.
-		$data                       = $this->profile->to_array();
-		$data['gateways_refreshed'] = true;
-		$this->profile->from_array( $data );
+		$this->profile->set_gateways_refreshed( true );
 		$this->profile->save();
 
 		return $this->return_success(

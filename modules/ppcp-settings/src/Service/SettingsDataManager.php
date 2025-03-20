@@ -204,15 +204,6 @@ class SettingsDataManager {
 	}
 
 	/**
-	 * Initialize hooks for gateway synchronization.
-	 *
-	 * @return void
-	 */
-	public function init_hooks() : void {
-		add_action( 'woocommerce_paypal_payments_sync_gateways', array( $this, 'sync_gateway_settings' ) );
-	}
-
-	/**
 	 * Synchronize gateway settings with merchant onboarding choices.
 	 *
 	 * @return void
@@ -236,7 +227,7 @@ class SettingsDataManager {
 	 * @param ConfigurationFlagsDTO $flags Shop configuration flags.
 	 * @return void
 	 */
-	public function toggle_payment_gateways( ConfigurationFlagsDTO $flags ) : void {
+	protected function toggle_payment_gateways( ConfigurationFlagsDTO $flags ) : void {
 		// First, disable all payment methods.
 		$methods_paypal = $this->methods_definition->group_paypal_methods();
 		$methods_cards  = $this->methods_definition->group_card_methods();

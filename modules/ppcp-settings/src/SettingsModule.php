@@ -627,11 +627,11 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 
 		// Toggle payment gateways after onboarding based on flags.
 		add_action(
-			'init',
-			function() use ( $container ) {
+			'woocommerce_paypal_payments_sync_gateways',
+			static function() use ( $container ) {
 				$settings_data_manager = $container->get( 'settings.service.data-manager' );
 				assert( $settings_data_manager instanceof SettingsDataManager );
-				$settings_data_manager->init_hooks();
+				$settings_data_manager->sync_gateway_settings();
 			}
 		);
 
