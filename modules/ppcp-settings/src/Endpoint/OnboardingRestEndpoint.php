@@ -220,7 +220,9 @@ class OnboardingRestEndpoint extends RestEndpoint {
 	 * @return WP_REST_Response The response.
 	 */
 	public function sync_gateways( WP_REST_Request $request ) : WP_REST_Response {
-		// Execute the sync action
+		/**
+		 * Execute the sync action.
+		 */
 		do_action( 'woocommerce_paypal_payments_sync_gateways' );
 
 		// Update gateways_synced in the profile.
