@@ -17,7 +17,7 @@ use WooCommerce\PayPalCommerce\Vendor\Psr\Container\ContainerInterface;
 use WooCommerce\PayPalCommerce\WcGateway\Gateway\CreditCardGateway;
 use WooCommerce\PayPalCommerce\WcGateway\Gateway\PayPalGateway;
 use WooCommerce\PayPalCommerce\WcGateway\Settings\Settings;
-use WooCommerce\PayPalCommerce\WcGateway\Helper\DCCGatewayConfiguration;
+use WooCommerce\PayPalCommerce\WcGateway\Helper\CardPaymentsConfiguration;
 use WooCommerce\PayPalCommerce\ApiClient\Helper\CurrencyGetter;
 
 return array(
@@ -39,7 +39,10 @@ return array(
 	},
 
 	'axo.helpers.compatibility-checker'      => static function ( ContainerInterface $container ) : CompatibilityChecker {
-		return new CompatibilityChecker( $container->get( 'axo.fastlane-incompatible-plugin-names' ) );
+		return new CompatibilityChecker(
+			$container->get( 'axo.fastlane-incompatible-plugin-names' ),
+			$container->get( 'wcgateway.configuration.card-configuration' )
+		);
 	},
 
 	// If AXO is configured and onboarded.
@@ -80,7 +83,7 @@ return array(
 		return new AxoGateway(
 			$container->get( 'wcgateway.settings.render' ),
 			$container->get( 'wcgateway.settings' ),
-			$container->get( 'wcgateway.configuration.dcc' ),
+			$container->get( 'wcgateway.configuration.card-configuration' ),
 			$container->get( 'wcgateway.url' ),
 			$container->get( 'session.handler' ),
 			$container->get( 'wcgateway.order-processor' ),
@@ -193,10 +196,7 @@ return array(
 		$compatibility_checker = $container->get( 'axo.helpers.compatibility-checker' );
 		assert( $compatibility_checker instanceof CompatibilityChecker );
 
-		$settings = $container->get( 'wcgateway.settings' );
-		assert( $settings instanceof Settings );
-
-		return $compatibility_checker->generate_settings_conflict_notice( $settings );
+		return $compatibility_checker->generate_settings_conflict_notice();
 	},
 
 	'axo.checkout-config-notice'             => static function ( ContainerInterface $container ) : string {
@@ -221,16 +221,15 @@ return array(
 	},
 
 	'axo.incompatible-plugins-notice.raw'    => static function ( ContainerInterface $container ) : string {
-		$settings_notice_generator = new CompatibilityChecker(
-			$container->get( 'axo.fastlane-incompatible-plugin-names' )
-		);
+		$settings_notice_generator = $container->get( 'axo.helpers.compatibility-checker' );
+		assert( $settings_notice_generator instanceof CompatibilityChecker );
 
 		return $settings_notice_generator->generate_incompatible_plugins_notice( true );
 	},
 
 	'axo.smart-button-location-notice'       => static function ( ContainerInterface $container ) : string {
-		$dcc_configuration = $container->get( 'wcgateway.configuration.dcc' );
-		assert( $dcc_configuration instanceof DCCGatewayConfiguration );
+		$dcc_configuration = $container->get( 'wcgateway.configuration.card-configuration' );
+		assert( $dcc_configuration instanceof CardPaymentsConfiguration );
 
 		if ( $dcc_configuration->use_fastlane() ) {
 			$fastlane_settings_url = admin_url(

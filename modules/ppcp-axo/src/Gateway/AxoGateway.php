@@ -29,7 +29,7 @@ use WooCommerce\PayPalCommerce\WcGateway\Settings\SettingsRenderer;
 use WooCommerce\PayPalCommerce\WcGateway\Gateway\ProcessPaymentTrait;
 use WooCommerce\PayPalCommerce\WcGateway\Exception\GatewayGenericException;
 use WooCommerce\PayPalCommerce\Session\SessionHandler;
-use WooCommerce\PayPalCommerce\WcGateway\Helper\DCCGatewayConfiguration;
+use WooCommerce\PayPalCommerce\WcGateway\Helper\CardPaymentsConfiguration;
 
 /**
  * Class AXOGateway.
@@ -56,9 +56,9 @@ class AxoGateway extends WC_Payment_Gateway {
 	/**
 	 * Gateway configuration object, providing relevant settings.
 	 *
-	 * @var DCCGatewayConfiguration
+	 * @var CardPaymentsConfiguration
 	 */
-	protected DCCGatewayConfiguration $dcc_configuration;
+	protected CardPaymentsConfiguration $dcc_configuration;
 
 	/**
 	 * The WcGateway module URL.
@@ -133,24 +133,24 @@ class AxoGateway extends WC_Payment_Gateway {
 	/**
 	 * AXOGateway constructor.
 	 *
-	 * @param SettingsRenderer          $settings_renderer The settings renderer.
-	 * @param ContainerInterface        $ppcp_settings The settings.
-	 * @param DCCGatewayConfiguration   $dcc_configuration The DCC Gateway configuration.
-	 * @param string                    $wcgateway_module_url The WcGateway module URL.
-	 * @param SessionHandler            $session_handler The Session Handler.
-	 * @param OrderProcessor            $order_processor The Order processor.
-	 * @param array                     $card_icons      The card icons.
-	 * @param OrderEndpoint             $order_endpoint The order endpoint.
-	 * @param PurchaseUnitFactory       $purchase_unit_factory The purchase unit factory.
+	 * @param SettingsRenderer          $settings_renderer           The settings renderer.
+	 * @param ContainerInterface        $ppcp_settings               The settings.
+	 * @param CardPaymentsConfiguration $dcc_configuration           The DCC Gateway configuration.
+	 * @param string                    $wcgateway_module_url        The WcGateway module URL.
+	 * @param SessionHandler            $session_handler             The Session Handler.
+	 * @param OrderProcessor            $order_processor             The Order processor.
+	 * @param array                     $card_icons                  The card icons.
+	 * @param OrderEndpoint             $order_endpoint              The order endpoint.
+	 * @param PurchaseUnitFactory       $purchase_unit_factory       The purchase unit factory.
 	 * @param ShippingPreferenceFactory $shipping_preference_factory The shipping preference factory.
-	 * @param TransactionUrlProvider    $transaction_url_provider The transaction url provider.
-	 * @param Environment               $environment The environment.
-	 * @param LoggerInterface           $logger The logger.
+	 * @param TransactionUrlProvider    $transaction_url_provider    The transaction url provider.
+	 * @param Environment               $environment                 The environment.
+	 * @param LoggerInterface           $logger                      The logger.
 	 */
 	public function __construct(
 		SettingsRenderer $settings_renderer,
 		ContainerInterface $ppcp_settings,
-		DCCGatewayConfiguration $dcc_configuration,
+		CardPaymentsConfiguration $dcc_configuration,
 		string $wcgateway_module_url,
 		SessionHandler $session_handler,
 		OrderProcessor $order_processor,

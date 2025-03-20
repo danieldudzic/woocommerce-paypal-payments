@@ -58,7 +58,7 @@ use WooCommerce\PayPalCommerce\WcGateway\Settings\SettingsListener;
 use WooCommerce\PayPalCommerce\WcGateway\Settings\SettingsRenderer;
 use WooCommerce\PayPalCommerce\Vendor\Psr\Container\ContainerInterface;
 use WooCommerce\PayPalCommerce\WcGateway\Settings\WcTasks\Registrar\TaskRegistrarInterface;
-use WooCommerce\PayPalCommerce\WcGateway\Helper\DCCGatewayConfiguration;
+use WooCommerce\PayPalCommerce\WcGateway\Helper\CardPaymentsConfiguration;
 use WooCommerce\PayPalCommerce\LocalAlternativePaymentMethods\LocalApmProductStatus;
 
 /**
@@ -195,8 +195,8 @@ class WCGatewayModule implements ServiceModule, ExtendingModule, ExecutableModul
 				$settings = $c->get( 'wcgateway.settings' );
 				assert( $settings instanceof Settings );
 
-				$dcc_configuration = $c->get( 'wcgateway.configuration.dcc' );
-				assert( $dcc_configuration instanceof DCCGatewayConfiguration );
+				$dcc_configuration = $c->get( 'wcgateway.configuration.card-configuration' );
+				assert( $dcc_configuration instanceof CardPaymentsConfiguration );
 
 				$assets = new SettingsPageAssets(
 					$c->get( 'wcgateway.url' ),
@@ -619,8 +619,8 @@ class WCGatewayModule implements ServiceModule, ExtendingModule, ExecutableModul
 					return $methods;
 				}
 
-				$dcc_configuration = $container->get( 'wcgateway.configuration.dcc' );
-				assert( $dcc_configuration instanceof DCCGatewayConfiguration );
+				$dcc_configuration = $container->get( 'wcgateway.configuration.card-configuration' );
+				assert( $dcc_configuration instanceof CardPaymentsConfiguration );
 
 				$standard_card_button = get_option( 'woocommerce_ppcp-card-button-gateway_settings' );
 

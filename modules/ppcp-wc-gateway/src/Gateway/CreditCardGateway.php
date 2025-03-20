@@ -34,7 +34,7 @@ use WooCommerce\PayPalCommerce\WcGateway\Processor\TransactionIdHandlingTrait;
 use WooCommerce\PayPalCommerce\WcGateway\Settings\SettingsRenderer;
 use WooCommerce\PayPalCommerce\WcSubscriptions\FreeTrialHandlerTrait;
 use WooCommerce\PayPalCommerce\WcSubscriptions\Helper\SubscriptionHelper;
-use WooCommerce\PayPalCommerce\WcGateway\Helper\DCCGatewayConfiguration;
+use WooCommerce\PayPalCommerce\WcGateway\Helper\CardPaymentsConfiguration;
 
 /**
  * Class CreditCardGateway
@@ -76,9 +76,9 @@ class CreditCardGateway extends \WC_Payment_Gateway_CC {
 	/**
 	 * The DCC Gateway Configuration.
 	 *
-	 * @var DCCGatewayConfiguration
+	 * @var CardPaymentsConfiguration
 	 */
-	protected DCCGatewayConfiguration $dcc_configuration;
+	protected CardPaymentsConfiguration $dcc_configuration;
 
 	/**
 	 * The vaulted credit card handler.
@@ -188,31 +188,31 @@ class CreditCardGateway extends \WC_Payment_Gateway_CC {
 	/**
 	 * CreditCardGateway constructor.
 	 *
-	 * @param SettingsRenderer         $settings_renderer The Settings Renderer.
-	 * @param OrderProcessor           $order_processor The Order processor.
-	 * @param ContainerInterface       $config The settings.
-	 * @param DCCGatewayConfiguration  $dcc_configuration The DCC Gateway Configuration.
-	 * @param array                    $card_icons The card icons.
-	 * @param string                   $module_url The URL to the module.
-	 * @param SessionHandler           $session_handler The Session Handler.
-	 * @param RefundProcessor          $refund_processor The refund processor.
-	 * @param TransactionUrlProvider   $transaction_url_provider Service able to provide view transaction url base.
-	 * @param SubscriptionHelper       $subscription_helper The subscription helper.
-	 * @param PaymentsEndpoint         $payments_endpoint The payments endpoint.
-	 * @param VaultedCreditCardHandler $vaulted_credit_card_handler The vaulted credit card handler.
-	 * @param Environment              $environment The environment.
-	 * @param OrderEndpoint            $order_endpoint The order endpoint.
-	 * @param CaptureCardPayment       $capture_card_payment Capture card payment.
-	 * @param string                   $prefix The prefix.
-	 * @param PaymentTokensEndpoint    $payment_tokens_endpoint Payment tokens endpoint.
-	 * @param WooCommercePaymentTokens $wc_payment_tokens WooCommerce payment tokens factory.
-	 * @param LoggerInterface          $logger The logger.
+	 * @param SettingsRenderer          $settings_renderer           The Settings Renderer.
+	 * @param OrderProcessor            $order_processor             The Order processor.
+	 * @param ContainerInterface        $config                      The settings.
+	 * @param CardPaymentsConfiguration $dcc_configuration           The DCC Gateway Configuration.
+	 * @param array                     $card_icons                  The card icons.
+	 * @param string                    $module_url                  The URL to the module.
+	 * @param SessionHandler            $session_handler             The Session Handler.
+	 * @param RefundProcessor           $refund_processor            The refund processor.
+	 * @param TransactionUrlProvider    $transaction_url_provider    Service able to provide view transaction url base.
+	 * @param SubscriptionHelper        $subscription_helper         The subscription helper.
+	 * @param PaymentsEndpoint          $payments_endpoint           The payments endpoint.
+	 * @param VaultedCreditCardHandler  $vaulted_credit_card_handler The vaulted credit card handler.
+	 * @param Environment               $environment                 The environment.
+	 * @param OrderEndpoint             $order_endpoint              The order endpoint.
+	 * @param CaptureCardPayment        $capture_card_payment        Capture card payment.
+	 * @param string                    $prefix                      The prefix.
+	 * @param PaymentTokensEndpoint     $payment_tokens_endpoint     Payment tokens endpoint.
+	 * @param WooCommercePaymentTokens  $wc_payment_tokens           WooCommerce payment tokens factory.
+	 * @param LoggerInterface           $logger                      The logger.
 	 */
 	public function __construct(
 		SettingsRenderer $settings_renderer,
 		OrderProcessor $order_processor,
 		ContainerInterface $config,
-		DCCGatewayConfiguration $dcc_configuration,
+		CardPaymentsConfiguration $dcc_configuration,
 		array $card_icons,
 		string $module_url,
 		SessionHandler $session_handler,
