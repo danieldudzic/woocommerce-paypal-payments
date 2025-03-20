@@ -193,9 +193,6 @@ class SettingsDataManager {
 	 * @return void
 	 */
 	protected function apply_configuration( ConfigurationFlagsDTO $flags ) : void {
-		// Apply defaults for the "Payment Methods" tab.
-		$this->toggle_payment_gateways( $flags );
-
 		// Apply defaults for the "Settings" tab.
 		$this->apply_payment_settings( $flags );
 
@@ -207,13 +204,39 @@ class SettingsDataManager {
 	}
 
 	/**
+	 * Initialize hooks for gateway synchronization.
+	 *
+	 * @return void
+	 */
+	public function init_hooks() : void {
+		add_action( 'woocommerce_paypal_payments_sync_gateways', array( $this, 'sync_gateway_settings' ) );
+	}
+
+	/**
+	 * Synchronize gateway settings with merchant onboarding choices.
+	 *
+	 * @return void
+	 */
+	public function sync_gateway_settings() : void {
+		$flags = new ConfigurationFlagsDTO();
+
+		$profile_data = $this->onboarding_profile->to_array();
+
+		$flags->is_business_seller = ! ( $profile_data['is_casual_seller'] ?? false );
+		$flags->use_card_payments  = $profile_data['accept_card_payments'] ?? false;
+		$flags->use_subscriptions  = in_array( 'SUBSCRIPTIONS', $profile_data['products'] ?? array(), true );
+
+		$this->toggle_payment_gateways( $flags );
+	}
+
+	/**
 	 * Enables or disables payment gateways depending on the provided
 	 * configuration flags.
 	 *
 	 * @param ConfigurationFlagsDTO $flags Shop configuration flags.
 	 * @return void
 	 */
-	protected function toggle_payment_gateways( ConfigurationFlagsDTO $flags ) : void {
+	public function toggle_payment_gateways( ConfigurationFlagsDTO $flags ) : void {
 		// First, disable all payment methods.
 		$methods_paypal = $this->methods_definition->group_paypal_methods();
 		$methods_cards  = $this->methods_definition->group_card_methods();
@@ -249,6 +272,14 @@ class SettingsDataManager {
 				$this->payment_methods->toggle_method_state( $method['id'], true );
 			}
 		}
+
+		/**
+		 * Allow plugins to modify payment gateway states before saving.
+		 *
+		 * @param PaymentSettings $payment_methods The payment methods object.
+		 * @param ConfigurationFlagsDTO $flags Configuration flags that determine which gateways to enable.
+		 */
+		do_action( 'woocommerce_paypal_payments_toggle_payment_gateways', $this->payment_methods, $flags );
 
 		$this->payment_methods->save();
 	}

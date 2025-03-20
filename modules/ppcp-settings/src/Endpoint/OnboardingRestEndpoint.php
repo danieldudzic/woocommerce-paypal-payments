@@ -60,6 +60,14 @@ class OnboardingRestEndpoint extends RestEndpoint {
 		'products'             => array(
 			'js_name' => 'products',
 		),
+		'gateways_synced'      => array(
+			'js_name'  => 'gatewaysSynced',
+			'sanitize' => 'to_boolean',
+		),
+		'gateways_refreshed'   => array(
+			'js_name'  => 'gatewaysRefreshed',
+			'sanitize' => 'to_boolean',
+		),
 	);
 
 	/**
@@ -134,6 +142,32 @@ class OnboardingRestEndpoint extends RestEndpoint {
 				'permission_callback' => array( $this, 'check_permission' ),
 			)
 		);
+
+		/**
+		 * POST /wp-json/wc/v3/wc_paypal/onboarding/sync-gateways
+		 */
+		register_rest_route(
+			static::NAMESPACE,
+			'/' . $this->rest_base . '/sync-gateways',
+			array(
+				'methods'             => WP_REST_Server::CREATABLE,
+				'callback'            => array( $this, 'sync_gateways' ),
+				'permission_callback' => array( $this, 'check_permission' ),
+			)
+		);
+
+		/**
+		 * POST /wp-json/wc/v3/wc_paypal/onboarding/refresh-gateways
+		 */
+		register_rest_route(
+			static::NAMESPACE,
+			'/' . $this->rest_base . '/refresh-gateways',
+			array(
+				'methods'             => WP_REST_Server::CREATABLE,
+				'callback'            => array( $this, 'refresh_gateways' ),
+				'permission_callback' => array( $this, 'check_permission' ),
+			)
+		);
 	}
 
 	/**
@@ -177,5 +211,50 @@ class OnboardingRestEndpoint extends RestEndpoint {
 		$this->profile->save();
 
 		return $this->get_details();
+	}
+
+	/**
+	 * Synchronize gateway settings based on onboarding choices.
+	 *
+	 * @param WP_REST_Request $request The request object.
+	 * @return WP_REST_Response The response.
+	 */
+	public function sync_gateways( WP_REST_Request $request ) : WP_REST_Response {
+		// Execute the sync action
+		do_action( 'woocommerce_paypal_payments_sync_gateways' );
+
+		// Update gateways_synced in the profile.
+		$data                    = $this->profile->to_array();
+		$data['gateways_synced'] = true;
+		$this->profile->from_array( $data );
+		$this->profile->save();
+
+		return $this->return_success(
+			array(
+				'success' => true,
+				'message' => 'Payment gateways synchronized successfully.',
+			)
+		);
+	}
+
+	/**
+	 * Refresh gateway settings.
+	 *
+	 * @param WP_REST_Request $request The request object.
+	 * @return WP_REST_Response The response.
+	 */
+	public function refresh_gateways( WP_REST_Request $request ) : WP_REST_Response {
+		// Update gateways_refreshed in the profile.
+		$data                       = $this->profile->to_array();
+		$data['gateways_refreshed'] = true;
+		$this->profile->from_array( $data );
+		$this->profile->save();
+
+		return $this->return_success(
+			array(
+				'success' => true,
+				'message' => 'Payment gateways refreshed successfully.',
+			)
+		);
 	}
 }
