@@ -5,7 +5,7 @@ namespace WooCommerce\PayPalCommerce\ApiClient\Helper;
 
 use PHPUnit\Framework\TestCase;
 
-use WooCommerce\PayPalCommerce\Settings\Service\BrandedExperience\ActivationDetector;
+use WooCommerce\PayPalCommerce\Settings\Enum\InstallationPathEnum;
 use function Brain\Monkey\Functions\when;
 use function Brain\Monkey\Functions\expect;
 use function Brain\Monkey\setUp;
@@ -29,8 +29,8 @@ class PartnerAttributionTest extends TestCase {
 	 * @var array
 	 */
     private array $bn_codes = array(
-        ActivationDetector::CORE_PROFILER    => 'WooPPCP_Ecom_PS_CoreProfiler',
-        ActivationDetector::PAYMENT_SETTINGS => 'WooPPCP_Ecom_PS_CoreProfiler',
+        InstallationPathEnum::CORE_PROFILER    => 'WooPPCP_Ecom_PS_CoreProfiler',
+        InstallationPathEnum::PAYMENT_SETTINGS => 'WooPPCP_Ecom_PS_CoreProfiler',
     );
 
 	/**
