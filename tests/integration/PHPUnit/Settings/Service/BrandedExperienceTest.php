@@ -42,6 +42,5 @@ class BrandedExperienceTest extends TestCase {
 		$repository->persist();
 
 		$this->assertEquals( 'foo', $this->generalSettings->get_installation_path() );
-		$this->generalSettings->purge();
 	}
 }
