@@ -67,9 +67,6 @@ class CommonRestEndpoint extends RestEndpoint {
 		'webhooks'              => array(
 			'js_name' => 'webhooks',
 		),
-		'installation_path'     => array(
-			'js_name' => 'installationPath',
-		),
 	);
 
 	/**
