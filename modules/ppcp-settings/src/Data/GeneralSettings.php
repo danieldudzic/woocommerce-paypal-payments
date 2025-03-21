@@ -12,6 +12,7 @@ namespace WooCommerce\PayPalCommerce\Settings\Data;
 use RuntimeException;
 use WooCommerce\PayPalCommerce\Settings\DTO\MerchantConnectionDTO;
 use WooCommerce\PayPalCommerce\Settings\Enum\SellerTypeEnum;
+use WooCommerce\PayPalCommerce\Settings\Enum\InstallationPathEnum;
 
 /**
  * Class GeneralSettings
@@ -128,7 +129,11 @@ class GeneralSettings extends AbstractDataModel {
 	 * @return array
 	 */
 	public function get_woo_settings() : array {
-		return $this->woo_settings;
+		$settings = $this->woo_settings;
+
+		$settings['installation_path'] = $this->get_installation_path();
+
+		return $settings;
 	}
 
 	/**
@@ -273,11 +278,11 @@ class GeneralSettings extends AbstractDataModel {
 	}
 
 	/**
-	 * Retrieves the installation path for the branded experience.
+	 * Retrieves the installation path. Used for the branded experience.
 	 *
 	 * @return string
 	 */
 	public function get_installation_path() : string {
-		return $this->data['installation_path'];
+		return $this->data['installation_path'] ?? InstallationPathEnum::DIRECT;
 	}
 }
