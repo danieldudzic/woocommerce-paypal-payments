@@ -251,10 +251,10 @@ class GooglepayModule implements ServiceModule, ExtendingModule, ExecutableModul
 
 		add_filter(
 			'ppcp_create_order_request_body_data',
-			static function ( array $data, string $payment_method ) use ( $c ) : array {
-				// TODO (bug): This condition only works when using Google Pay as separate gateway!
-				// When GooglePay is part of the smart buttons block, this condition fails and will not enable 3DS.
-				if ( $payment_method !== GooglePayGateway::ID ) {
+			static function ( array $data, string $payment_method, array $request ) use ( $c ) : array {
+
+				$funding_source = $request['funding_source'];
+				if ( $payment_method !== GooglePayGateway::ID && $funding_source !== 'googlepay' ) {
 					return $data;
 				}
 
@@ -282,7 +282,7 @@ class GooglepayModule implements ServiceModule, ExtendingModule, ExecutableModul
 				return $data;
 			},
 			10,
-			2
+			3
 		);
 
 		return true;
