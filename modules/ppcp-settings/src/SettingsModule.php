@@ -27,7 +27,7 @@ use WooCommerce\PayPalCommerce\Settings\Data\OnboardingProfile;
 use WooCommerce\PayPalCommerce\Settings\Data\TodosModel;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\RestEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Handler\ConnectionListener;
-use WooCommerce\PayPalCommerce\Settings\Service\BrandedExperience\ActivationDetector;
+use WooCommerce\PayPalCommerce\Settings\Service\BrandedExperience\PathRepository;
 use WooCommerce\PayPalCommerce\Settings\Service\GatewayRedirectService;
 use WooCommerce\PayPalCommerce\Vendor\Inpsyde\Modularity\Module\ExecutableModule;
 use WooCommerce\PayPalCommerce\Vendor\Inpsyde\Modularity\Module\ModuleClassNameIdTrait;
@@ -159,13 +159,10 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 		add_action(
 			'woocommerce_paypal_payments_gateway_migrate',
 			function () use ( $container ) {
-				$detector = $container->get( 'settings.service.branded-experience-activation-detector' );
-				assert( $detector instanceof ActivationDetector );
+				$path_repository = $container->get( 'settings.service.branded-experience.path-repository' );
+				assert( $path_repository instanceof PathRepository );
 
-				$general_settings = $container->get( 'settings.data.general' );
-				assert( $general_settings instanceof GeneralSettings );
-
-				$this->get_and_persist_branded_experience_path( $detector, $general_settings );
+				$path_repository->persist();
 			}
 		);
 
@@ -653,18 +650,5 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 		$gateway_enabled  = $gateway_settings['enabled'] ?? false;
 
 		return $gateway_enabled === 'yes';
-	}
-
-	/**
-	 * Get and persist the branded experience path.
-	 *
-	 * @param ActivationDetector $detector The branded experience path detector.
-	 * @param GeneralSettings    $general_settings The general settings data model.
-	 *
-	 * @return void
-	 */
-	private function get_and_persist_branded_experience_path( ActivationDetector $detector, GeneralSettings $general_settings ): void {
-		$general_settings->set_installation_path( $detector->detect_activation_path() );
-		$general_settings->save();
 	}
 }
