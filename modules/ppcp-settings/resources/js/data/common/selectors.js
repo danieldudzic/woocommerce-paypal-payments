@@ -41,7 +41,18 @@ export const features = ( state ) => {
 };
 
 export const wooSettings = ( state ) => {
-	return getState( state ).wooSettings || EMPTY_OBJ;
+	const settings = getState( state ).wooSettings || EMPTY_OBJ;
+
+	/**
+	 * The "is branded only experience" is determined based on the installation path.
+	 *
+	 * @type {boolean}
+	 */
+	settings.isBranded =
+		settings.installationPath === 'core-profile' ||
+		settings.installationPath === 'payment-settings';
+
+	return settings;
 };
 
 export const webhooks = ( state ) => {

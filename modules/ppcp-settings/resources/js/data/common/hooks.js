@@ -65,8 +65,6 @@ const useHooks = () => {
 		await persist();
 	};
 
-	const installationPath = usePersistent( 'installationPath' );
-
 	return {
 		activeModal,
 		setActiveModal,
@@ -81,7 +79,6 @@ const useHooks = () => {
 		webhooks,
 		startWebhookSimulation,
 		checkWebhookSimulationState,
-		installationPath,
 	};
 };
 
@@ -312,16 +309,5 @@ export const useActivityObserver = () => {
 		activities,
 		onStarted,
 		onFinished,
-	};
-};
-
-export const useBrandedOnly = () => {
-	const { installationPath } = useHooks();
-
-	return {
-		installationPath,
-		isBranded:
-			installationPath === 'core-profile' ||
-			installationPath === 'payment-settings',
 	};
 };
