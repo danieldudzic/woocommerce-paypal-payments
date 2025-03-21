@@ -971,7 +971,7 @@ return array(
 	 */
 	'api.bn-codes'                                   => static function (): array {
 		return array(
-			'core-profiler'    => 'WooPPCP_Ecom_PS_CoreProfiler',
+			'core-profiler' => 'WooPPCP_Ecom_PS_CoreProfiler',
 		);
 	},
 	'api.helper.partner-attribution'                 => static function ( ContainerInterface $container ) : PartnerAttribution {
