@@ -80,6 +80,12 @@ class PartnerAttribution {
 	 * @return string The stored BN Code, or the default value if no path is detected.
 	 */
 	public function get_bn_code(): string {
-		return get_option( $this->bn_code_option_name, $this->default_bn_code ) ?? $this->default_bn_code;
+		$bn_code = get_option( $this->bn_code_option_name, $this->default_bn_code ) ?? $this->default_bn_code;
+
+		if ( ! in_array( $bn_code, $this->bn_codes, true ) && $bn_code !== $this->default_bn_code ) {
+			return $this->default_bn_code;
+		}
+
+		return $bn_code;
 	}
 }
