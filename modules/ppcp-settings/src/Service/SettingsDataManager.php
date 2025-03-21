@@ -241,9 +241,8 @@ class SettingsDataManager {
 		// Always enable PayPal, Venmo and Pay Later.
 		$this->payment_methods->toggle_method_state( PayPalGateway::ID, true );
 		$this->payment_methods->toggle_method_state( 'venmo', true );
-		$this->payment_methods->toggle_method_state( 'pay-later', true );
 
-		if ( $flags->is_business_seller && $flags->use_card_payments ) {
+		if ( ! $flags->is_business_seller && $flags->use_card_payments ) {
 			// Use BCDC for casual sellers.
 			$this->payment_methods->toggle_method_state( CardButtonGateway::ID, true );
 		}
@@ -256,6 +255,9 @@ class SettingsDataManager {
 				// Apple Pay and Google Pay depend on the ACDC gateway.
 				$this->payment_methods->toggle_method_state( ApplePayGateway::ID, true );
 				$this->payment_methods->toggle_method_state( GooglePayGateway::ID, true );
+
+				// Enable Pay Later for business sellers.
+				$this->payment_methods->toggle_method_state( 'pay-later', true );
 			}
 
 			// Enable all APM methods.
