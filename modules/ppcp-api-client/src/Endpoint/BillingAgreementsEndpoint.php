@@ -15,6 +15,7 @@ use WooCommerce\PayPalCommerce\ApiClient\Authentication\Bearer;
 use WooCommerce\PayPalCommerce\ApiClient\Exception\PayPalApiException;
 use WooCommerce\PayPalCommerce\ApiClient\Exception\RuntimeException;
 use Psr\Log\LoggerInterface;
+use WooCommerce\PayPalCommerce\ApiClient\Helper\PartnerAttribution;
 
 /**
  * Class BillingAgreementsEndpoint
@@ -37,6 +38,13 @@ class BillingAgreementsEndpoint {
 	private $bearer;
 
 	/**
+	 * The PayPal Partner Attribution Helper.
+	 *
+	 * @var PartnerAttribution
+	 */
+	protected PartnerAttribution $partner_attribution;
+
+	/**
 	 * The logger.
 	 *
 	 * @var LoggerInterface
@@ -46,18 +54,21 @@ class BillingAgreementsEndpoint {
 	/**
 	 * BillingAgreementsEndpoint constructor.
 	 *
-	 * @param string          $host The host.
-	 * @param Bearer          $bearer The bearer.
-	 * @param LoggerInterface $logger The logger.
+	 * @param string             $host The host.
+	 * @param Bearer             $bearer The bearer.
+	 * @param PartnerAttribution $partner_attribution The PayPal Partner Attribution Helper.
+	 * @param LoggerInterface    $logger The logger.
 	 */
 	public function __construct(
 		string $host,
 		Bearer $bearer,
+		PartnerAttribution $partner_attribution,
 		LoggerInterface $logger
 	) {
-		$this->host   = $host;
-		$this->bearer = $bearer;
-		$this->logger = $logger;
+		$this->host                = $host;
+		$this->bearer              = $bearer;
+		$this->partner_attribution = $partner_attribution;
+		$this->logger              = $logger;
 	}
 
 	/**
@@ -91,8 +102,9 @@ class BillingAgreementsEndpoint {
 		$args     = array(
 			'method'  => 'POST',
 			'headers' => array(
-				'Authorization' => 'Bearer ' . $bearer->token(),
-				'Content-Type'  => 'application/json',
+				'Authorization'                 => 'Bearer ' . $bearer->token(),
+				'Content-Type'                  => 'application/json',
+				'PayPal-Partner-Attribution-Id' => $this->partner_attribution->get_bn_code(),
 			),
 			'body'    => wp_json_encode( $data ),
 		);
