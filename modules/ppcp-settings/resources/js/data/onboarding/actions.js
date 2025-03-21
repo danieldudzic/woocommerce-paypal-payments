@@ -128,7 +128,7 @@ export const updateGatewaysRefreshed = ( refreshed = true ) =>
 export function syncGateways() {
 	return async ( { dispatch } ) => {
 		dispatch( setPersistent( 'gatewaysSynced', true ) );
-		await dispatch( persist() );
+		await dispatch.persist();
 		return { success: true };
 	};
 }
@@ -136,7 +136,7 @@ export function syncGateways() {
 export function refreshGateways() {
 	return async ( { dispatch } ) => {
 		dispatch( setPersistent( 'gatewaysRefreshed', true ) );
-		await dispatch( persist() );
+		await dispatch.persist();
 		return { success: true };
 	};
 }
