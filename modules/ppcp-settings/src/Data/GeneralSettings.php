@@ -273,7 +273,7 @@ class GeneralSettings extends AbstractDataModel {
 	}
 
 	/**
-	 * Gets branded experience installation path.
+	 * Retrieves the installation path for the branded experience.
 	 *
 	 * @return string
 	 */
