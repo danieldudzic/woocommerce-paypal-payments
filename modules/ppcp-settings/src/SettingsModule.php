@@ -11,6 +11,7 @@ namespace WooCommerce\PayPalCommerce\Settings;
 
 use WC_Payment_Gateway;
 use WooCommerce\PayPalCommerce\ApiClient\Helper\DccApplies;
+use WooCommerce\PayPalCommerce\ApiClient\Helper\PartnerAttribution;
 use WooCommerce\PayPalCommerce\Applepay\Assets\AppleProductStatus;
 use WooCommerce\PayPalCommerce\Axo\Gateway\AxoGateway;
 use WooCommerce\PayPalCommerce\Googlepay\Helper\ApmProductStatus;
@@ -236,6 +237,9 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 				);
 
 				if ( $is_pay_later_configurator_available ) {
+					$partner_attribution = $container->get( 'api.helper.partner-attribution' );
+					assert( $partner_attribution instanceof PartnerAttribution );
+
 					wp_enqueue_script(
 						'ppcp-paylater-configurator-lib',
 						'https://www.paypalobjects.com/merchant-library/merchant-configurator.js',
@@ -251,7 +255,7 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 						'config'           => array(),
 						'merchantClientId' => $settings->get( 'client_id' ),
 						'partnerClientId'  => $container->get( 'api.partner_merchant_id' ),
-						'bnCode'           => PPCP_PAYPAL_BN_CODE,
+						'bnCode'           => $partner_attribution->get_bn_code(),
 					);
 				}
 
