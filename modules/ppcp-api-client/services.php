@@ -279,7 +279,6 @@ return array(
 		return new BillingAgreementsEndpoint(
 			$container->get( 'api.host' ),
 			$container->get( 'api.bearer' ),
-			$container->get( 'api.helper.partner-attribution' ),
 			$container->get( 'woocommerce.logger.woocommerce' )
 		);
 	},
