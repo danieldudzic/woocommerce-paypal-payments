@@ -975,6 +975,10 @@ return array(
 		);
 	},
 	'api.helper.partner-attribution'                 => static function ( ContainerInterface $container ) : PartnerAttribution {
-		return new PartnerAttribution( 'ppcp_bn_code', $container->get( 'api.bn-codes' ) );
+		return new PartnerAttribution(
+			'ppcp_bn_code',
+			$container->get( 'api.bn-codes' ),
+			PPCP_PAYPAL_BN_CODE
+		);
 	},
 );

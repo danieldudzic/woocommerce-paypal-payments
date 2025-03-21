@@ -38,14 +38,23 @@ class PartnerAttribution {
 	protected array $bn_codes;
 
 	/**
+	 * The default BN code.
+	 *
+	 * @var string
+	 */
+	protected string $default_bn_code;
+
+	/**
 	 * PartnerAttribution constructor.
 	 *
 	 * @param string                          $bn_code_option_name The BN code option name in DB.
 	 * @param array<installationPath, bnCode> $bn_codes BN Codes mapping for different installation paths.
+	 * @param string                          $default_bn_code The default BN code.
 	 */
-	public function __construct( string $bn_code_option_name, array $bn_codes ) {
+	public function __construct( string $bn_code_option_name, array $bn_codes, string $default_bn_code ) {
 		$this->bn_code_option_name = $bn_code_option_name;
 		$this->bn_codes            = $bn_codes;
+		$this->default_bn_code     = $default_bn_code;
 	}
 
 	/**
@@ -71,6 +80,6 @@ class PartnerAttribution {
 	 * @return string The stored BN Code, or the default value if no path is detected.
 	 */
 	public function get_bn_code(): string {
-		return get_option( $this->bn_code_option_name, PPCP_PAYPAL_BN_CODE );
+		return get_option( $this->bn_code_option_name, $this->default_bn_code ) ?? $this->default_bn_code;
 	}
 }

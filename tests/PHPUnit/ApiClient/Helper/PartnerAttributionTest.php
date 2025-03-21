@@ -29,8 +29,14 @@ class PartnerAttributionTest extends TestCase {
 	 */
 	private array $bn_codes = [
 		'core-profiler'    => 'WooPPCP_Ecom_PS_CoreProfiler',
-		'payment-settings' => 'WooPPCP_Ecom_PS_PaymentSettings',
 	];
+
+	/**
+	 * The default BN code.
+	 *
+	 * @var string
+	 */
+	private string $default_bn_code = 'Woo_PPCP';
 
 	/**
 	 * Set up Brain Monkey before each test.
@@ -64,7 +70,7 @@ class PartnerAttributionTest extends TestCase {
 			->with($this->bn_code_option_name, $expected_bn_code)
 			->andReturn(true);
 
-		$partner_attribution = new PartnerAttribution( $this->bn_code_option_name, $this->bn_codes );
+		$partner_attribution = new PartnerAttribution( $this->bn_code_option_name, $this->bn_codes, $this->default_bn_code );
 		$partner_attribution->initialize_bn_code( $installation_path );
 
 		$this->assertTrue(true);
@@ -77,7 +83,7 @@ class PartnerAttributionTest extends TestCase {
 		when('get_option')->justReturn('WooPPCP_Ecom_PS_CoreProfiler');
 		expect( 'update_option' )->never();
 
-		$partner_attribution = new PartnerAttribution( $this->bn_code_option_name, $this->bn_codes );
+		$partner_attribution = new PartnerAttribution( $this->bn_code_option_name, $this->bn_codes, $this->default_bn_code );
 		$partner_attribution->initialize_bn_code( 'core-profiler' );
 
 		$this->assertTrue(true);
@@ -91,10 +97,10 @@ class PartnerAttributionTest extends TestCase {
 
 		expect( 'get_option' )
 			->once()
-			->with( $this->bn_code_option_name, '' )
+			->with( $this->bn_code_option_name, $this->default_bn_code )
 		    ->andReturn( $expected_bn_code );
 
-		$partner_attribution = new PartnerAttribution( $this->bn_code_option_name, $this->bn_codes );
+		$partner_attribution = new PartnerAttribution( $this->bn_code_option_name, $this->bn_codes, $this->default_bn_code );
 
 		$this->assertSame( $expected_bn_code, $partner_attribution->get_bn_code() );
 	}
@@ -105,11 +111,11 @@ class PartnerAttributionTest extends TestCase {
 	public function test_get_bn_code_returns_empty_string_when_not_set(): void {
 		expect( 'get_option' )
 			->once()
-			->with( $this->bn_code_option_name, '' )
-			->andReturn( '' );
+			->with( $this->bn_code_option_name, $this->default_bn_code )
+			->andReturn( $this->default_bn_code );
 
-		$partner_attribution = new PartnerAttribution( $this->bn_code_option_name, $this->bn_codes );
+		$partner_attribution = new PartnerAttribution( $this->bn_code_option_name, $this->bn_codes, $this->default_bn_code );
 
-		$this->assertSame( '', $partner_attribution->get_bn_code() );
+		$this->assertSame( $this->default_bn_code, $partner_attribution->get_bn_code() );
 	}
 }
