@@ -83,6 +83,7 @@ use WooCommerce\PayPalCommerce\WcGateway\Settings\Settings;
 use WooCommerce\PayPalCommerce\ApiClient\Authentication\ConnectBearer;
 use WooCommerce\PayPalCommerce\WcGateway\Helper\EnvironmentConfig;
 use WooCommerce\PayPalCommerce\WcGateway\Helper\Environment;
+use WooCommerce\PayPalCommerce\Settings\Enum\InstallationPathEnum;
 
 return array(
 	'api.host'                                       => static function( ContainerInterface $container ) : string {
@@ -969,8 +970,8 @@ return array(
 		return new PartnerAttribution(
 			'ppcp_bn_code',
 			array(
-				ActivationDetector::CORE_PROFILER    => 'WooPPCP_Ecom_PS_CoreProfiler',
-				ActivationDetector::PAYMENT_SETTINGS => 'WooPPCP_Ecom_PS_CoreProfiler',
+				InstallationPathEnum::CORE_PROFILER    => 'WooPPCP_Ecom_PS_CoreProfiler',
+				InstallationPathEnum::PAYMENT_SETTINGS => 'WooPPCP_Ecom_PS_CoreProfiler',
 			),
 			PPCP_PAYPAL_BN_CODE
 		);
