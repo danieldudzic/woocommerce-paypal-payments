@@ -6,16 +6,19 @@
  * @package WooCommerce\PayPalCommerce\Axo\Helper
  */
 
-declare(strict_types=1);
+declare( strict_types = 1 );
 
 namespace WooCommerce\PayPalCommerce\Axo\Helper;
 
 use WooCommerce\PayPalCommerce\WcGateway\Helper\CartCheckoutDetector;
 use WooCommerce\PayPalCommerce\WcGateway\Settings\Settings;
 use WooCommerce\PayPalCommerce\WcGateway\Exception\NotFoundException;
+use WooCommerce\PayPalCommerce\WcGateway\Helper\CardPaymentsConfiguration;
 
 /**
  * Class CompatibilityChecker
+ *
+ * DI service: 'axo.helpers.compatibility-checker'
  */
 class CompatibilityChecker {
 	/**
@@ -33,20 +36,24 @@ class CompatibilityChecker {
 	protected array $checkout_compatibility;
 
 	/**
-	 * Stores whether DCC is enabled.
+	 * Provides details about the DCC configuration.
 	 *
-	 * @var bool|null
+	 * @var CardPaymentsConfiguration
 	 */
-	protected ?bool $is_dcc_enabled = null;
+	private CardPaymentsConfiguration $dcc_configuration;
 
 	/**
 	 * CompatibilityChecker constructor.
 	 *
-	 * @param string[] $incompatible_plugin_names The list of Fastlane incompatible plugin names.
+	 * @param string[]                  $incompatible_plugin_names The list of Fastlane incompatible
+	 *                                                             plugin names.
+	 * @param CardPaymentsConfiguration $dcc_configuration         DCC gateway configuration.
 	 */
-	public function __construct( array $incompatible_plugin_names ) {
+	public function __construct( array $incompatible_plugin_names, CardPaymentsConfiguration $dcc_configuration ) {
 		$this->incompatible_plugin_names = $incompatible_plugin_names;
-		$this->checkout_compatibility    = array(
+		$this->dcc_configuration         = $dcc_configuration;
+
+		$this->checkout_compatibility = array(
 			'has_elementor_checkout' => null,
 			'has_classic_checkout'   => null,
 			'has_block_checkout'     => null,
@@ -58,7 +65,7 @@ class CompatibilityChecker {
 	 *
 	 * @return bool Whether the checkout uses Elementor.
 	 */
-	protected function has_elementor_checkout(): bool {
+	protected function has_elementor_checkout() : bool {
 		if ( $this->checkout_compatibility['has_elementor_checkout'] === null ) {
 			$this->checkout_compatibility['has_elementor_checkout'] = CartCheckoutDetector::has_elementor_checkout();
 		}
@@ -71,7 +78,7 @@ class CompatibilityChecker {
 	 *
 	 * @return bool Whether the checkout uses classic checkout.
 	 */
-	protected function has_classic_checkout(): bool {
+	protected function has_classic_checkout() : bool {
 		if ( $this->checkout_compatibility['has_classic_checkout'] === null ) {
 			$this->checkout_compatibility['has_classic_checkout'] = CartCheckoutDetector::has_classic_checkout();
 		}
@@ -84,7 +91,7 @@ class CompatibilityChecker {
 	 *
 	 * @return bool Whether the checkout uses block checkout.
 	 */
-	protected function has_block_checkout(): bool {
+	protected function has_block_checkout() : bool {
 		if ( $this->checkout_compatibility['has_block_checkout'] === null ) {
 			$this->checkout_compatibility['has_block_checkout'] = CartCheckoutDetector::has_block_checkout();
 		}
@@ -93,28 +100,11 @@ class CompatibilityChecker {
 	}
 
 	/**
-	 * Checks if DCC is enabled.
-	 *
-	 * @param Settings $settings The plugin settings container.
-	 * @return bool Whether DCC is enabled.
-	 */
-	protected function is_dcc_enabled( Settings $settings ): bool {
-		if ( $this->is_dcc_enabled === null ) {
-			try {
-				$this->is_dcc_enabled = $settings->has( 'dcc_enabled' ) && $settings->get( 'dcc_enabled' );
-			} catch ( NotFoundException $ignored ) {
-				$this->is_dcc_enabled = false;
-			}
-		}
-
-		return $this->is_dcc_enabled;
-	}
-
-	/**
 	 * Generates the full HTML of the notification.
 	 *
-	 * @param string $message    HTML of the inner message contents.
-	 * @param bool   $is_error   Whether the provided message is an error. Affects the notice color.
+	 * @param string $message     HTML of the inner message contents.
+	 * @param bool   $is_error    Whether the provided message is an error. Affects the notice
+	 *                            color.
 	 * @param bool   $raw_message Whether to return raw message without HTML wrappers.
 	 *
 	 * @return string The full HTML code of the notification, or an empty string, or raw message.
@@ -136,11 +126,12 @@ class CompatibilityChecker {
 	}
 
 	/**
-	 * Check if there aren't any incompatibilities that would prevent Fastlane from working properly.
+	 * Check if there aren't any incompatibilities that would prevent Fastlane from working
+	 * properly.
 	 *
 	 * @return bool Whether the setup is compatible.
 	 */
-	public function is_fastlane_compatible(): bool {
+	public function is_fastlane_compatible() : bool {
 		// Check for incompatible plugins.
 		if ( ! empty( $this->incompatible_plugin_names ) ) {
 			return false;
@@ -165,7 +156,7 @@ class CompatibilityChecker {
 	 * @param bool $raw_message Whether to return raw message without HTML wrappers.
 	 * @return string
 	 */
-	public function generate_checkout_notice( bool $raw_message = false ): string {
+	public function generate_checkout_notice( bool $raw_message = false ) : string {
 		$notice_content = '';
 
 		// Check for checkout incompatibilities.
@@ -213,7 +204,7 @@ class CompatibilityChecker {
 	 * @param bool $raw_message Whether to return raw message without HTML wrappers.
 	 * @return string
 	 */
-	public function generate_incompatible_plugins_notice( bool $raw_message = false ): string {
+	public function generate_incompatible_plugins_notice( bool $raw_message = false ) : string {
 		if ( empty( $this->incompatible_plugin_names ) ) {
 			return '';
 		}
@@ -235,12 +226,11 @@ class CompatibilityChecker {
 	/**
 	 * Generates a warning notice with instructions on conflicting plugin-internal settings.
 	 *
-	 * @param Settings $settings The plugin settings container, which is checked for conflicting values.
-	 * @param bool     $raw_message Whether to return raw message without HTML wrappers.
+	 * @param bool $raw_message Whether to return raw message without HTML wrappers.
 	 * @return string
 	 */
-	public function generate_settings_conflict_notice( Settings $settings, bool $raw_message = false ) : string {
-		if ( $this->is_dcc_enabled( $settings ) ) {
+	public function generate_settings_conflict_notice( bool $raw_message = false ) : string {
+		if ( $this->dcc_configuration->is_enabled() ) {
 			return '';
 		}
 
