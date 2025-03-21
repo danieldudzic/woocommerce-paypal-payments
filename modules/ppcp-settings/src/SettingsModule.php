@@ -23,11 +23,11 @@ use WooCommerce\PayPalCommerce\LocalAlternativePaymentMethods\MyBankGateway;
 use WooCommerce\PayPalCommerce\LocalAlternativePaymentMethods\P24Gateway;
 use WooCommerce\PayPalCommerce\LocalAlternativePaymentMethods\TrustlyGateway;
 use WooCommerce\PayPalCommerce\Settings\Ajax\SwitchSettingsUiEndpoint;
-use WooCommerce\PayPalCommerce\Settings\Data\Definition\PaymentMethodsDefinition;
 use WooCommerce\PayPalCommerce\Settings\Data\OnboardingProfile;
 use WooCommerce\PayPalCommerce\Settings\Data\TodosModel;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\RestEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Handler\ConnectionListener;
+use WooCommerce\PayPalCommerce\Settings\Service\BrandedExperience\PathRepository;
 use WooCommerce\PayPalCommerce\Settings\Service\GatewayRedirectService;
 use WooCommerce\PayPalCommerce\Vendor\Inpsyde\Modularity\Module\ExecutableModule;
 use WooCommerce\PayPalCommerce\Vendor\Inpsyde\Modularity\Module\ModuleClassNameIdTrait;
@@ -144,10 +144,26 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 			return true;
 		}
 
+		/**
+		 * This hook is fired when the plugin is updated.
+		 */
 		add_action(
 			'woocommerce_paypal_payments_gateway_migrate_on_update',
 			static fn() => ! get_option( SwitchSettingsUiEndpoint::OPTION_NAME_SHOULD_USE_OLD_UI )
 				&& update_option( SwitchSettingsUiEndpoint::OPTION_NAME_SHOULD_USE_OLD_UI, 'yes' )
+		);
+
+		/**
+		 * This hook is fired when the plugin is installed or updated.
+		 */
+		add_action(
+			'woocommerce_paypal_payments_gateway_migrate',
+			function () use ( $container ) {
+				$path_repository = $container->get( 'settings.service.branded-experience.path-repository' );
+				assert( $path_repository instanceof PathRepository );
+
+				$path_repository->persist();
+			}
 		);
 
 		add_action(

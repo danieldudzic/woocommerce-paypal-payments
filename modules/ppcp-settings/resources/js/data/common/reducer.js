@@ -61,6 +61,7 @@ const defaultTransient = Object.freeze( {
 const defaultPersistent = Object.freeze( {
 	useSandbox: false,
 	useManualConnection: false,
+	installationPath: '',
 } );
 
 // Reducer logic.
