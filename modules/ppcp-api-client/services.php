@@ -32,6 +32,7 @@ use WooCommerce\PayPalCommerce\ApiClient\Factory\RefundPayerFactory;
 use WooCommerce\PayPalCommerce\ApiClient\Factory\SellerPayableBreakdownFactory;
 use WooCommerce\PayPalCommerce\ApiClient\Factory\ShippingOptionFactory;
 use WooCommerce\PayPalCommerce\Session\SessionHandler;
+use WooCommerce\PayPalCommerce\Settings\Service\BrandedExperience\ActivationDetector;
 use WooCommerce\PayPalCommerce\Vendor\Psr\Container\ContainerInterface;
 use WooCommerce\PayPalCommerce\ApiClient\Authentication\Bearer;
 use WooCommerce\PayPalCommerce\ApiClient\Authentication\PayPalBearer;
@@ -971,7 +972,8 @@ return array(
 	 */
 	'api.bn-codes'                                   => static function (): array {
 		return array(
-			'core-profiler' => 'WooPPCP_Ecom_PS_CoreProfiler',
+			ActivationDetector::CORE_PROFILER    => 'WooPPCP_Ecom_PS_CoreProfiler',
+			ActivationDetector::PAYMENT_SETTINGS => 'WooPPCP_Ecom_PS_CoreProfiler',
 		);
 	},
 	'api.helper.partner-attribution'                 => static function ( ContainerInterface $container ) : PartnerAttribution {
