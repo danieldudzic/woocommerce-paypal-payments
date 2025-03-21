@@ -21,6 +21,7 @@ use WooCommerce\PayPalCommerce\ApiClient\Entity\PaymentToken;
 use WooCommerce\PayPalCommerce\ApiClient\Factory\PayerFactory;
 use WooCommerce\PayPalCommerce\ApiClient\Helper\CurrencyGetter;
 use WooCommerce\PayPalCommerce\ApiClient\Helper\DccApplies;
+use WooCommerce\PayPalCommerce\ApiClient\Helper\PartnerAttribution;
 use WooCommerce\PayPalCommerce\Blocks\Endpoint\UpdateShippingEndpoint;
 use WooCommerce\PayPalCommerce\Button\Endpoint\ApproveOrderEndpoint;
 use WooCommerce\PayPalCommerce\Button\Endpoint\ApproveSubscriptionEndpoint;
@@ -238,6 +239,13 @@ class SmartButton implements SmartButtonInterface {
 	private $disabled_funding_sources;
 
 	/**
+	 * The PayPal Partner Attribution Helper.
+	 *
+	 * @var PartnerAttribution
+	 */
+	protected PartnerAttribution $partner_attribution;
+
+	/**
 	 * SmartButton constructor.
 	 *
 	 * @param string                 $module_url The URL to the module.
@@ -264,6 +272,7 @@ class SmartButton implements SmartButtonInterface {
 	 * @param LoggerInterface        $logger The logger.
 	 * @param bool                   $should_handle_shipping_in_paypal Whether the shipping should be handled in PayPal.
 	 * @param DisabledFundingSources $disabled_funding_sources List of funding sources to be disabled.
+	 * @param PartnerAttribution     $partner_attribution The PayPal Partner Attribution Helper.
 	 */
 	public function __construct(
 		string $module_url,
@@ -289,7 +298,8 @@ class SmartButton implements SmartButtonInterface {
 		PaymentTokensEndpoint $payment_tokens_endpoint,
 		LoggerInterface $logger,
 		bool $should_handle_shipping_in_paypal,
-		DisabledFundingSources $disabled_funding_sources
+		DisabledFundingSources $disabled_funding_sources,
+		PartnerAttribution $partner_attribution
 	) {
 
 		$this->module_url                        = $module_url;
@@ -316,6 +326,7 @@ class SmartButton implements SmartButtonInterface {
 		$this->payment_tokens_endpoint           = $payment_tokens_endpoint;
 		$this->should_handle_shipping_in_paypal  = $should_handle_shipping_in_paypal;
 		$this->disabled_funding_sources          = $disabled_funding_sources;
+		$this->partner_attribution               = $partner_attribution;
 	}
 
 	/**
@@ -833,9 +844,7 @@ document.querySelector("#payment").before(document.querySelector(".ppcp-messages
 		 */
 		do_action( "ppcp_before_{$location_hook}_message_wrapper" );
 
-		$bn_code = PPCP_PAYPAL_BN_CODE;
-
-		$messages_placeholder = '<div class="ppcp-messages" data-partner-attribution-id="' . esc_attr( $bn_code ) . '"></div>';
+		$messages_placeholder = '<div class="ppcp-messages" data-partner-attribution-id="' . esc_attr( $this->partner_attribution->get_bn_code() ) . '"></div>';
 
 		if ( is_array( $block_params ) && ( $block_params['blockName'] ?? false ) ) {
 			$this->render_after_block(
@@ -1545,12 +1554,9 @@ document.querySelector("#payment").before(document.querySelector(".ppcp-messages
 	 * @return string
 	 */
 	private function bn_code_for_context( string $context ): string {
-
 		$codes = $this->bn_codes();
 
-		$bn_code = PPCP_PAYPAL_BN_CODE;
-
-		return ( isset( $codes[ $context ] ) ) ? $codes[ $context ] : $bn_code;
+		return ( isset( $codes[ $context ] ) ) ? $codes[ $context ] : $this->partner_attribution->get_bn_code();
 	}
 
 	/**
@@ -1560,7 +1566,7 @@ document.querySelector("#payment").before(document.querySelector(".ppcp-messages
 	 */
 	private function bn_codes() : array {
 
-		$bn_code = PPCP_PAYPAL_BN_CODE;
+		$bn_code = $this->partner_attribution->get_bn_code();
 
 		return array(
 			'checkout'  => $bn_code,
