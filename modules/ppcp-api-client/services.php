@@ -965,21 +965,13 @@ return array(
 
 		return CONNECT_WOO_URL;
 	},
-	/**
-	 * BN Codes mapping for different installation paths.
-	 *
-	 * @returns array<string, string> The map of installation paths to BN Codes.
-	 */
-	'api.bn-codes'                                   => static function (): array {
-		return array(
-			ActivationDetector::CORE_PROFILER    => 'WooPPCP_Ecom_PS_CoreProfiler',
-			ActivationDetector::PAYMENT_SETTINGS => 'WooPPCP_Ecom_PS_CoreProfiler',
-		);
-	},
 	'api.helper.partner-attribution'                 => static function ( ContainerInterface $container ) : PartnerAttribution {
 		return new PartnerAttribution(
 			'ppcp_bn_code',
-			$container->get( 'api.bn-codes' ),
+			array(
+				ActivationDetector::CORE_PROFILER    => 'WooPPCP_Ecom_PS_CoreProfiler',
+				ActivationDetector::PAYMENT_SETTINGS => 'WooPPCP_Ecom_PS_CoreProfiler',
+			),
 			PPCP_PAYPAL_BN_CODE
 		);
 	},
