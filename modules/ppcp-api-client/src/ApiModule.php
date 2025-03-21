@@ -156,6 +156,10 @@ class ApiModule implements ServiceModule, ExtendingModule, ExecutableModule {
 				$partner_attribution = $c->get( 'api.helper.partner-attribution' );
 				assert( $partner_attribution instanceof PartnerAttribution );
 
+				if ( ! isset( $args['headers'] ) || ! is_array( $args['headers'] ) ) {
+					$args['headers'] = array();
+				}
+
 				$args['headers']['PayPal-Partner-Attribution-Id'] = $partner_attribution->get_bn_code();
 
 				return $args;
