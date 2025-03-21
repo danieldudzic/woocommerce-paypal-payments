@@ -68,9 +68,9 @@ class PartnerAttribution {
 	/**
 	 * Retrieves the persisted BN Code.
 	 *
-	 * @return string The stored BN Code, or the empty string if no path is detected .
+	 * @return string The stored BN Code, or the default value if no path is detected.
 	 */
 	public function get_bn_code(): string {
-		return get_option( $this->bn_code_option_name, '' );
+		return get_option( $this->bn_code_option_name, PPCP_PAYPAL_BN_CODE );
 	}
 }
