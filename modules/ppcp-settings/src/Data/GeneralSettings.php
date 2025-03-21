@@ -267,13 +267,26 @@ class GeneralSettings extends AbstractDataModel {
 	}
 
 	/**
-	 * Sets the branded experience installation path.
+	 * Sets the installation path. This function will only set the installation
+	 * path a single time and ignore subsequent calls.
 	 *
-	 * @param string $installation_path The branded experience installation path.
+	 * Short: The installation path cannot be updated once it's defined.
+	 *
+	 * @param string $installation_path The installation path.
 	 *
 	 * @return void
 	 */
 	public function set_installation_path( string $installation_path ) : void {
+		// The installation path can be set only once.
+		if ( InstallationPathEnum::is_valid( $this->data['installation_path'] ?? '' ) ) {
+			return;
+		}
+
+		// Ignore invalid installation paths.
+		if ( ! $installation_path || ! InstallationPathEnum::is_valid( $installation_path ) ) {
+			return;
+		}
+
 		$this->data['installation_path'] = $installation_path;
 	}
 
