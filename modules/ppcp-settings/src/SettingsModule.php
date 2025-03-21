@@ -163,7 +163,14 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 				$path_repository = $container->get( 'settings.service.branded-experience.path-repository' );
 				assert( $path_repository instanceof PathRepository );
 
+				$partner_attribution = $container->get( 'api.helper.partner-attribution' );
+				assert( $partner_attribution instanceof PartnerAttribution );
+
+				$general_settings = $container->get( 'settings.data.general' );
+				assert( $general_settings instanceof GeneralSettings );
+
 				$path_repository->persist();
+				$partner_attribution->initialize_bn_code( $general_settings->get_installation_path() );
 			}
 		);
 
