@@ -212,6 +212,7 @@ export const useMerchant = () => {
 			clientSecret: merchant.clientSecret ?? '',
 			isBusinessSeller: 'business' === merchant.sellerType,
 			isCasualSeller: 'personal' === merchant.sellerType,
+			isSendOnlyCountry: merchant.isSendOnlyCountry ?? false,
 		} ),
 		// the merchant object is stable, so a new memo is only generated when a merchant prop changes.
 		[ merchant ]
