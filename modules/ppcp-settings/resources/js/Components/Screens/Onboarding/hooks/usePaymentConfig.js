@@ -268,10 +268,10 @@ export const usePaymentConfig = (
 		// Get "learn more" links for the country
 		let learnMoreConfig = learnMoreLinks[ country ] || {};
 
-		// If ownBrandOnly is true, remove OptionalMethods link if present.
+		// If ownBrandOnly is true, move the "OptionalMethods" link to the "APMs" component.
 		if ( ownBrandOnly && learnMoreConfig.OptionalMethods ) {
 			const { OptionalMethods, ...rest } = learnMoreConfig;
-			learnMoreConfig = rest;
+			learnMoreConfig = { ...rest, APMs: OptionalMethods };
 		}
 
 		// Filter out conditional methods.
