@@ -15,6 +15,20 @@ import {
 	CreditDebitCards,
 } from '../Components/PaymentOptions';
 
+// List of all payment icons and which requirements they have.
+const allIcons = [
+	{ name: 'paypal', always: true },
+	{ name: 'venmo', isOwnBrand: true, isAcdc: false, countries: [ 'US' ] },
+	{ name: 'visa', isOwnBrand: false, isAcdc: false },
+	{ name: 'mastercard', isOwnBrand: false, isAcdc: false },
+	{ name: 'amex', isOwnBrand: false, isAcdc: false },
+	{ name: 'discover', isOwnBrand: false, isAcdc: false },
+	{ name: 'apple-pay', isOwnBrand: false, isAcdc: true },
+	{ name: 'google-pay', isOwnBrand: false, isAcdc: true },
+	{ name: 'ideal', isOwnBrand: true, isAcdc: true },
+	{ name: 'bancontact', isOwnBrand: true, isAcdc: true },
+];
+
 // Default configuration, used for all countries, unless they override individual attributes below.
 const defaultConfig = {
 	// Included: Items in the left column.
@@ -48,20 +62,6 @@ const defaultConfig = {
 		'Our all-in-one checkout solution lets you offer PayPal, Pay Later options, and more to help maximise conversion',
 		'woocommerce-paypal-payments'
 	),
-
-	// Icon groups.
-	bcdcIcons: [ 'paypal', 'visa', 'mastercard', 'amex', 'discover' ],
-	acdcIcons: [
-		'paypal',
-		'visa',
-		'mastercard',
-		'amex',
-		'discover',
-		'apple-pay',
-		'google-pay',
-		'ideal',
-		'bancontact',
-	],
 };
 
 const countrySpecificConfigs = {
@@ -90,26 +90,6 @@ const countrySpecificConfigs = {
 			'Accept debit/credit cards, PayPal, Apple Pay, Google Pay, and more. Note: Additional application required for more methods',
 			'woocommerce-paypal-payments'
 		),
-		bcdcIcons: [
-			'paypal',
-			'venmo',
-			'visa',
-			'mastercard',
-			'amex',
-			'discover',
-		],
-		acdcIcons: [
-			'paypal',
-			'venmo',
-			'visa',
-			'mastercard',
-			'amex',
-			'discover',
-			'apple-pay',
-			'google-pay',
-			'ideal',
-			'bancontact',
-		],
 	},
 	GB: {
 		includedMethods: [
@@ -123,6 +103,34 @@ const countrySpecificConfigs = {
 			{ name: 'APMs', Component: AlternativePaymentMethods },
 		],
 	},
+};
+
+/**
+ * Returns a list of icon names that are available to the relevant merchant.
+ *
+ * @param {string}  country     Merchant country, 2-character ISO code.
+ * @param {boolean} includeAcdc Whether to include advanced card payment methods.
+ * @param {boolean} onlyBranded Whether to return only branded payment methods.
+ * @return {string[]} List of icon names.
+ */
+const selectRelevantIcons = ( country, includeAcdc, onlyBranded ) => {
+	return allIcons
+		.filter( ( { always, isOwnBrand, isAcdc, countries = [] } ) => {
+			if ( always ) {
+				return true;
+			}
+
+			if ( onlyBranded && ! isOwnBrand ) {
+				return false;
+			}
+
+			if ( ! includeAcdc && isAcdc ) {
+				return false;
+			}
+
+			return ! countries.length || countries.includes( country );
+		} )
+		.map( ( icon ) => icon.name );
 };
 
 const filterMethods = ( methods, conditions ) => {
@@ -160,11 +168,17 @@ export const usePaymentConfig = (
 			( method ) => method.name !== 'Fastlane' || hasFastlane,
 		] );
 
+		const icons = selectRelevantIcons(
+			country,
+			canUseCardPayments,
+			ownBrandOnly
+		);
+
 		return {
 			...config,
 			optionalMethods: availableOptionalMethods,
 			learnMoreConfig,
-			icons: canUseCardPayments ? config.acdcIcons : config.bcdcIcons,
+			icons,
 		};
-	}, [ country, canUseCardPayments, hasFastlane ] );
+	}, [ country, canUseCardPayments, hasFastlane, ownBrandOnly ] );
 };
