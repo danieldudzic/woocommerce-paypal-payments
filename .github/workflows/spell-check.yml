@@ -1,0 +1,25 @@
+name: Spell Check
+
+on:
+  # Run on all pull requests
+  pull_request:
+
+jobs:
+  typos:
+    runs-on: ubuntu-latest
+    name: Check for typos
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check spelling
+        id: spelling
+        uses: crate-ci/typos@v1.30.2
+        with:
+          # This makes typos report issues as warnings rather than errors
+          error_level: warning
+          # Generate a more detailed report
+          format: brief
+          # Path to config file
+          config: .github/workflows-config/typos.toml
+        continue-on-error: true
