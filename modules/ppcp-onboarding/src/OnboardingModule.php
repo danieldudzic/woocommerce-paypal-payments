@@ -48,9 +48,15 @@ class OnboardingModule implements ServiceModule, ExtendingModule, ExecutableModu
 		add_action(
 			'admin_enqueue_scripts',
 			function() use ( $c ) {
-				if ( ! SettingsModule::should_use_the_old_ui() ) {
+				if (
+					apply_filters(
+						'woocommerce.feature-flags.woocommerce_paypal_payments.settings_enabled',
+						'1' === get_option( 'woocommerce-ppcp-is-new-merchant' )
+						|| getenv( 'PCP_SETTINGS_ENABLED' ) === '1'
+					)
+				)
 					return;
-				}
+
 
 				$asset_loader = $c->get( 'onboarding.assets' );
 				assert( $asset_loader instanceof OnboardingAssets );
