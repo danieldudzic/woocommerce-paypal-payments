@@ -131,14 +131,14 @@ const filterMethods = ( methods, conditions ) => {
 	);
 };
 
-export const usePaymentConfig = ( country, useAcdc, isFastlane ) => {
+export const usePaymentConfig = ( country, canUseCardPayments, isFastlane ) => {
 	return useMemo( () => {
 		const countryConfig = countrySpecificConfigs[ country ] || {};
 		const config = { ...defaultConfig, ...countryConfig };
 		const learnMoreConfig = learnMoreLinks[ country ] || {};
 
 		// Determine the "right side" items: Either BCDC or ACDC items.
-		const optionalMethods = useAcdc
+		const optionalMethods = canUseCardPayments
 			? config.extendedMethods
 			: config.basicMethods;
 
@@ -151,8 +151,7 @@ export const usePaymentConfig = ( country, useAcdc, isFastlane ) => {
 			...config,
 			optionalMethods: availableOptionalMethods,
 			learnMoreConfig,
-			acdcIcons: config.acdcIcons,
-			bcdcIcons: config.bcdcIcons,
+			icons: canUseCardPayments ? config.acdcIcons : config.bcdcIcons,
 		};
-	}, [ country, useAcdc, isFastlane ] );
+	}, [ country, canUseCardPayments, isFastlane ] );
 };
