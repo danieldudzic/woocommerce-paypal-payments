@@ -48,11 +48,11 @@ export const wooSettings = ( state ) => {
 	 *
 	 * @type {boolean}
 	 */
-	settings.isBranded =
+	const isBranded =
 		settings.installationPath === 'core-profile' ||
 		settings.installationPath === 'payment-settings';
 
-	return settings;
+	return { ...settings, isBranded };
 };
 
 export const webhooks = ( state ) => {
