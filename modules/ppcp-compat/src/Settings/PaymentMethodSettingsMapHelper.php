@@ -21,6 +21,15 @@ use WooCommerce\PayPalCommerce\WcGateway\Gateway\CreditCardGateway;
 class PaymentMethodSettingsMapHelper {
 
 	/**
+	 * A map of new to old 3d secure values.
+	 */
+	protected const THREE_D_SECURE_VALUES_MAP = array(
+		'no-3d-secure'            => 'NO_3D_SECURE',
+		'only-required-3d-secure' => 'SCA_WHEN_REQUIRED',
+		'always-3d-secure'        => 'SCA_ALWAYS',
+	);
+
+	/**
 	 * Maps old setting keys to new payment method settings names.
 	 *
 	 * @psalm-return array<oldSettingsKey, newSettingsKey>
