@@ -12,13 +12,14 @@ import AdvancedOptionsForm from '../Components/AdvancedOptionsForm';
 import { usePaymentConfig } from '../hooks/usePaymentConfig';
 
 const StepWelcome = ( { setStep, currentStep } ) => {
-	const { storeCountry, isBranded } = CommonHooks.useWooSettings();
+	const { storeCountry, ownBrandOnly } = CommonHooks.useWooSettings();
 	const { canUseCardPayments, canUseFastlane } = OnboardingHooks.useFlags();
 
 	const { icons } = usePaymentConfig(
 		storeCountry,
 		canUseCardPayments,
-		canUseFastlane
+		canUseFastlane,
+		ownBrandOnly
 	);
 
 	const onboardingHeaderDescription = canUseCardPayments
@@ -67,6 +68,7 @@ const StepWelcome = ( { setStep, currentStep } ) => {
 				useAcdc={ canUseCardPayments }
 				isFastlane={ canUseFastlane }
 				storeCountry={ storeCountry }
+				ownBrandOnly={ ownBrandOnly }
 			/>
 			<Separator text={ __( 'or', 'woocommerce-paypal-payments' ) } />
 			<Accordion

@@ -44,15 +44,18 @@ export const wooSettings = ( state ) => {
 	const settings = getState( state ).wooSettings || EMPTY_OBJ;
 
 	/**
-	 * The "is branded only experience" is determined based on the installation path.
+	 * The "branded only experience" is determined based on the installation path.
+	 *
+	 * When true, the plugin must only display "PayPal's own brand" payment options
+	 * i.e. no card payments or Apple Pay/Google Pay.
 	 *
 	 * @type {boolean}
 	 */
-	const isBranded =
+	const ownBrandOnly =
 		settings.installationPath === 'core-profile' ||
 		settings.installationPath === 'payment-settings';
 
-	return { ...settings, isBranded };
+	return { ...settings, ownBrandOnly };
 };
 
 export const webhooks = ( state ) => {

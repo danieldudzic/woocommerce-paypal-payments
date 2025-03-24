@@ -64,7 +64,8 @@ const PaymentStepTitle = () => {
 
 const OptionalMethodDescription = () => {
 	const { isCasualSeller } = OnboardingHooks.useBusiness();
-	const { storeCountry, storeCurrency } = CommonHooks.useWooSettings();
+	const { storeCountry, storeCurrency, ownBrandOnly } =
+		CommonHooks.useWooSettings();
 	const { canUseCardPayments } = OnboardingHooks.useFlags();
 
 	return (
@@ -73,6 +74,7 @@ const OptionalMethodDescription = () => {
 			useAcdc={ ! isCasualSeller && canUseCardPayments }
 			isFastlane={ true }
 			isPayLater={ true }
+			ownBrandOnly={ ownBrandOnly }
 			storeCountry={ storeCountry }
 			storeCurrency={ storeCurrency }
 		/>

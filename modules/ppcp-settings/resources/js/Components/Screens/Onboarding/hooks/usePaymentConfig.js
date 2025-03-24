@@ -131,8 +131,21 @@ const filterMethods = ( methods, conditions ) => {
 	);
 };
 
-export const usePaymentConfig = ( country, canUseCardPayments, isFastlane ) => {
+export const usePaymentConfig = (
+	country,
+	canUseCardPayments,
+	hasFastlane,
+	ownBrandOnly
+) => {
 	return useMemo( () => {
+		// eslint-disable-next-line no-console
+		console.log( '[Payment Config]', {
+			country,
+			canUseCardPayments,
+			hasFastlane,
+			ownBrandOnly,
+		} );
+
 		const countryConfig = countrySpecificConfigs[ country ] || {};
 		const config = { ...defaultConfig, ...countryConfig };
 		const learnMoreConfig = learnMoreLinks[ country ] || {};
@@ -144,7 +157,7 @@ export const usePaymentConfig = ( country, canUseCardPayments, isFastlane ) => {
 
 		// Remove conditional items from the right side list.
 		const availableOptionalMethods = filterMethods( optionalMethods, [
-			( method ) => method.name !== 'Fastlane' || isFastlane,
+			( method ) => method.name !== 'Fastlane' || hasFastlane,
 		] );
 
 		return {
@@ -153,5 +166,5 @@ export const usePaymentConfig = ( country, canUseCardPayments, isFastlane ) => {
 			learnMoreConfig,
 			icons: canUseCardPayments ? config.acdcIcons : config.bcdcIcons,
 		};
-	}, [ country, canUseCardPayments, isFastlane ] );
+	}, [ country, canUseCardPayments, hasFastlane ] );
 };

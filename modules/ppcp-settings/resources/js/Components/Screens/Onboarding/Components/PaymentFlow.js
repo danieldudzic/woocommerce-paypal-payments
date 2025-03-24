@@ -9,6 +9,7 @@ const PaymentFlow = ( {
 	useAcdc,
 	isFastlane,
 	storeCountry,
+	ownBrandOnly,
 	onlyOptional = false,
 } ) => {
 	const {
@@ -18,7 +19,7 @@ const PaymentFlow = ( {
 		optionalDescription,
 		learnMoreConfig,
 		paypalCheckoutDescription,
-	} = usePaymentConfig( storeCountry, useAcdc, isFastlane );
+	} = usePaymentConfig( storeCountry, useAcdc, isFastlane, ownBrandOnly );
 
 	if ( onlyOptional ) {
 		return (
