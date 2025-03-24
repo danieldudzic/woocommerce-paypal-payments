@@ -25,6 +25,7 @@ const allIcons = [
 	{ name: 'discover', isOwnBrand: false, isAcdc: false },
 	{ name: 'apple-pay', isOwnBrand: false, isAcdc: true },
 	{ name: 'google-pay', isOwnBrand: false, isAcdc: true },
+	{ name: 'blik', isOwnBrand: true, isAcdc: true },
 	{ name: 'ideal', isOwnBrand: true, isAcdc: true },
 	{ name: 'bancontact', isOwnBrand: true, isAcdc: true },
 ];
