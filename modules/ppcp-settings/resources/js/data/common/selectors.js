@@ -43,6 +43,8 @@ export const features = ( state ) => {
 export const wooSettings = ( state ) => {
 	const settings = getState( state ).wooSettings || EMPTY_OBJ;
 
+	const simulateBrandedOnly = localStorage.getItem( 'simulate-branded-only' );
+
 	/**
 	 * The "branded only experience" is determined based on the installation path.
 	 *
@@ -52,6 +54,7 @@ export const wooSettings = ( state ) => {
 	 * @type {boolean}
 	 */
 	const ownBrandOnly =
+		'true' === simulateBrandedOnly || // For development and testing. Remove this eventually!
 		settings.installationPath === 'core-profile' ||
 		settings.installationPath === 'payment-settings';
 
