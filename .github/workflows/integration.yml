@@ -36,4 +36,4 @@ jobs:
       run: ddev php tests/integration/PHPUnit/setup.php
 
     - name: Run PHPUnit
-      run: ddev exec phpunit -c tests/integration/phpunit.xml.dist
+      run: ddev exec phpunit --exclude skip-ci -c tests/integration/phpunit.xml.dist

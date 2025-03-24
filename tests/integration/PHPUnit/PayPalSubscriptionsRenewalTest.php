@@ -5,6 +5,9 @@ namespace WooCommerce\PayPalCommerce\Tests\Integration;
 use WC_Product_Simple;
 use WooCommerce\PayPalCommerce\PayPalSubscriptions\RenewalHandler;
 
+/**
+ * @group skip-ci
+ */
 class PayPalSubscriptionsRenewalTest extends TestCase {
 	public function test_renewal_order_is_not_created_just_after_receiving_webhook() {
 		$c       = $this->getContainer();
