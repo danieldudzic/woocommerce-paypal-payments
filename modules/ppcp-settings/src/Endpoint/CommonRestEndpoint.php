@@ -64,11 +64,9 @@ class CommonRestEndpoint extends RestEndpoint {
 			'js_name'  => 'useManualConnection',
 			'sanitize' => 'to_boolean',
 		),
+		// TODO: Is this really a "read-and-write" field? If no, it should not be listed in this map!
 		'webhooks'              => array(
 			'js_name' => 'webhooks',
-		),
-		'installation_path'     => array(
-			'js_name' => 'installationPath',
 		),
 	);
 
