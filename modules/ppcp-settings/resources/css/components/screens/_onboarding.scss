@@ -17,4 +17,9 @@
 	.ppcp-r-payment-method--separator {
 		margin: 8px 0 24px 0;
 	}
+
+	.components-button.ppcp-r-button-activate-paypal,
+	.ppcp-r-connection-button.ppcp--mode-live {
+		--button-background: #000;
+	}
 }
