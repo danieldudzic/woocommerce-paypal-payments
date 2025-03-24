@@ -9,7 +9,7 @@ import { strRemoveWord, strAddWord, throttle } from '../Helper/Utils';
 import merge from 'deepmerge';
 import { debounce } from '../../../../../ppcp-blocks/resources/js/Helper/debounce';
 
-class SingleProductBootstap {
+class SingleProductBootstrap {
 	constructor( gateway, renderer, errorHandler ) {
 		this.gateway = gateway;
 		this.renderer = renderer;
@@ -162,6 +162,12 @@ class SingleProductBootstap {
 			},
 		]
 			.map( ( f ) => f() )
+            .sort((a, b) => {
+                if (parseInt(a.replace(/\D/g, '')) < parseInt(b.replace(/\D/g, '')) ) {
+                    return 1;
+                }
+                return -1;
+            })
 			.find( ( val ) => val );
 
 		if ( typeof priceText === 'undefined' ) {
@@ -368,4 +374,4 @@ class SingleProductBootstap {
 	}
 }
 
-export default SingleProductBootstap;
+export default SingleProductBootstrap;

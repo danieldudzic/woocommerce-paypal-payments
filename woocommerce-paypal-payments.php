@@ -142,7 +142,7 @@ define( 'PPCP_PAYPAL_BN_CODE', 'Woo_PPCP' );
 		 * Add "Settings" link to Plugins screen.
 		 *
 		 * @param array $links
-		 * @retun array
+		 * @return array
 		 */
 		function( $links ) {
 			if ( ! is_woocommerce_activated() ) {
@@ -169,7 +169,7 @@ define( 'PPCP_PAYPAL_BN_CODE', 'Woo_PPCP' );
 		 *
 		 * @param array $links
 		 * @param string $file
-		 * @retun array
+		 * @return array
 		 */
 		function( $links, $file ) {
 			if ( plugin_basename( __FILE__ ) !== $file ) {
