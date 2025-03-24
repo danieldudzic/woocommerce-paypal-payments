@@ -289,17 +289,17 @@ const bootstrap = () => {
 	}
 
 	if ( context === 'checkout' ) {
-		const checkoutBootstap = new CheckoutBootstrap(
+		const checkoutBootstrap = new CheckoutBootstrap(
 			PayPalCommerceGateway,
 			renderer,
 			spinner,
 			errorHandler
 		);
 
-		checkoutBootstap.init();
+		checkoutBootstrap.init();
 		buttonModuleWatcher.registerContextBootstrap(
 			'checkout',
-			checkoutBootstap
+			checkoutBootstrap
 		);
 	}
 
