@@ -5,6 +5,18 @@ import PaymentMethodsGroup from './PaymentMethodsGroup';
 import { PayPalCheckout } from './PaymentOptions';
 import { usePaymentConfig } from '../hooks/usePaymentConfig';
 
+/**
+ * Displays the payment method details, tailored to the defined merchant.
+ *
+ * @param {Object}  props
+ * @param {string}  props.storeCountry The merchant's store country. 2-character ISO code.
+ * @param {boolean} props.useAcdc      Whether to include advanced card payments. When false, only BCDC items are included.
+ * @param {boolean} props.isFastlane   Whether Fastlane should be included.
+ * @param {boolean} props.ownBrandOnly Whether to show only PayPal's own payment methods.
+ * @param {boolean} props.onlyOptional Whether to only return the "right column", which includes the optional opt-in payment methods. When true, the "core" payment methods are not included.
+ * @return {JSX.Element} The payment options component.
+ * @class
+ */
 const PaymentFlow = ( {
 	useAcdc,
 	isFastlane,
@@ -21,6 +33,7 @@ const PaymentFlow = ( {
 		paypalCheckoutDescription,
 	} = usePaymentConfig( storeCountry, useAcdc, isFastlane, ownBrandOnly );
 
+	// When only opt-in methods are requested, without core-payment details, return early.
 	if ( onlyOptional ) {
 		return (
 			<OptionalMethodsSection
