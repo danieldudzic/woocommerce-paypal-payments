@@ -40,21 +40,25 @@ const DEFAULT_CONFIG = {
 		{
 			name: 'CreditDebitCards',
 			Component: CreditDebitCards,
+			isOwnBrand: false,
 			isAcdc: false,
 		},
 		{
 			name: 'CardFields',
 			Component: CardFields,
+			isOwnBrand: false,
 			isAcdc: true,
 		},
 		{
 			name: 'DigitalWallets',
 			Component: DigitalWallets,
+			isOwnBrand: false,
 			isAcdc: true,
 		},
 		{
 			name: 'APMs',
 			Component: AlternativePaymentMethods,
+			isOwnBrand: true,
 			isAcdc: true,
 		},
 	],
@@ -73,26 +77,31 @@ const COUNTRY_CONFIGS = {
 			{
 				name: 'CreditDebitCards',
 				Component: CreditDebitCards,
+				isOwnBrand: false,
 				isAcdc: false,
 			},
 			{
 				name: 'CardFields',
 				Component: CardFields,
+				isOwnBrand: false,
 				isAcdc: true,
 			},
 			{
 				name: 'DigitalWallets',
 				Component: DigitalWallets,
+				isOwnBrand: false,
 				isAcdc: true,
 			},
 			{
 				name: 'APMs',
 				Component: AlternativePaymentMethods,
+				isOwnBrand: true,
 				isAcdc: true,
 			},
 			{
 				name: 'Fastlane',
 				Component: Fastlane,
+				isOwnBrand: false,
 				isAcdc: true,
 				isFastlane: true,
 			},
@@ -109,11 +118,13 @@ const COUNTRY_CONFIGS = {
 			{
 				name: 'CardFields',
 				Component: CardFields,
+				isOwnBrand: false,
 				isAcdc: true,
 			},
 			{
 				name: 'APMs',
 				Component: AlternativePaymentMethods,
+				isOwnBrand: true,
 				isAcdc: true,
 			},
 		],
@@ -269,6 +280,8 @@ export const usePaymentConfig = (
 			[
 				// Either include Acdc or non-Acdc methods.
 				( method ) => method.isAcdc === canUseCardPayments,
+				// Only include own-brand methods when ownBrandOnly is true.
+				( method ) => ! ownBrandOnly || method.isOwnBrand === true,
 				// Only include Fastlane when hasFastlane is true.
 				( method ) => method.name !== 'Fastlane' || hasFastlane,
 			]
