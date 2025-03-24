@@ -173,7 +173,7 @@ class PayPalSubscriptionsModule implements ServiceModule, ExtendingModule, Execu
 				$order = $c->get( 'session.handler' )->order();
 				$gateway->add_paypal_meta( $wc_order, $order, $c->get( 'settings.environment' ) );
 
-				$subscriptions = function_exists( 'wcs_get_subscriptions_for_order' ) ? wcs_get_subscriptions_for_order( $wc_order ): array();
+				$subscriptions = function_exists( 'wcs_get_subscriptions_for_order' ) ? wcs_get_subscriptions_for_order( $wc_order ) : array();
 				foreach ( $subscriptions as $subscription ) {
 					$subscription->update_meta_data( 'ppcp_subscription', $paypal_subscription_id );
 					$subscription->save();
