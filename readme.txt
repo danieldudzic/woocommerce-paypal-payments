@@ -315,7 +315,7 @@ If you encounter issues with the PayPal buttons not appearing after an update, p
 * Fix - Shipping methods during callback not updated correctly #2421
 * Fix - Preserve subscription renewal processing when switching Subscriptions Mode or disabling gateway #2394
 * Fix - Remove shipping callback for Venmo express button #2374
-* Fix - Google Pay: Fix issuse with data.paymentSource being undefined #2390
+* Fix - Google Pay: Fix issue with data.paymentSource being undefined #2390
 * Fix - Loading of non-Order as a WC_Order causes warnings and potential data corruption #2343
 * Fix - Apple Pay and Google Pay buttons don't appear in PayPal Button stack on multi-step Checkout #2372
 * Fix - Apple Pay: Fix when shipping is disabled #2391

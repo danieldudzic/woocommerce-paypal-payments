@@ -376,7 +376,7 @@ class CardPaymentsConfiguration {
 	 *
 	 * Note: This setting is planned but not implemented yet.
 	 *
-	 * @retun bool True means, the default watermark is displayed to customers.
+	 * @return bool True means, the default watermark is displayed to customers.
 	 */
 	public function show_fastlane_watermark() : bool {
 		$this->ensure_resolved_values();

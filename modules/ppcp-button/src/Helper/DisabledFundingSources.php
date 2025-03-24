@@ -188,7 +188,7 @@ class DisabledFundingSources {
 		/**
 		 * Filters the final list of disabled funding sources.
 		 *
-		 * @param array $diabled_funding The filter value, funding sources to be disabled.
+		 * @param array $disable_funding The filter value, funding sources to be disabled.
 		 * @param array $flags           Decision flags to provide more context to filters.
 		 */
 		$disable_funding = apply_filters(
