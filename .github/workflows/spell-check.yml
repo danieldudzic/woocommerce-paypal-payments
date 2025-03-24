@@ -16,10 +16,6 @@ jobs:
         id: spelling
         uses: crate-ci/typos@v1.30.2
         with:
-          # This makes typos report issues as warnings rather than errors
-          error_level: warning
-          # Generate a more detailed report
-          format: brief
           # Path to config file
           config: .github/workflows-config/typos.toml
         continue-on-error: true
