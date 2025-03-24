@@ -95,7 +95,7 @@ const getUIText = ( country, onlyBranded ) => {
 
 	const OPTIONAL_DESCRIPTIONS = {
 		LOCAL_METHODS: __(
-			'Accept local payment methods. Note: Additional application required for more methods',
+			'Accept local payment methods. Note: Additional application required for some methods',
 			'woocommerce-paypal-payments'
 		),
 		WITH_APPLICATION: __(
@@ -103,7 +103,7 @@ const getUIText = ( country, onlyBranded ) => {
 			'woocommerce-paypal-payments'
 		),
 		US_EXPANDED: __(
-			'Accept debit/credit cards, PayPal, Apple Pay, Google Pay, and more. Note: Additional application required for more methods',
+			'Accept debit/credit cards, PayPal, Apple Pay, Google Pay, and more. Note: Additional application required for some methods',
 			'woocommerce-paypal-payments'
 		),
 	};
