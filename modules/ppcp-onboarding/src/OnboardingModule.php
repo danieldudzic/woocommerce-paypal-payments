@@ -48,13 +48,7 @@ class OnboardingModule implements ServiceModule, ExtendingModule, ExecutableModu
 		add_action(
 			'admin_enqueue_scripts',
 			function() use ( $c ) {
-				if (
-					apply_filters(
-					// phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores
-						'woocommerce.feature-flags.woocommerce_paypal_payments.settings_enabled',
-						getenv( 'PCP_SETTINGS_ENABLED' ) === '1'
-					) && ! SettingsModule::should_use_the_old_ui()
-				) {
+				if ( ! SettingsModule::should_use_the_old_ui() ) {
 					return;
 				}
 
