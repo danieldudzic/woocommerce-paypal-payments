@@ -36,11 +36,27 @@ const DEFAULT_CONFIG = {
 		{ name: 'PayWithPayPal', Component: PayWithPayPal },
 		{ name: 'PayLater', Component: PayLater },
 	],
-	basicMethods: [ { name: 'CreditDebitCards', Component: CreditDebitCards } ],
 	extendedMethods: [
-		{ name: 'CardFields', Component: CardFields },
-		{ name: 'DigitalWallets', Component: DigitalWallets },
-		{ name: 'APMs', Component: AlternativePaymentMethods },
+		{
+			name: 'CreditDebitCards',
+			Component: CreditDebitCards,
+			isAcdc: false,
+		},
+		{
+			name: 'CardFields',
+			Component: CardFields,
+			isAcdc: true,
+		},
+		{
+			name: 'DigitalWallets',
+			Component: DigitalWallets,
+			isAcdc: true,
+		},
+		{
+			name: 'APMs',
+			Component: AlternativePaymentMethods,
+			isAcdc: true,
+		},
 	],
 };
 
@@ -53,14 +69,33 @@ const COUNTRY_CONFIGS = {
 			{ name: 'Venmo', Component: Venmo },
 			{ name: 'Crypto', Component: Crypto },
 		],
-		basicMethods: [
-			{ name: 'CreditDebitCards', Component: CreditDebitCards },
-		],
 		extendedMethods: [
-			{ name: 'CardFields', Component: CardFields },
-			{ name: 'DigitalWallets', Component: DigitalWallets },
-			{ name: 'APMs', Component: AlternativePaymentMethods },
-			{ name: 'Fastlane', Component: Fastlane },
+			{
+				name: 'CreditDebitCards',
+				Component: CreditDebitCards,
+				isAcdc: false,
+			},
+			{
+				name: 'CardFields',
+				Component: CardFields,
+				isAcdc: true,
+			},
+			{
+				name: 'DigitalWallets',
+				Component: DigitalWallets,
+				isAcdc: true,
+			},
+			{
+				name: 'APMs',
+				Component: AlternativePaymentMethods,
+				isAcdc: true,
+			},
+			{
+				name: 'Fastlane',
+				Component: Fastlane,
+				isAcdc: true,
+				isFastlane: true,
+			},
 		],
 	},
 	GB: {
@@ -71,8 +106,16 @@ const COUNTRY_CONFIGS = {
 	},
 	MX: {
 		extendedMethods: [
-			{ name: 'CardFields', Component: CardFields },
-			{ name: 'APMs', Component: AlternativePaymentMethods },
+			{
+				name: 'CardFields',
+				Component: CardFields,
+				isAcdc: true,
+			},
+			{
+				name: 'APMs',
+				Component: AlternativePaymentMethods,
+				isAcdc: true,
+			},
 		],
 	},
 };
@@ -220,15 +263,16 @@ export const usePaymentConfig = (
 			learnMoreConfig = rest;
 		}
 
-		// Determine optional payment methods based on capability.
-		const baseOptionalMethods = canUseCardPayments
-			? config.extendedMethods
-			: config.basicMethods;
-
 		// Filter out conditional methods.
-		const availableOptionalMethods = filterMethods( baseOptionalMethods, [
-			( method ) => method.name !== 'Fastlane' || hasFastlane,
-		] );
+		const availableOptionalMethods = filterMethods(
+			config.extendedMethods,
+			[
+				// Either include Acdc or non-Acdc methods.
+				( method ) => method.isAcdc === canUseCardPayments,
+				// Only include Fastlane when hasFastlane is true.
+				( method ) => method.name !== 'Fastlane' || hasFastlane,
+			]
+		);
 
 		// Get all UI text elements.
 		const uiText = getUIText( country, ownBrandOnly );
@@ -245,7 +289,6 @@ export const usePaymentConfig = (
 			// Payment methods configuration.
 			includedMethods: config.includedMethods,
 			basicMethods: config.basicMethods,
-			extendedMethods: config.extendedMethods,
 			optionalMethods: availableOptionalMethods,
 
 			// UI text configuration.
