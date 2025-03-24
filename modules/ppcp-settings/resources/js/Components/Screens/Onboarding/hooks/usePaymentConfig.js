@@ -18,16 +18,16 @@ import {
 // List of all payment icons and which requirements they have.
 const PAYMENT_ICONS = [
 	{ name: 'paypal', always: true },
-	{ name: 'venmo', isOwnBrand: true, isAcdc: false, countries: [ 'US' ] },
-	{ name: 'visa', isOwnBrand: false, isAcdc: false },
-	{ name: 'mastercard', isOwnBrand: false, isAcdc: false },
-	{ name: 'amex', isOwnBrand: false, isAcdc: false },
-	{ name: 'discover', isOwnBrand: false, isAcdc: false },
-	{ name: 'apple-pay', isOwnBrand: false, isAcdc: true },
-	{ name: 'google-pay', isOwnBrand: false, isAcdc: true },
-	{ name: 'blik', isOwnBrand: true, isAcdc: true },
-	{ name: 'ideal', isOwnBrand: true, isAcdc: true },
-	{ name: 'bancontact', isOwnBrand: true, isAcdc: true },
+	{ name: 'venmo', isOwnBrand: true, onlyAcdc: false, countries: [ 'US' ] },
+	{ name: 'visa', isOwnBrand: false, onlyAcdc: false },
+	{ name: 'mastercard', isOwnBrand: false, onlyAcdc: false },
+	{ name: 'amex', isOwnBrand: false, onlyAcdc: false },
+	{ name: 'discover', isOwnBrand: false, onlyAcdc: false },
+	{ name: 'apple-pay', isOwnBrand: false, onlyAcdc: true },
+	{ name: 'google-pay', isOwnBrand: false, onlyAcdc: true },
+	{ name: 'blik', isOwnBrand: true, onlyAcdc: true },
+	{ name: 'ideal', isOwnBrand: true, onlyAcdc: true },
+	{ name: 'bancontact', isOwnBrand: true, onlyAcdc: true },
 ];
 
 // Default configuration, used for all countries, unless they override individual attributes below.
@@ -204,9 +204,9 @@ const getUIText = ( country, onlyBranded ) => {
  * @param {boolean} onlyBranded - Whether to show only branded payment methods
  * @return {string[]} List of icon names
  */
-const getRelevantIcons = ( country, includeAcdc, onlyBranded ) => {
-	return PAYMENT_ICONS.filter(
-		( { always, isOwnBrand, isAcdc, countries = [] } ) => {
+const getRelevantIcons = ( country, includeAcdc, onlyBranded ) =>
+	PAYMENT_ICONS.filter(
+		( { always, isOwnBrand, onlyAcdc, countries = [] } ) => {
 			if ( always ) {
 				return true;
 			}
@@ -215,14 +215,13 @@ const getRelevantIcons = ( country, includeAcdc, onlyBranded ) => {
 				return false;
 			}
 
-			if ( ! includeAcdc && isAcdc ) {
+			if ( ! includeAcdc && onlyAcdc ) {
 				return false;
 			}
 
 			return ! countries.length || countries.includes( country );
 		}
 	).map( ( icon ) => icon.name );
-};
 
 /**
  * Filters payment methods based on provided conditions.
