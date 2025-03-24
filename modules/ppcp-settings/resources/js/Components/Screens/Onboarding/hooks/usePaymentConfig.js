@@ -211,8 +211,14 @@ export const usePaymentConfig = (
 		const countryConfig = COUNTRY_CONFIGS[ country ] || {};
 		const config = { ...DEFAULT_CONFIG, ...countryConfig };
 
-		// Get "learn more" links for the country.
-		const learnMoreConfig = learnMoreLinks[ country ] || {};
+		// Get "learn more" links for the country
+		let learnMoreConfig = learnMoreLinks[ country ] || {};
+
+		// If ownBrandOnly is true, remove OptionalMethods link if present.
+		if ( ownBrandOnly && learnMoreConfig.OptionalMethods ) {
+			const { OptionalMethods, ...rest } = learnMoreConfig;
+			learnMoreConfig = rest;
+		}
 
 		// Determine optional payment methods based on capability.
 		const baseOptionalMethods = canUseCardPayments
