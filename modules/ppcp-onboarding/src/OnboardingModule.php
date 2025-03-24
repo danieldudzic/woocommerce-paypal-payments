@@ -55,9 +55,9 @@ class OnboardingModule implements ServiceModule, ExtendingModule, ExecutableModu
 						'1' === get_option( 'woocommerce-ppcp-is-new-merchant' )
 						|| getenv( 'PCP_SETTINGS_ENABLED' ) === '1'
 					)
-				)
+				) {
 					return;
-
+				}
 
 				$asset_loader = $c->get( 'onboarding.assets' );
 				assert( $asset_loader instanceof OnboardingAssets );
