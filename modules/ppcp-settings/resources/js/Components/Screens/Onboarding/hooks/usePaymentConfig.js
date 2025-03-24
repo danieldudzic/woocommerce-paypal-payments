@@ -48,16 +48,6 @@ const defaultConfig = {
 		{ name: 'APMs', Component: AlternativePaymentMethods },
 	],
 
-	// Title, Description: Header above the right column items.
-	optionalTitle: __(
-		'Optional payment methods',
-		'woocommerce-paypal-payments'
-	),
-	optionalDescription: __(
-		'with additional application',
-		'woocommerce-paypal-payments'
-	),
-
 	// PayPal Checkout description.
 	paypalCheckoutDescription: __(
 		'Our all-in-one checkout solution lets you offer PayPal, Pay Later options, and more to help maximise conversion',
@@ -86,11 +76,6 @@ const countrySpecificConfigs = {
 			'Our all-in-one checkout solution lets you offer PayPal, Venmo, Pay Later options, and more to help maximise conversion',
 			'woocommerce-paypal-payments'
 		),
-		optionalTitle: __( 'Expanded Checkout', 'woocommerce-paypal-payments' ),
-		optionalDescription: __(
-			'Accept debit/credit cards, PayPal, Apple Pay, Google Pay, and more. Note: Additional application required for more methods',
-			'woocommerce-paypal-payments'
-		),
 	},
 	GB: {
 		includedMethods: [
@@ -104,6 +89,46 @@ const countrySpecificConfigs = {
 			{ name: 'APMs', Component: AlternativePaymentMethods },
 		],
 	},
+};
+
+const getTitleAndDescription = ( country, onlyBranded ) => {
+	if ( onlyBranded ) {
+		return {
+			optionalTitle: __(
+				'PayPal-branded payment methods',
+				'woocommerce-paypal-payments'
+			),
+			optionalDescription: __(
+				'Accept PayPal, Venmo, and other PayPal-branded payment methods',
+				'woocommerce-paypal-payments'
+			),
+		};
+	}
+
+	switch ( country ) {
+		case 'US':
+			return {
+				optionalTitle: __(
+					'Expanded Checkout',
+					'woocommerce-paypal-payments'
+				),
+				optionalDescription: __(
+					'Accept debit/credit cards, PayPal, Apple Pay, Google Pay, and more. Note: Additional application required for more methods',
+					'woocommerce-paypal-payments'
+				),
+			};
+		default:
+			return {
+				optionalTitle: __(
+					'Optional payment methods',
+					'woocommerce-paypal-payments'
+				),
+				optionalDescription: __(
+					'with additional application',
+					'woocommerce-paypal-payments'
+				),
+			};
+	}
 };
 
 /**
@@ -169,6 +194,11 @@ export const usePaymentConfig = (
 			( method ) => method.name !== 'Fastlane' || hasFastlane,
 		] );
 
+		const { optionalTitle, optionalDescription } = getTitleAndDescription(
+			country,
+			ownBrandOnly
+		);
+
 		const icons = selectRelevantIcons(
 			country,
 			canUseCardPayments,
@@ -178,6 +208,8 @@ export const usePaymentConfig = (
 		return {
 			...config,
 			optionalMethods: availableOptionalMethods,
+			optionalTitle,
+			optionalDescription,
 			learnMoreConfig,
 			icons,
 		};
