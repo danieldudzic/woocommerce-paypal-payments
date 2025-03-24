@@ -16,7 +16,7 @@ import {
 } from '../Components/PaymentOptions';
 
 // List of all payment icons and which requirements they have.
-const allIcons = [
+const PAYMENT_ICONS = [
 	{ name: 'paypal', always: true },
 	{ name: 'venmo', isOwnBrand: true, isAcdc: false, countries: [ 'US' ] },
 	{ name: 'visa', isOwnBrand: false, isAcdc: false },
@@ -31,31 +31,21 @@ const allIcons = [
 ];
 
 // Default configuration, used for all countries, unless they override individual attributes below.
-const defaultConfig = {
-	// Included: Items in the left column.
+const DEFAULT_CONFIG = {
 	includedMethods: [
 		{ name: 'PayWithPayPal', Component: PayWithPayPal },
 		{ name: 'PayLater', Component: PayLater },
 	],
-
-	// Basic: Items on right side for BCDC-flow.
 	basicMethods: [ { name: 'CreditDebitCards', Component: CreditDebitCards } ],
-
-	// Extended: Items on right side for ACDC-flow.
 	extendedMethods: [
 		{ name: 'CardFields', Component: CardFields },
 		{ name: 'DigitalWallets', Component: DigitalWallets },
 		{ name: 'APMs', Component: AlternativePaymentMethods },
 	],
-
-	// PayPal Checkout description.
-	paypalCheckoutDescription: __(
-		'Our all-in-one checkout solution lets you offer PayPal, Pay Later options, and more to help maximise conversion',
-		'woocommerce-paypal-payments'
-	),
 };
 
-const countrySpecificConfigs = {
+// Country-specific configurations.
+const COUNTRY_CONFIGS = {
 	US: {
 		includedMethods: [
 			{ name: 'PayWithPayPal', Component: PayWithPayPal },
@@ -72,10 +62,6 @@ const countrySpecificConfigs = {
 			{ name: 'APMs', Component: AlternativePaymentMethods },
 			{ name: 'Fastlane', Component: Fastlane },
 		],
-		paypalCheckoutDescription: __(
-			'Our all-in-one checkout solution lets you offer PayPal, Venmo, Pay Later options, and more to help maximise conversion',
-			'woocommerce-paypal-payments'
-		),
 	},
 	GB: {
 		includedMethods: [
@@ -91,57 +77,82 @@ const countrySpecificConfigs = {
 	},
 };
 
-const getTitleAndDescription = ( country, onlyBranded ) => {
-	if ( onlyBranded ) {
-		return {
-			optionalTitle: __(
-				'PayPal-branded payment methods',
-				'woocommerce-paypal-payments'
-			),
-			optionalDescription: __(
-				'Accept PayPal, Venmo, and other PayPal-branded payment methods',
-				'woocommerce-paypal-payments'
-			),
-		};
+/**
+ * Gets all UI text elements based on country and branding options.
+ *
+ * @param {string}  country     - The country code
+ * @param {boolean} onlyBranded - Whether to show only branded payment methods
+ * @return {Object} All UI text elements
+ */
+const getUIText = ( country, onlyBranded ) => {
+	const TITLES = {
+		EXPANDED: __( 'Expanded Checkout', 'woocommerce-paypal-payments' ),
+		OPTIONAL: __(
+			'Optional payment methods',
+			'woocommerce-paypal-payments'
+		),
+	};
+
+	const OPTIONAL_DESCRIPTIONS = {
+		LOCAL_METHODS: __(
+			'Accept local payment methods. Note: Additional application required for more methods',
+			'woocommerce-paypal-payments'
+		),
+		WITH_APPLICATION: __(
+			'with additional application',
+			'woocommerce-paypal-payments'
+		),
+		US_EXPANDED: __(
+			'Accept debit/credit cards, PayPal, Apple Pay, Google Pay, and more. Note: Additional application required for more methods',
+			'woocommerce-paypal-payments'
+		),
+	};
+
+	const CORE_DESCRIPTIONS = {
+		DEFAULT_CHECKOUT: __(
+			'Our all-in-one checkout solution lets you offer PayPal, Pay Later options, and more to help maximise conversion',
+			'woocommerce-paypal-payments'
+		),
+		US_CHECKOUT: __(
+			'Our all-in-one checkout solution lets you offer PayPal, Venmo, Pay Later options, and more to help maximise conversion',
+			'woocommerce-paypal-payments'
+		),
+	};
+
+	// Base text configuration for all countries.
+	const texts = {
+		paypalCheckoutDescription: CORE_DESCRIPTIONS.DEFAULT_CHECKOUT,
+		optionalTitle: TITLES.OPTIONAL,
+		optionalDescription: OPTIONAL_DESCRIPTIONS.WITH_APPLICATION,
+	};
+
+	// Country-specific overrides.
+	if ( country === 'US' ) {
+		texts.paypalCheckoutDescription = CORE_DESCRIPTIONS.US_CHECKOUT;
+		texts.optionalTitle = TITLES.EXPANDED;
+		texts.optionalDescription = OPTIONAL_DESCRIPTIONS.US_EXPANDED;
 	}
 
-	switch ( country ) {
-		case 'US':
-			return {
-				optionalTitle: __(
-					'Expanded Checkout',
-					'woocommerce-paypal-payments'
-				),
-				optionalDescription: __(
-					'Accept debit/credit cards, PayPal, Apple Pay, Google Pay, and more. Note: Additional application required for more methods',
-					'woocommerce-paypal-payments'
-				),
-			};
-		default:
-			return {
-				optionalTitle: __(
-					'Optional payment methods',
-					'woocommerce-paypal-payments'
-				),
-				optionalDescription: __(
-					'with additional application',
-					'woocommerce-paypal-payments'
-				),
-			};
+	// Branded-only mode overrides.
+	if ( onlyBranded ) {
+		texts.optionalTitle = TITLES.EXPANDED;
+		texts.optionalDescription = OPTIONAL_DESCRIPTIONS.LOCAL_METHODS;
 	}
+
+	return texts;
 };
 
 /**
- * Returns a list of icon names that are available to the relevant merchant.
+ * Filters payment icons based on country and configuration.
  *
- * @param {string}  country     Merchant country, 2-character ISO code.
- * @param {boolean} includeAcdc Whether to include advanced card payment methods.
- * @param {boolean} onlyBranded Whether to return only branded payment methods.
- * @return {string[]} List of icon names.
+ * @param {string}  country     - The country code
+ * @param {boolean} includeAcdc - Whether to include advanced card payment methods
+ * @param {boolean} onlyBranded - Whether to show only branded payment methods
+ * @return {string[]} List of icon names
  */
-const selectRelevantIcons = ( country, includeAcdc, onlyBranded ) => {
-	return allIcons
-		.filter( ( { always, isOwnBrand, isAcdc, countries = [] } ) => {
+const getRelevantIcons = ( country, includeAcdc, onlyBranded ) => {
+	return PAYMENT_ICONS.filter(
+		( { always, isOwnBrand, isAcdc, countries = [] } ) => {
 			if ( always ) {
 				return true;
 			}
@@ -155,16 +166,32 @@ const selectRelevantIcons = ( country, includeAcdc, onlyBranded ) => {
 			}
 
 			return ! countries.length || countries.includes( country );
-		} )
-		.map( ( icon ) => icon.name );
+		}
+	).map( ( icon ) => icon.name );
 };
 
+/**
+ * Filters payment methods based on provided conditions.
+ *
+ * @param {Array}           methods    - The methods to filter
+ * @param {Array<Function>} conditions - List of filter conditions
+ * @return {Array} Filtered methods
+ */
 const filterMethods = ( methods, conditions ) => {
 	return methods.filter( ( method ) =>
 		conditions.every( ( condition ) => condition( method ) )
 	);
 };
 
+/**
+ * Custom hook that generates payment configuration based on merchant settings.
+ *
+ * @param {string}  country            - Merchant country code
+ * @param {boolean} canUseCardPayments - Whether merchant can use card payments
+ * @param {boolean} hasFastlane        - Whether merchant has Fastlane enabled
+ * @param {boolean} ownBrandOnly       - Whether to show only branded payment methods
+ * @return {Object} Complete payment configuration
+ */
 export const usePaymentConfig = (
 	country,
 	canUseCardPayments,
@@ -180,36 +207,47 @@ export const usePaymentConfig = (
 			ownBrandOnly,
 		} );
 
-		const countryConfig = countrySpecificConfigs[ country ] || {};
-		const config = { ...defaultConfig, ...countryConfig };
+		// Merge country-specific config with default.
+		const countryConfig = COUNTRY_CONFIGS[ country ] || {};
+		const config = { ...DEFAULT_CONFIG, ...countryConfig };
+
+		// Get "learn more" links for the country.
 		const learnMoreConfig = learnMoreLinks[ country ] || {};
 
-		// Determine the "right side" items: Either BCDC or ACDC items.
-		const optionalMethods = canUseCardPayments
+		// Determine optional payment methods based on capability.
+		const baseOptionalMethods = canUseCardPayments
 			? config.extendedMethods
 			: config.basicMethods;
 
-		// Remove conditional items from the right side list.
-		const availableOptionalMethods = filterMethods( optionalMethods, [
+		// Filter out conditional methods.
+		const availableOptionalMethods = filterMethods( baseOptionalMethods, [
 			( method ) => method.name !== 'Fastlane' || hasFastlane,
 		] );
 
-		const { optionalTitle, optionalDescription } = getTitleAndDescription(
-			country,
-			ownBrandOnly
-		);
+		// Get all UI text elements.
+		const uiText = getUIText( country, ownBrandOnly );
 
-		const icons = selectRelevantIcons(
+		// Get icons appropriate for this configuration.
+		const icons = getRelevantIcons(
 			country,
 			canUseCardPayments,
 			ownBrandOnly
 		);
 
+		// Return the complete configuration.
 		return {
-			...config,
+			// Payment methods configuration.
+			includedMethods: config.includedMethods,
+			basicMethods: config.basicMethods,
+			extendedMethods: config.extendedMethods,
 			optionalMethods: availableOptionalMethods,
-			optionalTitle,
-			optionalDescription,
+
+			// UI text configuration.
+			paypalCheckoutDescription: uiText.paypalCheckoutDescription,
+			optionalTitle: uiText.optionalTitle,
+			optionalDescription: uiText.optionalDescription,
+
+			// Additional configuration.
 			learnMoreConfig,
 			icons,
 		};
