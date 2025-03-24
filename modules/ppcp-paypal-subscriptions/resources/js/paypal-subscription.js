@@ -83,7 +83,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
             if (! price || parseInt( price ) <= 0 ) {
                 linkBtn.setAttribute('title', __( 'Prices must be above zero for PayPal Subscriptions!', 'woocommerce-paypal-subscriptions' ) );
             } else {
-                linkBtn.setAttribute('title', __( 'Not allowed period intervall combination for PayPal Subscriptions!', 'woocommerce-paypal-subscriptions' ) );
+                linkBtn.setAttribute('title', __( 'Not allowed period interval combination for PayPal Subscriptions!', 'woocommerce-paypal-subscriptions' ) );
             }
 
         } else {
