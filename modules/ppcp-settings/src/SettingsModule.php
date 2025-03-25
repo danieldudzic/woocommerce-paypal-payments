@@ -29,6 +29,7 @@ use WooCommerce\PayPalCommerce\Settings\Data\TodosModel;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\RestEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Handler\ConnectionListener;
 use WooCommerce\PayPalCommerce\Settings\Service\GatewayRedirectService;
+use WooCommerce\PayPalCommerce\Settings\Service\LoadingScreenService;
 use WooCommerce\PayPalCommerce\Vendor\Inpsyde\Modularity\Module\ExecutableModule;
 use WooCommerce\PayPalCommerce\Vendor\Inpsyde\Modularity\Module\ModuleClassNameIdTrait;
 use WooCommerce\PayPalCommerce\Vendor\Inpsyde\Modularity\Module\ServiceModule;
@@ -143,6 +144,11 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 
 			return true;
 		}
+
+		// Add the loading screen.
+		$loading_screen_service = $container->get( 'settings.services.loading-screen-service' );
+		assert( $loading_screen_service instanceof LoadingScreenService );
+		$loading_screen_service->register();
 
 		add_action(
 			'woocommerce_paypal_payments_gateway_migrate_on_update',
