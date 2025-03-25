@@ -306,6 +306,15 @@ class GeneralSettings extends AbstractDataModel {
 	 * @return bool
 	 */
 	public function own_brand_only() : bool {
+		// Temporary dev/test mode.
+		$simulate_cookie = sanitize_key( wp_unslash( $_COOKIE['simulate-branded-only'] ?? '' ) );
+
+		if ( $simulate_cookie === 'true' ) {
+			return true;
+		} elseif ( $simulate_cookie === 'false' ) {
+			return false;
+		}
+
 		$brand_only_paths = array(
 			InstallationPathEnum::CORE_PROFILER,
 			InstallationPathEnum::PAYMENT_SETTINGS,

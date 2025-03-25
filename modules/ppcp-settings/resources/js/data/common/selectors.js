@@ -44,7 +44,10 @@ export const wooSettings = ( state ) => {
 	const settings = getState( state ).wooSettings || EMPTY_OBJ;
 
 	// For development and testing. Remove this eventually!
-	const simulateBrandedOnly = localStorage.getItem( 'simulate-branded-only' );
+	const simulateBrandedOnly = document.cookie
+		.split( '; ' )
+		.find( ( row ) => row.startsWith( 'simulate-branded-only=' ) )
+		?.split( '=' )[ 1 ];
 
 	/**
 	 * The "own-brand-only" experience is determined on server-side, based on the installation path.
