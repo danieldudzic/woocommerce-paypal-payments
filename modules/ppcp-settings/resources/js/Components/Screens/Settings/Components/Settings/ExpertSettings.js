@@ -9,9 +9,6 @@ import PaypalSettings from './Blocks/PaypalSettings';
 import OtherSettings from './Blocks/OtherSettings';
 
 const ExpertSettings = () => {
-	const settings = {}; // dummy object
-	const updateFormValue = () => {}; // dummy function
-
 	return (
 		<SettingsCard
 			icon="icon-settings-expert.svg"
@@ -22,38 +19,25 @@ const ExpertSettings = () => {
 				'woocommerce-paypal-payments'
 			) }
 			actionProps={ {
-				callback: updateFormValue,
 				key: 'payNowExperience',
 			} }
 			contentContainer={ false }
 		>
 			<ContentWrapper>
 				{ /*<Content>
-					<ConnectionDetails
-						updateFormValue={ updateFormValue }
-						settings={ settings }
-					/>
+					<ConnectionDetails />
 				</Content>*/ }
 
 				<Content>
-					<Troubleshooting
-						updateFormValue={ updateFormValue }
-						settings={ settings }
-					/>
+					<Troubleshooting />
 				</Content>
 
 				<Content>
-					<PaypalSettings
-						updateFormValue={ updateFormValue }
-						settings={ settings }
-					/>
+					<PaypalSettings />
 				</Content>
 
 				<Content>
-					<OtherSettings
-						updateFormValue={ updateFormValue }
-						settings={ settings }
-					/>
+					<OtherSettings />
 				</Content>
 			</ContentWrapper>
 		</SettingsCard>
