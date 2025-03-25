@@ -12,6 +12,7 @@ namespace WooCommerce\PayPalCommerce\Settings\Data;
 use RuntimeException;
 use WooCommerce\PayPalCommerce\Settings\DTO\MerchantConnectionDTO;
 use WooCommerce\PayPalCommerce\Settings\Enum\SellerTypeEnum;
+use WooCommerce\PayPalCommerce\Settings\Enum\InstallationPathEnum;
 
 /**
  * Class GeneralSettings
@@ -78,6 +79,9 @@ class GeneralSettings extends AbstractDataModel {
 			'client_id'             => '',
 			'client_secret'         => '',
 			'seller_type'           => 'unknown',
+
+			// Branded experience installation path.
+			'installation_path'     => '',
 		);
 	}
 
@@ -125,7 +129,11 @@ class GeneralSettings extends AbstractDataModel {
 	 * @return array
 	 */
 	public function get_woo_settings() : array {
-		return $this->woo_settings;
+		$settings = $this->woo_settings;
+
+		$settings['installation_path'] = $this->get_installation_path();
+
+		return $settings;
 	}
 
 	/**
@@ -256,5 +264,38 @@ class GeneralSettings extends AbstractDataModel {
 		}
 
 		return $this->data['merchant_country'];
+	}
+
+	/**
+	 * Sets the installation path. This function will only set the installation
+	 * path a single time and ignore subsequent calls.
+	 *
+	 * Short: The installation path cannot be updated once it's defined.
+	 *
+	 * @param string $installation_path The installation path.
+	 *
+	 * @return void
+	 */
+	public function set_installation_path( string $installation_path ) : void {
+		// The installation path can be set only once.
+		if ( InstallationPathEnum::is_valid( $this->data['installation_path'] ?? '' ) ) {
+			return;
+		}
+
+		// Ignore invalid installation paths.
+		if ( ! $installation_path || ! InstallationPathEnum::is_valid( $installation_path ) ) {
+			return;
+		}
+
+		$this->data['installation_path'] = $installation_path;
+	}
+
+	/**
+	 * Retrieves the installation path. Used for the branded experience.
+	 *
+	 * @return string
+	 */
+	public function get_installation_path() : string {
+		return $this->data['installation_path'] ?? InstallationPathEnum::DIRECT;
 	}
 }

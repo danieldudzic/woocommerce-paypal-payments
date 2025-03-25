@@ -11,6 +11,7 @@ namespace WooCommerce\PayPalCommerce\Settings;
 
 use WC_Payment_Gateway;
 use WooCommerce\PayPalCommerce\ApiClient\Helper\DccApplies;
+use WooCommerce\PayPalCommerce\ApiClient\Helper\PartnerAttribution;
 use WooCommerce\PayPalCommerce\Applepay\Assets\AppleProductStatus;
 use WooCommerce\PayPalCommerce\Axo\Gateway\AxoGateway;
 use WooCommerce\PayPalCommerce\Googlepay\Helper\ApmProductStatus;
@@ -23,11 +24,11 @@ use WooCommerce\PayPalCommerce\LocalAlternativePaymentMethods\MyBankGateway;
 use WooCommerce\PayPalCommerce\LocalAlternativePaymentMethods\P24Gateway;
 use WooCommerce\PayPalCommerce\LocalAlternativePaymentMethods\TrustlyGateway;
 use WooCommerce\PayPalCommerce\Settings\Ajax\SwitchSettingsUiEndpoint;
-use WooCommerce\PayPalCommerce\Settings\Data\Definition\PaymentMethodsDefinition;
 use WooCommerce\PayPalCommerce\Settings\Data\OnboardingProfile;
 use WooCommerce\PayPalCommerce\Settings\Data\TodosModel;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\RestEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Handler\ConnectionListener;
+use WooCommerce\PayPalCommerce\Settings\Service\BrandedExperience\PathRepository;
 use WooCommerce\PayPalCommerce\Settings\Service\GatewayRedirectService;
 use WooCommerce\PayPalCommerce\Settings\Service\LoadingScreenService;
 use WooCommerce\PayPalCommerce\Vendor\Inpsyde\Modularity\Module\ExecutableModule;
@@ -145,16 +146,30 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 			return true;
 		}
 
-		// Add the loading screen.
+		/**
+		 * This hook is fired when the plugin is installed or updated.
+		 */
+		add_action(
+			'woocommerce_paypal_payments_gateway_migrate',
+			function () use ( $container ) {
+				$path_repository = $container->get( 'settings.service.branded-experience.path-repository' );
+				assert( $path_repository instanceof PathRepository );
+
+				$partner_attribution = $container->get( 'api.helper.partner-attribution' );
+				assert( $partner_attribution instanceof PartnerAttribution );
+
+				$general_settings = $container->get( 'settings.data.general' );
+				assert( $general_settings instanceof GeneralSettings );
+
+				$path_repository->persist();
+				$partner_attribution->initialize_bn_code( $general_settings->get_installation_path() );
+			}
+		);
+
+		// Supress WooCommerce Settings UI elements via CSS to improve the loading experience.
 		$loading_screen_service = $container->get( 'settings.services.loading-screen-service' );
 		assert( $loading_screen_service instanceof LoadingScreenService );
 		$loading_screen_service->register();
-
-		add_action(
-			'woocommerce_paypal_payments_gateway_migrate_on_update',
-			static fn() => ! get_option( SwitchSettingsUiEndpoint::OPTION_NAME_SHOULD_USE_OLD_UI )
-				&& update_option( SwitchSettingsUiEndpoint::OPTION_NAME_SHOULD_USE_OLD_UI, 'yes' )
-		);
 
 		add_action(
 			'admin_enqueue_scripts',
@@ -226,6 +241,9 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 				);
 
 				if ( $is_pay_later_configurator_available ) {
+					$partner_attribution = $container->get( 'api.helper.partner-attribution' );
+					assert( $partner_attribution instanceof PartnerAttribution );
+
 					wp_enqueue_script(
 						'ppcp-paylater-configurator-lib',
 						'https://www.paypalobjects.com/merchant-library/merchant-configurator.js',
@@ -241,7 +259,7 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 						'config'           => array(),
 						'merchantClientId' => $settings->get( 'client_id' ),
 						'partnerClientId'  => $container->get( 'api.partner_merchant_id' ),
-						'bnCode'           => PPCP_PAYPAL_BN_CODE,
+						'bnCode'           => $partner_attribution->get_bn_code(),
 					);
 				}
 

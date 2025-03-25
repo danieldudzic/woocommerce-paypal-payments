@@ -1,6 +1,6 @@
 <?php
 
-namespace WooCommerce\PayPalCommerce\Tests\Integration;
+namespace WooCommerce\PayPalCommerce\Tests\Integration\Settings;
 
 use Mockery;
 use WooCommerce\PayPalCommerce\Compat\Settings\GeneralSettingsMapHelper;
@@ -11,6 +11,7 @@ use WooCommerce\PayPalCommerce\Compat\Settings\SettingsTabMapHelper;
 use WooCommerce\PayPalCommerce\Compat\Settings\StylingSettingsMapHelper;
 use WooCommerce\PayPalCommerce\Compat\Settings\SubscriptionSettingsMapHelper;
 use WooCommerce\PayPalCommerce\Settings\Data\AbstractDataModel;
+use WooCommerce\PayPalCommerce\Tests\Integration\TestCase;
 use WooCommerce\PayPalCommerce\WcGateway\Exception\NotFoundException;
 use WooCommerce\PayPalCommerce\WcGateway\Settings\Settings;
 
