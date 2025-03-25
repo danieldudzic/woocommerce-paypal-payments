@@ -19,6 +19,14 @@ return array(
 
 		return $save_payment_methods_applies->for_country() && $save_payment_methods_applies->for_merchant();
 	},
+	'card-fields.eligibility.check'                    => static function ( ContainerInterface $container ): callable {
+		$save_payment_methods_applies = $container->get( 'card-fields.helpers.save-payment-methods-applies' );
+		assert( $save_payment_methods_applies instanceof CardFieldsApplies );
+
+		return static function () use ( $save_payment_methods_applies ) : bool {
+			return $save_payment_methods_applies->for_country() && $save_payment_methods_applies->for_merchant();
+		};
+	},
 	'card-fields.helpers.save-payment-methods-applies' => static function ( ContainerInterface $container ) : CardFieldsApplies {
 		return new CardFieldsApplies(
 			$container->get( 'card-fields.supported-country-matrix' ),

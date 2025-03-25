@@ -22,6 +22,14 @@ return array(
 
 		return $save_payment_methods_applies->for_country() && $save_payment_methods_applies->for_merchant();
 	},
+	'save-payment-methods.eligibility.check'             => static function ( ContainerInterface $container ): callable {
+		$save_payment_methods_applies = $container->get( 'save-payment-methods.helpers.save-payment-methods-applies' );
+		assert( $save_payment_methods_applies instanceof SavePaymentMethodsApplies );
+
+		return static function () use ( $save_payment_methods_applies ) : bool {
+			return $save_payment_methods_applies->for_country() && $save_payment_methods_applies->for_merchant();
+		};
+	},
 	'save-payment-methods.helpers.save-payment-methods-applies' => static function ( ContainerInterface $container ) : SavePaymentMethodsApplies {
 		return new SavePaymentMethodsApplies(
 			$container->get( 'save-payment-methods.supported-countries' ),
