@@ -54,6 +54,13 @@ const TabPaymentMethods = () => {
 	const merchant = CommonHooks.useMerchant();
 	const { canUseCardPayments } = OnboardingHooks.useFlags();
 
+	const showCardPayments =
+		methods.cardPayment.length > 0 &&
+		merchant.isBusinessSeller &&
+		canUseCardPayments;
+
+	const showApms = methods.apm.length > 0;
+
 	return (
 		<div className="ppcp-r-payment-methods">
 			<PaymentMethodCard
@@ -68,7 +75,8 @@ const TabPaymentMethods = () => {
 				onTriggerModal={ setActiveModal }
 				methodsMap={ methodsMap }
 			/>
-			{ merchant.isBusinessSeller && canUseCardPayments && (
+
+			{ showCardPayments && (
 				<PaymentMethodCard
 					id="ppcp-card-payments-card"
 					title={ __(
@@ -85,21 +93,24 @@ const TabPaymentMethods = () => {
 					methodsMap={ methodsMap }
 				/>
 			) }
-			<PaymentMethodCard
-				id="ppcp-alternative-payments-card"
-				title={ __(
-					'Alternative Payment Methods',
-					'woocommerce-paypal-payments'
-				) }
-				description={ __(
-					'With alternative payment methods, customers across the globe can pay with their bank accounts and other local payment methods.',
-					'woocommerce-paypal-payments'
-				) }
-				icon="icon-checkout-alternative-methods.svg"
-				methods={ methods.apm }
-				onTriggerModal={ setActiveModal }
-				methodsMap={ methodsMap }
-			/>
+
+			{ showApms && (
+				<PaymentMethodCard
+					id="ppcp-alternative-payments-card"
+					title={ __(
+						'Alternative Payment Methods',
+						'woocommerce-paypal-payments'
+					) }
+					description={ __(
+						'With alternative payment methods, customers across the globe can pay with their bank accounts and other local payment methods.',
+						'woocommerce-paypal-payments'
+					) }
+					icon="icon-checkout-alternative-methods.svg"
+					methods={ methods.apm }
+					onTriggerModal={ setActiveModal }
+					methodsMap={ methodsMap }
+				/>
+			) }
 
 			{ activeModal && (
 				<Modal
