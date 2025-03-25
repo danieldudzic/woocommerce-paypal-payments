@@ -8,7 +8,7 @@ import Troubleshooting from './Blocks/Troubleshooting';
 import PaypalSettings from './Blocks/PaypalSettings';
 import OtherSettings from './Blocks/OtherSettings';
 
-const ExpertSettings = () => {
+const ExpertSettings = ( { ownBradOnly } ) => {
 	return (
 		<SettingsCard
 			icon="icon-settings-expert.svg"
@@ -36,9 +36,12 @@ const ExpertSettings = () => {
 					<PaypalSettings />
 				</Content>
 
-				<Content>
-					<OtherSettings />
-				</Content>
+				{ ownBradOnly || (
+					// The "other settings" accordion is only relevant in white-label mode.
+					<Content>
+						<OtherSettings />
+					</Content>
+				) }
 			</ContentWrapper>
 		</SettingsCard>
 	);
