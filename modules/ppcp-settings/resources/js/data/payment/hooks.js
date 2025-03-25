@@ -83,34 +83,22 @@ export const usePaymentMethods = () => {
 	const [ pui ] = usePersistent( 'ppcp-pay-upon-invoice-gateway' );
 	const [ oxxo ] = usePersistent( 'ppcp-oxxo-gateway' );
 
-	const payPalCheckout = [ paypal, venmo, payLater, creditCard ];
-	const onlineCardPayments = [
-		advancedCreditCard,
-		fastlane,
-		applePay,
-		googlePay,
-	];
-	const alternative = [
-		bancontact,
-		blik,
-		eps,
-		ideal,
-		mybank,
-		p24,
-		trustly,
-		multibanco,
-		pui,
-		oxxo,
-	];
-	const paymentMethods = [
+	const removeEmpty = ( list ) =>
+		list.filter( ( item ) => item && item.id?.length );
+
+	const payPalCheckout = removeEmpty( [
 		paypal,
 		venmo,
 		payLater,
 		creditCard,
+	] );
+	const onlineCardPayments = removeEmpty( [
 		advancedCreditCard,
 		fastlane,
 		applePay,
 		googlePay,
+	] );
+	const alternative = removeEmpty( [
 		bancontact,
 		blik,
 		eps,
@@ -121,6 +109,12 @@ export const usePaymentMethods = () => {
 		multibanco,
 		pui,
 		oxxo,
+	] );
+
+	const paymentMethods = [
+		...payPalCheckout,
+		...onlineCardPayments,
+		...alternative,
 	];
 
 	return {
