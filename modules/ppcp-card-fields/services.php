@@ -13,11 +13,11 @@ use WooCommerce\PayPalCommerce\CardFields\Helper\CardFieldsApplies;
 use WooCommerce\PayPalCommerce\Vendor\Psr\Container\ContainerInterface;
 
 return array(
+	// @deprecated - use `card-fields.eligibility.check` instead.
 	'card-fields.eligible'                             => static function ( ContainerInterface $container ): bool {
-		$save_payment_methods_applies = $container->get( 'card-fields.helpers.save-payment-methods-applies' );
-		assert( $save_payment_methods_applies instanceof CardFieldsApplies );
+		$eligibility_check = $container->get( 'card-fields.eligibility.check' );
 
-		return $save_payment_methods_applies->for_country() && $save_payment_methods_applies->for_merchant();
+		return $eligibility_check();
 	},
 	'card-fields.eligibility.check'                    => static function ( ContainerInterface $container ): callable {
 		$save_payment_methods_applies = $container->get( 'card-fields.helpers.save-payment-methods-applies' );

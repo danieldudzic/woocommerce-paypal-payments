@@ -23,11 +23,11 @@ use WooCommerce\PayPalCommerce\WcGateway\Helper\Environment;
 use WooCommerce\PayPalCommerce\Vendor\Psr\Container\ContainerInterface;
 
 return array(
+	// @deprecated - use `applepay.eligibility.check` instead.
 	'applepay.eligible'                        => static function ( ContainerInterface $container ): bool {
-		$apm_applies = $container->get( 'applepay.helpers.apm-applies' );
-		assert( $apm_applies instanceof ApmApplies );
+		$eligibility_check = $container->get( 'applepay.eligibility.check' );
 
-		return $apm_applies->for_country() && $apm_applies->for_currency() && $apm_applies->for_merchant();
+		return $eligibility_check();
 	},
 	'applepay.eligibility.check'               => static function ( ContainerInterface $container ): callable {
 		$apm_applies = $container->get( 'applepay.helpers.apm-applies' );

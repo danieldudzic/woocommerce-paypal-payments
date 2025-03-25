@@ -23,12 +23,11 @@ use WooCommerce\PayPalCommerce\Vendor\Psr\Container\ContainerInterface;
 
 return array(
 
-	// If GooglePay can be configured.
+	// @deprecated - use `googlepay.eligibility.check` instead.
 	'googlepay.eligible'                        => static function ( ContainerInterface $container ): bool {
-		$apm_applies = $container->get( 'googlepay.helpers.apm-applies' );
-		assert( $apm_applies instanceof ApmApplies );
+		$eligibility_check = $container->get( 'googlepay.eligibility.check' );
 
-		return $apm_applies->for_country() && $apm_applies->for_currency() && $apm_applies->for_merchant();
+		return $eligibility_check();
 	},
 	'googlepay.eligibility.check'               => static function ( ContainerInterface $container ): callable {
 		$apm_applies = $container->get( 'googlepay.helpers.apm-applies' );
