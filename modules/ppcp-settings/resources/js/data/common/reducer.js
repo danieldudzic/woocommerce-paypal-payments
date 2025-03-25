@@ -32,7 +32,16 @@ const defaultTransient = Object.freeze( {
 	wooSettings: Object.freeze( {
 		storeCountry: '',
 		storeCurrency: '',
-		installationPath: '',
+
+		/**
+		 * The "branded-only" experience is determined on server-side, based on the installation path.
+		 *
+		 * When true, the plugin must only display "PayPal's own brand" payment options
+		 * i.e. no card payments or Apple Pay/Google Pay.
+		 *
+		 * @type {boolean}
+		 */
+		ownBrandOnly: false,
 	} ),
 
 	features: Object.freeze( {

@@ -131,7 +131,7 @@ class GeneralSettings extends AbstractDataModel {
 	public function get_woo_settings() : array {
 		$settings = $this->woo_settings;
 
-		$settings['installation_path'] = $this->get_installation_path();
+		$settings['own_brand_only'] = $this->own_brand_only();
 
 		return $settings;
 	}
