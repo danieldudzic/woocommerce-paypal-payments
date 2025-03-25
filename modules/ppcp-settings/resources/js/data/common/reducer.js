@@ -32,6 +32,7 @@ const defaultTransient = Object.freeze( {
 	wooSettings: Object.freeze( {
 		storeCountry: '',
 		storeCurrency: '',
+		installationPath: '',
 	} ),
 
 	features: Object.freeze( {

@@ -3,7 +3,7 @@ import { __ } from '@wordpress/i18n';
 import PricingDescription from './PricingDescription';
 import PaymentFlow from './PaymentFlow';
 
-const WelcomeDocs = ( { useAcdc, isFastlane, storeCountry } ) => {
+const WelcomeDocs = ( { useAcdc, isFastlane, storeCountry, ownBrandOnly } ) => {
 	return (
 		<div className="ppcp-r-welcome-docs">
 			<h2 className="ppcp-r-welcome-docs__title">
@@ -16,6 +16,7 @@ const WelcomeDocs = ( { useAcdc, isFastlane, storeCountry } ) => {
 				useAcdc={ useAcdc }
 				isFastlane={ isFastlane }
 				storeCountry={ storeCountry }
+				ownBrandOnly={ ownBrandOnly }
 			/>
 			<PricingDescription />
 		</div>
