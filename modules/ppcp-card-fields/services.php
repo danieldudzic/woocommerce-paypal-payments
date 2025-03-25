@@ -17,7 +17,7 @@ return array(
 		$save_payment_methods_applies = $container->get( 'card-fields.helpers.save-payment-methods-applies' );
 		assert( $save_payment_methods_applies instanceof CardFieldsApplies );
 
-		return $save_payment_methods_applies->for_country();
+		return $save_payment_methods_applies->for_country() && $save_payment_methods_applies->for_merchant();
 	},
 	'card-fields.helpers.save-payment-methods-applies' => static function ( ContainerInterface $container ) : CardFieldsApplies {
 		return new CardFieldsApplies(

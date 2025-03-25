@@ -20,7 +20,7 @@ return array(
 		$save_payment_methods_applies = $container->get( 'save-payment-methods.helpers.save-payment-methods-applies' );
 		assert( $save_payment_methods_applies instanceof SavePaymentMethodsApplies );
 
-		return $save_payment_methods_applies->for_country();
+		return $save_payment_methods_applies->for_country() && $save_payment_methods_applies->for_merchant();
 	},
 	'save-payment-methods.helpers.save-payment-methods-applies' => static function ( ContainerInterface $container ) : SavePaymentMethodsApplies {
 		return new SavePaymentMethodsApplies(

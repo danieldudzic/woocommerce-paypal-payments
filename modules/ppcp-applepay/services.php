@@ -27,7 +27,7 @@ return array(
 		$apm_applies = $container->get( 'applepay.helpers.apm-applies' );
 		assert( $apm_applies instanceof ApmApplies );
 
-		return $apm_applies->for_country() && $apm_applies->for_currency();
+		return $apm_applies->for_country() && $apm_applies->for_currency() && $apm_applies->for_merchant();
 	},
 	'applepay.helpers.apm-applies'             => static function ( ContainerInterface $container ) : ApmApplies {
 		return new ApmApplies(
