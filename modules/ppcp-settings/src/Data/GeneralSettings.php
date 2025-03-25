@@ -298,4 +298,19 @@ class GeneralSettings extends AbstractDataModel {
 	public function get_installation_path() : string {
 		return $this->data['installation_path'] ?? InstallationPathEnum::DIRECT;
 	}
+
+	/**
+	 * Whether the plugin is in the branded-experience mode and shows/enables only
+	 * payment methods that are PayPal's own brand.
+	 *
+	 * @return bool
+	 */
+	public function own_brand_only() : bool {
+		$brand_only_paths = array(
+			InstallationPathEnum::CORE_PROFILER,
+			InstallationPathEnum::PAYMENT_SETTINGS,
+		);
+
+		return in_array( $this->get_installation_path(), $brand_only_paths, true );
+	}
 }
