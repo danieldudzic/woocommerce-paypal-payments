@@ -396,6 +396,20 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 				$card_fields_eligible = $container->get( 'card-fields.eligible' );
 				if ( $dcc_product_status->is_active() && $card_fields_eligible ) {
 					unset( $payment_methods[ CardButtonGateway::ID ] );
+				} else {
+					// For non-ACDC regions unset ACDC, local APMs and set BCDC.
+						unset( $payment_methods[ CreditCardGateway::ID ] );
+						unset( $payment_methods['pay-later'] );
+						unset( $payment_methods[ BancontactGateway::ID ] );
+						unset( $payment_methods[ BlikGateway::ID ] );
+						unset( $payment_methods[ EPSGateway::ID ] );
+						unset( $payment_methods[ IDealGateway::ID ] );
+						unset( $payment_methods[ MyBankGateway::ID ] );
+						unset( $payment_methods[ P24Gateway::ID ] );
+						unset( $payment_methods[ TrustlyGateway::ID ] );
+						unset( $payment_methods[ MultibancoGateway::ID ] );
+						unset( $payment_methods[ PayUponInvoiceGateway::ID ] );
+						unset( $payment_methods[ OXXO::ID ] );
 				}
 
 				// Unset Venmo when store location is not United States.
@@ -426,23 +440,6 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 				// Unset Pay Upon Invoice if merchant country is not Germany.
 				if ( 'DE' !== $merchant_country ) {
 					unset( $payment_methods[ PayUponInvoiceGateway::ID ] );
-				}
-
-				// For non-ACDC regions unset ACDC, local APMs and set BCDC.
-				if ( ! $dcc_applies ) {
-					unset( $payment_methods[ CreditCardGateway::ID ] );
-					unset( $payment_methods[ BancontactGateway::ID ] );
-					unset( $payment_methods[ BlikGateway::ID ] );
-					unset( $payment_methods[ EPSGateway::ID ] );
-					unset( $payment_methods[ IDealGateway::ID ] );
-					unset( $payment_methods[ MyBankGateway::ID ] );
-					unset( $payment_methods[ P24Gateway::ID ] );
-					unset( $payment_methods[ TrustlyGateway::ID ] );
-					unset( $payment_methods[ MultibancoGateway::ID ] );
-					unset( $payment_methods[ PayUponInvoiceGateway::ID ] );
-					unset( $payment_methods[ OXXO::ID ] );
-
-					$payment_methods[ CardButtonGateway::ID ] = $all_payment_methods[ CardButtonGateway::ID ];
 				}
 
 				return $payment_methods;
