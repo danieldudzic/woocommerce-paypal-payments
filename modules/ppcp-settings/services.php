@@ -402,6 +402,7 @@ return array(
 
 		return new PaymentMethodsDefinition(
 			$container->get( 'settings.data.payment' ),
+			$container->get( 'settings.data.general' ),
 			$axo_notices
 		);
 	},
