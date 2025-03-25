@@ -16,23 +16,25 @@ use WooCommerce\PayPalCommerce\Settings\Enum\InstallationPathEnum;
  */
 class ActivationDetector {
 	/**
+	 * The expected slug that identifies the "core-profiler" installation path.
+	 */
+	private const ATTACHMENT_CORE_PROFILER = 'payments_settings';
+
+	/**
 	 * Detects from which path the plugin was installed.
 	 *
 	 * @return string The installation path.
 	 */
-	public function detect_activation_path(): string {
-		$slug = 'woocommerce-paypal-payments';
+	public function detect_activation_path() : string {
+		/**
+		 * Get the custom attachment detail which was added by WooCommerce
+		 *
+		 * @see PaymentProviders::attach_extension_suggestion()
+		 */
+		$branded_option = get_option( 'woocommerce_paypal_branded' );
 
-		$onboarding_data = (array) get_option( 'woocommerce_onboarding_profile', array() );
-		if ( ! empty( $onboarding_data['business_extensions'] ) && is_array( $onboarding_data['business_extensions'] ) && in_array( $slug, $onboarding_data['business_extensions'], true )
-		) {
+		if ( self::ATTACHMENT_CORE_PROFILER === $branded_option ) {
 			return InstallationPathEnum::CORE_PROFILER;
-		}
-
-		$nox_data = (array) get_option( 'woocommerce_payments_nox_profile', array() );
-		if ( ! empty( $nox_data['extensions']['attached'] ) && is_array( $nox_data['extensions']['attached'] ) && in_array( $slug, array_column( $nox_data['extensions']['attached'], 'slug' ), true )
-		) {
-			return InstallationPathEnum::PAYMENT_SETTINGS;
 		}
 
 		return InstallationPathEnum::DIRECT;
