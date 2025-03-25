@@ -4,7 +4,7 @@ Tags: woocommerce, paypal, payments, ecommerce, credit card
 Requires at least: 6.5
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 3.0.0
+Stable tag: 3.0.1
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -155,6 +155,31 @@ If you encounter issues with the PayPal buttons not appearing after an update, p
 6. Main settings screen.
 
 == Changelog ==
+
+= 3.0.1 - xxxx-xx-xx =
+* Enhancement - Include Fastlane meta on homepage #4071
+* Enhancement - Include Branded-only plugin configuration for certain installation paths #4263
+* Enhancement - Include UI status in system report #4397
+* Enhancement - Minor enhancements in new UI scrolling & highlighting behavior #4393
+* Fix - "Warning: Class 'WooCommerce\PayPalCommerce\Vendor\Stringable' not found" after 3.0.0 update #4380
+* Fix - ACDC does not work on the Classic Checkout when using the new UI #4307
+* Fix - "Send only" country banner not displayed in the new UI #4375
+* Fix - Typo in welcome screen #4389
+* Fix - onboarding.js file from old UI enqueued in new UI #4384
+* Fix - Onboarding in new UI with personal account does not hide all ineligible features #4406
+* Fix - ACDC not defaulting on for eligible merchants after onboarding with Expanded Checkout selection #4340
+* Fix - Disable "Save PayPal and Venmo" component if merchant is not eligible for Reference Transactions #4298
+* Fix - “Failed to fetch onboarding URL” error when onboarding with Subscriptions selected from non-Vault region #4385
+* Fix - Fastlane SDK token requested when Fastlane is disabled #4104
+* Fix - Subscription renewal payment via ACDC may fail in some cases due to 3D Secure #4116
+* Fix - Error: _load_textdomain_just_in_time Called Incorrectly when running docker compose #4227
+* Fix - Shipping callback not loading for guest users in some scenarios #4256
+* Fix - Phone number not saved in WC order when using Pay Now experience #4257
+* Fix - Phone number not pre-populated on Checkout block in continuation mode #4259
+* Fix - "Unfortunately, your credit card details are not valid" shown with actually valid card during checkout with invalid postcode. #4122
+* Fix - Incorrect Subscription Cancellation Handling with PayPal Subscriptions #4110
+* Fix - Google Pay not triggering 3D Secure challenge #4156
+* Tweak - Added PayPal as contributor #4394
 
 = 3.0.0 - 2025-03-17 =
 * Enhancement - Redesigned settings UI for new users #2908
