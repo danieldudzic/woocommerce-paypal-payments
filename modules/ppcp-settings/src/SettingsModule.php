@@ -175,7 +175,7 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 			}
 		);
 
-		// Supress WooCommerce Settings UI elements via CSS to improve the loading experience.
+		// Suppress WooCommerce Settings UI elements via CSS to improve the loading experience.
 		$loading_screen_service = $container->get( 'settings.services.loading-screen-service' );
 		assert( $loading_screen_service instanceof LoadingScreenService );
 		$loading_screen_service->register();
