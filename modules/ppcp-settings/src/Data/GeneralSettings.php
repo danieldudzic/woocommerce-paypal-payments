@@ -131,7 +131,7 @@ class GeneralSettings extends AbstractDataModel {
 	public function get_woo_settings() : array {
 		$settings = $this->woo_settings;
 
-		$settings['installation_path'] = $this->get_installation_path();
+		$settings['own_brand_only'] = $this->own_brand_only();
 
 		return $settings;
 	}
@@ -297,5 +297,29 @@ class GeneralSettings extends AbstractDataModel {
 	 */
 	public function get_installation_path() : string {
 		return $this->data['installation_path'] ?? InstallationPathEnum::DIRECT;
+	}
+
+	/**
+	 * Whether the plugin is in the branded-experience mode and shows/enables only
+	 * payment methods that are PayPal's own brand.
+	 *
+	 * @return bool
+	 */
+	public function own_brand_only() : bool {
+		// Temporary dev/test mode.
+		$simulate_cookie = sanitize_key( wp_unslash( $_COOKIE['simulate-branded-only'] ?? '' ) );
+
+		if ( $simulate_cookie === 'true' ) {
+			return true;
+		} elseif ( $simulate_cookie === 'false' ) {
+			return false;
+		}
+
+		$brand_only_paths = array(
+			InstallationPathEnum::CORE_PROFILER,
+			InstallationPathEnum::PAYMENT_SETTINGS,
+		);
+
+		return in_array( $this->get_installation_path(), $brand_only_paths, true );
 	}
 }
