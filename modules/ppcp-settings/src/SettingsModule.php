@@ -147,6 +147,15 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 		}
 
 		/**
+		 * This hook is fired when the plugin is updated.
+		 */
+		add_action(
+			'woocommerce_paypal_payments_gateway_migrate_on_update',
+			static fn() => ! get_option( SwitchSettingsUiEndpoint::OPTION_NAME_SHOULD_USE_OLD_UI )
+				&& update_option( SwitchSettingsUiEndpoint::OPTION_NAME_SHOULD_USE_OLD_UI, 'yes' )
+		);
+
+		/**
 		 * This hook is fired when the plugin is installed or updated.
 		 */
 		add_action(
