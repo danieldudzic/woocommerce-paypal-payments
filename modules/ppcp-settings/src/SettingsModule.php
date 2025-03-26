@@ -180,6 +180,8 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 		assert( $loading_screen_service instanceof LoadingScreenService );
 		$loading_screen_service->register();
 
+		$this->apply_branded_only_limitations( $container );
+
 		add_action(
 			'admin_enqueue_scripts',
 			/**
@@ -277,6 +279,9 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 					'ppcpSettings',
 					$script_data
 				);
+
+				// Dequeue the PayPal Subscription script.
+				wp_dequeue_script( 'ppcp-paypal-subscription' );
 			}
 		);
 
@@ -642,6 +647,30 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 		$gateway_redirect_service->register();
 
 		return true;
+	}
+
+	/**
+	 * Checks the branded-only state and applies relevant site-wide feature limitations, if needed.
+	 *
+	 * @param ContainerInterface $container The DI container provider.
+	 * @return void
+	 */
+	protected function apply_branded_only_limitations( ContainerInterface $container ) : void {
+		$settings = $container->get( 'settings.data.general' );
+		assert( $settings instanceof GeneralSettings );
+
+		if ( ! $settings->own_brand_only() ) {
+			return;
+		}
+
+		/**
+		 * In branded-only mode, we completely disable all white label features.
+		 */
+		add_filter( 'woocommerce_paypal_payments_is_eligible_for_applepay', '__return_false' );
+		add_filter( 'woocommerce_paypal_payments_is_eligible_for_googlepay', '__return_false' );
+		add_filter( 'woocommerce_paypal_payments_is_eligible_for_axo', '__return_false' );
+		add_filter( 'woocommerce_paypal_payments_is_eligible_for_save_payment_methods', '__return_false' );
+		add_filter( 'woocommerce_paypal_payments_is_eligible_for_card_fields', '__return_false' );
 	}
 
 	/**

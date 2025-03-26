@@ -6,7 +6,7 @@ import SavePaymentMethods from './Blocks/SavePaymentMethods';
 import InvoicePrefix from './Blocks/InvoicePrefix';
 import PayNowExperience from './Blocks/PayNowExperience';
 
-const CommonSettings = () => (
+const CommonSettings = ( { ownBradOnly } ) => (
 	<SettingsCard
 		icon="icon-settings-common.svg"
 		title={ __( 'Common settings', 'woocommerce-paypal-payments' ) }
@@ -18,7 +18,7 @@ const CommonSettings = () => (
 	>
 		<InvoicePrefix />
 		<OrderIntent />
-		<SavePaymentMethods />
+		<SavePaymentMethods ownBradOnly={ ownBradOnly } />
 		<PayNowExperience />
 	</SettingsCard>
 );
