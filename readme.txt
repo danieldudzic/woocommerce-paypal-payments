@@ -156,7 +156,7 @@ If you encounter issues with the PayPal buttons not appearing after an update, p
 
 == Changelog ==
 
-= 3.0.1 - xxxx-xx-xx =
+= 3.0.1 - 2025-03-26 =
 * Enhancement - Include Fastlane meta on homepage #3151
 * Enhancement - Include Branded-only plugin configuration for certain installation paths 
 * Enhancement - Include UI status in system report #3248
