@@ -3,6 +3,7 @@
 /.idea/
 node_modules
 .phpunit.result.cache
+phpunit.xml.dist.bak
 yarn-error.log
 modules/*/vendor/*
 modules/*/assets/*
