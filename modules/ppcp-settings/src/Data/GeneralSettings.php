@@ -9,6 +9,7 @@ declare( strict_types = 1 );
 
 namespace WooCommerce\PayPalCommerce\Settings\Data;
 
+use Automattic\WooCommerce\Admin\Features\PaymentGatewaySuggestions\DefaultPaymentGateways;
 use RuntimeException;
 use WooCommerce\PayPalCommerce\Settings\DTO\MerchantConnectionDTO;
 use WooCommerce\PayPalCommerce\Settings\Enum\SellerTypeEnum;
@@ -306,6 +307,13 @@ class GeneralSettings extends AbstractDataModel {
 	 * @return bool
 	 */
 	public function own_brand_only() : bool {
+		/**
+		 * If the current store is not eligible for WooPayments, we have to also show the other payment methods.
+		 */
+		if ( ! in_array( $this->woo_settings['country'], DefaultPaymentGateways::get_wcpay_countries(), true ) ) {
+			return false;
+		}
+
 		// Temporary dev/test mode.
 		$simulate_cookie = sanitize_key( wp_unslash( $_COOKIE['simulate-branded-only'] ?? '' ) );
 
