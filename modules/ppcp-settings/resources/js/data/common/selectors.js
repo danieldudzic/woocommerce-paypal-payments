@@ -43,10 +43,14 @@ export const features = ( state ) => {
 export const wooSettings = ( state ) => {
 	const settings = getState( state ).wooSettings || EMPTY_OBJ;
 
-	const simulateBrandedOnly = localStorage.getItem( 'simulate-branded-only' );
+	// For development and testing. Remove this eventually!
+	const simulateBrandedOnly = document.cookie
+		.split( '; ' )
+		.find( ( row ) => row.startsWith( 'simulate-branded-only=' ) )
+		?.split( '=' )[ 1 ];
 
 	/**
-	 * The "branded only experience" is determined based on the installation path.
+	 * The "own-brand-only" experience is determined on server-side, based on the installation path.
 	 *
 	 * When true, the plugin must only display "PayPal's own brand" payment options
 	 * i.e. no card payments or Apple Pay/Google Pay.
@@ -54,9 +58,7 @@ export const wooSettings = ( state ) => {
 	 * @type {boolean}
 	 */
 	const ownBrandOnly =
-		'true' === simulateBrandedOnly || // For development and testing. Remove this eventually!
-		settings.installationPath === 'core-profile' ||
-		settings.installationPath === 'payment-settings';
+		'true' === simulateBrandedOnly || settings.ownBrandOnly;
 
 	return { ...settings, ownBrandOnly };
 };

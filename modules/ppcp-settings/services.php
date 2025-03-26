@@ -402,6 +402,7 @@ return array(
 
 		return new PaymentMethodsDefinition(
 			$container->get( 'settings.data.payment' ),
+			$container->get( 'settings.data.general' ),
 			$axo_notices
 		);
 	},
@@ -575,10 +576,10 @@ return array(
 
 		return new FeaturesEligibilityService(
 			$container->get( 'save-payment-methods.eligible' ), // Save PayPal and Venmo eligibility.
-			$container->get( 'card-fields.eligible' ), // Advanced credit and debit cards eligibility.
+			$container->get( 'card-fields.eligibility.check' ), // Advanced credit and debit cards eligibility.
 			$apm_eligible, // Alternative payment methods eligibility.
-			$container->get( 'googlepay.eligible' ), // Google Pay eligibility.
-			$container->get( 'applepay.eligible' ), // Apple Pay eligibility.
+			$container->get( 'googlepay.eligibility.check' ), // Google Pay eligibility.
+			$container->get( 'applepay.eligibility.check' ), // Apple Pay eligibility.
 			$pay_later_eligible, // Pay Later eligibility.
 		);
 	},

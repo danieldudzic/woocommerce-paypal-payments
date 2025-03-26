@@ -21,6 +21,7 @@ use WooCommerce\PayPalCommerce\LocalAlternativePaymentMethods\MyBankGateway;
 use WooCommerce\PayPalCommerce\LocalAlternativePaymentMethods\P24Gateway;
 use WooCommerce\PayPalCommerce\LocalAlternativePaymentMethods\TrustlyGateway;
 use WooCommerce\PayPalCommerce\Settings\Data\PaymentSettings;
+use WooCommerce\PayPalCommerce\Settings\Data\GeneralSettings;
 use WooCommerce\PayPalCommerce\WcGateway\Gateway\CardButtonGateway;
 use WooCommerce\PayPalCommerce\WcGateway\Gateway\CreditCardGateway;
 use WooCommerce\PayPalCommerce\WcGateway\Gateway\OXXO\OXXO;
@@ -41,6 +42,14 @@ class PaymentMethodsDefinition {
 	private PaymentSettings $settings;
 
 	/**
+	 * Data model for the general plugin settings, used to access flags like
+	 * "own brand only" to modify the payment method details.
+	 *
+	 * @var GeneralSettings
+	 */
+	private GeneralSettings $general_settings;
+
+	/**
 	 * Conflict notices for Axo gateway.
 	 *
 	 * @var array
@@ -57,14 +66,17 @@ class PaymentMethodsDefinition {
 	/**
 	 * Constructor.
 	 *
-	 * @param PaymentSettings $settings Payment methods data model.
+	 * @param PaymentSettings $settings              Payment methods data model.
+	 * @param GeneralSettings $general_settings      General plugin settings model.
 	 * @param array           $axo_conflicts_notices Conflicts notices for Axo.
 	 */
 	public function __construct(
 		PaymentSettings $settings,
+		GeneralSettings $general_settings,
 		array $axo_conflicts_notices = array()
 	) {
 		$this->settings              = $settings;
+		$this->general_settings      = $general_settings;
 		$this->axo_conflicts_notices = $axo_conflicts_notices;
 	}
 
@@ -94,6 +106,7 @@ class PaymentMethodsDefinition {
 				$method['warningMessages'] ?? array(),
 			);
 		}
+
 		return $result;
 	}
 
@@ -105,9 +118,11 @@ class PaymentMethodsDefinition {
 	 * @param string      $title                      Admin-side payment method title.
 	 * @param string      $description                Admin-side info about the payment method.
 	 * @param string      $icon                       Admin-side icon of the payment method.
-	 * @param array|false $fields                     Optional. Additional fields to display in the edit modal.
-	 *                                                Setting this to false omits all fields.
-	 * @param array       $warning_messages           Optional. Warning messages to display in the UI.
+	 * @param array|false $fields                     Optional. Additional fields to display in the
+	 *                                                edit modal. Setting this to false omits all
+	 *                                                fields.
+	 * @param array       $warning_messages           Optional. Warning messages to display in the
+	 *                                                UI.
 	 * @return array Payment method definition.
 	 */
 	private function build_method_definition(
@@ -115,7 +130,7 @@ class PaymentMethodsDefinition {
 		string $title,
 		string $description,
 		string $icon,
-			   $fields = array(),
+		$fields = array(),
 		array $warning_messages = array()
 	) : array {
 		$gateway = $this->wc_gateways[ $gateway_id ] ?? null;
@@ -197,13 +212,16 @@ class PaymentMethodsDefinition {
 				'icon'        => 'payment-method-paypal',
 				'fields'      => false,
 			),
-			array(
+		);
+
+		if ( ! $this->general_settings->own_brand_only() ) {
+			$group[] = array(
 				'id'          => CardButtonGateway::ID,
 				'title'       => __( 'Credit and debit card payments', 'woocommerce-paypal-payments' ),
 				'description' => __( "Accept all major credit and debit cards - even if your customer doesn't have a PayPal account . ", 'woocommerce-paypal-payments' ),
 				'icon'        => 'payment-method-cards',
-			),
-		);
+			);
+		}
 
 		return apply_filters( 'woocommerce_paypal_payments_gateway_group_paypal', $group );
 	}
@@ -214,8 +232,10 @@ class PaymentMethodsDefinition {
 	 * @return array
 	 */
 	public function group_card_methods() : array {
-		$group = array(
-			array(
+		$group = array();
+
+		if ( ! $this->general_settings->own_brand_only() ) {
+			$group[] = array(
 				'id'          => CreditCardGateway::ID,
 				'title'       => __( 'Advanced Credit and Debit Card Payments', 'woocommerce-paypal-payments' ),
 				'description' => __( "Present custom credit and debit card fields to your payers so they can pay with credit and debit cards using your site's branding.", 'woocommerce-paypal-payments' ),
@@ -254,8 +274,8 @@ class PaymentMethodsDefinition {
 						),
 					),
 				),
-			),
-			array(
+			);
+			$group[] = array(
 				'id'              => AxoGateway::ID,
 				'title'           => __( 'Fastlane by PayPal', 'woocommerce-paypal-payments' ),
 				'description'     => __( "Tap into the scale and trust of PayPal's customer network to recognize shoppers and make guest checkout more seamless than ever.", 'woocommerce-paypal-payments' ),
@@ -279,20 +299,20 @@ class PaymentMethodsDefinition {
 					),
 				),
 				'warningMessages' => $this->axo_conflicts_notices,
-			),
-			array(
+			);
+			$group[] = array(
 				'id'          => ApplePayGateway::ID,
 				'title'       => __( 'Apple Pay', 'woocommerce-paypal-payments' ),
 				'description' => __( 'Allow customers to pay via their Apple Pay digital wallet.', 'woocommerce-paypal-payments' ),
 				'icon'        => 'payment-method-apple-pay',
-			),
-			array(
+			);
+			$group[] = array(
 				'id'          => GooglePayGateway::ID,
 				'title'       => __( 'Google Pay', 'woocommerce-paypal-payments' ),
 				'description' => __( 'Allow customers to pay via their Google Pay digital wallet.', 'woocommerce-paypal-payments' ),
 				'icon'        => 'payment-method-google-pay',
-			),
-		);
+			);
+		}
 
 		return apply_filters( 'woocommerce_paypal_payments_gateway_group_cards', $group );
 	}
