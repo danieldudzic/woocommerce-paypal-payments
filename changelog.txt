@@ -17,7 +17,7 @@
 * Fix - Subscription renewal payment via ACDC may fail in some cases due to 3D Secure #3098
 * Fix - Error: _load_textdomain_just_in_time Called Incorrectly when running docker compose #3172
 * Fix - Shipping callback not loading for guest users in some scenarios #3169
-* Fix - Phone number not saved in WC order when using Pay Now experience #4257
+* Fix - Phone number not saved in WC order when using Pay Now experience #3160
 * Fix - Phone number not pre-populated on Checkout block in continuation mode #3160
 * Fix - "Unfortunately, your credit card details are not valid" shown with actually valid card during checkout with invalid postcode. #3067
 * Fix - Incorrect Subscription Cancellation Handling with PayPal Subscriptions #3046
