@@ -5,7 +5,7 @@
  * @package WooCommerce\PayPalCommerce\ApiClient\Helper
  */
 
-declare( strict_types=1 );
+declare( strict_types = 1 );
 
 namespace WooCommerce\PayPalCommerce\ApiClient\Helper;
 
@@ -48,8 +48,9 @@ class Cache {
 	 *
 	 * @return bool
 	 */
-	public function has( string $key ): bool {
+	public function has( string $key ) : bool {
 		$value = $this->get( $key );
+
 		return false !== $value;
 	}
 
@@ -58,20 +59,20 @@ class Cache {
 	 *
 	 * @param string $key The key.
 	 */
-	public function delete( string $key ): void {
+	public function delete( string $key ) : void {
 		delete_transient( $this->prefix . $key );
 	}
 
 	/**
 	 * Caches a value.
 	 *
-	 * @param string $key The key under which the value should be cached.
-	 * @param mixed  $value The value to cache.
+	 * @param string $key        The key under which the value should be cached.
+	 * @param mixed  $value      The value to cache.
 	 * @param int    $expiration Time until expiration in seconds.
 	 *
 	 * @return bool
 	 */
-	public function set( string $key, $value, int $expiration = 0 ): bool {
+	public function set( string $key, $value, int $expiration = 0 ) : bool {
 		return (bool) set_transient( $this->prefix . $key, $value, $expiration );
 	}
 }
