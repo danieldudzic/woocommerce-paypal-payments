@@ -53,7 +53,7 @@ class SubscriptionHelper {
 		 * Don't use `$cart->is_empty()` for checking for an empty cart.
 		 * This is maybe called so early that it can corrupt it because it loads it than from session
 		 */
-		if ( ! $cart || empty($cart->cart_contents) ) {
+		if ( ! $cart || empty( $cart->cart_contents ) ) {
 			return false;
 		}
 
