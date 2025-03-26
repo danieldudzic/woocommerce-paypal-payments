@@ -273,6 +273,9 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 					'ppcpSettings',
 					$script_data
 				);
+
+				// Dequeue the PayPal Subscription script.
+				wp_dequeue_script( 'ppcp-paypal-subscription' );
 			}
 		);
 
