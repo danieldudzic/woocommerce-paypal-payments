@@ -123,7 +123,7 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 						)
 					);
 
-					wp_enqueue_script( 'ppcp-switch-settings-ui', '', array( 'wp-i18n' ), $script_asset_file['version'] );
+					wp_enqueue_script( 'ppcp-switch-settings-ui', '', array( 'wp-i18n' ), $script_asset_file['version'], false );
 					wp_set_script_translations(
 						'ppcp-switch-settings-ui',
 						'woocommerce-paypal-payments',
@@ -201,7 +201,7 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 					true
 				);
 
-				wp_enqueue_script( 'ppcp-admin-settings', '', array( 'wp-i18n' ), $script_asset_file['version'] );
+				wp_enqueue_script( 'ppcp-admin-settings', '', array( 'wp-i18n' ), $script_asset_file['version'], false );
 				wp_set_script_translations(
 					'ppcp-admin-settings',
 					'woocommerce-paypal-payments',
@@ -401,18 +401,18 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 					unset( $payment_methods[ CardButtonGateway::ID ] );
 				} else {
 					// For non-ACDC regions unset ACDC, local APMs and set BCDC.
-						unset( $payment_methods[ CreditCardGateway::ID ] );
-						unset( $payment_methods['pay-later'] );
-						unset( $payment_methods[ BancontactGateway::ID ] );
-						unset( $payment_methods[ BlikGateway::ID ] );
-						unset( $payment_methods[ EPSGateway::ID ] );
-						unset( $payment_methods[ IDealGateway::ID ] );
-						unset( $payment_methods[ MyBankGateway::ID ] );
-						unset( $payment_methods[ P24Gateway::ID ] );
-						unset( $payment_methods[ TrustlyGateway::ID ] );
-						unset( $payment_methods[ MultibancoGateway::ID ] );
-						unset( $payment_methods[ PayUponInvoiceGateway::ID ] );
-						unset( $payment_methods[ OXXO::ID ] );
+					unset( $payment_methods[ CreditCardGateway::ID ] );
+					unset( $payment_methods['pay-later'] );
+					unset( $payment_methods[ BancontactGateway::ID ] );
+					unset( $payment_methods[ BlikGateway::ID ] );
+					unset( $payment_methods[ EPSGateway::ID ] );
+					unset( $payment_methods[ IDealGateway::ID ] );
+					unset( $payment_methods[ MyBankGateway::ID ] );
+					unset( $payment_methods[ P24Gateway::ID ] );
+					unset( $payment_methods[ TrustlyGateway::ID ] );
+					unset( $payment_methods[ MultibancoGateway::ID ] );
+					unset( $payment_methods[ PayUponInvoiceGateway::ID ] );
+					unset( $payment_methods[ OXXO::ID ] );
 				}
 
 				// Unset Venmo when store location is not United States.
@@ -485,7 +485,7 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 				if ( $is_payments_page ) {
 					$methods = array_filter(
 						$methods,
-						function ( $method ) use ( $all_gateway_ids ): bool {
+						function ( $method ) use ( $all_gateway_ids ) : bool {
 							if ( ! is_object( $method )
 								|| $method->id === PayPalGateway::ID
 								|| ! in_array( $method->id, $all_gateway_ids, true )
@@ -609,7 +609,7 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 		// Enable Fastlane after onboarding if the store is compatible.
 		add_action(
 			'woocommerce_paypal_payments_toggle_payment_gateways',
-			function( PaymentSettings $payment_methods, ConfigurationFlagsDTO $flags ) use ( $container ) {
+			function ( PaymentSettings $payment_methods, ConfigurationFlagsDTO $flags ) use ( $container ) {
 				if ( $flags->is_business_seller && $flags->use_card_payments ) {
 					$compatibility_checker = $container->get( 'axo.helpers.compatibility-checker' );
 					assert( $compatibility_checker instanceof CompatibilityChecker );
@@ -626,7 +626,7 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 		// Toggle payment gateways after onboarding based on flags.
 		add_action(
 			'woocommerce_paypal_payments_sync_gateways',
-			static function() use ( $container ) {
+			static function () use ( $container ) {
 				$settings_data_manager = $container->get( 'settings.service.data-manager' );
 				assert( $settings_data_manager instanceof SettingsDataManager );
 				$settings_data_manager->sync_gateway_settings();
@@ -713,7 +713,7 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 	 * @param string $gateway_name The gateway name.
 	 * @return bool True if the payment gateway with the given name is enabled, otherwise false.
 	 */
-	protected function is_gateway_enabled( string $gateway_name ): bool {
+	protected function is_gateway_enabled( string $gateway_name ) : bool {
 		$gateway_settings = get_option( "woocommerce_{$gateway_name}_settings", array() );
 		$gateway_enabled  = $gateway_settings['enabled'] ?? false;
 
