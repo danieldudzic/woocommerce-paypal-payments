@@ -277,9 +277,11 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 
 		add_action(
 			'woocommerce_paypal_payments_gateway_admin_options_wrapper',
-			function () : void {
+			function () use ( $container ) : void {
 				global $hide_save_button;
 				$hide_save_button = true;
+
+				$this->initialize_branded_only( $container );
 
 				$this->render_header();
 				$this->render_content();
@@ -661,6 +663,28 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 		add_filter( 'woocommerce_paypal_payments_is_eligible_for_axo', '__return_false' );
 		add_filter( 'woocommerce_paypal_payments_is_eligible_for_save_payment_methods', '__return_false' );
 		add_filter( 'woocommerce_paypal_payments_is_eligible_for_card_fields', '__return_false' );
+	}
+
+	/**
+	 * Initializes the branded-only flags if they are not set.
+	 *
+	 * This method can be called multiple times:
+	 * The flags are only initialized once but does not change afterward.
+	 *
+	 * Also, this check has no impact on performance for two reasons:
+	 * 1. The GeneralSettings class is already initialized and will short-circuit
+	 *    the check if the settings are already initialized.
+	 * 2. The settings UI is a React app, this method only runs when the React app
+	 *    is injected to the DOM, and not while the UI is used.
+	 *
+	 * @param ContainerInterface $container The DI container provider.
+	 * @return void
+	 */
+	protected function initialize_branded_only( ContainerInterface $container ) : void {
+		$path_repository = $container->get( 'settings.service.branded-experience.path-repository' );
+		assert( $path_repository instanceof PathRepository );
+
+		$path_repository->persist();
 	}
 
 	/**
