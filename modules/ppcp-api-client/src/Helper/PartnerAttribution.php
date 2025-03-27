@@ -64,13 +64,14 @@ class PartnerAttribution {
 	 *
 	 * @param string $installation_path The installation path used to determine the BN Code.
 	 */
-	public function initialize_bn_code( string $installation_path ): void {
-		$selected_bn_code = $this->bn_codes[ $installation_path ] ?? false;
+	public function initialize_bn_code( string $installation_path ) : void {
+		$selected_bn_code = $this->bn_codes[ $installation_path ] ?? '';
 
-		if ( get_option( $this->bn_code_option_name ) || ! $selected_bn_code ) {
+		if ( ! $selected_bn_code || get_option( $this->bn_code_option_name ) ) {
 			return;
 		}
 
+		// This option is permanent and should not change.
 		update_option( $this->bn_code_option_name, $selected_bn_code );
 	}
 
@@ -79,10 +80,10 @@ class PartnerAttribution {
 	 *
 	 * @return string The stored BN Code, or the default value if no path is detected.
 	 */
-	public function get_bn_code(): string {
-		$bn_code = get_option( $this->bn_code_option_name, $this->default_bn_code ) ?? $this->default_bn_code;
+	public function get_bn_code() : string {
+		$bn_code = (string) ( get_option( $this->bn_code_option_name, $this->default_bn_code ) ?? $this->default_bn_code );
 
-		if ( ! in_array( $bn_code, $this->bn_codes, true ) && $bn_code !== $this->default_bn_code ) {
+		if ( ! in_array( $bn_code, $this->bn_codes, true ) ) {
 			return $this->default_bn_code;
 		}
 

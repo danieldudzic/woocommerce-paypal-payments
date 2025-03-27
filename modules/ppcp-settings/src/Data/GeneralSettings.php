@@ -9,6 +9,7 @@ declare( strict_types = 1 );
 
 namespace WooCommerce\PayPalCommerce\Settings\Data;
 
+use Automattic\WooCommerce\Admin\Features\PaymentGatewaySuggestions\DefaultPaymentGateways;
 use RuntimeException;
 use WooCommerce\PayPalCommerce\Settings\DTO\MerchantConnectionDTO;
 use WooCommerce\PayPalCommerce\Settings\Enum\SellerTypeEnum;
@@ -131,7 +132,7 @@ class GeneralSettings extends AbstractDataModel {
 	public function get_woo_settings() : array {
 		$settings = $this->woo_settings;
 
-		$settings['installation_path'] = $this->get_installation_path();
+		$settings['own_brand_only'] = $this->own_brand_only();
 
 		return $settings;
 	}
@@ -297,5 +298,36 @@ class GeneralSettings extends AbstractDataModel {
 	 */
 	public function get_installation_path() : string {
 		return $this->data['installation_path'] ?? InstallationPathEnum::DIRECT;
+	}
+
+	/**
+	 * Whether the plugin is in the branded-experience mode and shows/enables only
+	 * payment methods that are PayPal's own brand.
+	 *
+	 * @return bool
+	 */
+	public function own_brand_only() : bool {
+		/**
+		 * If the current store is not eligible for WooPayments, we have to also show the other payment methods.
+		 */
+		if ( ! in_array( $this->woo_settings['country'], DefaultPaymentGateways::get_wcpay_countries(), true ) ) {
+			return false;
+		}
+
+		// Temporary dev/test mode.
+		$simulate_cookie = sanitize_key( wp_unslash( $_COOKIE['simulate-branded-only'] ?? '' ) );
+
+		if ( $simulate_cookie === 'true' ) {
+			return true;
+		} elseif ( $simulate_cookie === 'false' ) {
+			return false;
+		}
+
+		$brand_only_paths = array(
+			InstallationPathEnum::CORE_PROFILER,
+			InstallationPathEnum::PAYMENT_SETTINGS,
+		);
+
+		return in_array( $this->get_installation_path(), $brand_only_paths, true );
 	}
 }

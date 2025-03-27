@@ -54,6 +54,16 @@ const TabPaymentMethods = () => {
 	const merchant = CommonHooks.useMerchant();
 	const { canUseCardPayments } = OnboardingHooks.useFlags();
 
+	const showCardPayments =
+		methods.cardPayment.length > 0 &&
+		merchant.isBusinessSeller &&
+		canUseCardPayments;
+
+	const showApms =
+		methods.apm.length > 0 &&
+		merchant.isBusinessSeller &&
+		canUseCardPayments;
+
 	return (
 		<div className="ppcp-r-payment-methods">
 			<PaymentMethodCard
@@ -68,7 +78,8 @@ const TabPaymentMethods = () => {
 				onTriggerModal={ setActiveModal }
 				methodsMap={ methodsMap }
 			/>
-			{ merchant.isBusinessSeller && canUseCardPayments && (
+
+			{ showCardPayments && (
 				<PaymentMethodCard
 					id="ppcp-card-payments-card"
 					title={ __(
@@ -85,7 +96,8 @@ const TabPaymentMethods = () => {
 					methodsMap={ methodsMap }
 				/>
 			) }
-			{ merchant.isBusinessSeller && canUseCardPayments && (
+
+			{ showApms && (
 				<PaymentMethodCard
 					id="ppcp-alternative-payments-card"
 					title={ __(

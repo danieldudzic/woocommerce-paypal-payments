@@ -22,14 +22,20 @@ use WooCommerce\PayPalCommerce\ApiClient\Helper\CurrencyGetter;
 
 return array(
 
-	// If AXO can be configured.
+	// @deprecated - use `axo.eligibility.check` instead.
 	'axo.eligible'                           => static function ( ContainerInterface $container ): bool {
+		$eligibility_check = $container->get( 'axo.eligibility.check' );
+
+		return $eligibility_check();
+	},
+	'axo.eligibility.check'                  => static function ( ContainerInterface $container ): callable {
 		$apm_applies = $container->get( 'axo.helpers.apm-applies' );
 		assert( $apm_applies instanceof ApmApplies );
 
-		return $apm_applies->for_country_currency();
+		return static function () use ( $apm_applies ) : bool {
+			return $apm_applies->for_country_currency() && $apm_applies->for_merchant();
+		};
 	},
-
 	'axo.helpers.apm-applies'                => static function ( ContainerInterface $container ) : ApmApplies {
 		return new ApmApplies(
 			$container->get( 'axo.supported-country-currency-matrix' ),
