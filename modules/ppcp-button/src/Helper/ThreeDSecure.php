@@ -20,7 +20,7 @@ use WooCommerce\PayPalCommerce\ApiClient\Factory\CardAuthenticationResultFactory
 class ThreeDSecure {
 
 	public const NO_DECISION = 0;
-	public const PROCCEED    = 1;
+	public const PROCEED    = 1;
 	public const REJECT      = 2;
 	public const RETRY       = 3;
 
@@ -99,7 +99,7 @@ class ThreeDSecure {
 		$this->logger->info( '3DS Authentication Result: ' . wc_print_r( $result->to_array(), true ) );
 
 		if ( $liability === AuthResult::LIABILITY_SHIFT_POSSIBLE ) {
-			return $this->return_decision( self::PROCCEED, $order );
+			return $this->return_decision( self::PROCEED, $order );
 		}
 
 		if ( $liability === AuthResult::LIABILITY_SHIFT_UNKNOWN ) {
@@ -140,15 +140,15 @@ class ThreeDSecure {
 
 		if ( ! $authentication ) {
 			if ( $enrollment === AuthResult::ENROLLMENT_STATUS_BYPASS ) {
-				return self::PROCCEED;
+				return self::PROCEED;
 			}
 
 			if ( $enrollment === AuthResult::ENROLLMENT_STATUS_UNAVAILABLE ) {
-				return self::PROCCEED;
+				return self::PROCEED;
 			}
 
 			if ( $enrollment === AuthResult::ENROLLMENT_STATUS_NO ) {
-				return self::PROCCEED;
+				return self::PROCEED;
 			}
 		}
 

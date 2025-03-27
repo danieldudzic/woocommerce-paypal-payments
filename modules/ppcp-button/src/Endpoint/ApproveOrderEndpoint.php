@@ -316,7 +316,7 @@ class ApproveOrderEndpoint implements EndpointInterface {
 
 		// Handle the verification result based on the proceed value.
 		switch ( $proceed ) {
-			case ThreeDSecure::PROCCEED:
+			case ThreeDSecure::PROCEED:
 				// Check was successful.
 				return;
 
