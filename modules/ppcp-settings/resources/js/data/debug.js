@@ -168,6 +168,16 @@ export const addDebugTools = ( context, modules ) => {
 		onboarding.persist();
 	};
 
+	/**
+	 * Sets a cookie to simulate the branded-only experience.
+	 * @param {boolean} value - Whether to simulate branded-only experience.
+	 */
+	debugApi.simulateBrandedOnly = ( value ) => {
+		const expirationDate = new Date( Date.now() + 3600000 ).toUTCString();
+		document.cookie = `simulate-branded-only=${ value }; expires=${ expirationDate }; path=/`;
+		window.location.reload();
+	};
+
 	// Expose original debug API.
 	Object.assign( context, debugApi );
 };

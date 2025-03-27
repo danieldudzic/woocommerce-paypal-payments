@@ -64,6 +64,7 @@ class CommonRestEndpoint extends RestEndpoint {
 			'js_name'  => 'useManualConnection',
 			'sanitize' => 'to_boolean',
 		),
+		// TODO: Is this really a "read-and-write" field? If no, it should not be listed in this map!
 		'webhooks'              => array(
 			'js_name' => 'webhooks',
 		),
@@ -107,11 +108,14 @@ class CommonRestEndpoint extends RestEndpoint {
 	 * @var array
 	 */
 	private array $woo_settings_map = array(
-		'country'  => array(
+		'country'        => array(
 			'js_name' => 'storeCountry',
 		),
-		'currency' => array(
+		'currency'       => array(
 			'js_name' => 'storeCurrency',
+		),
+		'own_brand_only' => array(
+			'js_name' => 'ownBrandOnly',
 		),
 	);
 
