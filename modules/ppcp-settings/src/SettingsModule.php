@@ -159,17 +159,13 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 		 */
 		add_action(
 			'woocommerce_paypal_payments_gateway_migrate',
-			function () use ( $container ) {
-				$path_repository = $container->get( 'settings.service.branded-experience.path-repository' );
-				assert( $path_repository instanceof PathRepository );
-
+			static function () use ( $container ) {
 				$partner_attribution = $container->get( 'api.helper.partner-attribution' );
 				assert( $partner_attribution instanceof PartnerAttribution );
 
 				$general_settings = $container->get( 'settings.data.general' );
 				assert( $general_settings instanceof GeneralSettings );
 
-				$path_repository->persist();
 				$partner_attribution->initialize_bn_code( $general_settings->get_installation_path() );
 			}
 		);
