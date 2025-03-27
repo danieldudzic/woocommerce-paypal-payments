@@ -1,10 +1,10 @@
 === WooCommerce PayPal Payments ===
-Contributors: woocommerce, automattic, syde
+Contributors: paypal, woocommerce, automattic, syde
 Tags: woocommerce, paypal, payments, ecommerce, credit card
 Requires at least: 6.5
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 3.0.0
+Stable tag: 3.0.1
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -156,7 +156,30 @@ If you encounter issues with the PayPal buttons not appearing after an update, p
 
 == Changelog ==
 
-= 3.0.0 - xxxx-xx-xx =
+= 3.0.1 - 2025-03-26 =
+* Enhancement - Include Fastlane meta on homepage #3151
+* Enhancement - Include Branded-only plugin configuration for certain installation paths 
+* Enhancement - Include UI status in system report #3248
+* Enhancement - Minor enhancements in new UI scrolling & highlighting behavior #3240
+* Fix - "Warning: Class 'WooCommerce\PayPalCommerce\Vendor\Stringable' not found" after 3.0.0 update #3235
+* Fix - ACDC does not work on the Classic Checkout when using the new UI #3219
+* Fix - "Send only" country banner not displayed in the new UI #3236
+* Fix - Typo in welcome screen #3258
+* Fix - onboarding.js file from old UI enqueued in new UI #3263
+* Fix - Onboarding in new UI with personal account does not hide all ineligible features #3254
+* Fix - ACDC not defaulting on for eligible merchants after onboarding with Expanded Checkout selection #3250
+* Fix - “Failed to fetch onboarding URL” error when onboarding with Subscriptions selected from non-Vault region #3242
+* Fix - Fastlane SDK token requested when Fastlane is disabled #3009
+* Fix - Subscription renewal payment via ACDC may fail in some cases due to 3D Secure #3098
+* Fix - Error: _load_textdomain_just_in_time Called Incorrectly when running docker compose #3172
+* Fix - Shipping callback not loading for guest users in some scenarios #3169
+* Fix - Phone number not saved in WC order when using Pay Now experience #3160
+* Fix - Phone number not pre-populated on Checkout block in continuation mode #3160
+* Fix - "Unfortunately, your credit card details are not valid" shown with actually valid card during checkout with invalid postcode. #3067
+* Fix - Incorrect Subscription Cancellation Handling with PayPal Subscriptions #3046
+* Tweak - Added PayPal as contributor #3259
+
+= 3.0.0 - 2025-03-17 =
 * Enhancement - Redesigned settings UI for new users #2908
 * Enhancement - Enable Fastlane by default on new store setups when eligible #3199
 * Enhancement - Enable support for advanced card payments and features for Hong Kong & Singapore #3089
@@ -170,6 +193,7 @@ If you encounter issues with the PayPal buttons not appearing after an update, p
 * Fix - Error in continuation mode due to wrong gateway selection on Checkout block #2996
 * Fix - Error in error in PayLaterConfigurator #2989
 * Tweak - Removed currency requirement for Vault v3 #2919
+* Tweak - Update plugin author from WooCommerce to PayPal
 
 = 2.9.6 - 2025-01-06 =
 * Fix - NOT_ENABLED_TO_VAULT_PAYMENT_SOURCE on PayPal transactions when using ACDC Vaulting without PayPal Vault approval #2955
@@ -314,7 +338,7 @@ If you encounter issues with the PayPal buttons not appearing after an update, p
 * Fix - Shipping methods during callback not updated correctly #2421
 * Fix - Preserve subscription renewal processing when switching Subscriptions Mode or disabling gateway #2394
 * Fix - Remove shipping callback for Venmo express button #2374
-* Fix - Google Pay: Fix issuse with data.paymentSource being undefined #2390
+* Fix - Google Pay: Fix issue with data.paymentSource being undefined #2390
 * Fix - Loading of non-Order as a WC_Order causes warnings and potential data corruption #2343
 * Fix - Apple Pay and Google Pay buttons don't appear in PayPal Button stack on multi-step Checkout #2372
 * Fix - Apple Pay: Fix when shipping is disabled #2391

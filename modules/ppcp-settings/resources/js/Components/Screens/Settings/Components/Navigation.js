@@ -16,9 +16,9 @@ const NOTIFICATION_ANIMATION_DURATION = 300;
 
 const SettingsNavigation = ( {
 	canSave = true,
-	tabs,
-	activePanel,
-	setActivePanel,
+	tabs = [],
+	activePanel = '',
+	setActivePanel = () => {},
 } ) => {
 	const { persistAll } = useStoreManager();
 

@@ -8,17 +8,20 @@ use WC_Payment_Gateways;
 use WooCommerce;
 use WooCommerce\PayPalCommerce\TestCase;
 use WooCommerce\PayPalCommerce\WcGateway\Settings\Settings;
+use WooCommerce\PayPalCommerce\WcGateway\Helper\CardPaymentsConfiguration;
 use function Brain\Monkey\Functions\when;
 
 class DisabledFundingSourcesTest extends TestCase
 {
 	private $settings;
+	private $dcc_configuration;
 
 	public function setUp(): void
 	{
 		parent::setUp();
 
 		$this->settings = Mockery::mock(Settings::class);
+		$this->dcc_configuration = Mockery::mock(CardPaymentsConfiguration::class);
 	}
 
 	/**
@@ -27,7 +30,9 @@ class DisabledFundingSourcesTest extends TestCase
 	 */
 	public function test_is_checkout_true_add_card_when_checkout_block_context()
 	{
-		$sut = new DisabledFundingSources($this->settings, []);
+		$this->dcc_configuration->shouldReceive('is_enabled')->andReturn(true);
+		$this->dcc_configuration->shouldReceive('use_acdc')->andReturn(true);
+		$sut = new DisabledFundingSources($this->settings, [], $this->dcc_configuration);
 
 		$this->setExpectations();
 		$this->setWcPaymentGateways();
@@ -43,7 +48,9 @@ class DisabledFundingSourcesTest extends TestCase
 	 */
 	public function test_is_checkout_false_add_card_when_checkout_context()
 	{
-		$sut = new DisabledFundingSources($this->settings, []);
+		$this->dcc_configuration->shouldReceive('is_enabled')->andReturn(true);
+		$this->dcc_configuration->shouldReceive('use_acdc')->andReturn(true);
+		$sut = new DisabledFundingSources($this->settings, [], $this->dcc_configuration);
 
 		$this->setExpectations();
 		$this->setWcPaymentGateways();
@@ -55,11 +62,17 @@ class DisabledFundingSourcesTest extends TestCase
 
 	public function test_is_checkout_true_add_allowed_sources_when_checkout_block_context()
 	{
-		$sut = new DisabledFundingSources($this->settings, [
-			'card' => 'Credit or debit cards',
-			'paypal' => 'PayPal',
-			'foo' => 'Bar',
-		]);
+		$this->dcc_configuration->shouldReceive('is_enabled')->andReturn(true);
+		$this->dcc_configuration->shouldReceive('use_acdc')->andReturn(true);
+		$sut = new DisabledFundingSources(
+			$this->settings,
+			[
+				'card' => 'Credit or debit cards',
+				'paypal' => 'PayPal',
+				'foo' => 'Bar',
+			],
+			$this->dcc_configuration
+		);
 
 		$this->setExpectations();
 		$this->setWcPaymentGateways();

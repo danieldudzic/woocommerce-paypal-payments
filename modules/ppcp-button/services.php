@@ -37,7 +37,7 @@ use WooCommerce\PayPalCommerce\Button\Helper\MessagesApply;
 use WooCommerce\PayPalCommerce\Button\Helper\ThreeDSecure;
 use WooCommerce\PayPalCommerce\WcGateway\Helper\Environment;
 use WooCommerce\PayPalCommerce\WcGateway\Helper\SettingsStatus;
-use WooCommerce\PayPalCommerce\WcGateway\Helper\DCCGatewayConfiguration;
+use WooCommerce\PayPalCommerce\WcGateway\Helper\CardPaymentsConfiguration;
 
 return array(
 	'button.client_id'                            => static function ( ContainerInterface $container ): string {
@@ -115,8 +115,8 @@ return array(
 			}
 
 			$no_smart_buttons  = ! $settings_status->is_smart_button_enabled_for_location( $context );
-			$dcc_configuration = $container->get( 'wcgateway.configuration.dcc' );
-			assert( $dcc_configuration instanceof DCCGatewayConfiguration );
+			$dcc_configuration = $container->get( 'wcgateway.configuration.card-configuration' );
+			assert( $dcc_configuration instanceof CardPaymentsConfiguration );
 
 			if ( $no_smart_buttons && ! $dcc_configuration->is_enabled() ) {
 				// Smart buttons disabled, and also not using advanced card payments.
@@ -167,7 +167,9 @@ return array(
 			$container->get( 'api.endpoint.payment-tokens' ),
 			$container->get( 'woocommerce.logger.woocommerce' ),
 			$container->get( 'button.handle-shipping-in-paypal' ),
-			$container->get( 'button.helper.disabled-funding-sources' )
+			$container->get( 'button.helper.disabled-funding-sources' ),
+			$container->get( 'wcgateway.configuration.card-configuration' ),
+			$container->get( 'api.helper.partner-attribution' )
 		);
 	},
 	'button.url'                                  => static function ( ContainerInterface $container ): string {
@@ -343,7 +345,8 @@ return array(
 	'button.helper.disabled-funding-sources'      => static function ( ContainerInterface $container ): DisabledFundingSources {
 		return new DisabledFundingSources(
 			$container->get( 'wcgateway.settings' ),
-			$container->get( 'wcgateway.all-funding-sources' )
+			$container->get( 'wcgateway.all-funding-sources' ),
+			$container->get( 'wcgateway.configuration.card-configuration' )
 		);
 	},
 	'button.is-logged-in'                         => static function ( ContainerInterface $container ): bool {
