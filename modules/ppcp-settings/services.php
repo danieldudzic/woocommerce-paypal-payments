@@ -371,7 +371,8 @@ return array(
 		$store_country = $container->get( 'wcgateway.store-country' );
 		$merchant_id = $container->get( 'api.partner_merchant_id' );
 		$button_language_choices = $container->get( 'wcgateway.wp-paypal-locales-map' );
-		return new ScriptDataHandler( $settings, $settings_url, $paylater_is_available, $store_country, $merchant_id, $button_language_choices );
+		$partner_attribution = $container->get( 'api.helper.partner-attribution' );
+		return new ScriptDataHandler( $settings, $settings_url, $paylater_is_available, $store_country, $merchant_id, $button_language_choices, $partner_attribution );
 	},
 	'settings.ajax.switch_ui'                             => static function ( ContainerInterface $container ) : SwitchSettingsUiEndpoint {
 		return new SwitchSettingsUiEndpoint(

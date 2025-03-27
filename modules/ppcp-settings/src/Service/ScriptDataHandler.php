@@ -7,6 +7,7 @@
 
 namespace WooCommerce\PayPalCommerce\Settings\Service;
 
+use WooCommerce\PayPalCommerce\ApiClient\Helper\PartnerAttribution;
 use WooCommerce\PayPalCommerce\WcGateway\Settings\Settings;
 
 /**
@@ -51,6 +52,7 @@ class ScriptDataHandler {
 	 * @var array
 	 */
 	protected array $button_language_choices;
+	protected PartnerAttribution $partner_attribution;
 
 	/**
 	 * ScriptDataHandler constructor.
@@ -68,7 +70,8 @@ class ScriptDataHandler {
 		bool $paylater_is_available,
 		string $store_country,
 		string $merchant_id,
-		array $button_language_choices
+		array $button_language_choices,
+		PartnerAttribution $partner_attribution
 	) {
 		$this->settings                = $settings;
 		$this->settings_url            = $settings_url;
@@ -76,9 +79,10 @@ class ScriptDataHandler {
 		$this->store_country           = $store_country;
 		$this->merchant_id             = $merchant_id;
 		$this->button_language_choices = $button_language_choices;
+		$this->partner_attribution     = $partner_attribution;
 	}
 
-	/**
+/**
 	 * Localize scripts.
 	 *
 	 * @param string $hook_suffix The current admin page.
@@ -195,6 +199,7 @@ class ScriptDataHandler {
 		);
 
 		if ( $is_pay_later_configurator_available ) {
+
 			wp_enqueue_script(
 				'ppcp-paylater-configurator-lib',
 				'https://www.paypalobjects.com/merchant-library/merchant-configurator.js',
@@ -210,7 +215,7 @@ class ScriptDataHandler {
 				'config'           => array(),
 				'merchantClientId' => $this->settings->get( 'client_id' ),
 				'partnerClientId'  => $this->merchant_id,
-				'bnCode'           => PPCP_PAYPAL_BN_CODE,
+				'bnCode'           => $this->partner_attribution->get_bn_code(),
 			);
 		}
 
@@ -219,6 +224,8 @@ class ScriptDataHandler {
 			'ppcpSettings',
 			$script_data
 		);
+	// Dequeue the PayPal Subscription script.
+	wp_dequeue_script( 'ppcp-paypal-subscription' );
 	}
 }
 
