@@ -82,7 +82,7 @@ class GeneralSettings extends AbstractDataModel {
 			'seller_type'           => 'unknown',
 
 			// Branded experience installation path.
-			'installation_path'     => '',
+			'wc_installation_path'  => '',
 		);
 	}
 
@@ -279,7 +279,7 @@ class GeneralSettings extends AbstractDataModel {
 	 */
 	public function set_installation_path( string $installation_path ) : void {
 		// The installation path can be set only once.
-		if ( InstallationPathEnum::is_valid( $this->data['installation_path'] ?? '' ) ) {
+		if ( InstallationPathEnum::is_valid( $this->data['wc_installation_path'] ?? '' ) ) {
 			return;
 		}
 
@@ -288,7 +288,7 @@ class GeneralSettings extends AbstractDataModel {
 			return;
 		}
 
-		$this->data['installation_path'] = $installation_path;
+		$this->data['wc_installation_path'] = $installation_path;
 	}
 
 	/**
@@ -297,7 +297,7 @@ class GeneralSettings extends AbstractDataModel {
 	 * @return string
 	 */
 	public function get_installation_path() : string {
-		return $this->data['installation_path'] ?? InstallationPathEnum::DIRECT;
+		return $this->data['wc_installation_path'] ?? InstallationPathEnum::DIRECT;
 	}
 
 	/**
