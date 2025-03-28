@@ -113,23 +113,16 @@ class ApiModule implements ServiceModule, ExtendingModule, ExecutableModule {
 			'woocommerce_paypal_payments_flush_api_cache',
 			static function () use ( $c ) {
 				$caches = array(
-					'api.paypal-bearer-cache'      => array(
-						PayPalBearer::CACHE_KEY,
-					),
-					'api.client-credentials-cache' => array(
-						SdkClientToken::CACHE_KEY,
-					),
+					'api.paypal-bearer-cache',
+					'api.client-credentials-cache',
+					'settings.service.signup-link-cache',
 				);
 
-				foreach ( $caches as $cache_id => $keys ) {
+				foreach ( $caches as $cache_id ) {
 					$cache = $c->get( $cache_id );
 					assert( $cache instanceof Cache );
 
-					foreach ( $keys as $key ) {
-						if ( $cache->has( $key ) ) {
-							$cache->delete( $key );
-						}
-					}
+					$cache->flush();
 				}
 			}
 		);
