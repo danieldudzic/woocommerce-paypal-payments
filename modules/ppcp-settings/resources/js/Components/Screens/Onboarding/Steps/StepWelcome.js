@@ -23,13 +23,13 @@ const StepWelcome = ( { setStep, currentStep } ) => {
 	);
 
 	const onboardingHeaderDescription =
-		! canUseCardPayments || ownBrandOnly
+		canUseCardPayments && ! ownBrandOnly
 			? __(
-					'Your all-in-one integration for PayPal checkout solutions that enable buyers to pay via PayPal, Pay Later, all major credit/debit cards, and more.',
+					'Your all-in-one integration for PayPal checkout solutions that enable buyers to pay via PayPal, Pay Later, all major credit/debit cards, Apple Pay, Google Pay, and more.',
 					'woocommerce-paypal-payments'
 			  )
 			: __(
-					'Your all-in-one integration for PayPal checkout solutions that enable buyers to pay via PayPal, Pay Later, all major credit/debit cards, Apple Pay, Google Pay, and more.',
+					'Your all-in-one integration for PayPal checkout solutions that enable buyers to pay via PayPal, Pay Later, all major credit/debit cards, and more.',
 					'woocommerce-paypal-payments'
 			  );
 
