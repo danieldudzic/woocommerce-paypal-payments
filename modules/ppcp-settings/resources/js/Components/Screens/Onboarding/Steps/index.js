@@ -1,5 +1,6 @@
 import { __ } from '@wordpress/i18n';
 
+import { CommonHooks, OnboardingHooks } from '../../../../data';
 import StepWelcome from './StepWelcome';
 import StepBusiness from './StepBusiness';
 import StepProducts from './StepProducts';
@@ -56,11 +57,16 @@ const filterSteps = ( steps, conditions ) => {
 };
 
 export const getSteps = ( flags ) => {
+	const { ownBrandOnly } = CommonHooks.useWooSettings();
+	const { isCasualSeller } = OnboardingHooks.useBusiness();
+
 	const steps = filterSteps( ALL_STEPS, [
 		// Casual selling: Unlock the "Personal Account" choice.
 		( step ) => flags.canUseCasualSelling || step.id !== 'business',
 		// Skip payment methods screen.
-		( step ) => ! flags.shouldSkipPaymentMethods || step.id !== 'methods',
+		( step ) =>
+			! flags.shouldSkipPaymentMethods &&
+			! ( ownBrandOnly && isCasualSeller && step.id === 'methods' ), // personal user in branded-only mode.
 	] );
 
 	const totalStepsCount = steps.length;
