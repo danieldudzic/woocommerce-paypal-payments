@@ -29,7 +29,7 @@ const StepWelcome = ( { setStep, currentStep } ) => {
 					'woocommerce-paypal-payments'
 			  )
 			: __(
-					'Your all-in-one integration for PayPal checkout solutions that enable buyers to pay via PayPal, Pay Later, all major credit/debit cards, and more.',
+					'Your all-in-one integration for PayPal checkout solutions that enable buyers to pay via PayPal, Pay Later, and more.',
 					'woocommerce-paypal-payments'
 			  );
 
