@@ -330,7 +330,7 @@ class SettingsDataManager {
 			'cart'             => new LocationStylingDTO( 'cart', true, $methods_full ),
 			'classic_checkout' => new LocationStylingDTO( 'classic_checkout', true, $methods_full ),
 			'express_checkout' => new LocationStylingDTO( 'express_checkout', true, $methods_full ),
-			'mini_cart'        => new LocationStylingDTO( 'mini_cart', true, $methods_full ),
+			'mini_cart'        => new LocationStylingDTO( 'mini_cart', false, $methods_full ),
 			'product'          => new LocationStylingDTO( 'product', true, $methods_own ),
 		);
 
