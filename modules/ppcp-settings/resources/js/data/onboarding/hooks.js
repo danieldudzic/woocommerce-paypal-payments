@@ -162,10 +162,15 @@ export const useNavigationState = () => {
 	};
 };
 
-export const useDetermineProducts = () => {
-	return useSelect( ( select ) => {
-		return select( STORE_NAME ).determineProductsAndCaps();
-	}, [] );
+export const useDetermineProducts = ( ownBrandOnly ) => {
+	return useSelect(
+		( select ) => {
+			return select( STORE_NAME ).determineProductsAndCaps(
+				ownBrandOnly
+			);
+		},
+		[ ownBrandOnly ]
+	);
 };
 
 export const useFlags = () => {
