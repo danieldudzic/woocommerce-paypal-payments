@@ -646,11 +646,7 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 				$settings_model = $container->get( 'settings.data.settings' );
 				assert( $settings_model instanceof SettingsModel );
 
-				if ( $settings_model->get_save_paypal_and_venmo() ) {
-					return false;
-				}
-
-				return true;
+				return ! $settings_model->get_save_paypal_and_venmo();
 			}
 		);
 
