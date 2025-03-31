@@ -25,6 +25,7 @@ use WooCommerce\PayPalCommerce\LocalAlternativePaymentMethods\P24Gateway;
 use WooCommerce\PayPalCommerce\LocalAlternativePaymentMethods\TrustlyGateway;
 use WooCommerce\PayPalCommerce\Settings\Ajax\SwitchSettingsUiEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Data\OnboardingProfile;
+use WooCommerce\PayPalCommerce\Settings\Data\SettingsModel;
 use WooCommerce\PayPalCommerce\Settings\Data\TodosModel;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\RestEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Handler\ConnectionListener;
@@ -637,6 +638,17 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 		$gateway_redirect_service = $container->get( 'settings.service.gateway-redirect' );
 		assert( $gateway_redirect_service instanceof GatewayRedirectService );
 		$gateway_redirect_service->register();
+
+		// Do not render Pay Later messaging if the "Save PayPal and Venmo" setting is enabled.
+		add_filter(
+			'woocommerce_paypal_payments_should_render_pay_later_messaging',
+			static function() use ( $container ): bool {
+				$settings_model = $container->get( 'settings.data.settings' );
+				assert( $settings_model instanceof SettingsModel );
+
+				return ! $settings_model->get_save_paypal_and_venmo();
+			}
+		);
 
 		return true;
 	}
