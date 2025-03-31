@@ -639,10 +639,10 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 		assert( $gateway_redirect_service instanceof GatewayRedirectService );
 		$gateway_redirect_service->register();
 
-		// Do not render Pay Later messaging if "Save PayPal and Venmo" setting is enabled.
+		// Do not render Pay Later messaging if the "Save PayPal and Venmo" setting is enabled.
 		add_filter(
 			'woocommerce_paypal_payments_should_render_pay_later_messaging',
-			function() use ( $container ) {
+			static function() use ( $container ): bool {
 				$settings_model = $container->get( 'settings.data.settings' );
 				assert( $settings_model instanceof SettingsModel );
 
