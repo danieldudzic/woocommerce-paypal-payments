@@ -1897,13 +1897,15 @@ document.querySelector("#payment").before(document.querySelector(".ppcp-messages
 			$variations = $product->get_available_variations( 'objects' );
 			$in_stock   = $this->has_in_stock_variation( $variations );
 		}
+		$enable_button = ! $product->is_type( array( 'external', 'grouped' ) ) && $in_stock &&
+			! ( ( $product->is_type( 'subscription' ) || $product->is_type( 'variable-subscription' ) ) && ! empty( $_GET['switch-subscription'] ) );
 
 		/**
 		 * Allows to filter if PayPal buttons/messages can be rendered for the given product.
 		 */
 		return apply_filters(
 			'woocommerce_paypal_payments_product_supports_payment_request_button',
-			! $product->is_type( array( 'external', 'grouped' ) ) && $in_stock,
+			$enable_button,
 			$product
 		);
 	}
