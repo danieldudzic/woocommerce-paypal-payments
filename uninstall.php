@@ -42,6 +42,7 @@ require $main_plugin_file;
 		$settings = $app_container->get( 'wcgateway.settings' );
 		assert( $settings instanceof Settings );
 
+		// TODO: This is a flag only present in the #legacy-ui. Should we change this to a filter, or remove the DB reset code?
 		$should_clear_db = $settings->has( 'uninstall_clear_db_on_uninstall' ) && $settings->get( 'uninstall_clear_db_on_uninstall' );
 		if ( ! $should_clear_db ) {
 			return;
