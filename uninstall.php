@@ -88,6 +88,14 @@ require $main_plugin_file;
  * @return void
  */
 function clear_plugin_branding( ContainerInterface $container ) : void {
+	/*
+	 * This flag is set by WooCommerce when the plugin is installed via their
+	 * Settings page. We remove it here, as uninstalling the plugin should
+	 * open up the possibility of installing it from a different source in
+	 * "white label" mode.
+	 */
+	delete_option( 'woocommerce_paypal_branded' );
+
 	try {
 		$general_settings = $container->get( 'wcgateway.settings.general_settings' );
 		assert( $general_settings instanceof GeneralSettings );
