@@ -5,7 +5,7 @@
  * @package WooCommerce\PayPalCommerce
  */
 
-declare(strict_types=1);
+declare( strict_types = 1 );
 
 namespace WooCommerce\PayPalCommerce;
 
@@ -17,16 +17,16 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 	die( 'Direct access not allowed.' );
 }
 
-$root_dir = __DIR__;
+$root_dir         = __DIR__;
 $main_plugin_file = "{$root_dir}/woocommerce-paypal-payments.php";
 
-if ( !file_exists( $main_plugin_file ) ) {
-    return;
+if ( ! file_exists( $main_plugin_file ) ) {
+	return;
 }
 
 require $main_plugin_file;
 
-( static function (string $root_dir): void {
+( static function ( string $root_dir ) : void {
 
 	$autoload_filepath = "{$root_dir}/vendor/autoload.php";
 	if ( file_exists( $autoload_filepath ) && ! class_exists( '\WooCommerce\PayPalCommerce\PluginModule' ) ) {
@@ -74,4 +74,4 @@ require $main_plugin_file;
 			}
 		);
 	}
-} )($root_dir);
+} )( $root_dir );
