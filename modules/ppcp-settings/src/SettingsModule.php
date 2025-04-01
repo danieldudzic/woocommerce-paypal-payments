@@ -617,6 +617,7 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 
 					if ( $compatibility_checker->is_fastlane_compatible() ) {
 						$payment_methods->toggle_method_state( AxoGateway::ID, true );
+						$payment_methods->set_fastlane_display_watermark( true );
 					}
 				}
 			},
