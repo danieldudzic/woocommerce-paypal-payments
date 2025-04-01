@@ -11,7 +11,9 @@ namespace WooCommerce\PayPalCommerce;
 
 use WooCommerce\PayPalCommerce\Uninstall\ClearDatabaseInterface;
 use WooCommerce\PayPalCommerce\Vendor\Psr\Container\ContainerInterface;
+use WooCommerce\PayPalCommerce\Vendor\Psr\Container\NotFoundExceptionInterface;
 use WooCommerce\PayPalCommerce\WcGateway\Settings\Settings;
+use WooCommerce\PayPalCommerce\Settings\Data\GeneralSettings;
 
 if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 	die( 'Direct access not allowed.' );
@@ -38,6 +40,8 @@ require $main_plugin_file;
 
 		$app_container = $bootstrap( $root_dir );
 		assert( $app_container instanceof ContainerInterface );
+
+		clear_plugin_branding( $app_container );
 
 		$settings = $app_container->get( 'wcgateway.settings' );
 		assert( $settings instanceof Settings );
@@ -76,3 +80,24 @@ require $main_plugin_file;
 		);
 	}
 } )( $root_dir );
+
+/**
+ * Clears plugin branding by resetting the installation path flag.
+ *
+ * @param ContainerInterface $container The plugin's DI container.
+ * @return void
+ */
+function clear_plugin_branding( ContainerInterface $container ) : void {
+	try {
+		$general_settings = $container->get( 'wcgateway.settings.general_settings' );
+		assert( $general_settings instanceof GeneralSettings );
+
+		if ( $general_settings->reset_installation_path( 'plugin_uninstall' ) ) {
+			$general_settings->save();
+		}
+	} catch ( NotFoundExceptionInterface $e ) {
+		// The container does not exist or did not return a GeneralSettings instance.
+		// In any case: A failure can be ignored, as it means we cannot reset anything.
+		return;
+	}
+}
