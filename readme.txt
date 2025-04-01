@@ -165,7 +165,7 @@ If you encounter issues with the PayPal buttons not appearing after an update, p
 * Fix - Hide the payment methods screen for personal user in branded-only mode #3286
 * Fix - Enabling Save PayPal does not disable Pay Later messaging #3288
 * Fix - Settings UI: Fix Feature button links #3285
-* Fix - Create mapping for the 3d_secure_contingency setting. (4410) #3262
+* Fix - Create mapping for the 3d_secure_contingency setting #3262
 
 = 3.0.1 - 2025-03-26 =
 * Enhancement - Include Fastlane meta on homepage #3151
