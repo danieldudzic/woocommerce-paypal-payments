@@ -9,6 +9,9 @@ declare(strict_types=1);
 
 namespace WooCommerce\PayPalCommerce\CardFields;
 
+use DomainException;
+use WooCommerce\PayPalCommerce\ApiClient\Entity\Order;
+use WooCommerce\PayPalCommerce\CardFields\Service\CardCaptureValidator;
 use WooCommerce\PayPalCommerce\Vendor\Inpsyde\Modularity\Module\ExecutableModule;
 use WooCommerce\PayPalCommerce\Vendor\Inpsyde\Modularity\Module\ExtendingModule;
 use WooCommerce\PayPalCommerce\Vendor\Inpsyde\Modularity\Module\ModuleClassNameIdTrait;
@@ -168,6 +171,19 @@ class CardFieldsModule implements ServiceModule, ExtendingModule, ExecutableModu
 			},
 			10,
 			2
+		);
+
+		// Ensures either order status or 3DS approval for card payment source is correct.
+		add_action(
+			'woocommerce_paypal_payments_before_capture_order',
+			function( Order $order ) use ( $c ) {
+				$validator = $c->get( 'card-fields.service.card-capture-validator' );
+				assert( $validator instanceof CardCaptureValidator );
+
+				if ( ! $validator->is_valid( $order ) ) {
+					throw new DomainException( 'Could not capture the order' );
+				}
+			}
 		);
 
 		return true;
