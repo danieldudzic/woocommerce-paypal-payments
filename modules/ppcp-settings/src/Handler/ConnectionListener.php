@@ -113,6 +113,11 @@ class ConnectionListener {
 		}
 
 		$token = $this->get_token_from_request( $request );
+
+		if ( $this->was_token_processed( $token ) ) {
+			return;
+		}
+
 		if ( ! $this->url_manager->validate_token_and_delete( $token, $this->user_id ) ) {
 			return;
 		}
@@ -126,6 +131,7 @@ class ConnectionListener {
 
 		try {
 			$this->authentication_manager->finish_oauth_authentication( $data );
+			$this->mark_token_as_processed( $token );
 		} catch ( \Exception $e ) {
 			$this->logger->error( 'Failed to complete authentication: ' . $e->getMessage() );
 		}
@@ -163,6 +169,32 @@ class ConnectionListener {
 		}
 
 		return true;
+	}
+
+	/**
+	 * Checks if the provided authentication token is new or has been used before.
+	 *
+	 * This check catches an issue where we receive the same authentication token twice,
+	 * which does not impact the login flow but creates noise in the logs.
+	 *
+	 * @param string $token The authentication token to check.
+	 * @return bool True if the token was already processed.
+	 */
+	private function was_token_processed( string $token ) : bool {
+		$prev_token = get_transient( 'ppcp_previous_ppcp_auth_token' );
+
+		return $prev_token && $prev_token === $token;
+	}
+
+	/**
+	 * Stores the processed authentication token so we can prevent double-processing
+	 * of already verified token.
+	 *
+	 * @param string $token The processed authentication token.
+	 * @return void
+	 */
+	private function mark_token_as_processed( string $token ) : void {
+		set_transient( 'ppcp_previous_ppcp_auth_token', $token, 60 );
 	}
 
 	/**
