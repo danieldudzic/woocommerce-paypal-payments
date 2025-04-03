@@ -11,7 +11,7 @@ use WooCommerce\PayPalCommerce\TestCase;
 
 class CardCaptureValidatorTest extends TestCase {
 
-	public function test_is_valid_if_order_status_is_approved() {
+	public function test_is_valid_when_order_status_is_approved() {
 		$validator = new CardCaptureValidator();
 
 		$order       = Mockery::mock( Order::class );
@@ -39,7 +39,7 @@ class CardCaptureValidatorTest extends TestCase {
 		$this->assertTrue( $validator->is_valid( $order ) );
 	}
 
-	public function test_is_valid_if_authentication_result_passes_3ds_approval() {
+	public function test_is_valid_when_authentication_result_passes_3ds_approval() {
 		$validator = new CardCaptureValidator();
 
 		$order         = Mockery::mock( Order::class );
@@ -48,7 +48,6 @@ class CardCaptureValidatorTest extends TestCase {
 
 		$order->shouldReceive( 'status' )->andReturn( $orderStatus );
 		$orderStatus->shouldReceive( 'name' )->andReturn( $orderStatus::CREATED );
-
 		$order->shouldReceive( 'payment_source' )->andReturn( $paymentSource );
 		$paymentSource->shouldReceive( 'name' )->andReturn( 'card' );
 
@@ -59,6 +58,5 @@ class CardCaptureValidatorTest extends TestCase {
 		] );
 
 		$this->assertTrue( $validator->is_valid( $order ) );
-
 	}
 }
