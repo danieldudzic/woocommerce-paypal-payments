@@ -156,7 +156,7 @@ If you encounter issues with the PayPal buttons not appearing after an update, p
 
 == Changelog ==
 
-= 3.0.2 - xxxx-xx-xx =
+= 3.0.2 - 2025-04-03 =
 * Enhancement - Check the branded-only flag when settings-UI is loaded the first time #3278
 * Enhancement - Implement a Cache-Flush API #3276
 * Enhancement - Disable the mini-cart location by default #3284
