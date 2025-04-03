@@ -189,7 +189,7 @@ class ConnectionListener {
 	 * @return bool True if the token was already processed.
 	 */
 	private function was_token_processed( string $token ) : bool {
-		$prev_token = get_transient( 'ppcp_previous_ppcp_auth_token' );
+		$prev_token = get_transient( 'ppcp_previous_auth_token' );
 
 		return $prev_token && $prev_token === $token;
 	}
@@ -202,7 +202,7 @@ class ConnectionListener {
 	 * @return void
 	 */
 	private function mark_token_as_processed( string $token ) : void {
-		set_transient( 'ppcp_previous_ppcp_auth_token', $token, 60 );
+		set_transient( 'ppcp_previous_auth_token', $token, 60 );
 	}
 
 	/**
