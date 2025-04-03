@@ -134,7 +134,7 @@ class ConnectionListener {
 	 */
 	private function process_oauth_token( string $token ) : void {
 		// The request contains OAuth details: To avoid abuse we'll slow down the processing.
-		sleep( 3 );
+		sleep( 2 );
 
 		if ( ! $token ) {
 			return;
