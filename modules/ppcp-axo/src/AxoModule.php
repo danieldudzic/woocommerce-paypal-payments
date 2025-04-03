@@ -349,35 +349,25 @@ class AxoModule implements ServiceModule, ExtendingModule, ExecutableModule {
 			}
 		);
 
-		// we need to remove Fastlane when we are in order pay page
-		add_filter(
-			'woocommerce_available_payment_gateways',
+	// Remove Fastlane on the Pay for Order page.
+	add_filter(
+    		'woocommerce_available_payment_gateways',
 			/**
 			 * Param types removed to avoid third-party issues.
 			 *
 			 * @psalm-suppress MissingClosureParamType
 			 */
-			static function ( $methods ) use ( $c ) : array {
-				if ( ! is_array( $methods ) ) {
-					return $methods;
-				}
-
-				if (! is_wc_endpoint_url( 'order-pay' )) {
-					return $methods;
-				}
-
-
-				foreach ( $methods as $key => $method ) {
-					if ( $method && $method->id === 'ppcp-axo-gateway' ) {
-						unset( $methods[ $key ] );
-						break;
-					}
-				}
-
-
-				return $methods;
-			}
-		);
+    		static function ( $methods ) {
+        		if ( ! is_array( $methods ) || ! is_wc_endpoint_url( 'order-pay' ) ) {
+            		return $methods;
+        	}
+        
+        	// Remove Fastlane if present.
+        	unset( $methods[AxoGateway::ID] );
+        
+        	return $methods;
+    	}
+	);
 
 		return true;
 	}
