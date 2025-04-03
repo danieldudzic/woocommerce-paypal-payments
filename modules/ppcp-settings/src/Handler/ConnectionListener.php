@@ -67,9 +67,18 @@ class ConnectionListener {
 	/**
 	 * ID of the current user, set by the process() method.
 	 *
+	 * Default value is 0 (guest), until the real ID is provided to process().
+	 *
 	 * @var int
 	 */
-	private int $user_id;
+	private int $user_id = 0;
+
+	/**
+	 * The request details (usually the GET data) which were provided.
+	 *
+	 * @var array
+	 */
+	private array $request_data = array();
 
 	/**
 	 * Prepare the instance.
@@ -92,9 +101,6 @@ class ConnectionListener {
 		$this->authentication_manager = $authentication_manager;
 		$this->redirector             = $redirector;
 		$this->logger                 = $logger ?: new NullLogger();
-
-		// Initialize as "guest", the real ID is provided via process().
-		$this->user_id = 0;
 	}
 
 	/**
@@ -107,12 +113,13 @@ class ConnectionListener {
 	 */
 	public function process( int $user_id, array $request ) : void {
 		$this->user_id = $user_id;
+		$this->request_data = $request;
 
-		if ( ! $this->is_valid_request( $request ) ) {
+		if ( ! $this->is_valid_request() ) {
 			return;
 		}
 
-		$token = $this->get_token_from_request( $request );
+		$token = $this->get_token_from_request();
 
 		// The request contains oAuth details: To avoid abuse we'll slow down the processing.
 		sleep( 3 );
@@ -125,7 +132,7 @@ class ConnectionListener {
 			return;
 		}
 
-		$data = $this->extract_data( $request );
+		$data = $this->extract_data();
 		if ( ! $data ) {
 			return;
 		}
@@ -146,11 +153,9 @@ class ConnectionListener {
 	 * Determine, if the request details contain connection data that should be
 	 * extracted and stored.
 	 *
-	 * @param array $request Request details to verify.
-	 *
 	 * @return bool True, if the request contains valid connection details.
 	 */
-	private function is_valid_request( array $request ) : bool {
+	private function is_valid_request() : bool {
 		if ( $this->user_id < 1 || ! $this->settings_page_id ) {
 			return false;
 		}
@@ -166,7 +171,7 @@ class ConnectionListener {
 		);
 
 		foreach ( $required_params as $param ) {
-			if ( empty( $request[ $param ] ) ) {
+			if ( empty( $this->request_data[ $param ] ) ) {
 				return false;
 			}
 		}
@@ -203,17 +208,15 @@ class ConnectionListener {
 	/**
 	 * Extract the merchant details (ID & email) from the request details.
 	 *
-	 * @param array $request The full request details.
-	 *
 	 * @return array Structured array with 'is_sandbox', 'merchant_id', and 'merchant_email' keys,
 	 *               or an empty array on failure.
 	 */
-	private function extract_data( array $request ) : array {
+	private function extract_data() : array {
 		$this->logger->info( 'Extracting connection data from request...' );
 
-		$merchant_id    = $this->get_merchant_id_from_request( $request );
-		$merchant_email = $this->get_merchant_email_from_request( $request );
-		$seller_type    = $this->get_seller_type_from_request( $request );
+		$merchant_id    = $this->get_merchant_id_from_request( $this->request_data );
+		$merchant_email = $this->get_merchant_email_from_request( $this->request_data );
+		$seller_type    = $this->get_seller_type_from_request( $this->request_data );
 
 		if ( ! $merchant_id || ! $merchant_email ) {
 			return array();
@@ -240,12 +243,10 @@ class ConnectionListener {
 	/**
 	 * Returns the sanitized connection token from the incoming request.
 	 *
-	 * @param array $request Full request details.
-	 *
 	 * @return string The sanitized token, or an empty string.
 	 */
-	private function get_token_from_request( array $request ) : string {
-		return $this->sanitize_string( $request['ppcpToken'] ?? '' );
+	private function get_token_from_request() : string {
+		return $this->sanitize_string( $this->request_data['ppcpToken'] ?? '' );
 	}
 
 	/**
