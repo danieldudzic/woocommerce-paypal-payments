@@ -37,6 +37,14 @@ class WooCommerceLogger implements LoggerInterface {
 	private string $source;
 
 	/**
+	 * A random prefix which is visible in every log message, to better
+	 * understand which messages belong to the same request.
+	 *
+	 * @var string
+	 */
+	private string $prefix;
+
+	/**
 	 * WooCommerceLogger constructor.
 	 *
 	 * @param \WC_Logger_Interface $wc_logger The WooCommerce logger.
@@ -45,6 +53,7 @@ class WooCommerceLogger implements LoggerInterface {
 	public function __construct( \WC_Logger_Interface $wc_logger, string $source ) {
 		$this->wc_logger = $wc_logger;
 		$this->source    = $source;
+		$this->prefix    = sprintf( '#%s - ', wp_rand( 1000, 9999 ) );
 	}
 
 	/**
@@ -58,6 +67,7 @@ class WooCommerceLogger implements LoggerInterface {
 		if ( ! isset( $context['source'] ) ) {
 			$context['source'] = $this->source;
 		}
-		$this->wc_logger->log( $level, $message, $context );
+
+		$this->wc_logger->log( $level, "{$this->prefix}$message", $context );
 	}
 }
