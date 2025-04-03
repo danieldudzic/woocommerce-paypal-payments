@@ -112,7 +112,7 @@ class ConnectionListener {
 	 * @throws RuntimeException If the merchant ID does not match the ID previously set via OAuth.
 	 */
 	public function process( int $user_id, array $request ) : void {
-		$this->user_id = $user_id;
+		$this->user_id      = $user_id;
 		$this->request_data = $request;
 
 		if ( ! $this->is_valid_request() ) {
@@ -121,8 +121,24 @@ class ConnectionListener {
 
 		$token = $this->get_token_from_request();
 
-		// The request contains oAuth details: To avoid abuse we'll slow down the processing.
+		$this->process_oauth_token( $token );
+
+		$this->redirect_after_authentication();
+	}
+
+	/**
+	 * Processes the OAuth token from the request.
+	 *
+	 * @param string $token The OAuth token extracted from the request.
+	 * @return void
+	 */
+	private function process_oauth_token( string $token ) : void {
+		// The request contains OAuth details: To avoid abuse we'll slow down the processing.
 		sleep( 3 );
+
+		if ( ! $token ) {
+			return;
+		}
 
 		if ( $this->was_token_processed( $token ) ) {
 			return;
@@ -145,8 +161,6 @@ class ConnectionListener {
 		} catch ( \Exception $e ) {
 			$this->logger->error( 'Failed to complete authentication: ' . $e->getMessage() );
 		}
-
-		$this->redirect_after_authentication();
 	}
 
 	/**
@@ -238,6 +252,7 @@ class ConnectionListener {
 		$redirect_url = $this->get_onboarding_redirect_url();
 
 		$this->redirector->redirect( $redirect_url );
+		exit;
 	}
 
 	/**
