@@ -114,6 +114,9 @@ class ConnectionListener {
 
 		$token = $this->get_token_from_request( $request );
 
+		// The request contains oAuth details: To avoid abuse we'll slow down the processing.
+		sleep( 3 );
+
 		if ( $this->was_token_processed( $token ) ) {
 			return;
 		}
