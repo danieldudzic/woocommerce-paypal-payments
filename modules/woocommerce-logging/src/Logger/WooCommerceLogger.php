@@ -8,7 +8,7 @@
  * @package WooCommerce\WooCommerce\Logging\Logger
  */
 
-declare(strict_types=1);
+declare( strict_types = 1 );
 
 namespace WooCommerce\WooCommerce\Logging\Logger;
 
@@ -19,7 +19,6 @@ use Psr\Log\LoggerTrait;
  * Class WooCommerceLogger
  */
 class WooCommerceLogger implements LoggerInterface {
-
 
 	use LoggerTrait;
 
@@ -35,13 +34,13 @@ class WooCommerceLogger implements LoggerInterface {
 	 *
 	 * @var string The source.
 	 */
-	private $source;
+	private string $source;
 
 	/**
 	 * WooCommerceLogger constructor.
 	 *
 	 * @param \WC_Logger_Interface $wc_logger The WooCommerce logger.
-	 * @param string               $source                  The source.
+	 * @param string               $source    The source.
 	 */
 	public function __construct( \WC_Logger_Interface $wc_logger, string $source ) {
 		$this->wc_logger = $wc_logger;
@@ -51,7 +50,7 @@ class WooCommerceLogger implements LoggerInterface {
 	/**
 	 * Logs a message.
 	 *
-	 * @param mixed  $level The logging level.
+	 * @param mixed  $level   The logging level.
 	 * @param string $message The message.
 	 * @param array  $context The context.
 	 */
