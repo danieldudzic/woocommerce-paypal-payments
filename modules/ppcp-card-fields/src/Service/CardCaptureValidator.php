@@ -31,18 +31,20 @@ class CardCaptureValidator {
 		}
 
 		$payment_source = $order->payment_source();
-		if ( $payment_source && $payment_source->name() !== 'card' ) {
-			return true;
-		}
+		if ( $payment_source ) {
+			if ( $payment_source->name() !== 'card' ) {
+				return true;
+			}
 
-		/**
-		 * The LiabilityShift response determines how you might proceed with authentication.
-		 *
-		 * @link https://developer.paypal.com/docs/checkout/advanced/customize/3d-secure/response-parameters/
-		 */
-		$liability_shift = $payment_source->properties()->authentication_result->liability_shift ?? '';
-		if ( in_array( $liability_shift, array( 'POSSIBLE', 'YES' ), true ) ) {
-			return true;
+			/**
+			 * The LiabilityShift response determines how you might proceed with authentication.
+			 *
+			 * @link https://developer.paypal.com/docs/checkout/advanced/customize/3d-secure/response-parameters/
+			 */
+			$liability_shift = $payment_source->properties()->authentication_result->liability_shift ?? '';
+			if ( in_array( $liability_shift, array( 'POSSIBLE', 'YES' ), true ) ) {
+				return true;
+			}
 		}
 
 		return false;
