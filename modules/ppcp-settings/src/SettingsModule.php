@@ -10,6 +10,7 @@ declare( strict_types = 1 );
 namespace WooCommerce\PayPalCommerce\Settings;
 
 use WC_Payment_Gateway;
+use Psr\Log\LoggerInterface;
 use WooCommerce\PayPalCommerce\ApiClient\Helper\DccApplies;
 use WooCommerce\PayPalCommerce\ApiClient\Helper\PartnerAttribution;
 use WooCommerce\PayPalCommerce\Applepay\Assets\AppleProductStatus;
@@ -328,6 +329,10 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 		add_action(
 			'woocommerce_paypal_payments_merchant_disconnected',
 			static function () use ( $container ) : void {
+				$logger = $container->get( 'woocommerce.logger.woocommerce' );
+				assert( $logger instanceof LoggerInterface );
+				$logger->info( 'Merchant disconnected, reset onboarding' );
+
 				// Reset onboarding profile.
 				$onboarding_profile = $container->get( 'settings.data.onboarding' );
 				assert( $onboarding_profile instanceof OnboardingProfile );
@@ -349,6 +354,10 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 		add_action(
 			'woocommerce_paypal_payments_authenticated_merchant',
 			static function () use ( $container ) : void {
+				$logger = $container->get( 'woocommerce.logger.woocommerce' );
+				assert( $logger instanceof LoggerInterface );
+				$logger->info( 'Merchant connected, complete onboarding and set defaults.' );
+
 				$onboarding_profile = $container->get( 'settings.data.onboarding' );
 				assert( $onboarding_profile instanceof OnboardingProfile );
 
