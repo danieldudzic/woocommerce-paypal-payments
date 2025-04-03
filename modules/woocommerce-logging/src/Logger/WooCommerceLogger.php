@@ -37,6 +37,14 @@ class WooCommerceLogger implements LoggerInterface {
 	private string $source;
 
 	/**
+	 * Details that are output before the first real log message, to help
+	 * identify the request.
+	 *
+	 * @var string
+	 */
+	private string $request_info;
+
+	/**
 	 * A random prefix which is visible in every log message, to better
 	 * understand which messages belong to the same request.
 	 *
@@ -54,6 +62,14 @@ class WooCommerceLogger implements LoggerInterface {
 		$this->wc_logger = $wc_logger;
 		$this->source    = $source;
 		$this->prefix    = sprintf( '#%s - ', wp_rand( 1000, 9999 ) );
+
+		// phpcs:disable -- Intentionally not sanitized, for logging purposes.
+		$method      = wp_unslash( $_SERVER['REQUEST_METHOD'] ?? 'CLI' );
+		$request_uri = wp_unslash( $_SERVER['REQUEST_URI'] ?? '-' );
+		// phpcs:enable
+
+		$request_path       = wp_parse_url( $request_uri, PHP_URL_PATH );
+		$this->request_info = "$method $request_path";
 	}
 
 	/**
@@ -66,6 +82,15 @@ class WooCommerceLogger implements LoggerInterface {
 	public function log( $level, $message, array $context = array() ) {
 		if ( ! isset( $context['source'] ) ) {
 			$context['source'] = $this->source;
+		}
+
+		if ( $this->request_info ) {
+			$this->wc_logger->log(
+				'debug',
+				"{$this->prefix}[New Request] $this->request_info",
+				array( 'source' => $context['source'] )
+			);
+			$this->request_info = '';
 		}
 
 		$this->wc_logger->log( $level, "{$this->prefix}$message", $context );
