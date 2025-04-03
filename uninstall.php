@@ -102,12 +102,17 @@ function clear_plugin_branding( ContainerInterface $container ) : void {
 		$general_settings = $container->get( 'wcgateway.settings.general_settings' );
 		assert( $general_settings instanceof GeneralSettings );
 
-		if ( $general_settings->reset_installation_path( 'plugin_uninstall' ) ) {
-			$general_settings->save();
-		}
+//		if ( $general_settings->reset_installation_path( 'plugin_uninstall' ) ) {
+//			$general_settings->save();
+//		}
+		$general_settings->reset_installation_path( 'plugin_uninstall' );
+		$general_settings->save();
 	} catch ( NotFoundExceptionInterface $e ) {
 		// The container does not exist or did not return a GeneralSettings instance.
 		// In any case: A failure can be ignored, as it means we cannot reset anything.
+
+		wp_die('Something failed' . $e->getMessage());
+
 		return;
 	}
 }
