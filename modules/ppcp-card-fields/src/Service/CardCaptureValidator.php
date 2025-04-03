@@ -37,7 +37,7 @@ class CardCaptureValidator {
 			}
 
 			/**
-			 * The LiabilityShift response determines how you might proceed with authentication.
+			 * LiabilityShift determines how to proceed with authentication.
 			 *
 			 * @link https://developer.paypal.com/docs/checkout/advanced/customize/3d-secure/response-parameters/
 			 */

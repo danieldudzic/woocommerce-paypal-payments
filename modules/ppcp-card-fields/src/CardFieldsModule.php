@@ -173,7 +173,7 @@ class CardFieldsModule implements ServiceModule, ExtendingModule, ExecutableModu
 			2
 		);
 
-		// Ensures either order status or 3DS approval for card payment source is valid.
+		// Validates if an order with card payment source can be captured.
 		add_action(
 			'woocommerce_paypal_payments_before_capture_order',
 			function( Order $order ) use ( $c ) {
