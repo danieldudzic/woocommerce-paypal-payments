@@ -464,10 +464,14 @@ return array(
 			array()
 		);
 
+		// TODO: This condition included in the `*.eligibility.check` services; it can be removed when we switch to those services.
+		$general_settings = $container->get( 'settings.data.general' );
+		assert( $general_settings instanceof GeneralSettings );
+
 		return array(
-			'apple_pay'   => $features['apple_pay']['enabled'] ?? false,
-			'google_pay'  => $features['google_pay']['enabled'] ?? false,
-			'acdc'        => $features['advanced_credit_and_debit_cards']['enabled'] ?? false,
+			'apple_pay'   => ( $features['apple_pay']['enabled'] ?? false ) && ! $general_settings->own_brand_only(),
+			'google_pay'  => ( $features['google_pay']['enabled'] ?? false ) && ! $general_settings->own_brand_only(),
+			'acdc'        => ( $features['advanced_credit_and_debit_cards']['enabled'] ?? false ) && ! $general_settings->own_brand_only(),
 			'save_paypal' => $features['save_paypal_and_venmo']['enabled'] ?? false,
 			'apm'         => $features['alternative_payment_methods']['enabled'] ?? false,
 			'paylater'    => $features['pay_later_messaging']['enabled'] ?? false,
