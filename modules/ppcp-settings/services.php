@@ -592,7 +592,7 @@ return array(
 	'settings.service.gateway-redirect'                   => static function (): GatewayRedirectService {
 		return new GatewayRedirectService();
 	},
-	'settings.services.loading-screen-service'     => static function ( ContainerInterface $container ) : LoadingScreenService {
+	'settings.services.loading-screen-service'            => static function ( ContainerInterface $container ) : LoadingScreenService {
 		return new LoadingScreenService();
 	},
 	/**
