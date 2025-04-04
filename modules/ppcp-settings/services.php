@@ -452,6 +452,13 @@ return array(
 		);
 	},
 	'settings.service.merchant_capabilities'              => static function ( ContainerInterface $container ) : array {
+		/**
+		 * Use the REST API filter to collect eligibility flags.
+		 *
+		 * TODO: We should switch to using the new `*.eligibility.check` services, which return a callback instead of a boolean.
+		 *       Problem with booleans is, that they are evaluated during DI service creation (plugin_loaded), and some relevant filters are not registered at that point.
+		 *       Overthink the capability system, it's difficult to reuse across the plugin.
+		 */
 		$features = apply_filters(
 			'woocommerce_paypal_payments_rest_common_merchant_features',
 			array()
@@ -474,6 +481,8 @@ return array(
 
 		$button_locations = $container->get( 'settings.service.button_locations' );
 		$gateways = $container->get( 'settings.service.gateways_status' );
+
+		// TODO: This "merchant_capabilities" service is only used here. Could it be merged to make the code cleaner and less segmented?
 		$capabilities = $container->get( 'settings.service.merchant_capabilities' );
 
 		/**
