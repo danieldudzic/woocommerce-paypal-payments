@@ -473,32 +473,40 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 				$methods[] = $applepay_gateway;
 				$methods[] = $axo_gateway;
 
-				$is_payments_page = $container->get( 'wcgateway.is-wc-payments-page' );
-				$all_gateway_ids  = $container->get( 'settings.config.all-gateway-ids' );
-
-				if ( $is_payments_page ) {
-					$methods = array_filter(
-						$methods,
-						function ( $method ) use ( $all_gateway_ids ) : bool {
-							if ( ! is_object( $method )
-								|| $method->id === PayPalGateway::ID
-								|| ! in_array( $method->id, $all_gateway_ids, true )
-							) {
-								return true;
-							}
-
-							if ( ! $this->is_gateway_enabled( $method->id ) ) {
-								return false;
-							}
-
-							return true;
-						}
-					);
-				}
-
 				return $methods;
 			},
 			99
+		);
+
+		/**
+		 * Filters the available payment gateways in the WooCommerce admin settings.
+		 *
+		 * Ensures that only enabled PayPal payment gateways are displayed.
+		 *
+		 * @hook woocommerce_admin_field_payment_gateways
+		 * @priority 5 Allows modifying the registered gateways before they are displayed.
+		 */
+		add_action(
+			'woocommerce_admin_field_payment_gateways',
+			function () use ( $container ) : void {
+				$all_gateway_ids  = $container->get( 'settings.config.all-gateway-ids' );
+				$payment_gateways = WC()->payment_gateways->payment_gateways;
+
+				foreach ( $payment_gateways as $index => $payment_gateway ) {
+					$payment_gateway_id = $payment_gateway->id;
+
+					if (
+						! in_array( $payment_gateway_id, $all_gateway_ids, true )
+						|| $payment_gateway_id === PayPalGateway::ID
+						|| $this->is_gateway_enabled( $payment_gateway_id )
+					) {
+						continue;
+					}
+
+					unset( WC()->payment_gateways->payment_gateways[ $index ] );
+				}
+			},
+			5
 		);
 
 		// Remove the Fastlane gateway if the customer is logged in, ensuring that we don't interfere with the Fastlane gateway status in the settings UI.
