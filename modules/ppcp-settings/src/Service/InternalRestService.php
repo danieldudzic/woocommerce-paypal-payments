@@ -56,7 +56,7 @@ class InternalRestService {
 		$rest_nonce   = wp_create_nonce( 'wp_rest' );
 		$auth_cookies = $this->build_authentication_cookie();
 
-		$this->logger->info( "Calling internal REST endpoint: $rest_url" );
+		$this->logger->info( "Calling internal REST endpoint [$rest_url]" );
 
 		$response = wp_remote_request(
 			$rest_url,
@@ -69,6 +69,7 @@ class InternalRestService {
 				'cookies' => $auth_cookies,
 			)
 		);
+		$this->logger->debug( "Finished internal REST call [$rest_url]" );
 
 		if ( is_wp_error( $response ) ) {
 			// Error: The wp_remote_request() call failed (timeout or similar).

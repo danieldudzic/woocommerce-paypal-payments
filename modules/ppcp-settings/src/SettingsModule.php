@@ -10,6 +10,7 @@ declare( strict_types = 1 );
 namespace WooCommerce\PayPalCommerce\Settings;
 
 use WC_Payment_Gateway;
+use Psr\Log\LoggerInterface;
 use WooCommerce\PayPalCommerce\ApiClient\Helper\DccApplies;
 use WooCommerce\PayPalCommerce\ApiClient\Helper\PartnerAttribution;
 use WooCommerce\PayPalCommerce\Applepay\Assets\AppleProductStatus;
@@ -25,6 +26,7 @@ use WooCommerce\PayPalCommerce\LocalAlternativePaymentMethods\P24Gateway;
 use WooCommerce\PayPalCommerce\LocalAlternativePaymentMethods\TrustlyGateway;
 use WooCommerce\PayPalCommerce\Settings\Ajax\SwitchSettingsUiEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Data\OnboardingProfile;
+use WooCommerce\PayPalCommerce\Settings\Data\SettingsModel;
 use WooCommerce\PayPalCommerce\Settings\Data\TodosModel;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\RestEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Handler\ConnectionListener;
@@ -124,7 +126,7 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 						)
 					);
 
-					wp_enqueue_script( 'ppcp-switch-settings-ui', '', array( 'wp-i18n' ), $script_asset_file['version'] );
+					wp_enqueue_script( 'ppcp-switch-settings-ui', '', array( 'wp-i18n' ), $script_asset_file['version'], false );
 					wp_set_script_translations(
 						'ppcp-switch-settings-ui',
 						'woocommerce-paypal-payments',
@@ -211,7 +213,7 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 					true
 				);
 
-				wp_enqueue_script( 'ppcp-admin-settings', '', array( 'wp-i18n' ), $script_asset_file['version'] );
+				wp_enqueue_script( 'ppcp-admin-settings', '', array( 'wp-i18n' ), $script_asset_file['version'], false );
 				wp_set_script_translations(
 					'ppcp-admin-settings',
 					'woocommerce-paypal-payments',
@@ -287,9 +289,11 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 
 		add_action(
 			'woocommerce_paypal_payments_gateway_admin_options_wrapper',
-			function () : void {
+			function () use ( $container ) : void {
 				global $hide_save_button;
 				$hide_save_button = true;
+
+				$this->initialize_branded_only( $container );
 
 				$this->render_header();
 				$this->render_content();
@@ -335,6 +339,10 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 		add_action(
 			'woocommerce_paypal_payments_merchant_disconnected',
 			static function () use ( $container ) : void {
+				$logger = $container->get( 'woocommerce.logger.woocommerce' );
+				assert( $logger instanceof LoggerInterface );
+				$logger->info( 'Merchant disconnected, reset onboarding' );
+
 				// Reset onboarding profile.
 				$onboarding_profile = $container->get( 'settings.data.onboarding' );
 				assert( $onboarding_profile instanceof OnboardingProfile );
@@ -356,6 +364,10 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 		add_action(
 			'woocommerce_paypal_payments_authenticated_merchant',
 			static function () use ( $container ) : void {
+				$logger = $container->get( 'woocommerce.logger.woocommerce' );
+				assert( $logger instanceof LoggerInterface );
+				$logger->info( 'Merchant connected, complete onboarding and set defaults.' );
+
 				$onboarding_profile = $container->get( 'settings.data.onboarding' );
 				assert( $onboarding_profile instanceof OnboardingProfile );
 
@@ -409,18 +421,18 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 					unset( $payment_methods[ CardButtonGateway::ID ] );
 				} else {
 					// For non-ACDC regions unset ACDC, local APMs and set BCDC.
-						unset( $payment_methods[ CreditCardGateway::ID ] );
-						unset( $payment_methods['pay-later'] );
-						unset( $payment_methods[ BancontactGateway::ID ] );
-						unset( $payment_methods[ BlikGateway::ID ] );
-						unset( $payment_methods[ EPSGateway::ID ] );
-						unset( $payment_methods[ IDealGateway::ID ] );
-						unset( $payment_methods[ MyBankGateway::ID ] );
-						unset( $payment_methods[ P24Gateway::ID ] );
-						unset( $payment_methods[ TrustlyGateway::ID ] );
-						unset( $payment_methods[ MultibancoGateway::ID ] );
-						unset( $payment_methods[ PayUponInvoiceGateway::ID ] );
-						unset( $payment_methods[ OXXO::ID ] );
+					unset( $payment_methods[ CreditCardGateway::ID ] );
+					unset( $payment_methods['pay-later'] );
+					unset( $payment_methods[ BancontactGateway::ID ] );
+					unset( $payment_methods[ BlikGateway::ID ] );
+					unset( $payment_methods[ EPSGateway::ID ] );
+					unset( $payment_methods[ IDealGateway::ID ] );
+					unset( $payment_methods[ MyBankGateway::ID ] );
+					unset( $payment_methods[ P24Gateway::ID ] );
+					unset( $payment_methods[ TrustlyGateway::ID ] );
+					unset( $payment_methods[ MultibancoGateway::ID ] );
+					unset( $payment_methods[ PayUponInvoiceGateway::ID ] );
+					unset( $payment_methods[ OXXO::ID ] );
 				}
 
 				// Unset Venmo when store location is not United States.
@@ -487,32 +499,40 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 				$methods[] = $applepay_gateway;
 				$methods[] = $axo_gateway;
 
-				$is_payments_page = $container->get( 'wcgateway.is-wc-payments-page' );
-				$all_gateway_ids  = $container->get( 'settings.config.all-gateway-ids' );
-
-				if ( $is_payments_page ) {
-					$methods = array_filter(
-						$methods,
-						function ( $method ) use ( $all_gateway_ids ): bool {
-							if ( ! is_object( $method )
-								|| $method->id === PayPalGateway::ID
-								|| ! in_array( $method->id, $all_gateway_ids, true )
-							) {
-								return true;
-							}
-
-							if ( ! $this->is_gateway_enabled( $method->id ) ) {
-								return false;
-							}
-
-							return true;
-						}
-					);
-				}
-
 				return $methods;
 			},
 			99
+		);
+
+		/**
+		 * Filters the available payment gateways in the WooCommerce admin settings.
+		 *
+		 * Ensures that only enabled PayPal payment gateways are displayed.
+		 *
+		 * @hook woocommerce_admin_field_payment_gateways
+		 * @priority 5 Allows modifying the registered gateways before they are displayed.
+		 */
+		add_action(
+			'woocommerce_admin_field_payment_gateways',
+			function () use ( $container ) : void {
+				$all_gateway_ids  = $container->get( 'settings.config.all-gateway-ids' );
+				$payment_gateways = WC()->payment_gateways->payment_gateways;
+
+				foreach ( $payment_gateways as $index => $payment_gateway ) {
+					$payment_gateway_id = $payment_gateway->id;
+
+					if (
+						! in_array( $payment_gateway_id, $all_gateway_ids, true )
+						|| $payment_gateway_id === PayPalGateway::ID
+						|| $this->is_gateway_enabled( $payment_gateway_id )
+					) {
+						continue;
+					}
+
+					unset( WC()->payment_gateways->payment_gateways[ $index ] );
+				}
+			},
+			5
 		);
 
 		// Remove the Fastlane gateway if the customer is logged in, ensuring that we don't interfere with the Fastlane gateway status in the settings UI.
@@ -617,7 +637,7 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 		// Enable Fastlane after onboarding if the store is compatible.
 		add_action(
 			'woocommerce_paypal_payments_toggle_payment_gateways',
-			function( PaymentSettings $payment_methods, ConfigurationFlagsDTO $flags ) use ( $container ) {
+			function ( PaymentSettings $payment_methods, ConfigurationFlagsDTO $flags ) use ( $container ) {
 				if ( $flags->is_business_seller && $flags->use_card_payments ) {
 					$compatibility_checker = $container->get( 'axo.helpers.compatibility-checker' );
 					assert( $compatibility_checker instanceof CompatibilityChecker );
@@ -634,7 +654,7 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 		// Toggle payment gateways after onboarding based on flags.
 		add_action(
 			'woocommerce_paypal_payments_sync_gateways',
-			static function() use ( $container ) {
+			static function () use ( $container ) {
 				$settings_data_manager = $container->get( 'settings.service.data-manager' );
 				assert( $settings_data_manager instanceof SettingsDataManager );
 				$settings_data_manager->sync_gateway_settings();
@@ -645,6 +665,17 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 		$gateway_redirect_service = $container->get( 'settings.service.gateway-redirect' );
 		assert( $gateway_redirect_service instanceof GatewayRedirectService );
 		$gateway_redirect_service->register();
+
+		// Do not render Pay Later messaging if the "Save PayPal and Venmo" setting is enabled.
+		add_filter(
+			'woocommerce_paypal_payments_should_render_pay_later_messaging',
+			static function() use ( $container ): bool {
+				$settings_model = $container->get( 'settings.data.settings' );
+				assert( $settings_model instanceof SettingsModel );
+
+				return ! $settings_model->get_save_paypal_and_venmo();
+			}
+		);
 
 		return true;
 	}
@@ -674,6 +705,36 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 	}
 
 	/**
+	 * Initializes the branded-only flags if they are not set.
+	 *
+	 * This method can be called multiple times:
+	 * The flags are only initialized once but does not change afterward.
+	 *
+	 * Also, this check has no impact on performance for two reasons:
+	 * 1. The GeneralSettings class is already initialized and will short-circuit
+	 *    the check if the settings are already initialized.
+	 * 2. The settings UI is a React app, this method only runs when the React app
+	 *    is injected to the DOM, and not while the UI is used.
+	 *
+	 * @param ContainerInterface $container The DI container provider.
+	 * @return void
+	 */
+	protected function initialize_branded_only( ContainerInterface $container ) : void {
+		$path_repository = $container->get( 'settings.service.branded-experience.path-repository' );
+		assert( $path_repository instanceof PathRepository );
+
+		$partner_attribution = $container->get( 'api.helper.partner-attribution' );
+		assert( $partner_attribution instanceof PartnerAttribution );
+
+		$general_settings = $container->get( 'settings.data.general' );
+		assert( $general_settings instanceof GeneralSettings );
+
+		$path_repository->persist();
+
+		$partner_attribution->initialize_bn_code( $general_settings->get_installation_path() );
+	}
+
+	/**
 	 * Outputs the settings page header (title and back-link).
 	 *
 	 * @return void
@@ -699,7 +760,7 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 	 * @param string $gateway_name The gateway name.
 	 * @return bool True if the payment gateway with the given name is enabled, otherwise false.
 	 */
-	protected function is_gateway_enabled( string $gateway_name ): bool {
+	protected function is_gateway_enabled( string $gateway_name ) : bool {
 		$gateway_settings = get_option( "woocommerce_{$gateway_name}_settings", array() );
 		$gateway_enabled  = $gateway_settings['enabled'] ?? false;
 
