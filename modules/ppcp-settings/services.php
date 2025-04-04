@@ -514,7 +514,7 @@ return array(
 			! $button_locations['cart_enabled'],                                                          // Add PayPal buttons to cart.
 			! $button_locations['block_checkout_enabled'],                                                // Add PayPal buttons to block checkout.
 			! $button_locations['product_enabled'],                                                       // Add PayPal buttons to product.
-			$capabilities['apple_pay'],                                                                   // Register Domain for Apple Pay.
+			$container->get( 'applepay.eligible' ) && $capabilities['apple_pay'],  // Register Domain for Apple Pay.
 			$capabilities['acdc'] && ! ( $capabilities['apple_pay'] && $capabilities['google_pay'] ),     // Add digital wallets to your account.
 			$container->get( 'applepay.eligible' ) && $capabilities['acdc'] && ! $capabilities['apple_pay'],                                        // Add Apple Pay to your account.
 			$container->get( 'googlepay.eligible' ) && $capabilities['acdc'] && ! $capabilities['google_pay'],                                       // Add Google Pay to your account.
