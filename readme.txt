@@ -156,7 +156,7 @@ If you encounter issues with the PayPal buttons not appearing after an update, p
 
 == Changelog ==
 
-= 3.0.3 - xxxx-xx-xx =
+= 3.0.3 - 2025-04-08 =
 * Fix - BN code was set before the installation path was initialized #3309
 * Fix - Things to do next referenced Apple Pay while in branded-only mode #3308
 * Fix - Disabled payment methods were not hidden in reactified WooCommerce Payments settings tab #3290
