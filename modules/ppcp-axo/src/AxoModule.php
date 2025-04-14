@@ -181,8 +181,6 @@ class AxoModule implements ServiceModule, ExtendingModule, ExecutableModule {
 		add_action(
 			'wp_loaded',
 			function () use ( $c ) {
-				$module = $this;
-
 				$this->session_handler = $c->get( 'session.handler' );
 
 				$settings = $c->get( 'wcgateway.settings' );
@@ -208,12 +206,12 @@ class AxoModule implements ServiceModule, ExtendingModule, ExecutableModule {
 				// Enqueue frontend scripts.
 				add_action(
 					'wp_enqueue_scripts',
-					static function () use ( $c, $manager, $module ) {
+					function () use ( $c, $manager ) {
 
 						$smart_button = $c->get( 'button.smart-button' );
 						assert( $smart_button instanceof SmartButtonInterface );
 
-						if ( $module->should_render_fastlane( $c ) && $smart_button->should_load_ppcp_script() ) {
+						if ( $this->should_render_fastlane( $c ) && $smart_button->should_load_ppcp_script() ) {
 							$manager->enqueue();
 						}
 					}
@@ -222,8 +220,8 @@ class AxoModule implements ServiceModule, ExtendingModule, ExecutableModule {
 				// Render submit button.
 				add_action(
 					$manager->checkout_button_renderer_hook(),
-					static function () use ( $c, $manager, $module ) {
-						if ( $module->should_render_fastlane( $c ) ) {
+					function () use ( $c, $manager ) {
+						if ( $this->should_render_fastlane( $c ) ) {
 							$manager->render_checkout_button();
 						}
 					}
@@ -278,14 +276,14 @@ class AxoModule implements ServiceModule, ExtendingModule, ExecutableModule {
 
 				add_filter(
 					'woocommerce_paypal_payments_localized_script_data',
-					function( array $localized_script_data ) use ( $c, $module ) {
+					function( array $localized_script_data ) use ( $c ) {
 						$api = $c->get( 'api.sdk-client-token' );
 						assert( $api instanceof SdkClientToken );
 
 						$logger = $c->get( 'woocommerce.logger.woocommerce' );
 						assert( $logger instanceof LoggerInterface );
 
-						return $module->add_sdk_client_token_to_script_data( $api, $logger, $localized_script_data );
+						return $this->add_sdk_client_token_to_script_data( $api, $logger, $localized_script_data );
 					}
 				);
 
@@ -403,6 +401,7 @@ class AxoModule implements ServiceModule, ExtendingModule, ExecutableModule {
 	 * @return bool
 	 */
 	private function should_render_fastlane( ContainerInterface $c ): bool {
+
 		$dcc_configuration = $c->get( 'wcgateway.configuration.card-configuration' );
 		assert( $dcc_configuration instanceof CardPaymentsConfiguration );
 
