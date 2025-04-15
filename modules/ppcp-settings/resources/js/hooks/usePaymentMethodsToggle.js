@@ -72,7 +72,7 @@ const usePaymentMethodsToggle = ( {
 			return;
 		}
 
-		// Determine the new state - if all are enabled, disable them, otherwise enable all
+		// Determine the new state - if all are enabled, disable them, otherwise enable all.
 		const newState = ! allEnabled;
 
 		availableMethods.forEach( ( method ) => {
