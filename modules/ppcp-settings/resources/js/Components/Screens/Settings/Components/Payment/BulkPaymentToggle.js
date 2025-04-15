@@ -1,4 +1,5 @@
 import { __, sprintf } from '@wordpress/i18n';
+import { Button } from '@wordpress/components';
 
 /**
  * Renders a link to enable/disable all payment methods in a group
@@ -43,24 +44,14 @@ const BulkPaymentToggle = ( {
 	}
 
 	return (
-		<div className="ppcp-bulk-action">
-			{ /* eslint-disable-next-line jsx-a11y/anchor-is-valid */ }
-			<a
-				href="#"
-				className={ `ppcp-bulk-action__link ${
-					isDisabled ? 'ppcp-bulk-action__link--disabled' : ''
-				}` }
-				onClick={ ( e ) => {
-					e.preventDefault();
-					if ( ! isDisabled ) {
-						onToggle();
-					}
-				} }
-				aria-disabled={ isDisabled }
-				role={ 'button' }
+		<div className="ppcp-bulk-toggle-payment-gateways">
+			<Button
+				variant="tertiary"
+				onClick={ onToggle }
+				disabled={ isDisabled }
 			>
 				{ displayLabel }
-			</a>
+			</Button>
 		</div>
 	);
 };
