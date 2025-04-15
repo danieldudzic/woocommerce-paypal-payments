@@ -82,6 +82,22 @@ const usePaymentMethodsToggle = ( {
 		} );
 	}, [ availableMethods, changePaymentSettings, allEnabled ] );
 
+       // Announce the change to screen readers.
+       const actionText = newState 
+          ? __('enabled', 'woocommerce-paypal-payments') 
+          : __('disabled', 'woocommerce-paypal-payments');
+       
+       const groupText = groupName || __('payment', 'woocommerce-paypal-payments');
+       
+       const message = sprintf(
+          /* translators: %1$s: group name, %2$s: "enabled" or "disabled" */
+          __('All %1$s payment gateways have been %2$s.', 'woocommerce-paypal-payments'),
+          groupText,
+          actionText
+       );
+       
+       speak(message, 'assertive');
+
 	return {
 		allEnabled,
 		toggleAllMethods,
