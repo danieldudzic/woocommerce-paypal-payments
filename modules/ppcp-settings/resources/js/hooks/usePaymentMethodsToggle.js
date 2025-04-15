@@ -1,4 +1,6 @@
 import { useState, useEffect, useCallback } from '@wordpress/element';
+import { __, sprintf } from '@wordpress/i18n';
+import { speak } from '@wordpress/a11y';
 
 /**
  * Custom hook to manage bulk toggling of payment methods
@@ -10,6 +12,7 @@ import { useState, useEffect, useCallback } from '@wordpress/element';
  * @param {Object}   options.paymentDependencies   - Payment method dependencies (optional)
  * @param {Object}   options.settingDependencies   - Setting dependencies (optional)
  * @param {Array}    options.additionalDeps        - Additional dependencies to trigger recalculation (optional)
+ * @param {string}   options.groupName
  * @return {Object} Toggle state and handlers
  */
 const usePaymentMethodsToggle = ( {
@@ -19,6 +22,7 @@ const usePaymentMethodsToggle = ( {
 	paymentDependencies = {},
 	settingDependencies = {},
 	additionalDeps = [],
+	groupName = '',
 } ) => {
 	const [ allEnabled, setAllEnabled ] = useState( false );
 	const [ availableMethods, setAvailableMethods ] = useState( [] );
@@ -80,23 +84,26 @@ const usePaymentMethodsToggle = ( {
 				enabled: newState,
 			} );
 		} );
-	}, [ availableMethods, changePaymentSettings, allEnabled ] );
+		// Announce the change to screen readers.
+		const actionText = newState
+			? __( 'enabled', 'woocommerce-paypal-payments' )
+			: __( 'disabled', 'woocommerce-paypal-payments' );
 
-       // Announce the change to screen readers.
-       const actionText = newState 
-          ? __('enabled', 'woocommerce-paypal-payments') 
-          : __('disabled', 'woocommerce-paypal-payments');
-       
-       const groupText = groupName || __('payment', 'woocommerce-paypal-payments');
-       
-       const message = sprintf(
-          /* translators: %1$s: group name, %2$s: "enabled" or "disabled" */
-          __('All %1$s payment gateways have been %2$s.', 'woocommerce-paypal-payments'),
-          groupText,
-          actionText
-       );
-       
-       speak(message, 'assertive');
+		const groupText =
+			groupName || __( 'payment', 'woocommerce-paypal-payments' );
+
+		const message = sprintf(
+			/* translators: %1$s: group name, %2$s: "enabled" or "disabled" */
+			__(
+				'All %1$s payment gateways have been %2$s.',
+				'woocommerce-paypal-payments'
+			),
+			groupText,
+			actionText
+		);
+
+		speak( message, 'assertive' );
+	}, [ availableMethods, changePaymentSettings, allEnabled, groupName ] );
 
 	return {
 		allEnabled,

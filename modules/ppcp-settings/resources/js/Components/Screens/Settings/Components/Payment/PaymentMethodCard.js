@@ -69,6 +69,7 @@ const PaymentMethodCard = ( {
 			paymentDependencies,
 			settingDependencies,
 			additionalDeps: [ isDisabled, gatewaysRefreshed ],
+			groupName,
 		} );
 
 	useEffect( () => {
