@@ -85,7 +85,7 @@ const PaymentMethodCard = ( {
 		return <SpinnerOverlay asModal={ true } />;
 	}
 
-	// Process methods with dependencies
+	// Process methods with dependencies.
 	const processedMethods = methods.map( ( method ) => {
 		const paymentDependency = paymentDependencies?.[ method.id ];
 		const settingDependency = settingDependencies?.[ method.id ];
