@@ -198,8 +198,6 @@ class AuthenticationManager {
 	 * @throws RuntimeException When failed to retrieve payee.
 	 */
 	public function authenticate_via_direct_api( bool $use_sandbox, string $client_id, string $client_secret ) : void {
-		$this->disconnect();
-
 		$this->logger->info(
 			'Attempting manual connection to PayPal...',
 			array(
@@ -261,8 +259,6 @@ class AuthenticationManager {
 	 * @throws RuntimeException When failed to retrieve payee.
 	 */
 	public function authenticate_via_oauth( bool $use_sandbox, string $shared_id, string $auth_code ) : void {
-		$this->disconnect();
-
 		$this->logger->info(
 			'Attempting OAuth login to PayPal...',
 			array(
