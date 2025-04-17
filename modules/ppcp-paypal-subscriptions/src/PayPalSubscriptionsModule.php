@@ -582,7 +582,7 @@ class PayPalSubscriptionsModule implements ServiceModule, ExtendingModule, Execu
 						),
 						'product_id' => $product->get_id(),
 						'i18n'       => array(
-							'prices_must_be_above_zero' => __( 'Prices must be above zero for PayPal Subscriptions!', 'woocommerce-paypal-payments' ),
+							'prices_must_be_above_zero'   => __( 'Prices must be above zero for PayPal Subscriptions!', 'woocommerce-paypal-payments' ),
 							'not_allowed_period_interval' => __( 'Not allowed period interval combination for PayPal Subscriptions!', 'woocommerce-paypal-payments' ),
 						),
 					)

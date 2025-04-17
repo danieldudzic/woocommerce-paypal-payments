@@ -52,6 +52,11 @@ class ScriptDataHandler {
 	 * @var array
 	 */
 	protected array $button_language_choices;
+	/**
+	 * The partner attribution object.
+	 *
+	 * @var PartnerAttribution
+	 */
 	protected PartnerAttribution $partner_attribution;
 
 	/**
@@ -63,6 +68,7 @@ class ScriptDataHandler {
 	 * @param string   $store_country The store country.
 	 * @param string   $merchant_id The merchant ID.
 	 * @param array    $button_language_choices The button language choices.
+	 * @param PartnerAttribution $partner_attribution The partner attribution object.
 	 */
 	public function __construct(
 		Settings $settings,
@@ -82,7 +88,7 @@ class ScriptDataHandler {
 		$this->partner_attribution     = $partner_attribution;
 	}
 
-/**
+	/**
 	 * Localize scripts.
 	 *
 	 * @param string $hook_suffix The current admin page.
@@ -224,8 +230,8 @@ class ScriptDataHandler {
 			'ppcpSettings',
 			$script_data
 		);
-	// Dequeue the PayPal Subscription script.
-	wp_dequeue_script( 'ppcp-paypal-subscription' );
+		// Dequeue the PayPal Subscription script.
+		wp_dequeue_script( 'ppcp-paypal-subscription' );
 	}
 }
 
