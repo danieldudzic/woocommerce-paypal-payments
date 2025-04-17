@@ -167,21 +167,9 @@ return array(
 			),
 		);
 
-		// phpcs:disable WordPress.NamingConventions.ValidHookName.UseUnderscores
-		/**
-		 * Filter to determine if Fastlane UK with 3D Secure should be enabled.
-		 *
-		 * @param bool $enabled Whether Fastlane UK is enabled.
-		 */
-		if ( apply_filters(
-			'woocommerce.feature-flags.woocommerce_paypal_payments.axo_uk_enabled',
-			getenv( 'PCP_AXO_UK_ENABLED' ) !== '0'
-		) ) {
-			$matrix['GB'] = array(
-				'GBP',
-			);
+		if ( $container->get( 'axo.uk.enabled' ) ) {
+			$matrix['GB'] = array( 'GBP' );
 		}
-		// phpcs:enable WordPress.NamingConventions.ValidHookName.UseUnderscores
 
 		/**
 		 * Returns which countries and currency combinations can be used for AXO.
@@ -210,16 +198,7 @@ return array(
 			),
 		);
 
-		// phpcs:disable WordPress.NamingConventions.ValidHookName.UseUnderscores
-		/**
-		 * Filter to determine if Fastlane UK with 3D Secure should be enabled.
-		 *
-		 * @param bool $enabled Whether Fastlane UK is enabled.
-		 */
-		if ( apply_filters(
-			'woocommerce.feature-flags.woocommerce_paypal_payments.axo_uk_enabled',
-			getenv( 'PCP_AXO_UK_ENABLED' ) !== '0'
-		) ) {
+		if ( $container->get( 'axo.uk.enabled' ) ) {
 			$matrix['GB'] = array(
 				'VISA',
 				'MASTERCARD',
@@ -227,7 +206,6 @@ return array(
 				'DISCOVER',
 			);
 		}
-		// phpcs:enable WordPress.NamingConventions.ValidHookName.UseUnderscores
 
 		/**
 		 * Returns which countries and card type combinations can be used for AXO.
@@ -417,5 +395,18 @@ return array(
 				)
 			)
 		);
+	},
+	'axo.uk.enabled'                         => static function ( ContainerInterface $container ): bool {
+		// phpcs:disable WordPress.NamingConventions.ValidHookName.UseUnderscores
+		/**
+		 * Filter to determine if Fastlane UK with 3D Secure should be enabled.
+		 *
+		 * @param bool $enabled Whether Fastlane UK is enabled.
+		 */
+		return apply_filters(
+			'woocommerce.feature-flags.woocommerce_paypal_payments.axo_uk_enabled',
+			getenv( 'PCP_AXO_UK_ENABLED' ) !== '0'
+		);
+		// phpcs:enable WordPress.NamingConventions.ValidHookName.UseUnderscores
 	},
 );
