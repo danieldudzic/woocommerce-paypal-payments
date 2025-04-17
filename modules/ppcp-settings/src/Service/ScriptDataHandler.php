@@ -62,12 +62,12 @@ class ScriptDataHandler {
 	/**
 	 * ScriptDataHandler constructor.
 	 *
-	 * @param Settings $settings The settings object.
-	 * @param string   $settings_url The settings URL.
-	 * @param bool     $paylater_is_available Whether the pay later configurator is available.
-	 * @param string   $store_country The store country.
-	 * @param string   $merchant_id The merchant ID.
-	 * @param array    $button_language_choices The button language choices.
+	 * @param Settings           $settings The settings object.
+	 * @param string             $settings_url The settings URL.
+	 * @param bool               $paylater_is_available Whether the pay later configurator is available.
+	 * @param string             $store_country The store country.
+	 * @param string             $merchant_id The merchant ID.
+	 * @param array              $button_language_choices The button language choices.
 	 * @param PartnerAttribution $partner_attribution The partner attribution object.
 	 */
 	public function __construct(
