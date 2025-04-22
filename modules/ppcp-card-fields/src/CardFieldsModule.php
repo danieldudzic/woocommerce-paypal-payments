@@ -11,6 +11,7 @@ namespace WooCommerce\PayPalCommerce\CardFields;
 
 use DomainException;
 use Psr\Log\LoggerInterface;
+use WC_Order;
 use WooCommerce\PayPalCommerce\ApiClient\Entity\Order;
 use WooCommerce\PayPalCommerce\CardFields\Service\CardCaptureValidator;
 use WooCommerce\PayPalCommerce\Vendor\Inpsyde\Modularity\Module\ExecutableModule;
@@ -185,7 +186,19 @@ class CardFieldsModule implements ServiceModule, ExtendingModule, ExecutableModu
 					$logger = $c->get( 'woocommerce.logger.woocommerce' );
 					assert( $logger instanceof LoggerInterface );
 
-					$logger->warning( "Could not capture order {$order->id()}." );
+					$logger->warning( "Could not capture order {$order->id()}" );
+
+					// Deletes WC order if it exists in PayPal order.
+					$wc_order_id = (int)$order->purchase_units()[0]->custom_id();
+					if( $wc_order_id ) {
+						$wc_order = wc_get_order( $wc_order_id );
+						if ( $wc_order instanceof WC_Order ) {
+							$result = $this->is_hpos_enabled() ? $wc_order->delete(true) : wp_delete_post($wc_order_id, true);
+							if($result) {
+								$logger->info( "Deleting failed WC order #$wc_order_id" );
+							}
+						}
+					}
 
 					throw new DomainException( esc_html__( 'Could not capture the PayPal order.', 'woocommerce-paypal-payments' ) );
 				}
@@ -193,5 +206,23 @@ class CardFieldsModule implements ServiceModule, ExtendingModule, ExecutableModu
 		);
 
 		return true;
+	}
+
+	/**
+	 * Check if HPOS is enabled.
+	 *
+	 * @return bool True if HPOS is enabled, false otherwise.
+	 */
+	private function is_hpos_enabled(): bool {
+		if ( ! class_exists( 'Automattic\WooCommerce\Utilities\OrderUtil' ) ) {
+			return false;
+		}
+
+		// Check if the method exists to avoid errors on older WooCommerce versions
+		if ( method_exists( \Automattic\WooCommerce\Utilities\OrderUtil::class, 'custom_orders_table_usage_is_enabled' ) ) {
+			return \Automattic\WooCommerce\Utilities\OrderUtil::custom_orders_table_usage_is_enabled();
+		}
+
+		return false;
 	}
 }
