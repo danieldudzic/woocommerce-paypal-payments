@@ -65,8 +65,9 @@ export const getSteps = ( flags ) => {
 		( step ) => flags.canUseCasualSelling || step.id !== 'business',
 		// Skip payment methods screen.
 		( step ) =>
-			! flags.shouldSkipPaymentMethods &&
-			! ( ownBrandOnly && isCasualSeller && step.id === 'methods' ), // personal user in branded-only mode.
+			step.id !== 'methods' ||
+			( ! flags.shouldSkipPaymentMethods &&
+				! ( ownBrandOnly && isCasualSeller ) ),
 	] );
 
 	const totalStepsCount = steps.length;
