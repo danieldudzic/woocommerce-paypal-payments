@@ -92,13 +92,13 @@ class SettingsTabMapHelper {
 	/**
 	 * Retrieves the mapped value for the '3d_secure_contingency' from the new settings.
 	 *
-	 * @param array<string, scalar|array> $settings_model The new settings model data as an array.
+	 * @param array $settings_model The new settings model data.
 	 * @return string|null The mapped '3d_secure_contingency' setting value.
 	 */
 	protected function mapped_3d_secure_value( array $settings_model ): ?string {
 		$three_d_secure = $settings_model['threeDSecure'] ?? null;
 
-		if ( is_null( $three_d_secure ) ) {
+		if ( ! is_string( $three_d_secure ) ) {
 			return null;
 		}
 
