@@ -28,8 +28,8 @@ class PaymentMethodSettingsMapHelper {
 	 */
 	public function map(): array {
 		return array(
-			'dcc_enabled'           => CreditCardGateway::ID,
-			'axo_enabled'           => AxoGateway::ID,
+			'dcc_enabled' => CreditCardGateway::ID,
+			'axo_enabled' => AxoGateway::ID,
 		);
 	}
 
