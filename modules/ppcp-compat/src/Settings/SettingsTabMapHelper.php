@@ -25,6 +25,8 @@ class SettingsTabMapHelper {
 
 	/**
 	 * A map of new to old 3d secure values.
+	 *
+	 * @var array<string, string>
 	 */
 	protected const THREE_D_SECURE_VALUES_MAP = array(
 		'no-3d-secure'            => 'NO_3D_SECURE',
