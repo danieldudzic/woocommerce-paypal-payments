@@ -20,7 +20,7 @@ use WooCommerce\PayPalCommerce\ApiClient\Factory\CardAuthenticationResultFactory
 class ThreeDSecure {
 
 	public const NO_DECISION = 0;
-	public const PROCEED    = 1;
+	public const PROCEED     = 1;
 	public const REJECT      = 2;
 	public const RETRY       = 3;
 
