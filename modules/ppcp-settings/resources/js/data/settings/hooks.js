@@ -67,6 +67,8 @@ const useHooks = () => {
 	const [ disabledCards, setDisabledCards ] =
 		usePersistent( 'disabledCards' );
 
+	const [ threeDSecure, setThreeDSecure ] = usePersistent( 'threeDSecure' );
+
 	return {
 		invoicePrefix,
 		setInvoicePrefix,
@@ -94,6 +96,8 @@ const useHooks = () => {
 		setButtonLanguage,
 		disabledCards,
 		setDisabledCards,
+		threeDSecure,
+		setThreeDSecure,
 	};
 };
 
@@ -138,6 +142,8 @@ export const useSettings = () => {
 		setButtonLanguage,
 		disabledCards,
 		setDisabledCards,
+		threeDSecure,
+		setThreeDSecure,
 	} = useHooks();
 
 	return {
@@ -167,5 +173,7 @@ export const useSettings = () => {
 		setButtonLanguage,
 		disabledCards,
 		setDisabledCards,
+		threeDSecure,
+		setThreeDSecure,
 	};
 };
