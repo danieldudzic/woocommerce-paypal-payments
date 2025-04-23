@@ -936,8 +936,8 @@ class GooglepayButton extends PaymentButton {
 			} else {
 				// This payment requires a 3DS verification before we can process the order.
 				if ( ORDER_INCOMPLETE === orderState ) {
-					await initiatePayerAction( orderId );
-					this.log( '3DS verification completed' );
+					const response = await initiatePayerAction( orderId );
+					this.log( '3DS verification completed', response );
 				}
 
 				const success = await approveOrderServerSide( orderId );
