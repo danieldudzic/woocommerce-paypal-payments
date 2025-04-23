@@ -2,9 +2,9 @@
 Contributors: paypal, woocommerce, automattic, syde
 Tags: woocommerce, paypal, payments, ecommerce, credit card
 Requires at least: 6.5
-Tested up to: 6.7
+Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 3.0.3
+Stable tag: 3.0.4
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -155,6 +155,9 @@ If you encounter issues with the PayPal buttons not appearing after an update, p
 6. Main settings screen.
 
 == Changelog ==
+
+= 3.0.4 - xxxx-xx-xx =
+* Fix - Onboarding screen blank when WooPayments plugin is active #3312
 
 = 3.0.3 - 2025-04-08 =
 * Fix - BN code was set before the installation path was initialized #3309

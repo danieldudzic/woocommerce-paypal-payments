@@ -1,5 +1,8 @@
 *** Changelog ***
 
+= 3.0.4 - xxxx-xx-xx =
+* Fix - Onboarding screen blank when WooPayments plugin is active #3312
+
 = 3.0.3 - 2025-04-08 =
 * Fix - BN code was set before the installation path was initialized #3309
 * Fix - Things to do next referenced Apple Pay while in branded-only mode #3308
