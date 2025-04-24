@@ -643,7 +643,7 @@ document.querySelector("#payment").before(document.querySelector(".ppcp-messages
 			add_action(
 				$this->proceed_to_checkout_button_renderer_hook(),
 				function() use ( $enabled_on_cart ) {
-					if ( ! is_cart() || ! $enabled_on_cart || $this->is_free_trial_cart() || $this->is_cart_price_total_zero() ) {
+					if ( ! is_cart() || ! $enabled_on_cart || $this->is_free_trial_cart() || $this->is_cart_price_total_zero() || isset(reset(WC()->cart->cart_contents)['subscription_switch']) ) {
 						return;
 					}
 
