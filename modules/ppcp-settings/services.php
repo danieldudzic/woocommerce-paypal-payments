@@ -51,6 +51,7 @@ use WooCommerce\PayPalCommerce\Settings\Service\BrandedExperience\PathRepository
 use WooCommerce\PayPalCommerce\Settings\Service\ConnectionUrlGenerator;
 use WooCommerce\PayPalCommerce\Settings\Service\FeaturesEligibilityService;
 use WooCommerce\PayPalCommerce\Settings\Service\GatewayRedirectService;
+use WooCommerce\PayPalCommerce\Settings\Service\LoadingScreenService;
 use WooCommerce\PayPalCommerce\Settings\Service\OnboardingUrlManager;
 use WooCommerce\PayPalCommerce\Settings\Service\TodosEligibilityService;
 use WooCommerce\PayPalCommerce\Settings\Service\TodosSortingAndFilteringService;
@@ -452,15 +453,26 @@ return array(
 		);
 	},
 	'settings.service.merchant_capabilities'              => static function ( ContainerInterface $container ) : array {
+		/**
+		 * Use the REST API filter to collect eligibility flags.
+		 *
+		 * TODO: We should switch to using the new `*.eligibility.check` services, which return a callback instead of a boolean.
+		 *       Problem with booleans is, that they are evaluated during DI service creation (plugin_loaded), and some relevant filters are not registered at that point.
+		 *       Overthink the capability system, it's difficult to reuse across the plugin.
+		 */
 		$features = apply_filters(
 			'woocommerce_paypal_payments_rest_common_merchant_features',
 			array()
 		);
 
+		// TODO: This condition included in the `*.eligibility.check` services; it can be removed when we switch to those services.
+		$general_settings = $container->get( 'settings.data.general' );
+		assert( $general_settings instanceof GeneralSettings );
+
 		return array(
-			'apple_pay'   => $features['apple_pay']['enabled'] ?? false,
-			'google_pay'  => $features['google_pay']['enabled'] ?? false,
-			'acdc'        => $features['advanced_credit_and_debit_cards']['enabled'] ?? false,
+			'apple_pay'   => ( $features['apple_pay']['enabled'] ?? false ) && ! $general_settings->own_brand_only(),
+			'google_pay'  => ( $features['google_pay']['enabled'] ?? false ) && ! $general_settings->own_brand_only(),
+			'acdc'        => ( $features['advanced_credit_and_debit_cards']['enabled'] ?? false ) && ! $general_settings->own_brand_only(),
 			'save_paypal' => $features['save_paypal_and_venmo']['enabled'] ?? false,
 			'apm'         => $features['alternative_payment_methods']['enabled'] ?? false,
 			'paylater'    => $features['pay_later_messaging']['enabled'] ?? false,
@@ -474,6 +486,8 @@ return array(
 
 		$button_locations = $container->get( 'settings.service.button_locations' );
 		$gateways = $container->get( 'settings.service.gateways_status' );
+
+		// TODO: This "merchant_capabilities" service is only used here. Could it be merged to make the code cleaner and less segmented?
 		$capabilities = $container->get( 'settings.service.merchant_capabilities' );
 
 		/**
@@ -514,7 +528,7 @@ return array(
 			! $button_locations['cart_enabled'],                                                          // Add PayPal buttons to cart.
 			! $button_locations['block_checkout_enabled'],                                                // Add PayPal buttons to block checkout.
 			! $button_locations['product_enabled'],                                                       // Add PayPal buttons to product.
-			$capabilities['apple_pay'],                                                                   // Register Domain for Apple Pay.
+			$container->get( 'applepay.eligible' ) && $capabilities['apple_pay'],  // Register Domain for Apple Pay.
 			$capabilities['acdc'] && ! ( $capabilities['apple_pay'] && $capabilities['google_pay'] ),     // Add digital wallets to your account.
 			$container->get( 'applepay.eligible' ) && $capabilities['acdc'] && ! $capabilities['apple_pay'],                                        // Add Apple Pay to your account.
 			$container->get( 'googlepay.eligible' ) && $capabilities['acdc'] && ! $capabilities['google_pay'],                                       // Add Google Pay to your account.
@@ -590,6 +604,9 @@ return array(
 	},
 	'settings.service.gateway-redirect'                   => static function (): GatewayRedirectService {
 		return new GatewayRedirectService();
+	},
+	'settings.services.loading-screen-service'            => static function ( ContainerInterface $container ) : LoadingScreenService {
+		return new LoadingScreenService();
 	},
 	/**
 	 * Returns a list of all payment gateway IDs created by this plugin.

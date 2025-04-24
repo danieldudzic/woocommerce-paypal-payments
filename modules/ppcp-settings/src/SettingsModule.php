@@ -10,6 +10,7 @@ declare( strict_types = 1 );
 namespace WooCommerce\PayPalCommerce\Settings;
 
 use WC_Payment_Gateway;
+use Psr\Log\LoggerInterface;
 use WooCommerce\PayPalCommerce\ApiClient\Helper\DccApplies;
 use WooCommerce\PayPalCommerce\ApiClient\Helper\PartnerAttribution;
 use WooCommerce\PayPalCommerce\Applepay\Assets\AppleProductStatus;
@@ -25,11 +26,13 @@ use WooCommerce\PayPalCommerce\LocalAlternativePaymentMethods\P24Gateway;
 use WooCommerce\PayPalCommerce\LocalAlternativePaymentMethods\TrustlyGateway;
 use WooCommerce\PayPalCommerce\Settings\Ajax\SwitchSettingsUiEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Data\OnboardingProfile;
+use WooCommerce\PayPalCommerce\Settings\Data\SettingsModel;
 use WooCommerce\PayPalCommerce\Settings\Data\TodosModel;
 use WooCommerce\PayPalCommerce\Settings\Endpoint\RestEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Handler\ConnectionListener;
 use WooCommerce\PayPalCommerce\Settings\Service\BrandedExperience\PathRepository;
 use WooCommerce\PayPalCommerce\Settings\Service\GatewayRedirectService;
+use WooCommerce\PayPalCommerce\Settings\Service\LoadingScreenService;
 use WooCommerce\PayPalCommerce\Vendor\Inpsyde\Modularity\Module\ExecutableModule;
 use WooCommerce\PayPalCommerce\Vendor\Inpsyde\Modularity\Module\ModuleClassNameIdTrait;
 use WooCommerce\PayPalCommerce\Vendor\Inpsyde\Modularity\Module\ServiceModule;
@@ -159,16 +162,25 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 		 */
 		add_action(
 			'woocommerce_paypal_payments_gateway_migrate',
-			static function () use ( $container ) {
+			function () use ( $container ) {
+				$path_repository = $container->get( 'settings.service.branded-experience.path-repository' );
+				assert( $path_repository instanceof PathRepository );
+
 				$partner_attribution = $container->get( 'api.helper.partner-attribution' );
 				assert( $partner_attribution instanceof PartnerAttribution );
 
 				$general_settings = $container->get( 'settings.data.general' );
 				assert( $general_settings instanceof GeneralSettings );
 
+				$path_repository->persist();
 				$partner_attribution->initialize_bn_code( $general_settings->get_installation_path() );
 			}
 		);
+
+		// Suppress WooCommerce Settings UI elements via CSS to improve the loading experience.
+		$loading_screen_service = $container->get( 'settings.services.loading-screen-service' );
+		assert( $loading_screen_service instanceof LoadingScreenService );
+		$loading_screen_service->register();
 
 		$this->apply_branded_only_limitations( $container );
 
@@ -327,6 +339,10 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 		add_action(
 			'woocommerce_paypal_payments_merchant_disconnected',
 			static function () use ( $container ) : void {
+				$logger = $container->get( 'woocommerce.logger.woocommerce' );
+				assert( $logger instanceof LoggerInterface );
+				$logger->info( 'Merchant disconnected, reset onboarding' );
+
 				// Reset onboarding profile.
 				$onboarding_profile = $container->get( 'settings.data.onboarding' );
 				assert( $onboarding_profile instanceof OnboardingProfile );
@@ -348,6 +364,10 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 		add_action(
 			'woocommerce_paypal_payments_authenticated_merchant',
 			static function () use ( $container ) : void {
+				$logger = $container->get( 'woocommerce.logger.woocommerce' );
+				assert( $logger instanceof LoggerInterface );
+				$logger->info( 'Merchant connected, complete onboarding and set defaults.' );
+
 				$onboarding_profile = $container->get( 'settings.data.onboarding' );
 				assert( $onboarding_profile instanceof OnboardingProfile );
 
@@ -479,32 +499,40 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 				$methods[] = $applepay_gateway;
 				$methods[] = $axo_gateway;
 
-				$is_payments_page = $container->get( 'wcgateway.is-wc-payments-page' );
-				$all_gateway_ids  = $container->get( 'settings.config.all-gateway-ids' );
-
-				if ( $is_payments_page ) {
-					$methods = array_filter(
-						$methods,
-						function ( $method ) use ( $all_gateway_ids ) : bool {
-							if ( ! is_object( $method )
-								|| $method->id === PayPalGateway::ID
-								|| ! in_array( $method->id, $all_gateway_ids, true )
-							) {
-								return true;
-							}
-
-							if ( ! $this->is_gateway_enabled( $method->id ) ) {
-								return false;
-							}
-
-							return true;
-						}
-					);
-				}
-
 				return $methods;
 			},
 			99
+		);
+
+		/**
+		 * Filters the available payment gateways in the WooCommerce admin settings.
+		 *
+		 * Ensures that only enabled PayPal payment gateways are displayed.
+		 *
+		 * @hook woocommerce_admin_field_payment_gateways
+		 * @priority 5 Allows modifying the registered gateways before they are displayed.
+		 */
+		add_action(
+			'woocommerce_admin_field_payment_gateways',
+			function () use ( $container ) : void {
+				$all_gateway_ids  = $container->get( 'settings.config.all-gateway-ids' );
+				$payment_gateways = WC()->payment_gateways->payment_gateways;
+
+				foreach ( $payment_gateways as $index => $payment_gateway ) {
+					$payment_gateway_id = $payment_gateway->id;
+
+					if (
+						! in_array( $payment_gateway_id, $all_gateway_ids, true )
+						|| $payment_gateway_id === PayPalGateway::ID
+						|| $this->is_gateway_enabled( $payment_gateway_id )
+					) {
+						continue;
+					}
+
+					unset( WC()->payment_gateways->payment_gateways[ $index ] );
+				}
+			},
+			5
 		);
 
 		// Remove the Fastlane gateway if the customer is logged in, ensuring that we don't interfere with the Fastlane gateway status in the settings UI.
@@ -638,6 +666,17 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 		assert( $gateway_redirect_service instanceof GatewayRedirectService );
 		$gateway_redirect_service->register();
 
+		// Do not render Pay Later messaging if the "Save PayPal and Venmo" setting is enabled.
+		add_filter(
+			'woocommerce_paypal_payments_should_render_pay_later_messaging',
+			static function() use ( $container ): bool {
+				$settings_model = $container->get( 'settings.data.settings' );
+				assert( $settings_model instanceof SettingsModel );
+
+				return ! $settings_model->get_save_paypal_and_venmo();
+			}
+		);
+
 		return true;
 	}
 
@@ -684,7 +723,15 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 		$path_repository = $container->get( 'settings.service.branded-experience.path-repository' );
 		assert( $path_repository instanceof PathRepository );
 
+		$partner_attribution = $container->get( 'api.helper.partner-attribution' );
+		assert( $partner_attribution instanceof PartnerAttribution );
+
+		$general_settings = $container->get( 'settings.data.general' );
+		assert( $general_settings instanceof GeneralSettings );
+
 		$path_repository->persist();
+
+		$partner_attribution->initialize_bn_code( $general_settings->get_installation_path() );
 	}
 
 	/**

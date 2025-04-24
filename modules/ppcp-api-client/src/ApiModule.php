@@ -23,6 +23,7 @@ use WooCommerce\PayPalCommerce\Vendor\Psr\Container\ContainerInterface;
 use WooCommerce\PayPalCommerce\ApiClient\Entity\Order;
 use WooCommerce\PayPalCommerce\ApiClient\Authentication\PayPalBearer;
 use WooCommerce\PayPalCommerce\ApiClient\Authentication\SdkClientToken;
+use Psr\Log\LoggerInterface;
 
 /**
  * Class ApiModule
@@ -117,6 +118,10 @@ class ApiModule implements ServiceModule, ExtendingModule, ExecutableModule {
 					'api.client-credentials-cache',
 					'settings.service.signup-link-cache',
 				);
+
+				$logger = $c->get( 'woocommerce.logger.woocommerce' );
+				assert( $logger instanceof LoggerInterface );
+				$logger->info( 'Flushing API caches...' );
 
 				foreach ( $caches as $cache_id ) {
 					$cache = $c->get( $cache_id );
