@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace WooCommerce\PayPalCommerce\WcGateway\Gateway;
 
+use DomainException;
 use Exception;
 use Psr\Log\LoggerInterface;
 use WC_Order;
@@ -543,7 +544,10 @@ class CreditCardGateway extends \WC_Payment_Gateway_CC {
 					$error
 				)
 			);
-		} catch ( Exception $error ) {
+		} catch ( DomainException $error ) {
+			return $this->handle_payment_failure( $wc_order, $error, true );
+		}
+		catch ( Exception $error ) {
 			return $this->handle_payment_failure( $wc_order, $error );
 		}
 	}

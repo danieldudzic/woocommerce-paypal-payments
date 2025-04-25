@@ -188,18 +188,6 @@ class CardFieldsModule implements ServiceModule, ExtendingModule, ExecutableModu
 
 					$logger->warning( "Could not capture order {$order->id()}" );
 
-					// Deletes WC order if it exists in PayPal order.
-					$wc_order_id = (int)$order->purchase_units()[0]->custom_id();
-					if( $wc_order_id ) {
-						$wc_order = wc_get_order( $wc_order_id );
-						if ( $wc_order instanceof WC_Order ) {
-							$result = $this->is_hpos_enabled() ? $wc_order->delete(true) : wp_delete_post($wc_order_id, true);
-							if($result) {
-								$logger->info( "Deleting failed WC order #$wc_order_id" );
-							}
-						}
-					}
-
 					throw new DomainException( esc_html__( 'Could not capture the PayPal order.', 'woocommerce-paypal-payments' ) );
 				}
 			}
