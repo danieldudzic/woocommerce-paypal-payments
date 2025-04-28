@@ -32,6 +32,7 @@ use WooCommerce\PayPalCommerce\Settings\Endpoint\RestEndpoint;
 use WooCommerce\PayPalCommerce\Settings\Handler\ConnectionListener;
 use WooCommerce\PayPalCommerce\Settings\Service\BrandedExperience\PathRepository;
 use WooCommerce\PayPalCommerce\Settings\Service\GatewayRedirectService;
+use WooCommerce\PayPalCommerce\Settings\Service\LoadingScreenService;
 use WooCommerce\PayPalCommerce\Vendor\Inpsyde\Modularity\Module\ExecutableModule;
 use WooCommerce\PayPalCommerce\Vendor\Inpsyde\Modularity\Module\ModuleClassNameIdTrait;
 use WooCommerce\PayPalCommerce\Vendor\Inpsyde\Modularity\Module\ServiceModule;
@@ -155,6 +156,31 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 			static fn() => ! get_option( SwitchSettingsUiEndpoint::OPTION_NAME_SHOULD_USE_OLD_UI )
 				&& update_option( SwitchSettingsUiEndpoint::OPTION_NAME_SHOULD_USE_OLD_UI, 'yes' )
 		);
+
+		/**
+		 * This hook is fired when the plugin is installed or updated.
+		 */
+		add_action(
+			'woocommerce_paypal_payments_gateway_migrate',
+			function () use ( $container ) {
+				$path_repository = $container->get( 'settings.service.branded-experience.path-repository' );
+				assert( $path_repository instanceof PathRepository );
+
+				$partner_attribution = $container->get( 'api.helper.partner-attribution' );
+				assert( $partner_attribution instanceof PartnerAttribution );
+
+				$general_settings = $container->get( 'settings.data.general' );
+				assert( $general_settings instanceof GeneralSettings );
+
+				$path_repository->persist();
+				$partner_attribution->initialize_bn_code( $general_settings->get_installation_path() );
+			}
+		);
+
+		// Suppress WooCommerce Settings UI elements via CSS to improve the loading experience.
+		$loading_screen_service = $container->get( 'settings.services.loading-screen-service' );
+		assert( $loading_screen_service instanceof LoadingScreenService );
+		$loading_screen_service->register();
 
 		$this->apply_branded_only_limitations( $container );
 

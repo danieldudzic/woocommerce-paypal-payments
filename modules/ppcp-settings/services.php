@@ -51,6 +51,7 @@ use WooCommerce\PayPalCommerce\Settings\Service\BrandedExperience\PathRepository
 use WooCommerce\PayPalCommerce\Settings\Service\ConnectionUrlGenerator;
 use WooCommerce\PayPalCommerce\Settings\Service\FeaturesEligibilityService;
 use WooCommerce\PayPalCommerce\Settings\Service\GatewayRedirectService;
+use WooCommerce\PayPalCommerce\Settings\Service\LoadingScreenService;
 use WooCommerce\PayPalCommerce\Settings\Service\OnboardingUrlManager;
 use WooCommerce\PayPalCommerce\Settings\Service\TodosEligibilityService;
 use WooCommerce\PayPalCommerce\Settings\Service\TodosSortingAndFilteringService;
@@ -603,6 +604,9 @@ return array(
 	},
 	'settings.service.gateway-redirect'                   => static function (): GatewayRedirectService {
 		return new GatewayRedirectService();
+	},
+	'settings.services.loading-screen-service'            => static function ( ContainerInterface $container ) : LoadingScreenService {
+		return new LoadingScreenService();
 	},
 	/**
 	 * Returns a list of all payment gateway IDs created by this plugin.
