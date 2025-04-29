@@ -35,7 +35,7 @@ trait ProcessPaymentTrait {
 				$this->format_exception( $error )
 			);
 
-			if ( WC()->session->get( 'ppcp_delete_wc_order_on_payment_failure' ) ) {
+			if ( WC()->session->get( 'ppcp_delete_wc_order_on_payment_failure' ) ?? false ) {
 				$wc_order->delete( true );
 			}
 		}
