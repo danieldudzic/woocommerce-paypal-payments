@@ -13,7 +13,7 @@ use WooCommerce\PayPalCommerce\ApiClient\Entity\Order;
 use WooCommerce\PayPalCommerce\ApiClient\Entity\OrderStatus;
 
 /**
- * CardCaptureValidator constructor.
+ * CardCaptureValidator class.
  */
 class CardCaptureValidator {
 
@@ -31,22 +31,21 @@ class CardCaptureValidator {
 		}
 
 		$payment_source = $order->payment_source();
-		if ( $payment_source ) {
-			if ( $payment_source->name() !== 'card' ) {
-				return true;
-			}
-
-			/**
-			 * LiabilityShift determines how to proceed with authentication.
-			 *
-			 * @link https://developer.paypal.com/docs/checkout/advanced/customize/3d-secure/response-parameters/
-			 */
-			$liability_shift = $payment_source->properties()->authentication_result->liability_shift ?? '';
-			if ( in_array( $liability_shift, array( 'POSSIBLE', 'YES' ), true ) ) {
-				return true;
-			}
+		if ( ! $payment_source ) {
+			return false;
 		}
 
-		return false;
+		if ( $payment_source->name() !== 'card' ) {
+			return true;
+		}
+
+		/**
+		 * LiabilityShift determines how to proceed with authentication.
+		 *
+		 * @link https://developer.paypal.com/docs/checkout/advanced/customize/3d-secure/response-parameters/
+		 */
+		$liability_shift = $payment_source->properties()->authentication_result->liability_shift ?? '';
+
+		return in_array( $liability_shift, array( 'POSSIBLE', 'YES' ), true );
 	}
 }

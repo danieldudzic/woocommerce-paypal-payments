@@ -24,7 +24,7 @@ trait ProcessPaymentTrait {
 	 *
 	 * @param WC_Order|null $wc_order The order.
 	 * @param Exception     $error The error causing the failure.
-	 * @param bool         $delete_order Whether to delete the order.
+	 * @param bool          $delete_order Whether to delete the order.
 	 * @return array The data that can be returned by the gateway process_payment method.
 	 */
 	protected function handle_payment_failure( ?WC_Order $wc_order, Exception $error, bool $delete_order = false ): array {
@@ -36,7 +36,7 @@ trait ProcessPaymentTrait {
 				$this->format_exception( $error )
 			);
 
-			if($delete_order) {
+			if ( $delete_order ) {
 				$wc_order->delete( true );
 			}
 		}
