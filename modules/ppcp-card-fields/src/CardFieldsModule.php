@@ -11,7 +11,6 @@ namespace WooCommerce\PayPalCommerce\CardFields;
 
 use DomainException;
 use Psr\Log\LoggerInterface;
-use WC_Order;
 use WooCommerce\PayPalCommerce\ApiClient\Entity\Order;
 use WooCommerce\PayPalCommerce\CardFields\Service\CardCaptureValidator;
 use WooCommerce\PayPalCommerce\Vendor\Inpsyde\Modularity\Module\ExecutableModule;
@@ -188,29 +187,16 @@ class CardFieldsModule implements ServiceModule, ExtendingModule, ExecutableModu
 
 					$logger->warning( "Could not capture order {$order->id()}" );
 
+					if ( apply_filters( 'woocommerce_paypal_payments_force_delete_wc_order_on_failed_capture', true ) ) {
+						// Add delete order flag in WC session to force delete on process payment failure handler.
+						WC()->session->set( 'ppcp_delete_wc_order_on_payment_failure', true );
+					}
+
 					throw new DomainException( esc_html__( 'Could not capture the PayPal order.', 'woocommerce-paypal-payments' ) );
 				}
 			}
 		);
 
 		return true;
-	}
-
-	/**
-	 * Check if HPOS is enabled.
-	 *
-	 * @return bool True if HPOS is enabled, false otherwise.
-	 */
-	private function is_hpos_enabled(): bool {
-		if ( ! class_exists( 'Automattic\WooCommerce\Utilities\OrderUtil' ) ) {
-			return false;
-		}
-
-		// Check if the method exists to avoid errors on older WooCommerce versions
-		if ( method_exists( \Automattic\WooCommerce\Utilities\OrderUtil::class, 'custom_orders_table_usage_is_enabled' ) ) {
-			return \Automattic\WooCommerce\Utilities\OrderUtil::custom_orders_table_usage_is_enabled();
-		}
-
-		return false;
 	}
 }

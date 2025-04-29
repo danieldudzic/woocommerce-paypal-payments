@@ -24,10 +24,9 @@ trait ProcessPaymentTrait {
 	 *
 	 * @param WC_Order|null $wc_order The order.
 	 * @param Exception     $error The error causing the failure.
-	 * @param bool          $delete_order Whether to delete the order.
 	 * @return array The data that can be returned by the gateway process_payment method.
 	 */
-	protected function handle_payment_failure( ?WC_Order $wc_order, Exception $error, bool $delete_order = false ): array {
+	protected function handle_payment_failure( ?WC_Order $wc_order, Exception $error ): array {
 		$this->logger->error( 'Payment failed: ' . $this->format_exception( $error ) );
 
 		if ( $wc_order ) {
@@ -36,13 +35,14 @@ trait ProcessPaymentTrait {
 				$this->format_exception( $error )
 			);
 
-			if ( $delete_order ) {
+			if ( WC()->session->get( 'ppcp_delete_wc_order_on_payment_failure' ) ) {
 				$wc_order->delete( true );
 			}
 		}
 
 		$this->session_handler->destroy_session_data();
 		WC()->session->set( 'ppcp_subscription_id', '' );
+		WC()->session->set( 'ppcp_delete_wc_order_on_payment_failure', false );
 
 		wc_add_notice( $error->getMessage(), 'error' );
 

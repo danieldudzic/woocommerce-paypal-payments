@@ -544,8 +544,6 @@ class CreditCardGateway extends \WC_Payment_Gateway_CC {
 					$error
 				)
 			);
-		} catch ( DomainException $error ) {
-			return $this->handle_payment_failure( $wc_order, $error, true );
 		} catch ( Exception $error ) {
 			return $this->handle_payment_failure( $wc_order, $error );
 		}
