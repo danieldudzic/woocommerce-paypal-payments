@@ -59,11 +59,7 @@ const TabPaymentMethods = () => {
 		merchant.isBusinessSeller &&
 		canUseCardPayments;
 
-	const showApms =
-		methods.apm.length > 0 &&
-		merchant.isBusinessSeller &&
-		canUseCardPayments;
-
+	const showApms = methods.apm.length > 0 && merchant.isBusinessSeller;
 	return (
 		<div className="ppcp-r-payment-methods">
 			<PaymentMethodCard

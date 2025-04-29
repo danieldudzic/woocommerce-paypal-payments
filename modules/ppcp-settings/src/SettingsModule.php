@@ -420,19 +420,8 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 				if ( $dcc_product_status->is_active() && $card_fields_eligible ) {
 					unset( $payment_methods[ CardButtonGateway::ID ] );
 				} else {
-					// For non-ACDC regions unset ACDC, local APMs and set BCDC.
+					// For non-ACDC regions unset ACDC.
 					unset( $payment_methods[ CreditCardGateway::ID ] );
-					unset( $payment_methods['pay-later'] );
-					unset( $payment_methods[ BancontactGateway::ID ] );
-					unset( $payment_methods[ BlikGateway::ID ] );
-					unset( $payment_methods[ EPSGateway::ID ] );
-					unset( $payment_methods[ IDealGateway::ID ] );
-					unset( $payment_methods[ MyBankGateway::ID ] );
-					unset( $payment_methods[ P24Gateway::ID ] );
-					unset( $payment_methods[ TrustlyGateway::ID ] );
-					unset( $payment_methods[ MultibancoGateway::ID ] );
-					unset( $payment_methods[ PayUponInvoiceGateway::ID ] );
-					unset( $payment_methods[ OXXO::ID ] );
 				}
 
 				// Unset Venmo when store location is not United States.
