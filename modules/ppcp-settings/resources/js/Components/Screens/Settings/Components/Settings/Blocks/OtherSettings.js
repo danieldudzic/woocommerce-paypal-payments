@@ -47,7 +47,6 @@ const OtherSettings = () => {
 export default OtherSettings;
 
 const disabledCardChoices = [
-	{ value: '', label: __( 'Select', 'woocommerce-paypal-payments' ) },
 	{
 		value: 'mastercard',
 		label: __( 'Mastercard', 'woocommerce-paypal-payments' ),
