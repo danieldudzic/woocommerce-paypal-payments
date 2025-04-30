@@ -401,10 +401,15 @@ return array(
 			)
 		);
 
+		$is_business = $container->get( 'settings.data.general' )->is_business_seller();
+		$is_acdc = $container->get( 'settings.service.merchant_capabilities' )['acdc'] ?? false;
+		$bcdc_enabled = $is_business && $is_acdc;
+
 		return new PaymentMethodsDefinition(
 			$container->get( 'settings.data.payment' ),
 			$container->get( 'settings.data.general' ),
-			$axo_notices
+			$axo_notices,
+			$bcdc_enabled
 		);
 	},
 	'settings.data.definition.method_dependencies'        => static function ( ContainerInterface $container ) : PaymentMethodsDependenciesDefinition {
