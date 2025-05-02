@@ -15,6 +15,7 @@ use WooCommerce\PayPalCommerce\Settings\DTO\ConfigurationFlagsDTO;
 use WooCommerce\PayPalCommerce\Settings\DTO\LocationStylingDTO;
 use WooCommerce\PayPalCommerce\Googlepay\GooglePayGateway;
 use WooCommerce\PayPalCommerce\Applepay\ApplePayGateway;
+use WooCommerce\PayPalCommerce\Settings\Enum\ProductChoicesEnum;
 use WooCommerce\PayPalCommerce\WcGateway\Gateway\PayPalGateway;
 use WooCommerce\PayPalCommerce\Settings\Data\StylingSettings;
 use WooCommerce\PayPalCommerce\Settings\Data\GeneralSettings;
@@ -215,7 +216,7 @@ class SettingsDataManager {
 
 		$flags->is_business_seller = ! ( $profile_data['is_casual_seller'] ?? false );
 		$flags->use_card_payments  = $profile_data['accept_card_payments'] ?? false;
-		$flags->use_subscriptions  = in_array( 'SUBSCRIPTIONS', $profile_data['products'] ?? array(), true );
+		$flags->use_subscriptions  = in_array( ProductChoicesEnum::SUBSCRIPTIONS, $profile_data['products'] ?? array(), true );
 
 		$this->toggle_payment_gateways( $flags );
 	}
@@ -259,8 +260,11 @@ class SettingsDataManager {
 				$this->payment_methods->toggle_method_state( ApplePayGateway::ID, true );
 				$this->payment_methods->toggle_method_state( GooglePayGateway::ID, true );
 
-				// Enable Pay Later for business sellers.
-				$this->payment_methods->toggle_method_state( 'pay-later', true );
+				// Enable Pay Later for business sellers if subscriptions were not selected.
+				// Selecting subscriptions automatically enables the "Save PayPal and Venmo" option, which is incompatible with Pay Later.
+				if ( ! $flags->use_subscriptions ) {
+					$this->payment_methods->toggle_method_state( 'pay-later', true );
+				}
 			}
 
 			// Enable all APM methods.
