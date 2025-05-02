@@ -41,6 +41,13 @@ class GeneralSettings extends AbstractDataModel {
 	protected array $woo_settings = array();
 
 	/**
+	 * Contexts in which the installation path can be reset.
+	 */
+	private const ALLOWED_RESET_REASONS = array(
+		'plugin_uninstall',
+	);
+
+	/**
 	 * Constructor.
 	 *
 	 * @param string $country              WooCommerce store country.
@@ -82,7 +89,7 @@ class GeneralSettings extends AbstractDataModel {
 			'seller_type'           => 'unknown',
 
 			// Branded experience installation path.
-			'installation_path'     => '',
+			'wc_installation_path'  => '',
 		);
 	}
 
@@ -279,7 +286,7 @@ class GeneralSettings extends AbstractDataModel {
 	 */
 	public function set_installation_path( string $installation_path ) : void {
 		// The installation path can be set only once.
-		if ( InstallationPathEnum::is_valid( $this->data['installation_path'] ?? '' ) ) {
+		if ( InstallationPathEnum::is_valid( $this->data['wc_installation_path'] ?? '' ) ) {
 			return;
 		}
 
@@ -288,7 +295,7 @@ class GeneralSettings extends AbstractDataModel {
 			return;
 		}
 
-		$this->data['installation_path'] = $installation_path;
+		$this->data['wc_installation_path'] = $installation_path;
 	}
 
 	/**
@@ -297,7 +304,23 @@ class GeneralSettings extends AbstractDataModel {
 	 * @return string
 	 */
 	public function get_installation_path() : string {
-		return $this->data['installation_path'] ?? InstallationPathEnum::DIRECT;
+		return $this->data['wc_installation_path'] ?? InstallationPathEnum::DIRECT;
+	}
+
+	/**
+	 * Resets the installation path to empty string. This method should only be called
+	 * during specific circumstances like plugin uninstallation.
+	 *
+	 * @param string $reason The reason for resetting the path, must be an allowed value.
+	 * @return bool Whether the reset was successful.
+	 */
+	public function reset_installation_path( string $reason ) : bool {
+		if ( ! in_array( $reason, self::ALLOWED_RESET_REASONS, true ) ) {
+			return false;
+		}
+
+		$this->data['wc_installation_path'] = '';
+		return true;
 	}
 
 	/**

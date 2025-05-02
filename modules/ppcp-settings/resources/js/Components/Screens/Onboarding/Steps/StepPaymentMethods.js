@@ -10,6 +10,7 @@ import PaymentFlow from '../Components/PaymentFlow';
 const StepPaymentMethods = () => {
 	const { optionalMethods, setOptionalMethods } =
 		OnboardingHooks.useOptionalPaymentMethods();
+	const { ownBrandOnly } = CommonHooks.useWooSettings();
 	const { isCasualSeller } = OnboardingHooks.useBusiness();
 
 	const optionalMethodTitle = useMemo( () => {
@@ -31,7 +32,10 @@ const StepPaymentMethods = () => {
 			description: <OptionalMethodDescription />,
 		},
 		{
-			title: __(
+			title: ownBrandOnly ? __(
+				'No thanks, I prefer to use a different provider for local payment methods',
+				'woocommerce-paypal-payments'
+			) : __(
 				'No thanks, I prefer to use a different provider for processing credit cards, digital wallets, and local payment methods',
 				'woocommerce-paypal-payments'
 			),
@@ -41,7 +45,9 @@ const StepPaymentMethods = () => {
 
 	return (
 		<div className="ppcp-r-page-optional-payment-methods">
-			<OnboardingHeader title={ <PaymentStepTitle /> } />
+			<OnboardingHeader
+				title={ <PaymentStepTitle isBrandedOnly={ ownBrandOnly } /> }
+			/>
 			<div className="ppcp-r-inner-container">
 				<OptionSelector
 					multiSelect={ false }
@@ -58,7 +64,13 @@ const StepPaymentMethods = () => {
 
 export default StepPaymentMethods;
 
-const PaymentStepTitle = () => {
+const PaymentStepTitle = ( ownBrandOnly ) => {
+	if ( ownBrandOnly.isBrandedOnly ) {
+		return __(
+			'Add Expanded Checkout for more ways to pay',
+			'woocommerce-paypal-payments'
+		);
+	}
 	return __( 'Add Credit and Debit Cards', 'woocommerce-paypal-payments' );
 };
 

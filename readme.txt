@@ -2,9 +2,9 @@
 Contributors: paypal, woocommerce, automattic, syde
 Tags: woocommerce, paypal, payments, ecommerce, credit card
 Requires at least: 6.5
-Tested up to: 6.7
+Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 3.0.1
+Stable tag: 3.0.5
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -20,7 +20,7 @@ WooCommerce PayPal Payments is an **all-in-one solution** to help you **maximize
 * **Faster checkout** via PayPal buttons on product pages and in-cart.
 * Convenience to **pay over time** with PayPal Pay Later.
 * Allow Venmo shoppers (US only) to **share purchases** with friends.
-* **Standard** and **Advanced Card Processing** options. 
+* **Standard** and **Advanced Card Processing** options.
 * **Country-specific** payment methods to build global trust.
 * Multiple **subscription payment** options to help drive repeat business.
 
@@ -74,7 +74,7 @@ You’ve come to the right place. [Our documentation](https://woocommerce.com/do
 
 = Where can I get support, report bugs, or request new features? =
 
-To start, [review our troubleshooting tips](https://woocommerce.com/document/woocommerce-paypal-payments/#troubleshooting) for answers to common questions. Then, if you need further assistance, get in touch via the [official support forum](https://wordpress.org/support/plugin/woocommerce-paypal-payments/). 
+To start, [review our troubleshooting tips](https://woocommerce.com/document/woocommerce-paypal-payments/#troubleshooting) for answers to common questions. Then, if you need further assistance, get in touch via the [official support forum](https://wordpress.org/support/plugin/woocommerce-paypal-payments/).
 
 Please report bugs via [GitHub](https://github.com/woocommerce/woocommerce-paypal-payments/issues) or the official support forum. You can request (or vote for) new features on our [feature request board](https://woocommerce.com/feature-requests/woocommerce-paypal-payments/).
 
@@ -156,9 +156,31 @@ If you encounter issues with the PayPal buttons not appearing after an update, p
 
 == Changelog ==
 
+= 3.0.5 - 2025-04-23 =
+* Fix - Onboarding screen blank when WooPayments plugin is active #3312
+
+= 3.0.3 - 2025-04-08 =
+* Fix - BN code was set before the installation path was initialized #3309
+* Fix - Things to do next referenced Apple Pay while in branded-only mode #3308
+* Fix - Disabled payment methods were not hidden in reactified WooCommerce Payments settings tab #3290
+
+= 3.0.2 - 2025-04-03 =
+* Enhancement - Check the branded-only flag when settings-UI is loaded the first time #3278
+* Enhancement - Implement a Cache-Flush API #3276
+* Enhancement - Disable the mini-cart location by default #3284
+* Enhancement - Remove branded-only flag when uninstalling PayPal Payments #3295
+* Fix - Welcome screen lists "all major credit/debit cards, Apple Pay, Google Pay," in branded-only mode #3281
+* Fix - Correct heading in onboarding step 4 in branded-only mode #3282
+* Fix - Hide the payment methods screen for personal user in branded-only mode #3286
+* Fix - Enabling Save PayPal does not disable Pay Later messaging #3288
+* Fix - Settings UI: Fix Feature button links #3285
+* Fix - Create mapping for the 3d_secure_contingency setting #3262
+* Fix - Enable Fastlane Watermark by default in new settings UI #3296
+* Fix - Payment method screen is referencing credit cards, digital wallets in branded-only mode #3297
+
 = 3.0.1 - 2025-03-26 =
 * Enhancement - Include Fastlane meta on homepage #3151
-* Enhancement - Include Branded-only plugin configuration for certain installation paths 
+* Enhancement - Include Branded-only plugin configuration for certain installation paths
 * Enhancement - Include UI status in system report #3248
 * Enhancement - Minor enhancements in new UI scrolling & highlighting behavior #3240
 * Fix - "Warning: Class 'WooCommerce\PayPalCommerce\Vendor\Stringable' not found" after 3.0.0 update #3235
