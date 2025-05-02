@@ -108,6 +108,8 @@ const TabPaymentMethods = () => {
 					methods={ methods.apm }
 					onTriggerModal={ setActiveModal }
 					methodsMap={ methodsMap }
+					showBulkToggle={ methods.apm.length > 1 }
+					groupName="Alternative Payment"
 				/>
 			) }
 
