@@ -365,7 +365,7 @@ return array(
 			$container->get( 'settings.data.todos' ),
 		);
 	},
-	'settings.service.script-data-handler'         => static function ( ContainerInterface $container ) : ScriptDataHandler {
+	'settings.service.script-data-handler'                => static function ( ContainerInterface $container ) : ScriptDataHandler {
 		$settings = $container->get( 'wcgateway.settings' );
 		$settings_url = $container->get( 'settings.url' );
 		$paylater_is_available = $container->get( 'paylater-configurator.is-available' );
