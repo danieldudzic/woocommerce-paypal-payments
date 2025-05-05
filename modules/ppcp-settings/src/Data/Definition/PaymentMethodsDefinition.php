@@ -64,19 +64,11 @@ class PaymentMethodsDefinition {
 	private ?array $wc_gateways = null;
 
 	/**
-	 * Whether the BCDC is enabled.
-	 *
-	 * @var bool
-	 */
-	private bool $bcdc_enabled;
-
-	/**
 	 * Constructor.
 	 *
 	 * @param PaymentSettings $settings              Payment methods data model.
 	 * @param GeneralSettings $general_settings      General plugin settings model.
 	 * @param array           $axo_conflicts_notices Conflicts notices for Axo.
-	 * @param bool            $bcdc_enabled          Whether the BCDC is enabled.
 	 */
 	public function __construct(
 		PaymentSettings $settings,
@@ -87,7 +79,6 @@ class PaymentMethodsDefinition {
 		$this->settings              = $settings;
 		$this->general_settings      = $general_settings;
 		$this->axo_conflicts_notices = $axo_conflicts_notices;
-		$this->bcdc_enabled          = $bcdc_enabled;
 	}
 
 	/**
@@ -148,9 +139,6 @@ class PaymentMethodsDefinition {
 		$gateway_title       = $gateway ? $gateway->get_title() : $title;
 		$gateway_description = $gateway ? $gateway->get_description() : $description;
 		$enabled = $this->settings->is_method_enabled( $gateway_id );
-		if ( $gateway_id === CardButtonGateway::ID ) {
-			$enabled = $this->bcdc_enabled;
-		}
 		$config = array(
 			'id'              => $gateway_id,
 			'enabled'         => $enabled,
