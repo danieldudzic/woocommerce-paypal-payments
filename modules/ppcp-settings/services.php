@@ -53,6 +53,7 @@ use WooCommerce\PayPalCommerce\Settings\Service\FeaturesEligibilityService;
 use WooCommerce\PayPalCommerce\Settings\Service\GatewayRedirectService;
 use WooCommerce\PayPalCommerce\Settings\Service\LoadingScreenService;
 use WooCommerce\PayPalCommerce\Settings\Service\OnboardingUrlManager;
+use WooCommerce\PayPalCommerce\Settings\Service\ScriptDataHandler;
 use WooCommerce\PayPalCommerce\Settings\Service\TodosEligibilityService;
 use WooCommerce\PayPalCommerce\Settings\Service\TodosSortingAndFilteringService;
 use WooCommerce\PayPalCommerce\Vendor\Psr\Container\ContainerInterface;
@@ -363,6 +364,16 @@ return array(
 			$container->get( 'settings.data.paylater-messaging' ),
 			$container->get( 'settings.data.todos' ),
 		);
+	},
+	'settings.service.script-data-handler'                => static function ( ContainerInterface $container ) : ScriptDataHandler {
+		$settings = $container->get( 'wcgateway.settings' );
+		$settings_url = $container->get( 'settings.url' );
+		$paylater_is_available = $container->get( 'paylater-configurator.is-available' );
+		$store_country = $container->get( 'wcgateway.store-country' );
+		$merchant_id = $container->get( 'api.partner_merchant_id' );
+		$button_language_choices = $container->get( 'wcgateway.wp-paypal-locales-map' );
+		$partner_attribution = $container->get( 'api.helper.partner-attribution' );
+		return new ScriptDataHandler( $settings, $settings_url, $paylater_is_available, $store_country, $merchant_id, $button_language_choices, $partner_attribution );
 	},
 	'settings.ajax.switch_ui'                             => static function ( ContainerInterface $container ) : SwitchSettingsUiEndpoint {
 		return new SwitchSettingsUiEndpoint(
