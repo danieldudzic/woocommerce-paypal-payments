@@ -73,8 +73,7 @@ class PaymentMethodsDefinition {
 	public function __construct(
 		PaymentSettings $settings,
 		GeneralSettings $general_settings,
-		array $axo_conflicts_notices = array(),
-		$bcdc_enabled = false
+		array $axo_conflicts_notices = array()
 	) {
 		$this->settings              = $settings;
 		$this->general_settings      = $general_settings;
@@ -138,8 +137,8 @@ class PaymentMethodsDefinition {
 
 		$gateway_title       = $gateway ? $gateway->get_title() : $title;
 		$gateway_description = $gateway ? $gateway->get_description() : $description;
-		$enabled = $this->settings->is_method_enabled( $gateway_id );
-		$config = array(
+		$enabled             = $this->settings->is_method_enabled( $gateway_id );
+		$config              = array(
 			'id'              => $gateway_id,
 			'enabled'         => $enabled,
 			'title'           => str_replace( '&amp;', '&', $gateway_title ),
