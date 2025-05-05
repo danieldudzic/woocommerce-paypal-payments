@@ -42,10 +42,7 @@ const PaymentFlow = ( {
 			/>
 		);
 	}
-	let description = optionalDescription;
-	if ( ! useAcdc ) {
-		description = '';
-	}
+const description = useAcdc ? optionalDescription : '';
 	return (
 		<div className="ppcp-r-welcome-docs__wrapper">
 			<DefaultMethodsSection
