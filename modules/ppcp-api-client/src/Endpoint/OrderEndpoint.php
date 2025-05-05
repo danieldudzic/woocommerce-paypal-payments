@@ -483,6 +483,7 @@ class OrderEndpoint {
 		}
 		$json        = json_decode( $response['body'] );
 		$status_code = (int) wp_remote_retrieve_response_code( $response );
+
 		if ( 404 === $status_code || empty( $response['body'] ) ) {
 			$error = new RuntimeException(
 				__( 'Could not retrieve order.', 'woocommerce-paypal-payments' ),
@@ -498,6 +499,7 @@ class OrderEndpoint {
 			);
 			throw $error;
 		}
+
 		if ( 200 !== $status_code ) {
 			$error = new PayPalApiException(
 				$json,
