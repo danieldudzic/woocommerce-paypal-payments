@@ -577,7 +577,7 @@ return array(
 		$merchant_capabilities = array(
 			'save_paypal' => $capabilities['save_paypal'], // Save PayPal and Venmo eligibility.
 			'acdc'        => $capabilities['acdc'] && ! $gateways['card-button'], // Advanced credit and debit cards eligibility.
-			'apm'         => $capabilities['acdc'] && ! $gateways['card-button'], // Alternative payment methods eligibility.
+			'apm'         => ! $gateways['card-button'], // Alternative payment methods eligibility.
 			'google_pay'  => $capabilities['acdc'] && $capabilities['google_pay'], // Google Pay eligibility.
 			'apple_pay'   => $capabilities['acdc'] && $capabilities['apple_pay'], // Apple Pay eligibility.
 			'pay_later'   => $capabilities['acdc'] && ! $gateways['card-button'], // Pay Later eligibility.
