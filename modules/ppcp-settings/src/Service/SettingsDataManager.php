@@ -165,7 +165,7 @@ class SettingsDataManager {
 	 */
 	public function set_defaults_for_new_merchant( ConfigurationFlagsDTO $flags ) : void {
 		if ( $this->onboarding_profile->is_setup_done() ) {
-			return;
+			//return;
 		}
 
 		$this->apply_configuration( $flags );
@@ -269,7 +269,7 @@ class SettingsDataManager {
 
 			// Enable all APM methods.
 			foreach ( $methods_apm as $method ) {
-				$this->payment_methods->toggle_method_state( $method['id'], true );
+				$this->payment_methods->toggle_method_state( $method['id'], $flags->use_card_payments );
 			}
 		}
 
