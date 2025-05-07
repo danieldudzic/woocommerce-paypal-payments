@@ -1501,16 +1501,26 @@ return array(
 			$container->get( 'woocommerce.logger.woocommerce' )
 		);
 	},
-	'wcgateway.logging.is-enabled'                         => function ( ContainerInterface $container ) : bool {
+	'wcgateway.logging.is-enabled'                         => static function ( ContainerInterface $container ) : bool {
 		$settings = $container->get( 'wcgateway.settings' );
+
+		// Check if logging was enabled in plugin settings.
+		$is_enabled = $settings->has( 'logging_enabled' ) && $settings->get( 'logging_enabled' );
+
+		// If not enabled, check if plugin is in onboarding mode.
+		if ( ! $is_enabled ) {
+			$state = $container->get( 'settings.connection-state' );
+			assert( $state instanceof ConnectionState );
+
+			$is_enabled = $state->is_onboarding();
+		}
 
 		/**
 		 * Whether the logging of the plugin errors/events is enabled.
+		 *
+		 * @param bool $is_enabled Whether the logging is enabled.
 		 */
-		return apply_filters(
-			'woocommerce_paypal_payments_is_logging_enabled',
-			$settings->has( 'logging_enabled' ) && $settings->get( 'logging_enabled' )
-		);
+		return apply_filters( 'woocommerce_paypal_payments_is_logging_enabled', $is_enabled );
 	},
 
 	'wcgateway.use-place-order-button'                     => function ( ContainerInterface $container ) : bool {
