@@ -146,8 +146,7 @@ class ScriptDataHandler {
 		wp_enqueue_style( 'ppcp-admin-settings-font', 'https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap', array(), $style_asset_file['version'] );
 
 		$is_pay_later_configurator_available = $this->paylater_is_available;
-
-		$disabled_cards_choices = array(
+		$disabled_cards_choices              = array(
 			array(
 				'value' => 'visa',
 				'label' => _x( 'Visa', 'Name of credit card', 'woocommerce-paypal-payments' ),
