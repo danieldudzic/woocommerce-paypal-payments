@@ -307,9 +307,12 @@ class OrderEndpoint {
 	 * @throws RuntimeException If the request fails.
 	 */
 	public function capture( Order $order ): Order {
+		do_action( 'woocommerce_paypal_payments_before_capture_order', $order );
+
 		if ( $order->status()->is( OrderStatus::COMPLETED ) ) {
 			return $order;
 		}
+
 		$bearer = $this->bearer->bearer();
 		$url    = trailingslashit( $this->host ) . 'v2/checkout/orders/' . $order->id() . '/capture';
 		$args   = array(
@@ -480,6 +483,7 @@ class OrderEndpoint {
 		}
 		$json        = json_decode( $response['body'] );
 		$status_code = (int) wp_remote_retrieve_response_code( $response );
+
 		if ( 404 === $status_code || empty( $response['body'] ) ) {
 			$error = new RuntimeException(
 				__( 'Could not retrieve order.', 'woocommerce-paypal-payments' ),
@@ -495,6 +499,7 @@ class OrderEndpoint {
 			);
 			throw $error;
 		}
+
 		if ( 200 !== $status_code ) {
 			$error = new PayPalApiException(
 				$json,
