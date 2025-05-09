@@ -12,10 +12,11 @@ const StepPaymentMethods = () => {
 		OnboardingHooks.useOptionalPaymentMethods();
 	const { ownBrandOnly } = CommonHooks.useWooSettings();
 	const { isCasualSeller } = OnboardingHooks.useBusiness();
+	const { canUseCardPayments } = OnboardingHooks.useFlags();
 
 	const optionalMethodTitle = useMemo( () => {
-		// The BCDC flow does not show a title.
-		if ( isCasualSeller ) {
+		// The BCDC flow does not show a title. !acdc does not show a title.
+		if ( isCasualSeller || ! canUseCardPayments ) {
 			return null;
 		}
 
@@ -23,7 +24,7 @@ const StepPaymentMethods = () => {
 			'Available with additional application',
 			'woocommerce-paypal-payments'
 		);
-	}, [ isCasualSeller ] );
+	}, [ isCasualSeller, canUseCardPayments ] );
 
 	const methodChoices = [
 		{
@@ -32,13 +33,16 @@ const StepPaymentMethods = () => {
 			description: <OptionalMethodDescription />,
 		},
 		{
-			title: ownBrandOnly ? __(
-				'No thanks, I prefer to use a different provider for local payment methods',
-				'woocommerce-paypal-payments'
-			) : __(
-				'No thanks, I prefer to use a different provider for processing credit cards, digital wallets, and local payment methods',
-				'woocommerce-paypal-payments'
-			),
+			title:
+				ownBrandOnly || ! canUseCardPayments
+					? __(
+							'No thanks, I prefer to use a different provider for local payment methods',
+							'woocommerce-paypal-payments'
+					  )
+					: __(
+							'No thanks, I prefer to use a different provider for processing credit cards, digital wallets, and local payment methods',
+							'woocommerce-paypal-payments'
+					  ),
 			value: false,
 		},
 	];

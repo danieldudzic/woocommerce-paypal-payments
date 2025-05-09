@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace WooCommerce\PayPalCommerce\CardFields;
 
 use WooCommerce\PayPalCommerce\CardFields\Helper\CardFieldsApplies;
+use WooCommerce\PayPalCommerce\CardFields\Service\CardCaptureValidator;
 use WooCommerce\PayPalCommerce\Vendor\Psr\Container\ContainerInterface;
 
 return array(
@@ -74,5 +75,8 @@ return array(
 				'NO',
 			)
 		);
+	},
+	'card-fields.service.card-capture-validator'       => static function ( ContainerInterface $container ) : CardCaptureValidator {
+		return new CardCaptureValidator();
 	},
 );

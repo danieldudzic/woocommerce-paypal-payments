@@ -43,7 +43,10 @@ const Features = () => {
 						'Features refreshed successfully.',
 						'woocommerce-paypal-payments'
 					),
-					{ icon: NOTIFICATION_SUCCESS }
+					{
+						icon: NOTIFICATION_SUCCESS,
+						speak: true,
+					}
 				);
 			} else {
 				throw new Error(
@@ -58,7 +61,10 @@ const Features = () => {
 					error.message ||
 						__( 'Unknown error', 'woocommerce-paypal-payments' )
 				),
-				{ icon: NOTIFICATION_ERROR }
+				{
+					icon: NOTIFICATION_ERROR,
+					speak: true,
+				}
 			);
 		} finally {
 			setIsRefreshing( false );
@@ -76,6 +82,8 @@ const Features = () => {
 				/>
 			}
 			contentContainer={ false }
+			aria-live="polite"
+			aria-busy={ isRefreshing }
 		>
 			<ContentWrapper>
 				{ features.map( ( { id, enabled, ...feature } ) => (

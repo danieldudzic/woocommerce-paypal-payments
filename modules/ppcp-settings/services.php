@@ -53,6 +53,7 @@ use WooCommerce\PayPalCommerce\Settings\Service\FeaturesEligibilityService;
 use WooCommerce\PayPalCommerce\Settings\Service\GatewayRedirectService;
 use WooCommerce\PayPalCommerce\Settings\Service\LoadingScreenService;
 use WooCommerce\PayPalCommerce\Settings\Service\OnboardingUrlManager;
+use WooCommerce\PayPalCommerce\Settings\Service\ScriptDataHandler;
 use WooCommerce\PayPalCommerce\Settings\Service\TodosEligibilityService;
 use WooCommerce\PayPalCommerce\Settings\Service\TodosSortingAndFilteringService;
 use WooCommerce\PayPalCommerce\Vendor\Psr\Container\ContainerInterface;
@@ -364,6 +365,16 @@ return array(
 			$container->get( 'settings.data.todos' ),
 		);
 	},
+	'settings.service.script-data-handler'                => static function ( ContainerInterface $container ) : ScriptDataHandler {
+		$settings = $container->get( 'wcgateway.settings' );
+		$settings_url = $container->get( 'settings.url' );
+		$paylater_is_available = $container->get( 'paylater-configurator.is-available' );
+		$store_country = $container->get( 'wcgateway.store-country' );
+		$merchant_id = $container->get( 'api.partner_merchant_id' );
+		$button_language_choices = $container->get( 'wcgateway.wp-paypal-locales-map' );
+		$partner_attribution = $container->get( 'api.helper.partner-attribution' );
+		return new ScriptDataHandler( $settings, $settings_url, $paylater_is_available, $store_country, $merchant_id, $button_language_choices, $partner_attribution );
+	},
 	'settings.ajax.switch_ui'                             => static function ( ContainerInterface $container ) : SwitchSettingsUiEndpoint {
 		return new SwitchSettingsUiEndpoint(
 			$container->get( 'woocommerce.logger.woocommerce' ),
@@ -566,7 +577,7 @@ return array(
 		$merchant_capabilities = array(
 			'save_paypal' => $capabilities['save_paypal'], // Save PayPal and Venmo eligibility.
 			'acdc'        => $capabilities['acdc'] && ! $gateways['card-button'], // Advanced credit and debit cards eligibility.
-			'apm'         => $capabilities['acdc'] && ! $gateways['card-button'], // Alternative payment methods eligibility.
+			'apm'         => ! $gateways['card-button'], // Alternative payment methods eligibility.
 			'google_pay'  => $capabilities['acdc'] && $capabilities['google_pay'], // Google Pay eligibility.
 			'apple_pay'   => $capabilities['acdc'] && $capabilities['apple_pay'], // Apple Pay eligibility.
 			'pay_later'   => $capabilities['acdc'] && ! $gateways['card-button'], // Pay Later eligibility.
