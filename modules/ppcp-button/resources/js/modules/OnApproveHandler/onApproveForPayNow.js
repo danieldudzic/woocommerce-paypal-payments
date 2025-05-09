@@ -1,7 +1,5 @@
 const onApprove = ( context, errorHandler, spinner ) => {
 	return ( data, actions ) => {
-		console.log( 'capturing order...' );
-
 		spinner.block();
 		errorHandler.clear();
 
@@ -23,10 +21,6 @@ const onApprove = ( context, errorHandler, spinner ) => {
 			.then( ( data ) => {
 				spinner.unblock();
 				if ( ! data.success ) {
-					console.error(
-						'something went wrong capturing the order',
-						data
-					);
 					if ( data.data.code === 100 ) {
 						errorHandler.message( data.data.message );
 					} else {
@@ -40,8 +34,6 @@ const onApprove = ( context, errorHandler, spinner ) => {
 					}
 					throw new Error( data.data.message );
 				}
-
-				console.log( 'order captured correctly' );
 				document.querySelector( '#place_order' ).click();
 			} );
 	};
