@@ -50,6 +50,7 @@ class CheckoutActionHandler {
 	configuration() {
 		const spinner = this.spinner;
 		const createOrder = ( data, actions ) => {
+			console.log( 'creating the order' );
 			const payer = payerData();
 			const bnCode =
 				typeof this.config.bn_codes[ this.config.context ] !==
@@ -103,6 +104,10 @@ class CheckoutActionHandler {
 				} )
 				.then( function ( data ) {
 					if ( ! data.success ) {
+						console.log(
+							'something went wrong creating the order',
+							data
+						);
 						spinner.unblock();
 						//handle both messages sent from Woocommerce (data.messages) and this plugin (data.data.message)
 						if ( typeof data.messages !== 'undefined' ) {
@@ -152,6 +157,9 @@ class CheckoutActionHandler {
 					input.setAttribute( 'name', 'ppcp-resume-order' );
 					input.setAttribute( 'value', data.data.custom_id );
 					document.querySelector( formSelector ).appendChild( input );
+
+					console.log( 'returning order id: ' );
+
 					return data.data.id;
 				} );
 		};
