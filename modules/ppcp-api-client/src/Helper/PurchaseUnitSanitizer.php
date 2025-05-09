@@ -193,10 +193,23 @@ class PurchaseUnitSanitizer {
 			$item_mismatch = $this->calculate_item_mismatch();
 
 			if ( $item_mismatch > 0 ) {
+				// Do not convert a purely digital basket to a physical one.
+				$mismatch_category = Item::DIGITAL_GOODS;
+
+				foreach ( $this->purchase_unit['items'] as $item ) {
+					if ( $item['category'] !== Item::DIGITAL_GOODS ) {
+						$mismatch_category = Item::PHYSICAL_GOODS;
+						break;
+					}
+				}
+
 				// Add extra line item with roundings.
-				$line_name                      = $this->extra_line_name;
-				$roundings_money                = new Money( $item_mismatch, $this->currency_code() );
-				$this->purchase_unit['items'][] = ( new Item( $line_name, $roundings_money, 1 ) )->to_array();
+				$line_name       = $this->extra_line_name;
+				$roundings_money = new Money( $item_mismatch, $this->currency_code() );
+
+				$this->purchase_unit['items'][] = (
+						new Item( $line_name, $roundings_money, 1, '', null, '', $mismatch_category )
+					)->to_array();
 
 				$this->set_last_message(
 					__( 'Item amount mismatch. Extra line added.', 'woocommerce-paypal-payments' )
