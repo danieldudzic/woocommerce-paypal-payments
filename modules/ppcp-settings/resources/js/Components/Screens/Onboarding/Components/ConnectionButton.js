@@ -7,6 +7,13 @@ import { useHandleOnboardingButton } from '../../../../hooks/useHandleConnection
 import BusyStateWrapper from '../../../ReusableComponents/BusyStateWrapper';
 import { Notice } from '../../../ReusableComponents/Elements';
 
+const useIsFirefox = () => {
+	if ( typeof window === 'undefined' ) {
+		return false;
+	}
+	return window.navigator.userAgent.toLowerCase().indexOf( 'firefox' ) > -1;
+};
+
 /**
  * Button component that outputs a placeholder button when no onboardingUrl is present yet - the
  * placeholder button looks identical to the working button, but has no href, target, or
@@ -26,9 +33,7 @@ const ButtonOrPlaceholder = ( {
 	href,
 	children,
 } ) => {
-	const isFirefox =
-		typeof window !== 'undefined' &&
-		window.navigator.userAgent.toLowerCase().indexOf( 'firefox' ) > -1;
+	const isFirefox = useIsFirefox();
 
 	const buttonProps = {
 		className,
