@@ -622,19 +622,12 @@ class WCGatewayModule implements ServiceModule, ExtendingModule, ExecutableModul
 				$dcc_configuration = $container->get( 'wcgateway.configuration.card-configuration' );
 				assert( $dcc_configuration instanceof CardPaymentsConfiguration );
 
-				$logger = $container->get( 'woocommerce.logger.woocommerce' );
-
 				$standard_card_button = get_option( 'woocommerce_ppcp-card-button-gateway_settings' );
-				$logger->info('$standard_card_button: ' . wc_print_r( $standard_card_button, true));
 
-
-				$logger->info('dcc_configuration->is_enabled(): '. wc_print_r($dcc_configuration->is_enabled(), true));
-				$logger->info('isset( $standard_card_button["enabled"] ): '. wc_print_r(isset( $standard_card_button['enabled'] ), true));
-				if ( $dcc_configuration->is_enabled() && isset( $standard_card_button['enabled'] ) ) {
-					$standard_card_button['enabled'] = 'no';
-					update_option( 'woocommerce_ppcp-card-button-gateway_settings', $standard_card_button );
-					$logger->info('Updated woocommerce_ppcp-card-button-gateway_settings to: '. print_r($standard_card_button, true));
-				}
+//				if ( $dcc_configuration->is_enabled() && isset( $standard_card_button['enabled'] ) ) {
+//					$standard_card_button['enabled'] = 'no';
+//					update_option( 'woocommerce_ppcp-card-button-gateway_settings', $standard_card_button );
+//				}
 
 				$dcc_applies = $container->get( 'api.helpers.dccapplies' );
 				assert( $dcc_applies instanceof DccApplies );
@@ -654,10 +647,8 @@ class WCGatewayModule implements ServiceModule, ExtendingModule, ExecutableModul
 					$methods[] = $container->get( 'wcgateway.credit-card-gateway' );
 				}
 
-				$logger->info('WCGatewayModule allow card button gateway: ' . apply_filters( 'woocommerce_paypal_payments_card_button_gateway_should_register_gateway', $container->get( 'wcgateway.settings.allow_card_button_gateway' ) ));
 				if ( $paypal_gateway_enabled && apply_filters( 'woocommerce_paypal_payments_card_button_gateway_should_register_gateway', $container->get( 'wcgateway.settings.allow_card_button_gateway' ) ) ) {
 					$methods[] = $container->get( 'wcgateway.card-button-gateway' );
-					$logger->info('WCGatewayModule added card button gateway');
 				}
 
 				$pui_product_status = $container->get( 'wcgateway.pay-upon-invoice-product-status' );
