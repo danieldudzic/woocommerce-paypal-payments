@@ -625,11 +625,11 @@ class WCGatewayModule implements ServiceModule, ExtendingModule, ExecutableModul
 				$logger = $container->get( 'woocommerce.logger.woocommerce' );
 
 				$standard_card_button = get_option( 'woocommerce_ppcp-card-button-gateway_settings' );
-				$logger->info('$standard_card_button: ' . $standard_card_button);
+				$logger->info('$standard_card_button: ' . wc_print_r( $standard_card_button, true));
 
 
-				$logger->info('dcc_configuration->is_enabled(): '. $dcc_configuration->is_enabled());
-				$logger->info('isset( $standard_card_button["enabled"] ): '. isset( $standard_card_button['enabled'] ));
+				$logger->info('dcc_configuration->is_enabled(): '. wc_print_r($dcc_configuration->is_enabled(), true));
+				$logger->info('isset( $standard_card_button["enabled"] ): '. wc_print_r(isset( $standard_card_button['enabled'] ), true));
 				if ( $dcc_configuration->is_enabled() && isset( $standard_card_button['enabled'] ) ) {
 					$standard_card_button['enabled'] = 'no';
 					update_option( 'woocommerce_ppcp-card-button-gateway_settings', $standard_card_button );
