@@ -97,7 +97,6 @@ class DisableGateways {
 
 		if ( ! $this->settings_status->is_smart_button_enabled_for_location( 'checkout' ) ) {
 			unset( $methods[ CardButtonGateway::ID ] );
-			\WooCommerce\PayPalCommerce\PPCP::container()->get( 'woocommerce.logger.woocommerce' )->info( "DisableGateways.php unset gateway" );
 			if ( $this->subscription_helper->cart_contains_subscription() ) {
 				unset( $methods[ PayPalGateway::ID ] );
 			}
