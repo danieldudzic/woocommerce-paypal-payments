@@ -322,7 +322,8 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 				// Unset BCDC if merchant is eligible for ACDC and country is eligible for card fields.
 				$card_fields_eligible = $container->get( 'card-fields.eligible' );
 				if ( $dcc_product_status->is_active() && $card_fields_eligible ) {
-					//unset( $payment_methods[ CardButtonGateway::ID ] );
+					unset( $payment_methods[ CardButtonGateway::ID ] );
+					\WooCommerce\PayPalCommerce\PPCP::container()->get( 'woocommerce.logger.woocommerce' )->info( "SettingsModule: unsetting CardButtonGateway::ID" );
 				} else {
 					// For non-ACDC regions unset ACDC.
 					unset( $payment_methods[ CreditCardGateway::ID ] );
