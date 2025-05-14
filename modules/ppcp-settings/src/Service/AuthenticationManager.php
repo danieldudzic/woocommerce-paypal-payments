@@ -9,12 +9,9 @@ declare( strict_types = 1 );
 
 namespace WooCommerce\PayPalCommerce\Settings\Service;
 
-use JsonException;
 use Throwable;
-use Exception;
+use JsonException;
 use Psr\Log\LoggerInterface;
-use WooCommerce\PayPalCommerce\ApiClient\Endpoint\PartnersEndpoint;
-use WooCommerce\PayPalCommerce\ApiClient\Exception\PayPalApiException;
 use WooCommerce\PayPalCommerce\ApiClient\Exception\RuntimeException;
 use WooCommerce\PayPalCommerce\ApiClient\Authentication\PayPalBearer;
 use WooCommerce\PayPalCommerce\ApiClient\Endpoint\LoginSeller;
@@ -303,7 +300,7 @@ class AuthenticationManager {
 	 * @return void
 	 * @throws RuntimeException When invalid shared ID or auth provided.
 	 */
-	public function validate_id_and_auth_code( string $shared_id, string $auth_code ) : void {
+	private function validate_id_and_auth_code( string $shared_id, string $auth_code ) : void {
 		if ( empty( $shared_id ) ) {
 			throw new RuntimeException( 'No onboarding ID provided.' );
 		}
@@ -322,10 +319,10 @@ class AuthenticationManager {
 	 * @param bool   $use_sandbox Whether to use the sandbox mode.
 	 * @param string $shared_id   The OAuth client ID.
 	 * @param string $auth_code   The OAuth authorization code.
-	 * @return void
+	 * @return MerchantConnectionDTO A DTO containing the connection details.
 	 * @throws RuntimeException When failed to retrieve payee.
 	 */
-	public function authenticate_via_oauth( bool $use_sandbox, string $shared_id, string $auth_code ) : void {
+	private function authenticate_via_oauth( bool $use_sandbox, string $shared_id, string $auth_code ) : MerchantConnectionDTO {
 		$this->logger->info(
 			'Attempting OAuth login to PayPal...',
 			array(
