@@ -156,7 +156,7 @@ class ConnectionListener {
 		$this->logger->info( 'Found OAuth merchant data in request', $data );
 
 		try {
-			$this->authentication_manager->finish_oauth_authentication( $data );
+			$this->authentication_manager->handle_oauth_authentication( $data );
 			$this->mark_token_as_processed( $token );
 		} catch ( \Exception $e ) {
 			$this->logger->error( 'Failed to complete authentication: ' . $e->getMessage() );

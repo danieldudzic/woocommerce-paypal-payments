@@ -11,6 +11,7 @@ namespace WooCommerce\PayPalCommerce\Settings\Service;
 
 use JsonException;
 use Throwable;
+use Exception;
 use Psr\Log\LoggerInterface;
 use WooCommerce\PayPalCommerce\ApiClient\Endpoint\PartnersEndpoint;
 use WooCommerce\PayPalCommerce\ApiClient\Exception\PayPalApiException;
@@ -257,6 +258,36 @@ class AuthenticationManager {
 		update_option( self::OAUTH_OPTION_NAME, $oauth_connection, false );
 	}
 
+	/**
+	 * Remove the temporary oauth credentials from the DB.
+	 *
+	 * @return void
+	 */
+	private function remove_oauth_connection_details() : void {
+		delete_option( self::OAUTH_OPTION_NAME );
+	}
+
+	/**
+	 * Returns the previously remembered oauth details.
+	 *
+	 * @return OAuthConnectionDTO The stored oauth credentials.
+	 * @throws RuntimeException When no stored credentials are found, or they have expired.
+	 */
+	private function retrieve_oauth_connection_details() : OAuthConnectionDTO {
+		$oauth_data = get_option( self::OAUTH_OPTION_NAME );
+
+		if ( ! $oauth_data instanceof OAuthConnectionDTO ) {
+			throw new RuntimeException( 'No stored OAuth credentials found' );
+		}
+
+		// Check for expiration (credentials expire after 1 hour).
+		if ( time() - $oauth_data->timestamp > 3600 ) {
+			$this->remove_oauth_connection_details();
+			throw new RuntimeException( 'Stored OAuth credentials have expired' );
+		}
+
+		return $oauth_data;
+	}
 
 	/**
 	 * Checks if the provided ID and auth-code have a valid format.
@@ -319,29 +350,44 @@ class AuthenticationManager {
 		$connection->client_secret = $credentials['client_secret'];
 		$connection->merchant_id   = $credentials['merchant_id'];
 
-		$this->update_connection_details( $connection );
+		return $connection;
 	}
 
 	/**
-	 * Verifies the merchant details in the final OAuth redirect and extracts
-	 * missing credentials from the URL.
+	 * Handles the full OAuth authentication flow.
+	 *
+	 * 1. Verify that the provided request contains required details.
+	 * 2. Retrieve the oauth-connection details and validate them.
+	 * 3. Convert the oauth-connection details into a permanent id/secret.
+	 * 4. Complete the authentication by storing all details in the DB.
 	 *
 	 * @param array $request_data Array of request parameters to process.
 	 * @return void
 	 *
 	 * @throws RuntimeException Missing or invalid credentials.
 	 */
-	public function finish_oauth_authentication( array $request_data ) : void {
+	public function handle_oauth_authentication( array $request_data ) : void {
 		$merchant_id    = $request_data['merchant_id'] ?? '';
 		$merchant_email = $request_data['merchant_email'] ?? '';
 		$seller_type    = $request_data['seller_type'] ?? '';
 
+		// 1. Verify the request details.
 		if ( empty( $merchant_id ) || empty( $merchant_email ) ) {
 			throw new RuntimeException( 'Missing merchant ID or email in request' );
 		}
 
-		$connection = $this->common_settings->get_merchant_data();
+		// 2. Retrieve and validate the oauth connection.
+		$oauth_connection = $this->retrieve_oauth_connection_details();
+		$this->validate_id_and_auth_code( $oauth_connection->shared_id, $oauth_connection->auth_token );
 
+		// 3. Trade oauth connection details to permanent client credentials.
+		$connection = $this->authenticate_via_oauth(
+			$oauth_connection->is_sandbox,
+			$oauth_connection->shared_id,
+			$oauth_connection->auth_token
+		);
+
+		// 4. Complete the authentication checks and persist details.
 		if ( $connection->merchant_id && $connection->merchant_id !== $merchant_id ) {
 			throw new RuntimeException( 'Unexpected merchant ID in request' );
 		}
@@ -352,6 +398,8 @@ class AuthenticationManager {
 		if ( SellerTypeEnum::is_valid( $seller_type ) ) {
 			$connection->seller_type = $seller_type;
 		}
+
+		$this->remove_oauth_connection_details();
 
 		$this->update_connection_details( $connection );
 	}
