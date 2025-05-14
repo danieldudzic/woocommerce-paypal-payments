@@ -24,6 +24,7 @@ use WooCommerce\PayPalCommerce\Settings\Data\GeneralSettings;
 use WooCommerce\PayPalCommerce\WcGateway\Helper\EnvironmentConfig;
 use WooCommerce\WooCommerce\Logging\Logger\NullLogger;
 use WooCommerce\PayPalCommerce\Settings\DTO\MerchantConnectionDTO;
+use WooCommerce\PayPalCommerce\Settings\DTO\OAuthConnectionDTO;
 use WooCommerce\PayPalCommerce\Webhooks\WebhookRegistrar;
 use WooCommerce\PayPalCommerce\Settings\Enum\SellerTypeEnum;
 use WooCommerce\PayPalCommerce\WcGateway\Helper\ConnectionState;
@@ -33,6 +34,12 @@ use WooCommerce\PayPalCommerce\Settings\Endpoint\CommonRestEndpoint;
  * Class that manages the connection to PayPal.
  */
 class AuthenticationManager {
+
+	/**
+	 * Option name used to store the OAuth connection details.
+	 */
+	private const OAUTH_OPTION_NAME = 'ppcp_oauth_connection_details';
+
 	/**
 	 * Data model that stores the connection details.
 	 *
@@ -219,6 +226,35 @@ class AuthenticationManager {
 		);
 
 		$this->update_connection_details( $connection );
+	}
+
+	/**
+	 * Stores the OAuth details in the DB.
+	 *
+	 * Those details are used in another request to complete the OAuth login process.
+	 *
+	 * @param string $shared_id   The shared onboarding ID.
+	 * @param string $auth_code   The authorization code.
+	 * @param bool   $use_sandbox Whether it's a sandbox or production account.
+	 * @return void
+	 */
+	public function remember_oauth_connection_details( string $shared_id, string $auth_code, bool $use_sandbox ) : void {
+		$this->logger->info(
+			'Storing one-time OAuth credentials...',
+			array(
+				'shared_id'   => $shared_id,
+				'auth_code'   => $auth_code,
+				'use_sandbox' => $use_sandbox,
+			)
+		);
+
+		$oauth_connection = new OAuthConnectionDTO(
+			$use_sandbox,
+			$shared_id,
+			$auth_code
+		);
+
+		update_option( self::OAUTH_OPTION_NAME, $oauth_connection, false );
 	}
 
 
