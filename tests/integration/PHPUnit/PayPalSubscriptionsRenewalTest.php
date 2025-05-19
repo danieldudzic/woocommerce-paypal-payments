@@ -367,7 +367,6 @@ class PayPalSubscriptionsRenewalTest extends TestCase
 				]
 			],
 		]);
-		$order->set_status('completed');
 		// Make sure the order is properly saved
 		$order->save();
 
