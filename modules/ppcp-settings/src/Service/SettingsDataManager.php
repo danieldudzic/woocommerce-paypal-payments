@@ -165,7 +165,7 @@ class SettingsDataManager {
 	 */
 	public function set_defaults_for_new_merchant( ConfigurationFlagsDTO $flags ) : void {
 		if ( $this->onboarding_profile->is_setup_done() ) {
-			//return;
+			return;
 		}
 
 		$this->apply_configuration( $flags );
