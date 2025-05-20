@@ -116,16 +116,16 @@ const COUNTRY_CONFIGS = {
 	MX: {
 		extendedMethods: [
 			{
-				name: 'CardFields',
-				Component: CardFields,
+				name: 'CreditDebitCards',
+				Component: CreditDebitCards,
 				isOwnBrand: false,
-				isAcdc: true,
+				isAcdc: false,
 			},
 			{
 				name: 'APMs',
 				Component: AlternativePaymentMethods,
 				isOwnBrand: true,
-				isAcdc: true,
+				isAcdc: false,
 			},
 		],
 	},
