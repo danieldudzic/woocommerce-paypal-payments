@@ -73,8 +73,7 @@ return array(
 			$container->get( 'wcgateway.settings' ),
 			$container->get( 'api.endpoint.partners' ),
 			$container->get( 'settings.flag.is-connected' ),
-			$container->get( 'api.helper.failure-registry' ),
-			$container->get( 'woocommerce.logger.woocommerce' )
+			$container->get( 'api.helper.failure-registry' )
 		);
 	},
 	'ppcp-local-apms.bancontact.wc-gateway'     => static function ( ContainerInterface $container ): BancontactGateway {
