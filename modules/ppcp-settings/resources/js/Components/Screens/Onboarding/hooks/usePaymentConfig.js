@@ -15,8 +15,6 @@ import {
 	CreditDebitCards,
 } from '../Components/PaymentOptions';
 
-import { useWooSettings } from '../../../../data/common/hooks';
-
 // List of all payment icons and which requirements they have.
 const PAYMENT_ICONS = [
 	{ name: 'paypal', always: true },
@@ -259,7 +257,6 @@ export const usePaymentConfig = (
 	hasFastlane,
 	ownBrandOnly
 ) => {
-	const { countryCode } = useWooSettings();
 	return useMemo( () => {
 		// eslint-disable-next-line no-console
 		console.log( '[Payment Config]', {
@@ -288,7 +285,7 @@ export const usePaymentConfig = (
 			[
 				// Either include Acdc or non-Acdc methods except for Mexico.
 				( method ) =>
-					countryCode === 'MX'
+					country === 'MX'
 						? ! method.isAcdc || canUseCardPayments
 						: method.isAcdc === canUseCardPayments,
 				// Only include own-brand methods when ownBrandOnly is true.
