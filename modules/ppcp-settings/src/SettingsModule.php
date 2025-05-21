@@ -584,13 +584,6 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 				$merchant_data    = $general_settings->get_merchant_data();
 				$merchant_country = $merchant_data->merchant_country;
 
-				$logger = $container->get( 'woocommerce.logger.woocommerce' );
-				assert( $logger instanceof LoggerInterface );
-
-				$logger->info( 'Merchant country: ' . $merchant_country );
-				$logger->info( 'Merchant data: ' . json_encode( $merchant_data ) );
-				$logger->info( '$methods_apm: ' . json_encode( $methods_apm ) );
-
 				// Enable all APM methods.
 				foreach ( $methods_apm as $method ) {
 					// Skip PayUponInvoice if merchant is not in Germany.
