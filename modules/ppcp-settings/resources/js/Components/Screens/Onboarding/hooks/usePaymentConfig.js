@@ -15,6 +15,8 @@ import {
 	CreditDebitCards,
 } from '../Components/PaymentOptions';
 
+import { useWooSettings } from '../../../../data/common/hooks';
+
 // List of all payment icons and which requirements they have.
 const PAYMENT_ICONS = [
 	{ name: 'paypal', always: true },
@@ -28,6 +30,7 @@ const PAYMENT_ICONS = [
 	{ name: 'blik', isOwnBrand: true, onlyAcdc: true },
 	{ name: 'ideal', isOwnBrand: true, onlyAcdc: true },
 	{ name: 'bancontact', isOwnBrand: true, onlyAcdc: true },
+	{ name: 'oxxo', isOwnBrand: true, onlyAcdc: false, countries: [ 'MX' ] },
 ];
 
 // Default configuration, used for all countries, unless they override individual attributes below.
@@ -211,6 +214,11 @@ const getRelevantIcons = ( country, includeAcdc, onlyBranded ) =>
 				return true;
 			}
 
+			// If we're in Mexico, only show OXXO from the APMs.
+			if ( country === 'MX' && onlyAcdc ) {
+				return false;
+			}
+
 			if ( onlyBranded && ! isOwnBrand ) {
 				return false;
 			}
@@ -251,6 +259,7 @@ export const usePaymentConfig = (
 	hasFastlane,
 	ownBrandOnly
 ) => {
+	const { countryCode } = useWooSettings();
 	return useMemo( () => {
 		// eslint-disable-next-line no-console
 		console.log( '[Payment Config]', {
@@ -277,8 +286,11 @@ export const usePaymentConfig = (
 		const availableOptionalMethods = filterMethods(
 			config.extendedMethods,
 			[
-				// Either include Acdc or non-Acdc methods.
-				( method ) => method.isAcdc === canUseCardPayments,
+				// Either include Acdc or non-Acdc methods except for Mexico.
+				( method ) =>
+					countryCode === 'MX'
+						? ! method.isAcdc || canUseCardPayments
+						: method.isAcdc === canUseCardPayments,
 				// Only include own-brand methods when ownBrandOnly is true.
 				( method ) => ! ownBrandOnly || method.isOwnBrand === true,
 				// Only include Fastlane when hasFastlane is true.

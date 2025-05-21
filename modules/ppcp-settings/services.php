@@ -568,16 +568,17 @@ return array(
 		);
 		// Merchant capabilities, serve to show active or inactive badge and buttons.
 		$capabilities = array(
-			'apple_pay'   => $features['apple_pay']['enabled'] ?? false,
-			'google_pay'  => $features['google_pay']['enabled'] ?? false,
-			'acdc'        => $features['advanced_credit_and_debit_cards']['enabled'] ?? false,
-			'save_paypal' => $features['save_paypal_and_venmo']['enabled'] ?? false,
+			'apple_pay'                   => $features['apple_pay']['enabled'] ?? false,
+			'google_pay'                  => $features['google_pay']['enabled'] ?? false,
+			'acdc'                        => $features['advanced_credit_and_debit_cards']['enabled'] ?? false,
+			'save_paypal'                 => $features['save_paypal_and_venmo']['enabled'] ?? false,
+			'alternative_payment_methods' => $features['alternative_payment_methods']['enabled'] ?? false,
 		);
 
 		$merchant_capabilities = array(
 			'save_paypal' => $capabilities['save_paypal'], // Save PayPal and Venmo eligibility.
-			'acdc'        => $capabilities['acdc'] && ! $gateways['card-button'], // Advanced credit and debit cards eligibility.
-			'apm'         => ! $gateways['card-button'], // Alternative payment methods eligibility.
+			'acdc'        => $capabilities['acdc'], // Advanced credit and debit cards eligibility.
+			'apm'         => $capabilities['alternative_payment_methods'], // Alternative payment methods eligibility.
 			'google_pay'  => $capabilities['acdc'] && $capabilities['google_pay'], // Google Pay eligibility.
 			'apple_pay'   => $capabilities['acdc'] && $capabilities['apple_pay'], // Apple Pay eligibility.
 			'pay_later'   => $capabilities['acdc'] && ! $gateways['card-button'], // Pay Later eligibility.
