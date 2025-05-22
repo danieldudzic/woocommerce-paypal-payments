@@ -13,7 +13,6 @@ use Automattic\WooCommerce\Admin\Notes\Note;
 use Automattic\WooCommerce\Admin\Notes\NotesUnavailableException;
 use Automattic\WooCommerce\Admin\Notes\NoteTraits;
 use Exception;
-use Mockery\Matcher\Not;
 
 /**
  * Class MexicoInstallmentsNote
