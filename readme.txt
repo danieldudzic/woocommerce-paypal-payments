@@ -163,6 +163,8 @@ If you encounter issues with the PayPal buttons not appearing after an update, p
 * Enhancement - Enhance the accessibility of the new Settings UI #3294
 * Enhancement - Add capture pre-conditions for card payment source #3300
 * Enhancement - Enable all/Disable all toggle next to Alternative Payment methods on Payment Methods tab #3321
+* Enhancement - Add installment notifications for Mexico store locations #3404, #3405
+* Fix - Various issues for Mexico store locations during onboarding & plugin configuration #3403
 * Fix - APFS plugin triggers incorrect renewal date for simple products as subscriptions #3272
 * Fix - PayPal Smart Button incompatible with WooCommerce Subscription Switching #3291
 * Fix - Fastlane gateway visible on Pay for Order page #3293
