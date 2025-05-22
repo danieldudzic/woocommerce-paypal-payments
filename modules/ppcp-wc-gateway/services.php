@@ -1170,14 +1170,16 @@ return array(
 				'requirements' => array(),
 				'gateway'      => 'paypal',
 				'description'  => sprintf(
-				// translators: %1$s and %2$s are the opening and closing of HTML <a> tag.
+				// translators: %1$s and %2$s are the opening and closing of HTML <a> tag. %3$s and %4$s are the opening and closing of HTML <p> tag.
 					__(
 						'Allow your customers to pay in installments without interest while you receive the full payment in a single transaction.*
-					<p class="description">Terms and conditions: *You will receive the full payment minus the applicable PayPal fee. See %1$sterms and conditions%2$s.</p>',
+					%3$sTerms and conditions: *You will receive the full payment minus the applicable PayPal fee. See %1$sterms and conditions%2$s.%4$s',
 						'woocommerce-paypal-payments'
 					),
 					'<a href="https://www.paypal.com/mx/webapps/mpp/merchant-fees" target="_blank">',
-					'</a>'
+					'</a>',
+					'<p class="description">',
+					'</p>'
 				),
 			),
 			'mexico_installments_action_link' => array(
