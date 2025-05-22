@@ -691,7 +691,7 @@ return array(
 		assert( $dcc_configuration instanceof CardPaymentsConfiguration );
 
 		$fields              = array(
-			'checkout_settings_heading'   => array(
+			'checkout_settings_heading'       => array(
 				'heading'      => __( 'Standard Payments Settings', 'woocommerce-paypal-payments' ),
 				'type'         => 'ppcp-heading',
 				'screens'      => array(
@@ -701,7 +701,7 @@ return array(
 				'requirements' => array(),
 				'gateway'      => 'paypal',
 			),
-			'title'                       => array(
+			'title'                           => array(
 				'title'        => __( 'Title', 'woocommerce-paypal-payments' ),
 				'type'         => 'text',
 				'description'  => __(
@@ -717,7 +717,7 @@ return array(
 				'requirements' => array(),
 				'gateway'      => 'paypal',
 			),
-			'dcc_block_checkout_notice'   => array(
+			'dcc_block_checkout_notice'       => array(
 				'heading'      => '',
 				'html'         => $container->get( 'wcgateway.notice.checkout-blocks' ),
 				'type'         => 'ppcp-html',
@@ -728,7 +728,7 @@ return array(
 				'requirements' => array( 'dcc' ),
 				'gateway'      => 'dcc',
 			),
-			'dcc_enabled'                 => array(
+			'dcc_enabled'                     => array(
 				'title'        => __( 'Enable/Disable', 'woocommerce-paypal-payments' ),
 				'desc_tip'     => true,
 				'description'  => __( 'Once enabled, the Credit Card option will show up in the checkout.', 'woocommerce-paypal-payments' ),
@@ -743,7 +743,7 @@ return array(
 					State::STATE_ONBOARDED,
 				),
 			),
-			'dcc_gateway_title'           => array(
+			'dcc_gateway_title'               => array(
 				'title'        => __( 'Title', 'woocommerce-paypal-payments' ),
 				'type'         => 'text',
 				'description'  => __(
@@ -760,7 +760,7 @@ return array(
 				),
 				'gateway'      => 'dcc',
 			),
-			'description'                 => array(
+			'description'                     => array(
 				'title'        => __( 'Description', 'woocommerce-paypal-payments' ),
 				'type'         => 'text',
 				'desc_tip'     => true,
@@ -779,7 +779,7 @@ return array(
 				'requirements' => array(),
 				'gateway'      => 'paypal',
 			),
-			'intent'                      => array(
+			'intent'                          => array(
 				'title'        => __( 'Intent', 'woocommerce-paypal-payments' ),
 				'type'         => 'select',
 				'class'        => array(),
@@ -801,7 +801,7 @@ return array(
 				'requirements' => array(),
 				'gateway'      => 'paypal',
 			),
-			'capture_on_status_change'    => array(
+			'capture_on_status_change'        => array(
 				'title'        => __( 'Capture On Status Change', 'woocommerce-paypal-payments' ),
 				'type'         => 'checkbox',
 				'default'      => false,
@@ -818,7 +818,7 @@ return array(
 				'requirements' => array(),
 				'gateway'      => 'paypal',
 			),
-			'capture_for_virtual_only'    => array(
+			'capture_for_virtual_only'        => array(
 				'title'        => __( 'Capture Virtual-Only Orders ', 'woocommerce-paypal-payments' ),
 				'type'         => 'checkbox',
 				'default'      => false,
@@ -835,7 +835,7 @@ return array(
 				'requirements' => array(),
 				'gateway'      => 'paypal',
 			),
-			'payee_preferred'             => array(
+			'payee_preferred'                 => array(
 				'title'        => __( 'Instant Payments ', 'woocommerce-paypal-payments' ),
 				'type'         => 'checkbox',
 				'default'      => false,
@@ -852,7 +852,7 @@ return array(
 				'requirements' => array(),
 				'gateway'      => 'paypal',
 			),
-			'brand_name'                  => array(
+			'brand_name'                      => array(
 				'title'        => __( 'Brand Name', 'woocommerce-paypal-payments' ),
 				'type'         => 'text',
 				'default'      => get_bloginfo( 'name' ),
@@ -868,7 +868,7 @@ return array(
 				'requirements' => array(),
 				'gateway'      => 'paypal',
 			),
-			'landing_page'                => array(
+			'landing_page'                    => array(
 				'title'        => __( 'Landing Page', 'woocommerce-paypal-payments' ),
 				'type'         => 'select',
 				'class'        => array(),
@@ -890,7 +890,7 @@ return array(
 				'requirements' => array(),
 				'gateway'      => 'paypal',
 			),
-			'alternative_payment_methods' => array(
+			'alternative_payment_methods'     => array(
 				'heading'      => __( 'Alternative Payment Methods', 'woocommerce-paypal-payments' ),
 				'description'  => sprintf(
 				// translators: %1$s, %2$s, %3$s and %4$s are a link tags.
@@ -906,7 +906,7 @@ return array(
 				'requirements' => array(),
 				'gateway'      => 'paypal',
 			),
-			'disable_funding'             => array(
+			'disable_funding'                 => array(
 				'title'        => __( 'Disable Alternative Payment Methods', 'woocommerce-paypal-payments' ),
 				'type'         => 'ppcp-multiselect',
 				'class'        => array(),
@@ -930,7 +930,7 @@ return array(
 				'requirements' => array(),
 				'gateway'      => 'paypal',
 			),
-			'card_billing_data_mode'      => array(
+			'card_billing_data_mode'          => array(
 				'title'        => __( 'Send checkout billing data to card fields', 'woocommerce-paypal-payments' ),
 				'type'         => 'select',
 				'class'        => array(),
@@ -950,7 +950,7 @@ return array(
 				'requirements' => array(),
 				'gateway'      => array( 'paypal', CardButtonGateway::ID ),
 			),
-			'allow_card_button_gateway'   => array(
+			'allow_card_button_gateway'       => array(
 				'title'        => __( 'Create gateway for Standard Card Button', 'woocommerce-paypal-payments' ),
 				'type'         => 'checkbox',
 				'desc_tip'     => true,
@@ -964,7 +964,7 @@ return array(
 				'requirements' => array(),
 				'gateway'      => 'paypal',
 			),
-			'allow_local_apm_gateways'    => array(
+			'allow_local_apm_gateways'        => array(
 				'title'        => __( 'Create gateway for alternative payment methods', 'woocommerce-paypal-payments' ),
 				'type'         => 'checkbox',
 				'desc_tip'     => true,
@@ -978,7 +978,7 @@ return array(
 				'requirements' => array(),
 				'gateway'      => 'paypal',
 			),
-			'disable_cards'               => array(
+			'disable_cards'                   => array(
 				'title'        => __( 'Disable specific credit cards', 'woocommerce-paypal-payments' ),
 				'type'         => 'ppcp-multiselect',
 				'class'        => array(),
@@ -1006,7 +1006,7 @@ return array(
 				),
 				'gateway'      => 'dcc',
 			),
-			'card_icons'                  => array(
+			'card_icons'                      => array(
 				'title'        => __( 'Show logo of the following credit cards', 'woocommerce-paypal-payments' ),
 				'type'         => 'ppcp-multiselect',
 				'class'        => array(),
@@ -1045,7 +1045,7 @@ return array(
 				),
 				'gateway'      => 'dcc',
 			),
-			'dcc_name_on_card'            => array(
+			'dcc_name_on_card'                => array(
 				'title'        => __( 'Cardholder Name', 'woocommerce-paypal-payments' ),
 				'type'         => 'select',
 				'default'      => $dcc_configuration->show_name_on_card(),
@@ -1059,7 +1059,7 @@ return array(
 				'gateway'      => array( 'dcc', 'axo' ),
 				'requirements' => array( 'axo' ),
 			),
-			'3d_secure_heading'           => array(
+			'3d_secure_heading'               => array(
 				'heading'      => __( '3D Secure', 'woocommerce-paypal-payments' ),
 				'type'         => 'ppcp-heading',
 				'description'  => wp_kses_post(
@@ -1087,7 +1087,7 @@ return array(
 				),
 				'gateway'      => 'dcc',
 			),
-			'3d_secure_contingency'       => array(
+			'3d_secure_contingency'           => array(
 				'title'        => __( 'Contingency for 3D Secure', 'woocommerce-paypal-payments' ),
 				'type'         => 'select',
 				'description'  => sprintf(
@@ -1115,7 +1115,7 @@ return array(
 				),
 				'gateway'      => 'dcc',
 			),
-			'saved_payments_heading'      => array(
+			'saved_payments_heading'          => array(
 				'heading'      => __( 'Saved Payments', 'woocommerce-paypal-payments' ),
 				'type'         => 'ppcp-heading',
 				'description'  => wp_kses_post(
@@ -1142,7 +1142,7 @@ return array(
 				),
 				'gateway'      => 'dcc',
 			),
-			'vault_enabled_dcc'           => array(
+			'vault_enabled_dcc'               => array(
 				'title'        => __( 'Vaulting', 'woocommerce-paypal-payments' ),
 				'type'         => 'checkbox',
 				'desc_tip'     => true,
@@ -1161,7 +1161,36 @@ return array(
 				'gateway'      => 'dcc',
 				'input_class'  => $container->get( 'wcgateway.helper.vaulting-scope' ) ? array() : array( 'ppcp-disabled-checkbox' ),
 			),
-			'paypal_saved_payments'       => array(
+			'mexico_installments'             => array(
+				'heading'      => __( 'Installments', 'woocommerce-paypal-payments' ),
+				'type'         => 'ppcp-heading',
+				'screens'      => array(
+					State::STATE_ONBOARDED,
+				),
+				'requirements' => array(),
+				'gateway'      => 'paypal',
+				'description'  => sprintf(
+				// translators: %1$s and %2$s are the opening and closing of HTML <a> tag.
+					__(
+						'Allow your customers to pay in installments without interest while you receive the full payment in a single transaction.*
+					<p class="description">Terms and conditions: *You will receive the full payment minus the applicable PayPal fee. See %1$sterms and conditions%2$s.</p>',
+						'woocommerce-paypal-payments'
+					),
+					'<a href="https://www.paypal.com/mx/webapps/mpp/merchant-fees" target="_blank">',
+					'</a>'
+				),
+			),
+			'mexico_installments_action_link' => array(
+				'title'        => __( 'Activate your Installments', 'woocommerce-paypal-payments' ),
+				'type'         => 'ppcp-text',
+				'text'         => '<a href="https://www.paypal.com/businessmanage/preferences/installmentplan" target="_blank" class="button ppcp-refresh-feature-status">' . esc_html__( 'Enable Installments', 'woocommerce-paypal-payments' ) . '</a>',
+				'screens'      => array(
+					State::STATE_ONBOARDED,
+				),
+				'requirements' => array(),
+				'gateway'      => 'paypal',
+			),
+			'paypal_saved_payments'           => array(
 				'heading'      => __( 'Saved payments', 'woocommerce-paypal-payments' ),
 				'description'  => sprintf(
 				// translators: %1$s, %2$s, %3$s and %4$s are a link tags.
@@ -1179,8 +1208,8 @@ return array(
 				'requirements' => array(),
 				'gateway'      => 'paypal',
 			),
-			'subscriptions_mode'          => $container->get( 'wcgateway.settings.fields.subscriptions_mode' ),
-			'vault_enabled'               => array(
+			'subscriptions_mode'              => $container->get( 'wcgateway.settings.fields.subscriptions_mode' ),
+			'vault_enabled'                   => array(
 				'title'        => __( 'Vaulting', 'woocommerce-paypal-payments' ),
 				'type'         => 'checkbox',
 				'desc_tip'     => true,
@@ -1199,7 +1228,7 @@ return array(
 				'gateway'      => 'paypal',
 				'input_class'  => $container->get( 'wcgateway.helper.vaulting-scope' ) ? array() : array( 'ppcp-disabled-checkbox' ),
 			),
-			'digital_wallet_heading'      => array(
+			'digital_wallet_heading'          => array(
 				'heading'      => __( 'Digital Wallet Services', 'woocommerce-paypal-payments' ),
 				'type'         => 'ppcp-heading',
 				'description'  => wp_kses_post(
@@ -1253,6 +1282,11 @@ return array(
 
 		$fields['disable_cards']['options'] = $card_options;
 		$fields['card_icons']['options'] = array_merge( $dark_versions, $card_options );
+
+		if ( $container->get( 'api.shop.country' ) !== 'MX' ) {
+			unset( $fields['mexico_installments'] );
+			unset( $fields['mexico_installments_action_link'] );
+		}
 
 		return $fields;
 	},

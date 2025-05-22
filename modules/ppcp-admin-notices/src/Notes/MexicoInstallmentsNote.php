@@ -70,8 +70,19 @@ class MexicoInstallmentsNote {
 			__( 'Enable Installments with PayPal', 'woocommerce-paypal-payments' )
 		);
 		$note->set_content(
-			__( 'Allow your customers to pay in installments without interest while you receive the full payment.* Activate your Installments without interest with PayPal. *You will receive the full payment minus the applicable PayPal fee. See <a href="https://www.paypal.com/mx/webapps/mpp/merchant-fees" target="_blank">terms and conditions</a>.', 'woocommerce-paypal-payments' )
+			sprintf(
+			// translators: %1$s and %2$s are the opening and closing of HTML <a> tag.
+				__(
+					'Allow your customers to pay in installments without interest while you receive the full payment in a single transaction.*
+					<p>Activate your Installments without interest with PayPal.</p>
+					<p class="description">You will receive the full payment minus the applicable PayPal fee. See %1$sterms and conditions%2$s.</p>',
+					'woocommerce-paypal-payments'
+				),
+				'<a href="https://www.paypal.com/mx/webapps/mpp/merchant-fees" target="_blank">',
+				'</a>'
+			)
 		);
+
 		$note->add_action(
 			'enable-installments-action-link',
 			__( 'Enable Installments', 'woocommerce-paypal-payments' ),
