@@ -61,6 +61,7 @@ return array(
 				'LT',
 				'LU',
 				'MT',
+				'MX',
 				'NL',
 				'PL',
 				'PT',
