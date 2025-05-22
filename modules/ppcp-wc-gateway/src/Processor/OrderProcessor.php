@@ -228,6 +228,13 @@ class OrderProcessor {
 			}
 		}
 
+		// Do not continue if PayPal order status is completed.
+		$order = $this->order_endpoint->order( $order->id() );
+		if ( $order->status()->is( OrderStatus::COMPLETED ) ) {
+			$this->logger->warning('Could not process PayPal completed order #'. $order->id() );
+			return;
+		}
+
 		$this->add_paypal_meta( $wc_order, $order, $this->environment );
 
 		if ( $this->order_helper->contains_physical_goods( $order ) && ! $this->order_is_ready_for_process( $order ) ) {
