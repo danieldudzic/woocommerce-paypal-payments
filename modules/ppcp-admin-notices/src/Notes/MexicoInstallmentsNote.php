@@ -13,6 +13,7 @@ use Automattic\WooCommerce\Admin\Notes\Note;
 use Automattic\WooCommerce\Admin\Notes\NotesUnavailableException;
 use Automattic\WooCommerce\Admin\Notes\NoteTraits;
 use Exception;
+use Mockery\Matcher\Not;
 
 /**
  * Class MexicoInstallmentsNote
@@ -46,7 +47,7 @@ class MexicoInstallmentsNote {
 	 *
 	 * @throws NotesUnavailableException Throws exception when notes are unavailable.
 	 */
-	public static function possibly_add_note() {
+	public static function possibly_add_note(): void {
 		$note = self::get_note();
 
 		if ( ! self::can_be_added() ) {
@@ -106,8 +107,12 @@ class MexicoInstallmentsNote {
 			return false;
 		}
 
-		$note = self::get_note();
-		if ( ! $note instanceof Note || self::note_exists() ) {
+		/**
+		 * The method exists in the NoteTraits trait.
+		 *
+		 * @psalm-suppress UndefinedMethod
+		 */
+		if ( self::note_exists() ) {
 			return false;
 		}
 
