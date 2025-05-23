@@ -398,7 +398,6 @@ return array(
 			'ML',
 			'MH',
 			'MR',
-			'YT',
 			'FM',
 			'MN',
 			'ME',
