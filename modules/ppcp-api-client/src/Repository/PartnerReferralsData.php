@@ -55,9 +55,11 @@ class PartnerReferralsData {
 	 * @return array
 	 */
 	public function data( array $products = array(), string $onboarding_token = '', bool $use_subscriptions = null, bool $use_card_payments = true ) : array {
+		$in_acdc_country = $this->dcc_applies->for_country_currency();
+
 		if ( ! $products ) {
 			$products = array(
-				$this->dcc_applies->for_country_currency() ? 'PPCP' : 'EXPRESS_CHECKOUT',
+				$in_acdc_country ? 'PPCP' : 'EXPRESS_CHECKOUT',
 			);
 		}
 
@@ -87,7 +89,7 @@ class PartnerReferralsData {
 			'TRACKING_SHIPMENT_READWRITE',
 		);
 
-		if ( $this->dcc_applies->for_country_currency() ) {
+		if ( $in_acdc_country ) {
 			$capabilities[] = 'PAYPAL_WALLET_VAULTING_ADVANCED';
 		}
 
