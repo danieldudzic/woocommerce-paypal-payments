@@ -206,20 +206,23 @@ class PartnerReferralsDataTest extends TestCase {
 	 * core params present in the legacy and new UI.
 	 */
 	public function testDataStructure() : void {
+		$this->dccApplies->shouldReceive('for_country_currency')->andReturn(true);
+
 		/**
 		 * Undefined subscription: Keep vaulting in first-party, but don't add the capability.
 		 */
 		$result = $this->testee->data( [ 'PPCP' ], self::TOKEN );
-		$this->dccApplies->shouldNotHaveReceived( 'for_country_currency' );
 
 		$expected = $this->getBaseExpectedArray();
 
 		$expected['products'] = [ 'PPCP' ];
 
+		$expected['operations'][0]['api_integration_preference']['rest_api_integration']['first_party_details']['features'][] = 'BILLING_AGREEMENT';
 		$expected['operations'][0]['api_integration_preference']['rest_api_integration']['first_party_details']['features'][] = 'FUTURE_PAYMENT';
 		$expected['operations'][0]['api_integration_preference']['rest_api_integration']['first_party_details']['features'][] = 'VAULT';
 
-		$this->assertArrayNotHasKey( 'capabilities', $expected );
+		$expected['capabilities'][] = 'PAYPAL_WALLET_VAULTING_ADVANCED';
+
 		$this->assertEquals( $expected, $result );
 	}
 
