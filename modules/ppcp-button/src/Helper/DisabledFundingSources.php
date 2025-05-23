@@ -154,7 +154,7 @@ class DisabledFundingSources {
 	 * @return array
 	 */
 	private function apply_context_rules( array $disable_funding ) : array {
-		if ( 'MX' === $this->merchant_country && $this->dcc_configuration->is_bcdc_enabled() ) {
+		if ( 'MX' === $this->merchant_country && $this->dcc_configuration->is_bcdc_enabled() && is_checkout() ) {
 			return $disable_funding;
 		}
 
