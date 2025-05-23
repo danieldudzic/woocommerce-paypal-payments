@@ -342,7 +342,7 @@ class FeaturesDefinition {
 						'url'      => 'https://www.paypal.com/businessmanage/preferences/installmentplan',
 						'showWhen' => 'disabled',
 						'class'    => 'small-button',
-					)
+					),
 				),
 			),
 		);
