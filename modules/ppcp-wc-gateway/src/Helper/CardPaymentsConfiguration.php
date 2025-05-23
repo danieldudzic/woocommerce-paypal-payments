@@ -13,6 +13,7 @@ declare( strict_types = 1 );
 
 namespace WooCommerce\PayPalCommerce\WcGateway\Helper;
 
+use WooCommerce\PayPalCommerce\Settings\Data\GeneralSettings;
 use WooCommerce\PayPalCommerce\WcGateway\Settings\Settings;
 use WooCommerce\PayPalCommerce\WcGateway\Exception\NotFoundException;
 use WooCommerce\PayPalCommerce\Axo\Helper\PropertiesDictionary;
@@ -68,6 +69,13 @@ class CardPaymentsConfiguration {
 	 * @var DCCProductStatus
 	 */
 	private DCCProductStatus $dcc_status;
+
+	/**
+	 * General Settings
+	 *
+	 * @var GeneralSettings
+	 */
+	private GeneralSettings $general_settings;
 
 	/**
 	 * This classes lazily resolves settings on first access. This flag indicates
@@ -134,17 +142,20 @@ class CardPaymentsConfiguration {
 	 * @param Settings         $settings         Plugin settings instance.
 	 * @param DccApplies       $dcc_applies      DCC eligibility helper.
 	 * @param DCCProductStatus $dcc_status        Manages the Seller status.
+	 * @param GeneralSettings  $general_settings General settings instance.
 	 */
 	public function __construct(
 		ConnectionState $connection_state,
 		Settings $settings,
 		DccApplies $dcc_applies,
-		DCCProductStatus $dcc_status
+		DCCProductStatus $dcc_status,
+		GeneralSettings $general_settings
 	) {
 		$this->connection_state = $connection_state;
 		$this->settings         = $settings;
 		$this->dcc_applies      = $dcc_applies;
 		$this->dcc_status       = $dcc_status;
+		$this->general_settings = $general_settings;
 
 		$this->is_resolved = false;
 	}
@@ -319,6 +330,11 @@ class CardPaymentsConfiguration {
 	 * @return bool
 	 */
 	public function is_bcdc_enabled() : bool {
+		if ( 'MX' === $this->general_settings->get_merchant_country() ) {
+			$bcdc_setting = get_option( 'woocommerce_ppcp-card-button-gateway_settings' );
+			return 'yes' === $bcdc_setting['enabled'];
+		}
+
 		return $this->is_enabled() && ! $this->use_acdc();
 	}
 
