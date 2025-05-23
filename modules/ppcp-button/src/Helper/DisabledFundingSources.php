@@ -13,6 +13,7 @@ use WooCommerce\PayPalCommerce\WcGateway\Exception\NotFoundException;
 use WooCommerce\PayPalCommerce\WcGateway\Settings\Settings;
 use WooCommerce\PayPalCommerce\WcSubscriptions\FreeTrialHandlerTrait;
 use WooCommerce\PayPalCommerce\WcGateway\Helper\CardPaymentsConfiguration;
+use WooCommerce\PayPalCommerce\WcGateway\Helper\CartCheckoutDetector;
 
 /**
  * Class DisabledFundingSources
@@ -154,7 +155,7 @@ class DisabledFundingSources {
 	 * @return array
 	 */
 	private function apply_context_rules( array $disable_funding ) : array {
-		if ( 'MX' === $this->merchant_country && $this->dcc_configuration->is_bcdc_enabled() && is_checkout() ) {
+		if ( 'MX' === $this->merchant_country && $this->dcc_configuration->is_bcdc_enabled() && CartCheckoutDetector::has_classic_checkout() && is_checkout() ) {
 			return $disable_funding;
 		}
 
