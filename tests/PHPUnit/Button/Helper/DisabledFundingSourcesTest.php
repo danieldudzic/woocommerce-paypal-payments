@@ -38,6 +38,7 @@ class DisabledFundingSourcesTest extends TestCase
 		$this->setWcPaymentGateways();
 
 		when('is_checkout')->justReturn(true);
+		when('wc_get_page_id')->justReturn(123);
 
 		$this->assertEquals(['card'], $sut->sources('checkout-block'));
 	}
@@ -56,6 +57,7 @@ class DisabledFundingSourcesTest extends TestCase
 		$this->setWcPaymentGateways();
 
 		when('is_checkout')->justReturn(false);
+		when('wc_get_page_id')->justReturn(123);
 
 		$this->assertEquals(['card'], $sut->sources('checkout'));
 	}
@@ -79,6 +81,7 @@ class DisabledFundingSourcesTest extends TestCase
 		$this->setWcPaymentGateways();
 
 		when('is_checkout')->justReturn(true);
+		when('wc_get_page_id')->justReturn(123);
 
 		$this->assertEquals(['card', 'foo'], $sut->sources('checkout-block'));
 	}
@@ -98,6 +101,7 @@ class DisabledFundingSourcesTest extends TestCase
 		$this->setWcPaymentGateways();
 
 		when('is_checkout')->justReturn(true);
+		when('wc_get_page_id')->justReturn(123);
 
 		// For Mexico with BCDC enabled, card should not be in disabled funding sources
 		$this->assertEquals([], $sut->sources('checkout-block'));
@@ -118,6 +122,7 @@ class DisabledFundingSourcesTest extends TestCase
 		$this->setWcPaymentGateways();
 
 		when('is_checkout')->justReturn(true);
+		when('wc_get_page_id')->justReturn(123);
 
 		// For Mexico with BCDC disabled, card should be in disabled funding sources
 		$this->assertEquals(['card'], $sut->sources('checkout-block'));
@@ -138,6 +143,7 @@ class DisabledFundingSourcesTest extends TestCase
 		$this->setWcPaymentGateways();
 
 		when('is_checkout')->justReturn(true);
+		when('wc_get_page_id')->justReturn(123);
 
 		// For non-Mexico countries, existing logic applies
 		$this->assertEquals(['card'], $sut->sources('checkout-block'));
