@@ -3,7 +3,8 @@ body:has(.ppcp-r-container--onboarding) {
 	background-color: var(--ppcp-color-app-bg) !important;
 
 	// WC 9.9+.
-	#mainform {
+	#mainform,
+	#wpcontent {
 		background-color: var(--ppcp-color-app-bg) !important;
 	}
 
