@@ -231,7 +231,7 @@ class OrderProcessor {
 		// Do not continue if PayPal order status is completed.
 		$order = $this->order_endpoint->order( $order->id() );
 		if ( $order->status()->is( OrderStatus::COMPLETED ) ) {
-			$this->logger->warning('Could not process PayPal completed order #'. $order->id() );
+			$this->logger->warning( 'Could not process PayPal completed order #' . $order->id() . ', Status: ' . $order->status()->name() );
 			return;
 		}
 
