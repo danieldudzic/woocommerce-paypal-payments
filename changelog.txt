@@ -25,6 +25,7 @@
 * Fix - Block checkout - Address form missing after payment on Product and Cart pages #3371
 * Fix - Payments with Debit & Credit Cards failing #3376
 * Fix - PayPalGateway::process_payment on completed order leads to order failure #3374
+* Fix - New settings UI background color impacted by WooCommerce 9.9+ #3407
 * Fix - Can not save payments if subscriptions is not selected when onboarding #3408
 
 = 3.0.5 - 2025-04-23 =
