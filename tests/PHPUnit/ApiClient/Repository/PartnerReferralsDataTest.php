@@ -97,11 +97,12 @@ class PartnerReferralsDataTest extends TestCase {
 	/**
 	 * Data provider for testing flag combinations.
 	 *
-	 * @return array[] Test cases with [has_subscriptions, has_cards, is_acdc_eligible, expected_changes]
+	 * @return array[] Test cases with [has_subscriptions, has_cards, is_acdc_eligible,
+	 *                 expected_changes]
 	 */
 	public function flagCombinationsProvider() : array {
 		return [
-			'with subscriptions and cards, ACDC eligible' => [
+			'with subscriptions and cards, ACDC eligible'        => [
 				true,  // With subscription?
 				true,  // With cards?
 				true,  // ACDC eligible?
@@ -111,7 +112,7 @@ class PartnerReferralsDataTest extends TestCase {
 					'has_vault_features'   => true,
 				],
 			],
-			'with subscriptions, no cards, ACDC eligible' => [
+			'with subscriptions, no cards, ACDC eligible'        => [
 				true,  // With subscription?
 				false, // With cards?
 				true,  // ACDC eligible?
@@ -121,20 +122,22 @@ class PartnerReferralsDataTest extends TestCase {
 					'has_vault_features'   => true,
 				],
 			],
-			'no subscriptions, with cards, ACDC eligible' => [
+			'no subscriptions, with cards, ACDC eligible'        => [
 				false, // With subscription?
 				true,  // With cards?
 				true,  // ACDC eligible?
 				[
+					'capabilities'         => [ 'PAYPAL_WALLET_VAULTING_ADVANCED' ],
 					'show_add_credit_card' => true,
 					'has_vault_features'   => false,
 				],
 			],
-			'no subscriptions, no cards, ACDC eligible' => [
+			'no subscriptions, no cards, ACDC eligible'          => [
 				false, // With subscription?
 				false, // With cards?
 				true,  // ACDC eligible?
 				[
+					'capabilities'         => [ 'PAYPAL_WALLET_VAULTING_ADVANCED' ],
 					'show_add_credit_card' => false,
 					'has_vault_features'   => false,
 				],
@@ -166,7 +169,7 @@ class PartnerReferralsDataTest extends TestCase {
 					'has_vault_features'   => false,
 				],
 			],
-			'no subscriptions, no cards, ACDC is not eligible' => [
+			'no subscriptions, no cards, ACDC is not eligible'   => [
 				false, // With subscription?
 				false, // With cards?
 				false, // ACDC eligible?
@@ -206,20 +209,23 @@ class PartnerReferralsDataTest extends TestCase {
 	 * core params present in the legacy and new UI.
 	 */
 	public function testDataStructure() : void {
+		$this->dccApplies->shouldReceive( 'for_country_currency' )->andReturn( true );
+
 		/**
 		 * Undefined subscription: Keep vaulting in first-party, but don't add the capability.
 		 */
 		$result = $this->testee->data( [ 'PPCP' ], self::TOKEN );
-		$this->dccApplies->shouldNotHaveReceived( 'for_country_currency' );
 
 		$expected = $this->getBaseExpectedArray();
 
 		$expected['products'] = [ 'PPCP' ];
 
+		$expected['operations'][0]['api_integration_preference']['rest_api_integration']['first_party_details']['features'][] = 'BILLING_AGREEMENT';
 		$expected['operations'][0]['api_integration_preference']['rest_api_integration']['first_party_details']['features'][] = 'FUTURE_PAYMENT';
 		$expected['operations'][0]['api_integration_preference']['rest_api_integration']['first_party_details']['features'][] = 'VAULT';
 
-		$this->assertArrayNotHasKey( 'capabilities', $expected );
+		$expected['capabilities'][] = 'PAYPAL_WALLET_VAULTING_ADVANCED';
+
 		$this->assertEquals( $expected, $result );
 	}
 
@@ -230,7 +236,7 @@ class PartnerReferralsDataTest extends TestCase {
 	 * @dataProvider flagCombinationsProvider
 	 */
 	public function testDataStructureWithFlags( bool $has_subscriptions, bool $has_cards, bool $is_acdc_eligible, array $expected_changes ) : void {
-		$this->dccApplies->shouldReceive('for_country_currency')->andReturn($is_acdc_eligible);
+		$this->dccApplies->shouldReceive( 'for_country_currency' )->andReturn( $is_acdc_eligible );
 
 		$result   = $this->testee->data( [ 'PPCP' ], self::TOKEN, $has_subscriptions, $has_cards );
 		$expected = $this->getBaseExpectedArray();
@@ -245,9 +251,7 @@ class PartnerReferralsDataTest extends TestCase {
 
 		$expected['partner_config_override']['show_add_credit_card'] = $expected_changes['show_add_credit_card'];
 
-		if ( $has_subscriptions ) {
-			$expected['operations'][0]['api_integration_preference']['rest_api_integration']['first_party_details']['features'][] = 'BILLING_AGREEMENT';
-		}
+		$expected['operations'][0]['api_integration_preference']['rest_api_integration']['first_party_details']['features'][] = 'BILLING_AGREEMENT';
 
 		if ( $expected_changes['has_vault_features'] ) {
 			$expected['operations'][0]['api_integration_preference']['rest_api_integration']['first_party_details']['features'][] = 'FUTURE_PAYMENT';
