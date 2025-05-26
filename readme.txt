@@ -180,6 +180,8 @@ If you encounter issues with the PayPal buttons not appearing after an update, p
 * Fix - BCDC not enabled by default when cards selected during onboarding #3366
 * Fix - Block checkout - Address form missing after payment on Product and Cart pages #3371
 * Fix - Payments with Debit & Credit Cards failing #3376
+* Fix - PayPalGateway::process_payment on completed order leads to order failure #3374
+* Fix - Can not save payments if subscriptions is not selected when onboarding #3408
 
 = 3.0.5 - 2025-04-23 =
 * Fix - Onboarding screen blank when WooPayments plugin is active #3312

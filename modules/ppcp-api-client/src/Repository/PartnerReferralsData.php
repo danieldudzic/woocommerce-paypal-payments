@@ -55,9 +55,11 @@ class PartnerReferralsData {
 	 * @return array
 	 */
 	public function data( array $products = array(), string $onboarding_token = '', bool $use_subscriptions = null, bool $use_card_payments = true ) : array {
+		$in_acdc_country = $this->dcc_applies->for_country_currency();
+
 		if ( ! $products ) {
 			$products = array(
-				$this->dcc_applies->for_country_currency() ? 'PPCP' : 'EXPRESS_CHECKOUT',
+				$in_acdc_country ? 'PPCP' : 'EXPRESS_CHECKOUT',
 			);
 		}
 
@@ -87,27 +89,17 @@ class PartnerReferralsData {
 			'TRACKING_SHIPMENT_READWRITE',
 		);
 
-		if ( true === $use_subscriptions ) {
-			if ( $this->dcc_applies->for_country_currency() ) {
-				$capabilities[] = 'PAYPAL_WALLET_VAULTING_ADVANCED';
-			}
-
-			$first_party_features[] = 'BILLING_AGREEMENT';
+		if ( $in_acdc_country ) {
+			$capabilities[] = 'PAYPAL_WALLET_VAULTING_ADVANCED';
 		}
+
+		$first_party_features[] = 'BILLING_AGREEMENT';
 
 		// Backwards compatibility. Keep those features in the #legacy-ui (null-value).
 		// Move this into the previous condition, once legacy code is removed.
 		if ( false !== $use_subscriptions ) {
 			$first_party_features[] = 'FUTURE_PAYMENT';
 			$first_party_features[] = 'VAULT';
-		}
-
-		if ( false === $use_subscriptions ) {
-			// Only use "ADVANCED_VAULTING" product for onboarding with subscriptions.
-			$products = array_filter(
-				$products,
-				static fn( $product ) => $product !== 'ADVANCED_VAULTING'
-			);
 		}
 
 		$payload = array(
