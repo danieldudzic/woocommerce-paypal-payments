@@ -347,7 +347,7 @@ return array(
 			$container->get( 'wcgateway.settings' ),
 			$container->get( 'wcgateway.all-funding-sources' ),
 			$container->get( 'wcgateway.configuration.card-configuration' ),
-			$container->get( 'settings.data.general' )->get_merchant_country()
+			$container->get( 'api.shop.country' )
 		);
 	},
 	'button.is-logged-in'                         => static function ( ContainerInterface $container ): bool {
