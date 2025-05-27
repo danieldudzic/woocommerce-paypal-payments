@@ -156,7 +156,7 @@ If you encounter issues with the PayPal buttons not appearing after an update, p
 
 == Changelog ==
 
-= 3.0.6 - xxxx-xx-xx =
+= 3.0.6 - 2025-05-27 =
 * Enhancement - Implement 3D secure check for Google Pay #3163
 * Enhancement - Add options for "Disable Credit Cards" and "Language" #3226
 * Enhancement - Improve the loading experience for the new UI #3269
