@@ -331,6 +331,13 @@ class FeaturesDefinition {
 				'buttons'     => array(
 					array(
 						'type'     => 'secondary',
+						'text'     => __( 'Configure', 'woocommerce-paypal-payments' ),
+						'url'      => 'https://www.paypal.com/businessmanage/preferences/installmentplan',
+						'showWhen' => 'enabled',
+						'class'    => 'small-button',
+					),
+					array(
+						'type'     => 'secondary',
 						'text'     => __( 'Sign up', 'woocommerce-paypal-payments' ),
 						'url'      => 'https://www.paypal.com/businessmanage/preferences/installmentplan',
 						'showWhen' => 'disabled',

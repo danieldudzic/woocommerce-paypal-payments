@@ -1404,7 +1404,8 @@ return array(
 			$container->get( 'settings.connection-state' ),
 			$container->get( 'wcgateway.settings' ),
 			$container->get( 'api.helpers.dccapplies' ),
-			$container->get( 'wcgateway.helper.dcc-product-status' )
+			$container->get( 'wcgateway.helper.dcc-product-status' ),
+			$container->get( 'api.shop.country' )
 		);
 	},
 
