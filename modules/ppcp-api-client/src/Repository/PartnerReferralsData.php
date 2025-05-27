@@ -90,16 +90,15 @@ class PartnerReferralsData {
 		);
 
 		if ( $in_acdc_country ) {
+			$products       = array( 'PPCP', 'ADVANCED_VAULTING' );
 			$capabilities[] = 'PAYPAL_WALLET_VAULTING_ADVANCED';
 		}
 
 		$first_party_features[] = 'BILLING_AGREEMENT';
 
-		// Backwards compatibility. Keep those features in the #legacy-ui (null-value).
-		// Move this into the previous condition, once legacy code is removed.
-		if ( false !== $use_subscriptions ) {
-			$first_party_features[] = 'FUTURE_PAYMENT';
+		if ( $use_card_payments !== false ) {
 			$first_party_features[] = 'VAULT';
+			$first_party_features[] = 'FUTURE_PAYMENT';
 		}
 
 		$payload = array(
