@@ -346,7 +346,8 @@ return array(
 		return new DisabledFundingSources(
 			$container->get( 'wcgateway.settings' ),
 			$container->get( 'wcgateway.all-funding-sources' ),
-			$container->get( 'wcgateway.configuration.card-configuration' )
+			$container->get( 'wcgateway.configuration.card-configuration' ),
+			$container->get( 'api.shop.country' )
 		);
 	},
 	'button.is-logged-in'                         => static function ( ContainerInterface $container ): bool {
