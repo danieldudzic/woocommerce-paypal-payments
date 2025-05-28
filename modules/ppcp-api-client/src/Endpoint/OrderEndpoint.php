@@ -259,11 +259,8 @@ class OrderEndpoint {
 
 		$response = $this->request( $url, $args );
 		if ( is_wp_error( $response ) ) {
-			$error = new RuntimeException(
-				__( 'Could not create order.', 'woocommerce-paypal-payments' )
-			);
-			$this->logger->log(
-				'warning',
+			$error = new RuntimeException( 'Could not create order.' );
+			$this->logger->warning(
 				$error->getMessage(),
 				array(
 					'args'     => $args,
@@ -332,8 +329,7 @@ class OrderEndpoint {
 			$error = new RuntimeException(
 				__( 'Could not capture order.', 'woocommerce-paypal-payments' )
 			);
-			$this->logger->log(
-				'warning',
+			$this->logger->warning(
 				$error->getMessage(),
 				array(
 					'args'     => $args,
@@ -354,8 +350,7 @@ class OrderEndpoint {
 			if ( strpos( $response['body'], ErrorResponse::ORDER_ALREADY_CAPTURED ) !== false ) {
 				return $this->order( $order->id() );
 			}
-			$this->logger->log(
-				'warning',
+			$this->logger->warning(
 				sprintf(
 					'Failed to capture order. PayPal API response: %1$s',
 					$error->getMessage()
@@ -409,8 +404,7 @@ class OrderEndpoint {
 					'woocommerce-paypal-payments'
 				)
 			);
-			$this->logger->log(
-				'warning',
+			$this->logger->warning(
 				$error->getMessage(),
 				array(
 					'args'     => $args,
@@ -429,8 +423,7 @@ class OrderEndpoint {
 				$json,
 				$status_code
 			);
-			$this->logger->log(
-				'warning',
+			$this->logger->warning(
 				sprintf(
 					'Failed to authorize order. PayPal API response: %1$s',
 					$error->getMessage()
@@ -489,8 +482,7 @@ class OrderEndpoint {
 				__( 'Could not retrieve order.', 'woocommerce-paypal-payments' ),
 				404
 			);
-			$this->logger->log(
-				'warning',
+			$this->logger->warning(
 				$error->getMessage(),
 				array(
 					'args'     => $args,
@@ -505,8 +497,7 @@ class OrderEndpoint {
 				$json,
 				$status_code
 			);
-			$this->logger->log(
-				'warning',
+			$this->logger->warning(
 				$error->getMessage(),
 				array(
 					'args'     => $args,

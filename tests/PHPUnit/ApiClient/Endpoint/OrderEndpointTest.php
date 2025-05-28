@@ -64,7 +64,7 @@ class OrderEndpointTest extends TestCase
         $patchCollectionFactory = Mockery::mock(PatchCollectionFactory::class);
         $intent = 'CAPTURE';
         $logger = Mockery::mock(LoggerInterface::class);
-        $logger->shouldNotReceive('log');
+        $logger->shouldNotReceive('warning');
         $logger->shouldReceive('debug');
         $applicationContextRepository = Mockery::mock(ApplicationContextRepository::class);
 		$headers = Mockery::mock(Requests_Utility_CaseInsensitiveDictionary::class);
@@ -179,7 +179,7 @@ class OrderEndpointTest extends TestCase
 			'headers' => $headers,
 		];
         $logger = Mockery::mock(LoggerInterface::class);
-        $logger->shouldReceive('log');
+        $logger->shouldReceive('warning');
         $logger->shouldReceive('debug');
         $applicationContextRepository = Mockery::mock(ApplicationContextRepository::class);
 		$subscription_helper = Mockery::mock(SubscriptionHelper::class);
@@ -245,7 +245,7 @@ class OrderEndpointTest extends TestCase
         $intent = 'CAPTURE';
 
         $logger = Mockery::mock(LoggerInterface::class);
-        $logger->shouldNotReceive('log');
+        $logger->shouldNotReceive('warning');
         $logger->shouldReceive('debug');
         $applicationContextRepository = Mockery::mock(ApplicationContextRepository::class);
 		$subscription_helper = Mockery::mock(SubscriptionHelper::class);
@@ -315,7 +315,7 @@ class OrderEndpointTest extends TestCase
         $intent = 'CAPTURE';
 
         $logger = Mockery::mock(LoggerInterface::class);
-        $logger->shouldNotReceive('log');
+        $logger->shouldNotReceive('warning');
         $applicationContextRepository = Mockery::mock(ApplicationContextRepository::class);
 		$subscription_helper = Mockery::mock(SubscriptionHelper::class);
 
@@ -359,7 +359,7 @@ class OrderEndpointTest extends TestCase
         $intent = 'CAPTURE';
 
         $logger = Mockery::mock(LoggerInterface::class);
-        $logger->shouldReceive('log');
+        $logger->shouldReceive('warning');
         $logger->shouldReceive('debug');
         $applicationContextRepository = Mockery::mock(ApplicationContextRepository::class);
 		$subscription_helper = Mockery::mock(SubscriptionHelper::class);
@@ -411,7 +411,7 @@ class OrderEndpointTest extends TestCase
         $intent = 'CAPTURE';
 
         $logger = Mockery::mock(LoggerInterface::class);
-        $logger->shouldReceive('log');
+        $logger->shouldReceive('warning');
         $logger->shouldReceive('debug');
         $applicationContextRepository = Mockery::mock(ApplicationContextRepository::class);
 		$subscription_helper = Mockery::mock(SubscriptionHelper::class);
@@ -465,7 +465,7 @@ class OrderEndpointTest extends TestCase
         $intent = 'CAPTURE';
 
         $logger = Mockery::mock(LoggerInterface::class);
-        $logger->shouldNotReceive('log');
+        $logger->shouldNotReceive('warning');
         $logger->shouldReceive('debug');
         $applicationContextRepository = Mockery::mock(ApplicationContextRepository::class);
 		$subscription_helper = Mockery::mock(SubscriptionHelper::class);
@@ -545,7 +545,7 @@ class OrderEndpointTest extends TestCase
         $intent = 'CAPTURE';
 
         $logger = Mockery::mock(LoggerInterface::class);
-        $logger->shouldNotReceive('log');
+        $logger->shouldNotReceive('warning');
         $logger->shouldReceive('debug');
         $applicationContextRepository = Mockery::mock(ApplicationContextRepository::class);
 		$subscription_helper = Mockery::mock(SubscriptionHelper::class);
@@ -819,7 +819,7 @@ class OrderEndpointTest extends TestCase
         $intent = 'CAPTURE';
 
         $logger = Mockery::mock(LoggerInterface::class);
-        $logger->shouldNotReceive('log');
+        $logger->shouldNotReceive('warning');
         $applicationContextRepository = Mockery::mock(ApplicationContextRepository::class);
 		$subscription_helper = Mockery::mock(SubscriptionHelper::class);
 
@@ -873,7 +873,7 @@ class OrderEndpointTest extends TestCase
         $intent = 'CAPTURE';
 
         $logger = Mockery::mock(LoggerInterface::class);
-        $logger->shouldNotReceive('log');
+        $logger->shouldNotReceive('warning');
         $logger->shouldReceive('debug');
         $applicationContext = Mockery::mock(ApplicationContext::class);
         $applicationContext
@@ -976,7 +976,7 @@ class OrderEndpointTest extends TestCase
         $intent = 'CAPTURE';
 
         $logger = Mockery::mock(LoggerInterface::class);
-        $logger->shouldNotReceive('log');
+        $logger->shouldNotReceive('warning');
         $logger->shouldReceive('debug');
         $applicationContext = Mockery::mock(ApplicationContext::class);
         $applicationContext
@@ -1056,7 +1056,7 @@ class OrderEndpointTest extends TestCase
         $intent = 'CAPTURE';
 
         $logger = Mockery::mock(LoggerInterface::class);
-        $logger->shouldReceive('log');
+        $logger->shouldReceive('warning');
         $logger->shouldReceive('debug');
         $applicationContext = Mockery::mock(ApplicationContext::class);
         $applicationContext
@@ -1147,7 +1147,6 @@ class OrderEndpointTest extends TestCase
         $intent = 'CAPTURE';
 
         $logger = Mockery::mock(LoggerInterface::class);
-        $logger->shouldReceive('log');
         $logger->shouldReceive('debug');
         $logger->shouldReceive('warning');
         $applicationContext = Mockery::mock(ApplicationContext::class);
