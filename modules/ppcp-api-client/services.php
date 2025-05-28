@@ -47,7 +47,6 @@ use WooCommerce\PayPalCommerce\ApiClient\Endpoint\PaymentTokenEndpoint;
 use WooCommerce\PayPalCommerce\ApiClient\Endpoint\WebhookEndpoint;
 use WooCommerce\PayPalCommerce\ApiClient\Factory\AddressFactory;
 use WooCommerce\PayPalCommerce\ApiClient\Factory\AmountFactory;
-use WooCommerce\PayPalCommerce\ApiClient\Factory\ApplicationContextFactory;
 use WooCommerce\PayPalCommerce\ApiClient\Factory\AuthorizationFactory;
 use WooCommerce\PayPalCommerce\ApiClient\Factory\CaptureFactory;
 use WooCommerce\PayPalCommerce\ApiClient\Factory\ExchangeRateFactory;
@@ -339,9 +338,6 @@ return array(
 			$container->get( 'api.endpoint.order' )
 		);
 	},
-	'api.factory.application-context'                => static function ( ContainerInterface $container ) : ApplicationContextFactory {
-		return new ApplicationContextFactory();
-	},
 	'api.factory.payment-token'                      => static function ( ContainerInterface $container ) : PaymentTokenFactory {
 		return new PaymentTokenFactory();
 	},
@@ -441,12 +437,10 @@ return array(
 		$purchase_unit_factory          = $container->get( 'api.factory.purchase-unit' );
 		$payer_factory                  = $container->get( 'api.factory.payer' );
 		$application_context_repository = $container->get( 'api.repository.application-context' );
-		$application_context_factory    = $container->get( 'api.factory.application-context' );
 		return new OrderFactory(
 			$purchase_unit_factory,
 			$payer_factory,
-			$application_context_repository,
-			$application_context_factory
+			$application_context_repository
 		);
 	},
 	'api.factory.payments'                           => static function ( ContainerInterface $container ): PaymentsFactory {
