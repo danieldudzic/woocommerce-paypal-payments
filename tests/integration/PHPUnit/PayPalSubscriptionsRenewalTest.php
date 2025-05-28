@@ -383,7 +383,6 @@ class PayPalSubscriptionsRenewalTest extends TestCase
 			'stock_status' => 'instock',
 			'weight' => '1.1',
 		]);
-		$product->save();
 
 		$subscription = wcs_create_subscription([
 			'start_date' => gmdate('Y-m-d H:i:s', strtotime($startDate)),
