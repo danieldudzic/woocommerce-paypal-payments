@@ -77,8 +77,13 @@ class ExperienceContextBuilder {
 	public function with_current_brand_name(): ExperienceContextBuilder {
 		$builder = clone $this;
 
+		$brand_name = $this->settings->has( 'brand_name' ) ? (string) $this->settings->get( 'brand_name' ) : '';
+		if ( empty( $brand_name ) ) {
+			$brand_name = null;
+		}
+
 		$builder->experience_context = $builder->experience_context
-			->with_brand_name( $this->settings->has( 'brand_name' ) ? (string) $this->settings->get( 'brand_name' ) : '' );
+			->with_brand_name( $brand_name );
 
 		return $builder;
 	}
