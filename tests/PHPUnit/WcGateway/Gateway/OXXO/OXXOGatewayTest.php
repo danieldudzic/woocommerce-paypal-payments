@@ -114,7 +114,7 @@ private $testee;
 
 		$this->orderEndpoint
 			->shouldReceive('create')
-			->with([$purchaseUnit], $shippingPreference, null, 'CONTINUE', '', [], Mockery::any())
+			->with([$purchaseUnit], $shippingPreference, null, '', [], Mockery::any())
 			->andReturn($order);
 
 		$this->wcOrder

@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace WooCommerce\PayPalCommerce\Compat\Settings;
 
-use WooCommerce\PayPalCommerce\ApiClient\Entity\ApplicationContext;
+use WooCommerce\PayPalCommerce\ApiClient\Entity\ExperienceContext;
 use WooCommerce\PayPalCommerce\ApiClient\Helper\PurchaseUnitSanitizer;
 use WooCommerce\PayPalCommerce\Button\Helper\ContextTrait;
 
@@ -104,10 +104,10 @@ class SettingsTabMapHelper {
 		}
 
 		return $landing_page === 'login'
-			? ApplicationContext::LANDING_PAGE_LOGIN
+			? ExperienceContext::LANDING_PAGE_LOGIN
 			: ( $landing_page === 'guest_checkout'
-				? ApplicationContext::LANDING_PAGE_BILLING
-				: ApplicationContext::LANDING_PAGE_NO_PREFERENCE
+				? ExperienceContext::LANDING_PAGE_GUEST_CHECKOUT
+				: ExperienceContext::LANDING_PAGE_NO_PREFERENCE
 			);
 	}
 

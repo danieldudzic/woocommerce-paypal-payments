@@ -15,7 +15,6 @@ use WC_Payment_Tokens;
 use WC_Subscription;
 use WooCommerce\PayPalCommerce\ApiClient\Endpoint\OrderEndpoint;
 use WooCommerce\PayPalCommerce\ApiClient\Endpoint\PaymentTokensEndpoint;
-use WooCommerce\PayPalCommerce\ApiClient\Entity\ApplicationContext;
 use WooCommerce\PayPalCommerce\ApiClient\Entity\Order;
 use WooCommerce\PayPalCommerce\ApiClient\Entity\PaymentSource;
 use WooCommerce\PayPalCommerce\ApiClient\Entity\PaymentToken;
@@ -353,7 +352,6 @@ class RenewalHandler {
 				array( $purchase_unit ),
 				$shipping_preference,
 				$payer,
-				ApplicationContext::USER_ACTION_CONTINUE,
 				'',
 				array(),
 				$payment_source
@@ -395,7 +393,6 @@ class RenewalHandler {
 					array( $purchase_unit ),
 					$shipping_preference,
 					$payer,
-					ApplicationContext::USER_ACTION_CONTINUE,
 					'',
 					array(),
 					$payment_source
@@ -418,7 +415,6 @@ class RenewalHandler {
 					array( $purchase_unit ),
 					$shipping_preference,
 					$payer,
-					ApplicationContext::USER_ACTION_CONTINUE,
 					'',
 					array(),
 					$token->to_payment_source()

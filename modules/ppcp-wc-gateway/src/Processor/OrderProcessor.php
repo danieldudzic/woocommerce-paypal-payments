@@ -13,7 +13,6 @@ use Exception;
 use Psr\Log\LoggerInterface;
 use WC_Order;
 use WooCommerce\PayPalCommerce\ApiClient\Endpoint\OrderEndpoint;
-use WooCommerce\PayPalCommerce\ApiClient\Entity\ApplicationContext;
 use WooCommerce\PayPalCommerce\ApiClient\Entity\ExperienceContext;
 use WooCommerce\PayPalCommerce\ApiClient\Entity\Order;
 use WooCommerce\PayPalCommerce\ApiClient\Entity\OrderStatus;
@@ -328,7 +327,6 @@ class OrderProcessor {
 			array( $pu ),
 			$shipping_preference,
 			$this->payer_factory->from_wc_order( $wc_order ),
-			ApplicationContext::USER_ACTION_PAY_NOW,
 			'',
 			array(),
 			new PaymentSource(

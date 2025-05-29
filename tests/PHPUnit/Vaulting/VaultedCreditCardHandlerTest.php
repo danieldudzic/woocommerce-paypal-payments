@@ -125,7 +125,7 @@ class VaultedCreditCardHandlerTest extends TestCase
 		$purchaseUnit->shouldReceive('payments')->andReturn($payments);
 
 		$this->orderEndpoint->shouldReceive('create')
-			->with([$purchaseUnit], 'some_preference', $payer, 'CONTINUE', '', array(), $requestPaymentSource)
+			->with([$purchaseUnit], 'some_preference', $payer, '', array(), $requestPaymentSource)
 			->andReturn($order);
 
 		$this->environment->shouldReceive('current_environment_is')->andReturn(true);

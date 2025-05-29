@@ -8,7 +8,6 @@ use WooCommerce\PayPalCommerce\ApiClient\Entity\OrderStatus;
 use WooCommerce\PayPalCommerce\ApiClient\Entity\Payer;
 use WooCommerce\PayPalCommerce\ApiClient\Entity\PurchaseUnit;
 use WooCommerce\PayPalCommerce\ApiClient\Exception\RuntimeException;
-use WooCommerce\PayPalCommerce\ApiClient\Repository\ApplicationContextRepository;
 use WooCommerce\PayPalCommerce\TestCase;
 use Mockery;
 
@@ -28,7 +27,6 @@ class OrderFactoryTest extends TestCase
         $order->expects('intent')->andReturn('intent');
         $order->expects('create_time')->andReturn($createTime);
         $order->expects('update_time')->andReturn($updateTime);
-        $order->expects('application_context')->andReturnNull();
         $order->expects('payment_source')->andReturnNull();
         $wcOrder = Mockery::mock(\WC_Order::class);
         $purchaseUnitFactory = Mockery::mock(PurchaseUnitFactory::class);

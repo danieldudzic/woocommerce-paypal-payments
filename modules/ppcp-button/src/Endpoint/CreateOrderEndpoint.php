@@ -15,7 +15,7 @@ use stdClass;
 use Throwable;
 use WooCommerce\PayPalCommerce\ApiClient\Endpoint\OrderEndpoint;
 use WooCommerce\PayPalCommerce\ApiClient\Entity\Amount;
-use WooCommerce\PayPalCommerce\ApiClient\Entity\ApplicationContext;
+use WooCommerce\PayPalCommerce\ApiClient\Entity\ExperienceContext;
 use WooCommerce\PayPalCommerce\ApiClient\Entity\Money;
 use WooCommerce\PayPalCommerce\ApiClient\Entity\Order;
 use WooCommerce\PayPalCommerce\ApiClient\Entity\Payer;
@@ -464,16 +464,16 @@ class CreateOrderEndpoint implements EndpointInterface {
 		);
 
 		$action = in_array( $this->parsed_request_data['context'], $this->pay_now_contexts, true ) ?
-			ApplicationContext::USER_ACTION_PAY_NOW : ApplicationContext::USER_ACTION_CONTINUE;
+			ExperienceContext::USER_ACTION_PAY_NOW : ExperienceContext::USER_ACTION_CONTINUE;
 
 		if ( 'card' === $funding_source ) {
 			if ( CardBillingMode::MINIMAL_INPUT === $this->card_billing_data_mode ) {
-				if ( ApplicationContext::SHIPPING_PREFERENCE_SET_PROVIDED_ADDRESS === $shipping_preference ) {
+				if ( ExperienceContext::SHIPPING_PREFERENCE_SET_PROVIDED_ADDRESS === $shipping_preference ) {
 					if ( $payer ) {
 						$payer->set_address( null );
 					}
 				}
-				if ( ApplicationContext::SHIPPING_PREFERENCE_NO_SHIPPING === $shipping_preference ) {
+				if ( ExperienceContext::SHIPPING_PREFERENCE_NO_SHIPPING === $shipping_preference ) {
 					if ( $payer ) {
 						$payer->set_name( null );
 					}
@@ -499,7 +499,6 @@ class CreateOrderEndpoint implements EndpointInterface {
 				array( $this->purchase_unit ),
 				$shipping_preference,
 				$payer,
-				$action,
 				$payment_method,
 				$data,
 				$payment_source
@@ -523,7 +522,6 @@ class CreateOrderEndpoint implements EndpointInterface {
 					array( $this->purchase_unit ),
 					$shipping_preference,
 					$payer,
-					$action,
 					$payment_method,
 					$data,
 					$payment_source

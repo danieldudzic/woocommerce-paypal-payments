@@ -14,7 +14,6 @@ use WooCommerce\PayPalCommerce\ApiClient\Entity\OrderStatus;
 use WooCommerce\PayPalCommerce\ApiClient\Entity\PaymentSource;
 use WooCommerce\PayPalCommerce\ApiClient\Entity\PurchaseUnit;
 use WooCommerce\PayPalCommerce\ApiClient\Exception\RuntimeException;
-use WooCommerce\PayPalCommerce\ApiClient\Repository\ApplicationContextRepository;
 
 /**
  * Class OrderFactory
@@ -65,7 +64,6 @@ class OrderFactory {
 			$order->id(),
 			$purchase_units,
 			$order->status(),
-			$order->application_context(),
 			$order->payment_source(),
 			$order->payer(),
 			$order->intent(),
@@ -142,7 +140,6 @@ class OrderFactory {
 			$order_data->id,
 			$purchase_units,
 			new OrderStatus( $order_data->status ),
-			null,
 			$payment_source,
 			$payer,
 			$order_data->intent,

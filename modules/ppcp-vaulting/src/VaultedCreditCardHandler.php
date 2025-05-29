@@ -9,7 +9,6 @@ declare(strict_types=1);
 
 namespace WooCommerce\PayPalCommerce\Vaulting;
 
-use WooCommerce\PayPalCommerce\ApiClient\Entity\ApplicationContext;
 use WooCommerce\PayPalCommerce\Vendor\Psr\Container\ContainerInterface;
 use WC_Customer;
 use WC_Order;
@@ -168,7 +167,6 @@ class VaultedCreditCardHandler {
 				array( $purchase_unit ),
 				$shipping_preference,
 				$payer,
-				ApplicationContext::USER_ACTION_CONTINUE,
 				'',
 				array(),
 				$selected_token->to_payment_source()

@@ -13,7 +13,6 @@ use Psr\Log\LoggerInterface;
 use WC_Order;
 use WC_Payment_Gateway;
 use WooCommerce\PayPalCommerce\ApiClient\Endpoint\OrderEndpoint;
-use WooCommerce\PayPalCommerce\ApiClient\Entity\ApplicationContext;
 use WooCommerce\PayPalCommerce\ApiClient\Entity\PaymentSource;
 use WooCommerce\PayPalCommerce\ApiClient\Exception\PayPalApiException;
 use WooCommerce\PayPalCommerce\ApiClient\Exception\RuntimeException;
@@ -200,7 +199,6 @@ class OXXOGateway extends WC_Payment_Gateway {
 				array( $purchase_unit ),
 				$shipping_preference,
 				null,
-				ApplicationContext::USER_ACTION_CONTINUE,
 				'',
 				array(),
 				new PaymentSource(
