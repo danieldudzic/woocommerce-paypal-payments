@@ -344,8 +344,6 @@ class RenewalHandler {
 				array( $purchase_unit ),
 				$shipping_preference,
 				$payer,
-				null,
-				'',
 				ApplicationContext::USER_ACTION_CONTINUE,
 				'',
 				array(),
@@ -388,8 +386,6 @@ class RenewalHandler {
 					array( $purchase_unit ),
 					$shipping_preference,
 					$payer,
-					null,
-					'',
 					ApplicationContext::USER_ACTION_CONTINUE,
 					'',
 					array(),
@@ -413,7 +409,10 @@ class RenewalHandler {
 					array( $purchase_unit ),
 					$shipping_preference,
 					$payer,
-					$token
+					ApplicationContext::USER_ACTION_CONTINUE,
+					'',
+					array(),
+					$token->to_payment_source()
 				);
 
 				$this->handle_paypal_order( $wc_order, $order );

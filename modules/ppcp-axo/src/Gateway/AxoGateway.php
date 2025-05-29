@@ -307,8 +307,6 @@ class AxoGateway extends WC_Payment_Gateway {
 			array( $purchase_unit ),
 			$shipping_preference,
 			null,
-			null,
-			'',
 			ApplicationContext::USER_ACTION_CONTINUE,
 			'',
 			array(),
