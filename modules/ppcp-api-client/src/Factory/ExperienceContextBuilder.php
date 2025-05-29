@@ -42,6 +42,32 @@ class ExperienceContextBuilder {
 	}
 
 	/**
+	 * Uses the default config for the PayPal buttons.
+	 *
+	 * @param string $shipping_preference One of the ExperienceContext::SHIPPING_PREFERENCE_* values.
+	 * @param string $user_action One of the ExperienceContext::USER_ACTION_* values.
+	 */
+	public function with_default_paypal_config(
+		string $shipping_preference = ExperienceContext::SHIPPING_PREFERENCE_NO_SHIPPING,
+		string $user_action = ExperienceContext::USER_ACTION_CONTINUE
+	): ExperienceContextBuilder {
+		$builder = clone $this;
+
+		$builder = $builder
+			->with_current_locale()
+			->with_current_brand_name()
+			->with_current_landing_page()
+			->with_current_payment_method_preference()
+			->with_endpoint_return_urls();
+
+		$builder->experience_context = $builder->experience_context
+			->with_shipping_preference( $shipping_preference )
+			->with_user_action( $user_action );
+
+		return $builder;
+	}
+
+	/**
 	 * Uses the ReturnUrlEndpoint return URL.
 	 */
 	public function with_endpoint_return_urls(): ExperienceContextBuilder {

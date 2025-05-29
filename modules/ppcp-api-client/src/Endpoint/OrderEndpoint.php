@@ -196,8 +196,8 @@ class OrderEndpoint {
 	): Order {
 		$bearer = $this->bearer->bearer();
 		$data   = array(
-			'intent'              => apply_filters( 'woocommerce_paypal_payments_order_intent', $this->intent ),
-			'purchase_units'      => array_map(
+			'intent'         => apply_filters( 'woocommerce_paypal_payments_order_intent', $this->intent ),
+			'purchase_units' => array_map(
 				static function ( PurchaseUnit $item ) use ( $shipping_preference ): array {
 					$data = $item->to_array();
 
@@ -210,8 +210,6 @@ class OrderEndpoint {
 				},
 				$items
 			),
-			'application_context' => $this->application_context_repository
-				->current_context( $shipping_preference, $user_action )->to_array(),
 		);
 		if ( $payer && ! empty( $payer->email_address() ) ) {
 			$data['payer'] = $payer->to_array();
