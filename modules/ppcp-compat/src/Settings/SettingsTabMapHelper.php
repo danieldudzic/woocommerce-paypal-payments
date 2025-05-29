@@ -94,7 +94,7 @@ class SettingsTabMapHelper {
 	 * Retrieves the mapped value for the 'landing_page' from the new settings.
 	 *
 	 * @param array<string, scalar|array> $settings_model The new settings model data as an array.
-	 * @return 'LOGIN'|'BILLING'|'NO_PREFERENCE'|null The mapped 'landing_page' setting value.
+	 * @return 'LOGIN'|'GUEST_CHECKOUT'|'NO_PREFERENCE'|null The mapped 'landing_page' setting value.
 	 */
 	protected function mapped_landing_page_value( array $settings_model ): ?string {
 		$landing_page = $settings_model['landing_page'] ?? false;
