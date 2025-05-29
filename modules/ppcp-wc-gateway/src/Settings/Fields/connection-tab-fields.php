@@ -539,6 +539,20 @@ return function ( ContainerInterface $container, array $fields ): array {
 			'requirements' => array(),
 			'gateway'      => Settings::CONNECTION_TAB_ID,
 		),
+		'keep_updated'                               => array(
+			'title'        => __( 'Keep updated with PayPal', 'woocommerce-paypal-payments' ),
+			'type'         => 'checkbox',
+			'desc_tip'     => true,
+			'label'        => __( 'Keep updated with PayPal. ', 'woocommerce-paypal-payments' ),
+			'description'  => __( 'Receive updates on PayPal features, promotions, and news.', 'woocommerce-paypal-payments' ),
+			'default'      => true,
+			'screens'      => array(
+				State::STATE_START,
+				State::STATE_ONBOARDED,
+			),
+			'requirements' => array(),
+			'gateway'      => Settings::CONNECTION_TAB_ID,
+		),
 		'subtotal_mismatch_behavior'                    => array(
 			'title'             => __( 'Subtotal mismatch behavior', 'woocommerce-paypal-payments' ),
 			'type'              => 'select',
