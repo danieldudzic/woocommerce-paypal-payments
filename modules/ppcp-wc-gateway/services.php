@@ -570,7 +570,8 @@ return array(
 			$order_helper,
 			$container->get( 'api.factory.purchase-unit' ),
 			$container->get( 'api.factory.payer' ),
-			$container->get( 'api.factory.shipping-preference' )
+			$container->get( 'api.factory.shipping-preference' ),
+			$container->get( 'wcgateway.builder.experience-context' )
 		);
 	},
 	'wcgateway.processor.refunds'                          => static function ( ContainerInterface $container ): RefundProcessor {

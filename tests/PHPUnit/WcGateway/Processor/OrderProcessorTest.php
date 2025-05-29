@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace WooCommerce\PayPalCommerce\WcGateway\Processor;
 
 use Exception;
+use WooCommerce\PayPalCommerce\ApiClient\Factory\ExperienceContextBuilder;
 use WooCommerce\PayPalCommerce\ApiClient\Factory\PayerFactory;
 use WooCommerce\PayPalCommerce\ApiClient\Factory\PurchaseUnitFactory;
 use WooCommerce\PayPalCommerce\ApiClient\Factory\ShippingPreferenceFactory;
@@ -150,7 +151,8 @@ class OrderProcessorTest extends TestCase
 			$order_helper,
 			Mockery::mock(PurchaseUnitFactory::class),
 			Mockery::mock(PayerFactory::class),
-			Mockery::mock(ShippingPreferenceFactory::class)
+			Mockery::mock(ShippingPreferenceFactory::class),
+			Mockery::mock(ExperienceContextBuilder::class)
         );
 
         $wcOrder
@@ -281,7 +283,8 @@ class OrderProcessorTest extends TestCase
 			$order_helper,
 			Mockery::mock(PurchaseUnitFactory::class),
 			Mockery::mock(PayerFactory::class),
-			Mockery::mock(ShippingPreferenceFactory::class)
+			Mockery::mock(ShippingPreferenceFactory::class),
+			Mockery::mock(ExperienceContextBuilder::class)
         );
 
         $wcOrder
@@ -394,7 +397,8 @@ class OrderProcessorTest extends TestCase
 			$order_helper,
 			Mockery::mock(PurchaseUnitFactory::class),
 			Mockery::mock(PayerFactory::class),
-			Mockery::mock(ShippingPreferenceFactory::class)
+			Mockery::mock(ShippingPreferenceFactory::class),
+			Mockery::mock(ExperienceContextBuilder::class)
         );
 
         $wcOrder
