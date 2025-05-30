@@ -4,25 +4,22 @@ import { ControlToggleButton } from '../../../../../ReusableComponents/Controls'
 import { SettingsHooks } from '../../../../../../data';
 import SettingsBlock from '../../../../../ReusableComponents/SettingsBlock';
 
-const KeepUpdated = () => {
-	const { keepUpdated, setKeepUpdated } = SettingsHooks.useSettings();
+const StayUpdated = () => {
+	const { stayUpdated, setStayUpdated } = SettingsHooks.useSettings();
 
 	return (
 		<SettingsBlock className="ppcp--pay-now-experience">
 			<ControlToggleButton
-				label={ __(
-					'Keep updated with PayPal',
-					'woocommerce-paypal-payments'
-				) }
+				label={ __( 'Stay Updated', 'woocommerce-paypal-payments' ) }
 				description={ __(
-					'Receive updates on PayPal features, promotions, and news.',
+					'Get the latest PayPal features and capabilities as they are released. When the extension is updated, new features, payment methods, styling options, and more will automatically update.',
 					'woocommerce-paypal-payments'
 				) }
-				onChange={ setKeepUpdated }
-				value={ keepUpdated }
+				onChange={ setStayUpdated }
+				value={ stayUpdated }
 			/>
 		</SettingsBlock>
 	);
 };
 
-export default KeepUpdated;
+export default StayUpdated;

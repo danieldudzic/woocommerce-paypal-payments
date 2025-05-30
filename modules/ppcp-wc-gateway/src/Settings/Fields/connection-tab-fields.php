@@ -539,12 +539,12 @@ return function ( ContainerInterface $container, array $fields ): array {
 			'requirements' => array(),
 			'gateway'      => Settings::CONNECTION_TAB_ID,
 		),
-		'keep_updated'                               => array(
-			'title'        => __( 'Keep updated with PayPal', 'woocommerce-paypal-payments' ),
+		'stay_updated'                               => array(
+			'title'        => __( 'Stay Updated', 'woocommerce-paypal-payments' ),
 			'type'         => 'checkbox',
 			'desc_tip'     => true,
-			'label'        => __( 'Keep updated with PayPal. ', 'woocommerce-paypal-payments' ),
-			'description'  => __( 'Receive updates on PayPal features, promotions, and news.', 'woocommerce-paypal-payments' ),
+			'label'        => __( 'Update to the latest features when available. ', 'woocommerce-paypal-payments' ),
+			'description'  => __( 'Get the latest PayPal features and capabilities as they are released. When the extension is updated, new features, payment methods, styling options, and more will automatically update.', 'woocommerce-paypal-payments' ),
 			'default'      => true,
 			'screens'      => array(
 				State::STATE_START,

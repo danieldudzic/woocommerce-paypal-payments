@@ -5,7 +5,7 @@ import OrderIntent from './Blocks/OrderIntent';
 import SavePaymentMethods from './Blocks/SavePaymentMethods';
 import InvoicePrefix from './Blocks/InvoicePrefix';
 import PayNowExperience from './Blocks/PayNowExperience';
-import KeepUpdated from './Blocks/KeepUpdated';
+import StayUpdated from './Blocks/StayUpdated';
 
 const CommonSettings = ( { ownBradOnly } ) => (
 	<SettingsCard
@@ -21,7 +21,7 @@ const CommonSettings = ( { ownBradOnly } ) => (
 		<OrderIntent />
 		<SavePaymentMethods ownBradOnly={ ownBradOnly } />
 		<PayNowExperience />
-		<KeepUpdated />
+		<StayUpdated />
 	</SettingsCard>
 );
 
