@@ -7,6 +7,8 @@ use WC_Product_Simple;
 use WooCommerce\PayPalCommerce\PayPalSubscriptions\RenewalHandler;
 
 /**
+ * @group subscriptions
+ * @group subscription-paypal
  * @group skip-ci
  */
 class PayPalSubscriptionsRenewalTest extends TestCase
@@ -324,7 +326,6 @@ class PayPalSubscriptionsRenewalTest extends TestCase
 	public function test_process_empty_subscriptions_array()
 	{
 		$c = $this->getContainer();
-		$logger = $c->get('woocommerce.logger.woocommerce');
 
 		// Create a logger mock that expects no operations if no subscriptions
 		$logger_mock = \Mockery::mock(LoggerInterface::class);

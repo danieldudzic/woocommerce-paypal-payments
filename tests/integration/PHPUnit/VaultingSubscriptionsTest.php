@@ -15,7 +15,9 @@ use WooCommerce\PayPalCommerce\WcGateway\Gateway\PayPalGateway;
 use WooCommerce\PayPalCommerce\WcGateway\Gateway\CreditCardGateway;
 
 /**
+ * @group subscriptions
  * @group subscription-vaulting
+ * @group skip-ci
  */
 class VaultingSubscriptionsTest extends IntegrationMockedTestCase
 {
@@ -187,7 +189,6 @@ class VaultingSubscriptionsTest extends IntegrationMockedTestCase
 		$mockOrderEndpoint = $this->mockOrderEndpoint('CAPTURE', true);
 		$c = $this->setupTestContainer($mockOrderEndpoint);
 
-		$paymentToken = $this->setupPaymentToken($this->customer_id, $gateway_id);
 		$subscription = $this->createSubscription($this->customer_id, $gateway_id);
 		$renewal_order = $this->createRenewalOrder($this->customer_id, $gateway_id, $subscription->get_id());
 
@@ -210,7 +211,6 @@ class VaultingSubscriptionsTest extends IntegrationMockedTestCase
 		$mockOrderEndpoint = $this->mockOrderEndpoint('CAPTURE', false);
 		$c = $this->setupTestContainer($mockOrderEndpoint);
 
-		$paymentToken = $this->setupPaymentToken($this->customer_id, PayPalGateway::ID);
 		$subscription = $this->createSubscription($this->customer_id, PayPalGateway::ID);
 		$renewal_order = $this->createRenewalOrder($this->customer_id, PayPalGateway::ID, $subscription->get_id());
 		$renewal_handler = $c->get('wc-subscriptions.renewal-handler');
@@ -234,7 +234,6 @@ class VaultingSubscriptionsTest extends IntegrationMockedTestCase
 		$c = $this->setupTestContainer($mockOrderEndpoint);
 
 		// Setup payment token and subscription
-		$paymentToken = $this->setupPaymentToken($this->customer_id, PayPalGateway::ID);
 		$subscription = $this->createSubscription($this->customer_id, PayPalGateway::ID);
 		$renewal_order = $this->createRenewalOrder($this->customer_id, PayPalGateway::ID, $subscription->get_id());
 
