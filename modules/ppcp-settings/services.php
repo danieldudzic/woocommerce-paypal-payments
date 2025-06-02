@@ -121,7 +121,8 @@ return array(
 	},
 	'settings.data.settings'                              => static function ( ContainerInterface $container ) : SettingsModel {
 		return new SettingsModel(
-			$container->get( 'settings.service.sanitizer' )
+			$container->get( 'settings.service.sanitizer' ),
+			$container->has( 'wcgateway.settings.invoice-prefix' ) ? $container->get( 'wcgateway.settings.invoice-prefix' ) : ''
 		);
 	},
 	'settings.data.paylater-messaging'                    => static function ( ContainerInterface $container ) : array {

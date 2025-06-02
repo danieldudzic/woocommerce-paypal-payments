@@ -2093,4 +2093,16 @@ return array(
 	'wcgateway.settings.admin-settings-enabled'            => static function( ContainerInterface $container ): bool {
 		return $container->has( 'settings.url' ) && ! SettingsModule::should_use_the_old_ui();
 	},
+
+	/**
+	 * Returns a prefix for the site, ensuring the same site always gets the same prefix (unless the URL changes).
+	 */
+	'wcgateway.settings.invoice-prefix'                    => static function( ContainerInterface $container ): string {
+		$site_url = get_site_url( get_current_blog_id() );
+		$hash     = md5( $site_url );
+		$letters  = preg_replace( '~\d~', '', $hash ) ?? '';
+		$prefix   = substr( $letters, 0, 6 );
+
+		return $prefix ? $prefix . '-' : '';
+	},
 );
