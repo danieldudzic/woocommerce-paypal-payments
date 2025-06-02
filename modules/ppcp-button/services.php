@@ -227,6 +227,7 @@ return array(
 			$request_data,
 			$purchase_unit_factory,
 			$container->get( 'api.factory.shipping-preference' ),
+			$container->get( 'wcgateway.builder.experience-context' ),
 			$order_endpoint,
 			$payer_factory,
 			$session_handler,
