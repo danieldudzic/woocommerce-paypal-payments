@@ -6,6 +6,7 @@ namespace PHPUnit\ApiClient\Factory;
 use WooCommerce\PayPalCommerce\ApiClient\Entity\ExperienceContext;
 use WooCommerce\PayPalCommerce\ApiClient\Factory\ExperienceContextBuilder;
 use WooCommerce\PayPalCommerce\TestCase;
+use WooCommerce\PayPalCommerce\WcGateway\Endpoint\ReturnUrlEndpoint;
 use WooCommerce\PayPalCommerce\WcGateway\Settings\Settings;
 use function Brain\Monkey\Functions\expect;
 use Mockery;
@@ -149,6 +150,50 @@ class ExperienceContextBuilderTest extends TestCase
 			true,
 			ExperienceContext::LANDING_PAGE_LOGIN,
 			ExperienceContext::LANDING_PAGE_LOGIN,
+		];
+	}
+
+	/**
+	 * @dataProvider paymentMethodPreferenceDataProvider
+	 */
+	public function testCurrentPaymentMethodPreference($has, $value, $expected)
+	{
+		$this->settings
+			->expects('has')
+			->with('payee_preferred')
+			->andReturn($has);
+		if ($has) {
+			$this->settings
+				->expects('get')
+				->with('payee_preferred')
+				->andReturn($value);
+		}
+
+		$result = $this->sut
+			->with_current_payment_method_preference()
+			->build();
+
+		self::assertEquals([
+			'payment_method_preference' => $expected,
+		], $result->to_array());
+	}
+
+	public function paymentMethodPreferenceDataProvider()
+	{
+		yield [
+			false,
+			'',
+			ExperienceContext::PAYMENT_METHOD_UNRESTRICTED,
+		];
+		yield [
+			true,
+			'',
+			ExperienceContext::PAYMENT_METHOD_UNRESTRICTED,
+		];
+		yield [
+			true,
+			'yes',
+			ExperienceContext::PAYMENT_METHOD_IMMEDIATE_PAYMENT_REQUIRED,
 		];
 	}
 }
