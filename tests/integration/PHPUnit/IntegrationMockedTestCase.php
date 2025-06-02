@@ -162,7 +162,7 @@ class IntegrationMockedTestCase extends TestCase
 	public function createCustomerIfNotExists(int $customer_id= 1): int
 	{
 		$customer = new \WC_Customer($customer_id);
-        if (! empty($customer->get_email() )) {
+        if ( empty($customer->get_email() )) {
             $customer->set_email('customer'. $customer_id. '@example.com');
             $customer->set_first_name('John');
             $customer->set_last_name('Doe');
