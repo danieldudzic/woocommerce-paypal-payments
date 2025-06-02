@@ -2095,9 +2095,21 @@ return array(
 	},
 
 	/**
-	 * Returns random 6 characters length alphanumeric prefix, followed by a hyphen.
+	 * Returns a prefix for the site, ensuring the same site always gets the same prefix (unless the URL changes).
 	 */
 	'wcgateway.settings.invoice-prefix'                    => static function( ContainerInterface $container ): string {
-		return wp_generate_password(6, false) . '-';
+		$site_url = get_site_url( get_current_blog_id() );
+		$hash     = md5( $site_url );
+		$letters  = preg_replace( '~\d~', '', $hash ) ?? '';
+		$prefix   = substr( $letters, 0, 6 );
+
+		return $prefix ? $prefix . '-' : '';
+	},
+
+	/**
+	 * Returns random 6 characters length alphanumeric prefix, followed by a hyphen.
+	 */
+	'wcgateway.settings.invoice-prefix-random'             => static function( ContainerInterface $container ): string {
+		return wp_generate_password( 6, false ) . '-';
 	},
 );
