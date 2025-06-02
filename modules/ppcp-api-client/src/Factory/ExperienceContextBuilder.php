@@ -132,12 +132,15 @@ class ExperienceContextBuilder {
 	public function with_current_landing_page(): ExperienceContextBuilder {
 		$builder = clone $this;
 
+		$landing_page = $this->settings->has( 'landing_page' ) ?
+			(string) $this->settings->get( 'landing_page' )
+			: ExperienceContext::LANDING_PAGE_NO_PREFERENCE;
+		if ( empty( $landing_page ) ) {
+			$landing_page = ExperienceContext::LANDING_PAGE_NO_PREFERENCE;
+		}
+
 		$builder->experience_context = $builder->experience_context
-			->with_landing_page(
-				$this->settings->has( 'landing_page' ) ?
-				(string) $this->settings->get( 'landing_page' )
-				: ExperienceContext::LANDING_PAGE_NO_PREFERENCE
-			);
+			->with_landing_page( $landing_page );
 
 		return $builder;
 	}
