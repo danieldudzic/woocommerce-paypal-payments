@@ -14,14 +14,10 @@
   </a>
 </p>
 
-[![PHP Version](https://img.shields.io/badge/PHP-7.4%2B-green)](https://github.com/woocommerce/woocommerce-paypal-payments/blob/trunk/woocommerce-paypal-payments.php#L10)
-[![WordPress Version](https://img.shields.io/badge/WordPress-6.5%2B-blue)](https://github.com/woocommerce/woocommerce-paypal-payments/blob/trunk/woocommerce-paypal-payments.php#L12)
-[![WooCommerce Version](https://img.shields.io/badge/WooCommerce-9.6%2B-purple)](https://github.com/woocommerce/woocommerce-paypal-payments/blob/trunk/woocommerce-paypal-payments.php#L13)
 [![License](https://img.shields.io/github/license/woocommerce/woocommerce-paypal-payments 'License')](https://github.com/woocommerce/woocommerce-paypal-payments/blob/trunk/LICENSE)
 [![GitHub Release](https://img.shields.io/github/v/release/woocommerce/woocommerce-paypal-payments)](https://github.com/woocommerce/woocommerce-paypal-payments/releases)
 [![GitHub Release Date](https://img.shields.io/github/release-date/woocommerce/woocommerce-paypal-payments)](https://github.com/woocommerce/woocommerce-paypal-payments/releases)
 [![WordPress.org downloads](https://img.shields.io/wordpress/plugin/dt/woocommerce-paypal-payments.svg 'WordPress.org downloads')](https://wordpress.org/plugins/woocommerce-paypal-payments/advanced/#plugin-download-history-stats)
-[![WordPress.org rating](https://img.shields.io/wordpress/plugin/r/woocommerce-paypal-payments.svg 'WordPress.org rating')](https://wordpress.org/support/plugin/woocommerce-paypal-payments/reviews/)
 [![Build Status](https://github.com/woocommerce/woocommerce-paypal-payments/actions/workflows/php.yml/badge.svg?branch=trunk 'Build Status')](https://github.com/woocommerce/woocommerce-paypal-payments/blob/trunk/.github/workflows/php.yml)
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/woocommerce/woocommerce-paypal-payments)
 
