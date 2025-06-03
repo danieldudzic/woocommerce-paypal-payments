@@ -22,7 +22,7 @@
 [![GitHub Release Date](https://img.shields.io/github/release-date/woocommerce/woocommerce-paypal-payments)](https://github.com/woocommerce/woocommerce-paypal-payments/releases)
 [![WordPress.org downloads](https://img.shields.io/wordpress/plugin/dt/woocommerce-paypal-payments.svg 'WordPress.org downloads')](https://wordpress.org/plugins/woocommerce-paypal-payments/advanced/#plugin-download-history-stats)
 [![WordPress.org rating](https://img.shields.io/wordpress/plugin/r/woocommerce-paypal-payments.svg 'WordPress.org rating')](https://wordpress.org/support/plugin/woocommerce-paypal-payments/reviews/)
-[![Build Status](https://github.com/woocommerce/woocommerce-paypal-payments/actions/workflows/integration.yml/badge.svg?branch=trunk 'Build Status')](https://github.com/woocommerce/woocommerce-paypal-payments/blob/trunk/.github/workflows/integration.yml)
+[![Build Status](https://github.com/woocommerce/woocommerce-paypal-payments/actions/workflows/php.yml/badge.svg?branch=trunk 'Build Status')](https://github.com/woocommerce/woocommerce-paypal-payments/blob/trunk/.github/workflows/php.yml)
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/woocommerce/woocommerce-paypal-payments)
 
 # WooCommerce PayPal Payments
