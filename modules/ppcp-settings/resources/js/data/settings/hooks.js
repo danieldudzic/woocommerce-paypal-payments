@@ -36,7 +36,20 @@ const useStoreData = () => {
 	);
 };
 
-const useHooks = () => {
+export const useStore = () => {
+	const { select, dispatch, useTransient } = useStoreData();
+	const { persist, refresh } = dispatch;
+	const [ isReady ] = useTransient( 'isReady' );
+
+	// Load persistent data from REST if not done yet.
+	if ( ! isReady ) {
+		select.persistentData();
+	}
+
+	return { persist, refresh, isReady };
+};
+
+export const useSettings = () => {
 	const { usePersistent } = useStoreData();
 
 	// Persistent accessors.
@@ -67,83 +80,6 @@ const useHooks = () => {
 
 	const [ disabledCards, setDisabledCards ] =
 		usePersistent( 'disabledCards' );
-
-	return {
-		invoicePrefix,
-		setInvoicePrefix,
-		authorizeOnly,
-		setAuthorizeOnly,
-		captureVirtualOnlyOrders,
-		setCaptureVirtualOnlyOrders,
-		savePaypalAndVenmo,
-		setSavePaypalAndVenmo,
-		saveCardDetails,
-		setSaveCardDetails,
-		payNowExperience,
-		setPayNowExperience,
-		logging,
-		setLogging,
-		stayUpdated,
-		setStayUpdated,
-		subtotalAdjustment,
-		setSubtotalAdjustment,
-		brandName,
-		setBrandName,
-		softDescriptor,
-		setSoftDescriptor,
-		landingPage,
-		setLandingPage,
-		buttonLanguage,
-		setButtonLanguage,
-		disabledCards,
-		setDisabledCards,
-	};
-};
-
-export const useStore = () => {
-	const { select, dispatch, useTransient } = useStoreData();
-	const { persist, refresh } = dispatch;
-	const [ isReady ] = useTransient( 'isReady' );
-
-	// Load persistent data from REST if not done yet.
-	if ( ! isReady ) {
-		select.persistentData();
-	}
-
-	return { persist, refresh, isReady };
-};
-
-export const useSettings = () => {
-	const {
-		invoicePrefix,
-		setInvoicePrefix,
-		authorizeOnly,
-		setAuthorizeOnly,
-		captureVirtualOnlyOrders,
-		setCaptureVirtualOnlyOrders,
-		savePaypalAndVenmo,
-		setSavePaypalAndVenmo,
-		saveCardDetails,
-		setSaveCardDetails,
-		payNowExperience,
-		setPayNowExperience,
-		logging,
-		setLogging,
-		stayUpdated,
-		setStayUpdated,
-		subtotalAdjustment,
-		setSubtotalAdjustment,
-		brandName,
-		setBrandName,
-		softDescriptor,
-		setSoftDescriptor,
-		landingPage,
-		setLandingPage,
-		buttonLanguage,
-		setButtonLanguage,
-		disabledCards,
-		setDisabledCards,
-	} = useHooks();
 
 	return {
 		invoicePrefix,
