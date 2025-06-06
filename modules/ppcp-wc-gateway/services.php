@@ -2092,4 +2092,21 @@ return array(
 	'wcgateway.settings.admin-settings-enabled'            => static function( ContainerInterface $container ): bool {
 		return $container->has( 'settings.url' ) && ! SettingsModule::should_use_the_old_ui();
 	},
+
+	'wcgateway.contact-module.eligibility.check'           => static function ( ContainerInterface $container ): callable {
+		$feature_enabled = (bool) apply_filters(
+			'woocommerce.feature-flags.woocommerce_paypal_payments.contact_module_enabled',
+			getenv( 'PCP_CONTACT_MODULE_ENABLED' ) === '1'
+		);
+
+		/**
+		 * Decides, whether the current merchant is eligible to use the
+		 * "Contact Module" feature on this site.
+		 *
+		 * This check will change later:
+		 * - For the start, a feature flag will decide if the contact module can be accessed.
+		 * - Later, we will extend this check to also verify merchant details, like country.
+		 */
+		return static fn() => $feature_enabled;
+	},
 );
