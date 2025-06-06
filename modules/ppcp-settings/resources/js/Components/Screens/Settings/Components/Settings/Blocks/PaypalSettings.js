@@ -15,6 +15,8 @@ const PaypalSettings = () => {
 	const {
 		savePaypalAndVenmo,
 		setSavePaypalAndVenmo,
+		contactModule,
+		setContactModule,
 		subtotalAdjustment,
 		setSubtotalAdjustment,
 		brandName,
@@ -67,6 +69,21 @@ const PaypalSettings = () => {
 					) }
 					value={ savePaypalAndVenmo }
 					onChange={ setSavePaypalAndVenmo }
+				/>
+			</SettingsBlock>
+
+			<SettingsBlock>
+				<ControlToggleButton
+					label={ __(
+						'Custom Shipping Contact',
+						'woocommerce-paypal-payments'
+					) }
+					description={ __(
+						'If enabled, customers can provide a custom shipping email and phone number when paying via PayPal. Order updates are delivered to the custom shipping email, and not to the billing email.',
+						'woocommerce-paypal-payments'
+					) }
+					value={ contactModule }
+					onChange={ setContactModule }
 				/>
 			</SettingsBlock>
 

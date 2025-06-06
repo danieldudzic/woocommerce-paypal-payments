@@ -71,6 +71,9 @@ export const useSettings = () => {
 		usePersistent( 'captureVirtualOrders' );
 	const [ savePaypalAndVenmo, setSavePaypalAndVenmo ] =
 		usePersistent( 'savePaypalAndVenmo' );
+	const [ contactModule, setContactModule ] = usePersistent(
+		'enableContactModule'
+	);
 	const [ saveCardDetails, setSaveCardDetails ] =
 		usePersistent( 'saveCardDetails' );
 	const [ payNowExperience, setPayNowExperience ] =
@@ -90,6 +93,8 @@ export const useSettings = () => {
 		setCaptureVirtualOnlyOrders,
 		savePaypalAndVenmo,
 		setSavePaypalAndVenmo,
+		contactModule,
+		setContactModule,
 		saveCardDetails,
 		setSaveCardDetails,
 		payNowExperience,
