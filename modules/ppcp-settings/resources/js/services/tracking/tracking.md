@@ -7,6 +7,33 @@ It monitors WordPress data stores rather than adding code to frontend components
 
 ## Architecture Components
 
+### File/Folder Organization
+
+```
+src/
+├── services/
+│   └── tracking/
+│       ├── registry.js                    # Central funnel registration
+│       ├── subscription-manager.js        # Store subscription management
+│       ├── utils.js                      # Field config helpers & utilities
+│       ├── adapters/                     # Tracking destination adapters
+│       │   ├── woocommerce-tracks.js     # WooCommerce Tracks integration
+│       │   └── console-logger.js         # Console output
+│       └── funnels/                      # Funnel-specific configurations
+│           └── onboarding.js             # Onboarding funnel config & translations
+├── data/                                 # Enhanced Redux stores
+│   ├── onboarding/
+│   │   ├── actions.js                    # Enhanced with source parameter
+│   │   ├── reducer.js                    # Enhanced with field source tracking
+│   │   └── hooks.js                      # Enhanced to pass source values
+│   └── common/
+│       ├── actions.js                    # Enhanced with source parameter
+│       ├── reducer.js                    # Enhanced with field source tracking
+│       └── hooks.js                      # Enhanced to pass source values
+└── components/                           # Enhanced to pass tracking sources
+    └── **/*.js                          # Form components updated with source attribution
+```
+
 ### 1. Registry System (`src/services/tracking/registry.js`)
 
 The registry manages funnel registration and coordinates multiple tracking concerns without conflicts.
@@ -61,7 +88,7 @@ const subscription = wp.data.subscribe(() => {
 });
 ```
 
-### 3. Source-Based Field Filtering
+### 3. Source-Based Field Filtering (`src/services/tracking/utils.js`, `subscription-manager.js`)
 
 **Why Source Tracking?** Redux store subscriptions and internal system updates were creating noise in analytics by triggering tracking events for non-user actions.
 
@@ -79,14 +106,12 @@ fieldRules: {
 // Usage in components
 const { setIsCasualSeller } = useOnboardingHooks();
 setIsCasualSeller(true, 'user'); // Will be tracked
-setIsCasualSeller(false, 'subscription'); // Will be filtered out
+setIsCasualSeller(false); // Will be filtered out
 ```
 
 #### Source Types
 - `'user'` - Direct user interactions (form inputs, button clicks)
-- `'system'` - System-initiated changes (auto-progression, defaults)
-- `'subscription'` - Changes from store subscriptions (filtered out)
-- `'api'` - Changes from API responses
+- `'system'` - System-initiated changes (data loaded from settings, defaults)
 
 ### 4. Adapter Pattern (`src/services/tracking/adapters/`)
 
@@ -94,9 +119,8 @@ Supports multiple tracking backends through a consistent interface.
 
 #### Available Adapters
 
-##### WooCommerce Tracks Adapter
+##### WooCommerce Tracks Adapter (`src/services/tracking/adapters/woocommerce-tracks.js`)
 ```javascript
-// src/services/tracking/adapters/woocommerce-tracks.js
 class WooCommerceTracksAdapter {
     sendEvent(eventName, properties) {
         if (window.wcTracks?.recordEvent) {
@@ -106,9 +130,8 @@ class WooCommerceTracksAdapter {
 }
 ```
 
-##### Console Logger Adapter
+##### Console Logger Adapter (`src/services/tracking/adapters/console-logger.js`)
 ```javascript
-// src/services/tracking/adapters/console-logger.js
 class ConsoleLoggerAdapter {
     sendEvent(eventName, properties) {
         console.log(`🎯 ${eventName}`, properties);
@@ -118,6 +141,7 @@ class ConsoleLoggerAdapter {
 
 #### Creating Custom Adapters
 ```javascript
+// src/services/tracking/adapters/your-custom-adapter.js
 class CustomAnalyticsAdapter {
     sendEvent(eventName, properties) {
         // Your custom implementation
@@ -125,17 +149,19 @@ class CustomAnalyticsAdapter {
     }
 }
 
-// Register the adapter
+// Register in funnel configuration
 trackingService.addAdapter(new CustomAnalyticsAdapter());
 ```
 
-### 5. Translation Functions (`src/services/tracking/funnels/`)
+### 5. Funnel Configurations & Translation Functions (`src/services/tracking/funnels/`)
 
-Transform generic field changes into meaningful business events with rich context.
+Each funnel gets its own file containing both configuration and translation functions.
 
-#### Example Translation
+#### Example: Onboarding Funnel (`src/services/tracking/funnels/onboarding.js`)
 ```javascript
-// src/services/tracking/funnels/onboarding.js
+import { createFieldTrackingConfig, createBooleanFieldConfig } from '../utils';
+
+// Translation functions for this funnel
 export const translations = {
     isCasualSeller: (oldValue, newValue, metadata, trackingService) => {
         const accountType = newValue === true ? 'personal' : 'business';
@@ -161,6 +187,31 @@ export const translations = {
             trackingService.sendToAdapters('ppcp_onboarding_step_forward', eventData);
         }
     }
+};
+
+// Funnel configuration
+export const onboardingFunnelConfig = {
+    funnelId: 'onboarding',
+    stores: ['wc/paypal/onboarding', 'wc/paypal/common'],
+    
+    trackingCondition: {
+        store: 'wc/paypal/common',
+        selector: 'merchant', 
+        field: 'isConnected',
+        expectedValue: false
+    },
+    
+    fieldConfigs: {
+        'wc/paypal/onboarding': [
+            createFieldTrackingConfig('step', 'persistent', {
+                rules: { allowedSources: ['user', 'system'] }
+            }),
+            createBooleanFieldConfig('isCasualSeller', 'persistent', ['user'])
+        ]
+    },
+    
+    translations,
+    debug: process.env.NODE_ENV === 'development'
 };
 ```
 
@@ -234,16 +285,18 @@ const onboardingFunnelConfig = {
 
 ## Integration with Redux Stores
 
-### Action Enhancement
+### Action Enhancement (`src/data/{store}/actions.js`)
 
-PayPal store actions for tracked fields have been enhanced to support source tracking. **Note:** Source tracking support must be manually added to specific actions when you want to track new fields or extend tracking to additional data stores.
+Store actions for tracked fields have been enhanced to support source tracking. **Note:** Source tracking support must be manually added to specific actions when you want to track new fields or extend tracking to additional data stores.
 
 ```javascript
+// src/data/onboarding/actions.js
+
 // Before
 export const setIsCasualSeller = (isCasualSeller) =>
     setPersistent('isCasualSeller', isCasualSeller);
 
-// After
+// After  
 export const setIsCasualSeller = (isCasualSeller, source = 'user') =>
     setPersistent('isCasualSeller', isCasualSeller, source);
 ```
@@ -252,14 +305,14 @@ export const setIsCasualSeller = (isCasualSeller, source = 'user') =>
 
 To add source tracking to additional fields, you need to:
 
-1. **Update the action creator** to accept and pass the source parameter:
+1. **Update the action creator** (`src/data/{store}/actions.js`) to accept and pass the source parameter:
 ```javascript
 // Add source parameter to action creator
 export const setNewField = (value, source = 'user') =>
     setPersistent('newField', value, source);
 ```
 
-2. **Update the hook** to pass source values:
+2. **Update the hook** (`src/data/{store}/hooks.js`) to pass source values:
 ```javascript
 // In hooks file
 const setNewField = async (value, source = 'user') => {
@@ -268,7 +321,7 @@ const setNewField = async (value, source = 'user') => {
 };
 ```
 
-3. **Add field configuration** to your funnel:
+3. **Add field configuration** to your funnel (`src/services/tracking/funnels/{funnel-name}.js`):
 ```javascript
 fieldConfigs: {
     'your-store-name': [
@@ -283,7 +336,7 @@ fieldConfigs: {
 
 To extend tracking to a new data store:
 
-1. **Enhance the base actions** (`setPersistent`/`setTransient`) to handle source:
+1. **Enhance the base actions** (`src/data/{new-store}/actions.js`) - add `setPersistent`/`setTransient` to handle source:
 ```javascript
 // In your new store's actions.js
 export const setPersistent = (prop, value, source) => ({
@@ -294,7 +347,7 @@ export const setPersistent = (prop, value, source) => ({
 });
 ```
 
-2. **Update the reducer** to track field sources:
+2. **Update the reducer** (`src/data/{new-store}/reducer.js`) to track field sources:
 ```javascript
 // In your reducer
 case ACTION_TYPES.SET_PERSISTENT:
@@ -313,7 +366,19 @@ case ACTION_TYPES.SET_PERSISTENT:
     return newState;
 ```
 
-3. **Register the store** in your funnel configuration:
+3. **Create enhanced hooks** (`src/data/{new-store}/hooks.js`) that pass source values:
+```javascript
+export const useNewStoreHooks = () => {
+    return {
+        setNewField: async (value, source = 'user') => {
+            setNewFieldAction(value, source);
+            await dispatchActions.persist();
+        }
+    };
+};
+```
+
+4. **Register the store** in your funnel configuration (`src/services/tracking/funnels/{funnel-name}.js`):
 ```javascript
 registerTrackingFunnel('your-funnel', {
     stores: ['your-new-store-name'],
@@ -321,7 +386,7 @@ registerTrackingFunnel('your-funnel', {
 });
 ```
 
-### Reducer Enhancement
+### Reducer Enhancement (`src/data/{onboarding,common}/reducer.js`)
 
 Reducers automatically handle field source tracking (only for onboarding and common data stores for now):
 
@@ -342,11 +407,12 @@ case ACTION_TYPES.SET_PERSISTENT:
     return newState;
 ```
 
-### Hook Integration
+### Hook Integration (`src/data/{onboarding,common}/hooks.js`)
 
 Custom hooks pass appropriate source values (only for onboarding and common data stores for now):
 
 ```javascript
+// src/data/onboarding/hooks.js
 export const useOnboardingHooks = () => {
     const { setIsCasualSeller: setIsCasualSellerAction } = useActions();
     
@@ -358,6 +424,32 @@ export const useOnboardingHooks = () => {
     };
 };
 ```
+
+### Component Integration (`src/components/**/*.js`)
+
+Update form components and user interaction handlers to pass appropriate source values:
+
+```javascript
+// src/components/onboarding/AccountTypeSelector.js
+import { useOnboardingHooks } from '../../data/onboarding/hooks';
+
+const AccountTypeSelector = () => {
+    const { setIsCasualSeller } = useOnboardingHooks();
+    
+    const handleAccountTypeChange = (accountType) => {
+        const isCasual = accountType === 'personal';
+        setIsCasualSeller(isCasual, 'user'); // Specify 'user' source for tracking
+    };
+    
+    return (
+        <select onChange={(e) => handleAccountTypeChange(e.target.value)}>
+            <option value="business">Business</option>
+            <option value="personal">Personal</option>
+        </select>
+    );
+};
+```
+
 
 ## Event Schema
 
