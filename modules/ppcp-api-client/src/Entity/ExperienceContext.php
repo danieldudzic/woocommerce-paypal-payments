@@ -71,6 +71,11 @@ class ExperienceContext {
 	private ?string $payment_method_preference = null;
 
 	/**
+	 * The callback config.
+	 */
+	private ?CallbackConfig $order_update_callback_config = null;
+
+	/**
 	 * Returns the return URL.
 	 */
 	public function return_url(): ?string {
@@ -225,6 +230,25 @@ class ExperienceContext {
 	}
 
 	/**
+	 * Returns the callback config.
+	 */
+	public function order_update_callback_config(): ?CallbackConfig {
+		return $this->order_update_callback_config;
+	}
+
+	/**
+	 * Sets the callback config.
+	 *
+	 * @param CallbackConfig|null $new_value The value to set.
+	 */
+	public function with_order_update_callback_config( ?CallbackConfig $new_value ): ExperienceContext {
+		$obj = clone $this;
+
+		$obj->order_update_callback_config = $new_value;
+		return $obj;
+	}
+
+	/**
 	 * Returns the object as array.
 	 */
 	public function to_array(): array {
@@ -235,6 +259,9 @@ class ExperienceContext {
 			$value = $this->{$prop->getName()};
 			if ( $value === null ) {
 				continue;
+			}
+			if ( is_object( $value ) && method_exists( $value, 'to_array' ) ) {
+				$value = $value->to_array();
 			}
 			$data[ $prop->getName() ] = $value;
 		}
