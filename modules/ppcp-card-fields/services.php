@@ -61,6 +61,7 @@ return array(
 				'LT',
 				'LU',
 				'MT',
+				'MX',
 				'NL',
 				'PL',
 				'PT',
@@ -73,6 +74,11 @@ return array(
 				'GB',
 				'US',
 				'NO',
+				'YT',
+				'RE',
+				'GP',
+				'GF',
+				'MQ'
 			)
 		);
 	},
