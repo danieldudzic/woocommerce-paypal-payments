@@ -71,11 +71,11 @@ class CardPaymentsConfiguration {
 	private DCCProductStatus $dcc_status;
 
 	/**
-	 * General Settings
+	 * Store country.
 	 *
-	 * @var GeneralSettings
+	 * @var string
 	 */
-	private GeneralSettings $general_settings;
+	private string $store_country;
 
 	/**
 	 * This classes lazily resolves settings on first access. This flag indicates
@@ -142,20 +142,20 @@ class CardPaymentsConfiguration {
 	 * @param Settings         $settings         Plugin settings instance.
 	 * @param DccApplies       $dcc_applies      DCC eligibility helper.
 	 * @param DCCProductStatus $dcc_status        Manages the Seller status.
-	 * @param GeneralSettings  $general_settings General settings instance.
+	 * @param string           $store_country The shop's country code.
 	 */
 	public function __construct(
 		ConnectionState $connection_state,
 		Settings $settings,
 		DccApplies $dcc_applies,
 		DCCProductStatus $dcc_status,
-		GeneralSettings $general_settings
+		string $store_country
 	) {
 		$this->connection_state = $connection_state;
 		$this->settings         = $settings;
 		$this->dcc_applies      = $dcc_applies;
 		$this->dcc_status       = $dcc_status;
-		$this->general_settings = $general_settings;
+		$this->store_country    = $store_country;
 
 		$this->is_resolved = false;
 	}
@@ -330,7 +330,7 @@ class CardPaymentsConfiguration {
 	 * @return bool
 	 */
 	public function is_bcdc_enabled() : bool {
-		if ( 'MX' === $this->general_settings->get_merchant_country() ) {
+		if ( 'MX' === $this->store_country ) {
 			$bcdc_setting = get_option( 'woocommerce_ppcp-card-button-gateway_settings' );
 			return 'yes' === $bcdc_setting['enabled'];
 		}

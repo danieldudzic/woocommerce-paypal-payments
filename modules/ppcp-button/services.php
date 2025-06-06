@@ -227,6 +227,7 @@ return array(
 			$request_data,
 			$purchase_unit_factory,
 			$container->get( 'api.factory.shipping-preference' ),
+			$container->get( 'wcgateway.builder.experience-context' ),
 			$order_endpoint,
 			$payer_factory,
 			$session_handler,
@@ -347,7 +348,7 @@ return array(
 			$container->get( 'wcgateway.settings' ),
 			$container->get( 'wcgateway.all-funding-sources' ),
 			$container->get( 'wcgateway.configuration.card-configuration' ),
-			$container->get( 'settings.data.general' )->get_merchant_country()
+			$container->get( 'api.shop.country' )
 		);
 	},
 	'button.is-logged-in'                         => static function ( ContainerInterface $container ): bool {
