@@ -13,7 +13,10 @@ export default {
 	RESET: 'ppcp/onboarding/RESET',
 	HYDRATE: 'ppcp/onboarding/HYDRATE',
 
-	// Gateway sync flag
+	// Gateway sync flag.
 	SYNC_GATEWAYS: 'ppcp/onboarding/SYNC_GATEWAYS',
 	REFRESH_GATEWAYS: 'ppcp/onboarding/REFRESH_GATEWAYS',
+
+	// Tracking.
+	CLEAR_FIELD_SOURCE: 'ppcp/onboarding/CLEAR_FIELD_SOURCE',
 };

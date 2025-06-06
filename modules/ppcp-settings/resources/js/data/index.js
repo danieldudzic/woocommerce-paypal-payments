@@ -8,6 +8,9 @@ import * as Todos from './todos';
 import * as PayLaterMessaging from './pay-later-messaging';
 import * as Features from './features';
 
+// Initialize tracking funnels before any store initialization.
+import '../services/tracking/init';
+
 const stores = [
 	Onboarding,
 	Common,

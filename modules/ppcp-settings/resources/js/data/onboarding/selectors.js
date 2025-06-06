@@ -18,12 +18,49 @@ export const persistentData = ( state ) => {
 };
 
 export const transientData = ( state ) => {
-	const { data, flags, ...transientState } = getState( state );
+	const { data, flags, fieldSources, ...transientState } = getState( state );
 	return transientState || EMPTY_OBJ;
 };
 
 export const flags = ( state ) => {
 	return getState( state ).flags || EMPTY_OBJ;
+};
+
+/**
+ * Get the source information for a specific field.
+ * @param {Object} state     - Store state.
+ * @param {string} fieldName
+ */
+export const getFieldSource = ( state, fieldName ) => {
+	const fieldSources = state?.fieldSources || {};
+	const fieldSource = fieldSources[ fieldName ];
+
+	if ( ! fieldSource ) {
+		return null;
+	}
+
+	return fieldSource;
+};
+
+/**
+ * Get all field sources for debugging.
+ * @param {Object} state - Store state.
+ * @return {Object} All field source information.
+ */
+export const getAllFieldSources = ( state ) => {
+	const currentState = getState( state );
+	return currentState.fieldSources || {};
+};
+
+/**
+ * Get the connection button clicked status.
+ *
+ * @param {Object} state - Store state.
+ * @return {boolean} Whether the connection button has been clicked.
+ */
+export const getConnectionButtonClicked = ( state ) => {
+	const transient = transientData( state );
+	return transient.connectionButtonClicked || false;
 };
 
 /**

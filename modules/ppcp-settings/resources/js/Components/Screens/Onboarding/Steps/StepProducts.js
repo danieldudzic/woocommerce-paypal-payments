@@ -38,7 +38,7 @@ const StepProducts = () => {
 		};
 
 		initChoices();
-	}, [ canUseSubscriptions, optionState, products, setProducts ] );
+	}, [ canUseSubscriptions, isCasualSeller ] );
 
 	const handleChange = ( key, checked ) => {
 		const getNewValue = () => {
@@ -48,7 +48,7 @@ const StepProducts = () => {
 			return products.filter( ( val ) => val !== key );
 		};
 
-		setProducts( getNewValue() );
+		setProducts( getNewValue(), 'user' );
 	};
 	const productChoicesFull = [
 		{

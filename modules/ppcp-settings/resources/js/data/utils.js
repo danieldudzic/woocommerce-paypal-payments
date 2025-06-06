@@ -74,7 +74,11 @@ export const createReducer = (
 
 	return function reducer( state = initialState, action ) {
 		if ( Object.hasOwnProperty.call( handlers, action.type ) ) {
-			return handlers[ action.type ]( state, action.payload ?? {} );
+			return handlers[ action.type ](
+				state,
+				action.payload ?? {},
+				action
+			);
 		}
 
 		return state;
@@ -121,13 +125,13 @@ export const createHooksForStore = ( storeName ) => {
 		const actions = useDispatch( storeName );
 
 		const setValue = useCallback(
-			( newValue ) => {
+			( newValue, source ) => {
 				if ( ! actions?.[ dispatcher ] ) {
 					throw new Error(
 						`Please create the action "${ dispatcher }" for store "${ storeName }"`
 					);
 				}
-				actions[ dispatcher ]( key, newValue );
+				actions[ dispatcher ]( key, newValue, source );
 			},
 			[ actions, key ]
 		);

@@ -36,26 +36,34 @@ export const hydrate = ( payload ) => ( {
 /**
  * Generic transient-data updater.
  *
- * @param {string} prop  Name of the property to update.
- * @param {any}    value The new value of the property.
+ * @param {string} prop   Name of the property to update.
+ * @param {any}    value  The new value of the property.
+ * @param {string} source Optional source context for tracking.
  * @return {Action} The action.
  */
-export const setTransient = ( prop, value ) => ( {
+export const setTransient = ( prop, value, source = '' ) => ( {
 	type: ACTION_TYPES.SET_TRANSIENT,
 	payload: { [ prop ]: value },
+	source,
+	fieldName: prop,
 } );
 
 /**
  * Generic persistent-data updater.
  *
- * @param {string} prop  Name of the property to update.
- * @param {any}    value The new value of the property.
+ * @param {string} prop   Name of the property to update.
+ * @param {any}    value  The new value of the property.
+ * @param {string} source Optional source context for tracking.
  * @return {Action} The action.
  */
-export const setPersistent = ( prop, value ) => ( {
-	type: ACTION_TYPES.SET_PERSISTENT,
-	payload: { [ prop ]: value },
-} );
+export const setPersistent = ( prop, value, source = '' ) => {
+	return {
+		type: ACTION_TYPES.SET_PERSISTENT,
+		payload: { [ prop ]: value },
+		source,
+		fieldName: prop,
+	};
+};
 
 /**
  * Transient. Marks the onboarding details as "ready", i.e., fully initialized.
@@ -78,19 +86,22 @@ export const setActiveModal = ( activeModal ) =>
  * Persistent. Sets the sandbox mode on or off.
  *
  * @param {boolean} useSandbox
+ * @param {string}  source     Optional source context for tracking.
  * @return {Action} The action.
  */
-export const setSandboxMode = ( useSandbox ) =>
-	setPersistent( 'useSandbox', useSandbox );
+export const setSandboxMode = ( useSandbox, source ) => {
+	return setPersistent( 'useSandbox', useSandbox, source );
+};
 
 /**
  * Persistent. Toggles the "Manual Connection" mode on or off.
  *
  * @param {boolean} useManualConnection
+ * @param {string}  source              Optional source context for tracking.
  * @return {Action} The action.
  */
-export const setManualConnectionMode = ( useManualConnection ) =>
-	setPersistent( 'useManualConnection', useManualConnection );
+export const setManualConnectionMode = ( useManualConnection, source ) =>
+	setPersistent( 'useManualConnection', useManualConnection, source );
 
 /**
  * Persistent. Changes the "webhooks" value.
@@ -151,4 +162,15 @@ export const startActivity = ( id, description = null ) => {
 export const stopActivity = ( id ) => ( {
 	type: ACTION_TYPES.STOP_ACTIVITY,
 	payload: { id },
+} );
+
+/**
+ * Action creator to clear field source tracking.
+ *
+ * @param {string} fieldName - Name of the field to clear source for.
+ * @return {Action} The action.
+ */
+export const clearFieldSource = ( fieldName ) => ( {
+	type: ACTION_TYPES.CLEAR_FIELD_SOURCE,
+	payload: { fieldName },
 } );
