@@ -79,6 +79,7 @@ class SettingsModel extends AbstractDataModel {
 			'authorize_only'         => false,
 			'capture_virtual_orders' => false,
 			'save_paypal_and_venmo'  => false,
+			'enable_contact_module'  => false,
 			'save_card_details'      => false,
 			'enable_pay_now'         => false,
 			'enable_logging'         => false,
@@ -252,6 +253,24 @@ class SettingsModel extends AbstractDataModel {
 	 */
 	public function set_save_paypal_and_venmo( bool $save ) : void {
 		$this->data['save_paypal_and_venmo'] = $this->sanitizer->sanitize_bool( $save );
+	}
+
+	/**
+	 * Gets the custom-shipping-contact flag ("Contact Module").
+	 *
+	 * @return bool True if the contact module feature is enabled, false otherwise.
+	 */
+	public function get_enable_contact_module() : bool {
+		return $this->data['enable_contact_module'];
+	}
+
+	/**
+	 * Sets the custom-shipping-contact flag ("Contact Module").
+	 *
+	 * @param bool $save Whether to use the contact module feature.
+	 */
+	public function set_enable_contact_module( bool $save ) : void {
+		$this->data['enable_contact_module'] = $this->sanitizer->sanitize_bool( $save );
 	}
 
 	/**
