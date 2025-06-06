@@ -1921,6 +1921,7 @@ return array(
 		assert( $settings instanceof Settings );
 
 		if ( apply_filters(
+			// phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- feature flags use this convention
 			'woocommerce.feature-flags.woocommerce_paypal_payments.settings_enabled',
 			getenv( 'PCP_SETTINGS_ENABLED' ) === '1'
 		) ) {
@@ -2095,6 +2096,7 @@ return array(
 
 	'wcgateway.contact-module.eligibility.check'           => static function ( ContainerInterface $container ): callable {
 		$feature_enabled = (bool) apply_filters(
+			// phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- feature flags use this convention
 			'woocommerce.feature-flags.woocommerce_paypal_payments.contact_module_enabled',
 			getenv( 'PCP_CONTACT_MODULE_ENABLED' ) === '1'
 		);
