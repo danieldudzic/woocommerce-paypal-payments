@@ -2106,9 +2106,15 @@ return array(
 	},
 
 	/**
-	 * Returns random 6 characters length alphanumeric prefix, followed by a hyphen.
+	 * Returns random 6 characters length alphabetic prefix, followed by a hyphen.
 	 */
 	'wcgateway.settings.invoice-prefix-random'             => static function( ContainerInterface $container ): string {
-		return wp_generate_password( 6, false ) . '-';
+		$characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+		$prefix = '';
+		for ( $i = 0; $i < 6; $i++ ) {
+			$prefix .= $characters[ wp_rand( 0, strlen( $characters ) - 1 ) ];
+		}
+
+		return $prefix . '-';
 	},
 );
