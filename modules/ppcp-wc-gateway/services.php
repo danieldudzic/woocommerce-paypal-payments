@@ -2109,7 +2109,9 @@ return array(
 		 * - For the start, a feature flag will decide if the contact module can be accessed.
 		 * - Later, we will extend this check to also verify merchant details, like country.
 		 */
-		return static fn() => $feature_enabled;
+		return static function () use ( $feature_enabled ) {
+			return $feature_enabled;
+		};
 	},
 	/**
 	 * Returns a prefix for the site, ensuring the same site always gets the same prefix (unless the URL changes).
