@@ -576,7 +576,7 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 		// Enable APMs after onboarding if the country is compatible.
 		add_action(
 			'woocommerce_paypal_payments_toggle_payment_gateways_apms',
-			function ( PaymentSettings $payment_methods, array $methods_apm ) use ( $container ) {
+			function ( PaymentSettings $payment_methods, array $methods_apm, ConfigurationFlagsDTO $flags ) use ( $container ) {
 
 				$general_settings = $container->get( 'settings.data.general' );
 				assert( $general_settings instanceof GeneralSettings );
@@ -586,6 +586,11 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 
 				// Enable all APM methods.
 				foreach ( $methods_apm as $method ) {
+					if ( $flags->use_card_payments === false ) {
+						$payment_methods->toggle_method_state( $method['id'], $flags->use_card_payments );
+						continue;
+					}
+
 					// Skip PayUponInvoice if merchant is not in Germany.
 					if ( PayUponInvoiceGateway::ID === $method['id'] && 'DE' !== $merchant_country ) {
 						continue;
