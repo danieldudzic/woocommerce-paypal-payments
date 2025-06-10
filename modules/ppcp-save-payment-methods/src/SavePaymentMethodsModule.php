@@ -164,20 +164,6 @@ class SavePaymentMethodsModule implements ServiceModule, ExtendingModule, Execut
 										),
 									),
 								);
-							} elseif ( $funding_source && $funding_source === 'apple_pay' ) {
-								$data['payment_source'] = array(
-									'apple_pay' => array(
-										'stored_credential' => array(
-											'payment_initiator' => 'CUSTOMER',
-											'payment_type' => 'RECURRING',
-										),
-										'attributes' => array(
-											'vault' => array(
-												'store_in_vault' => 'ON_SUCCESS',
-											),
-										),
-									),
-								);
 							} else {
 								$data['payment_source'] = array(
 									'paypal' => array(
