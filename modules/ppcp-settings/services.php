@@ -120,8 +120,12 @@ return array(
 		return new PaymentSettings();
 	},
 	'settings.data.settings'                              => static function ( ContainerInterface $container ) : SettingsModel {
+		$environment = $container->get( 'settings.environment' );
+		assert( $environment instanceof Environment );
+
 		return new SettingsModel(
-			$container->get( 'settings.service.sanitizer' )
+			$container->get( 'settings.service.sanitizer' ),
+			$environment->is_sandbox() ? $container->get( 'wcgateway.settings.invoice-prefix-random' ) : $container->get( 'wcgateway.settings.invoice-prefix' )
 		);
 	},
 	'settings.data.paylater-messaging'                    => static function ( ContainerInterface $container ) : array {
