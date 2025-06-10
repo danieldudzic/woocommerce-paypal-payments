@@ -2111,4 +2111,28 @@ return array(
 		 */
 		return static fn() => $feature_enabled;
 	},
+	/**
+	 * Returns a prefix for the site, ensuring the same site always gets the same prefix (unless the URL changes).
+	 */
+	'wcgateway.settings.invoice-prefix'                    => static function( ContainerInterface $container ): string {
+		$site_url = get_site_url( get_current_blog_id() );
+		$hash     = md5( $site_url );
+		$letters  = preg_replace( '~\d~', '', $hash ) ?? '';
+		$prefix   = substr( $letters, 0, 6 );
+
+		return $prefix ? $prefix . '-' : '';
+	},
+
+	/**
+	 * Returns random 6 characters length alphabetic prefix, followed by a hyphen.
+	 */
+	'wcgateway.settings.invoice-prefix-random'             => static function( ContainerInterface $container ): string {
+		$characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+		$prefix = '';
+		for ( $i = 0; $i < 6; $i++ ) {
+			$prefix .= $characters[ wp_rand( 0, strlen( $characters ) - 1 ) ];
+		}
+
+		return $prefix . '-';
+	},
 );
