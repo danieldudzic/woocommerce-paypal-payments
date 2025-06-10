@@ -282,8 +282,8 @@ class CompatModule implements ServiceModule, ExtendingModule, ExecutableModule {
 	 * The migration will be done on plugin update if it hasn't already done.
 	 */
 	protected function migrate_three_d_secure_setting(): void {
-		$payment_settings = get_option('woocommerce-ppcp-data-payment') ?: array();
-		$data_settings = get_option('woocommerce-ppcp-data-settings') ?: array();
+		$payment_settings = get_option( 'woocommerce-ppcp-data-payment' ) ?: array();
+		$data_settings    = get_option( 'woocommerce-ppcp-data-settings' ) ?: array();
 
 		// Skip if payment settings don't have the setting but data settings do.
 		if ( ! isset( $payment_settings['three_d_secure'] ) && isset( $data_settings['three_d_secure'] ) ) {
@@ -293,16 +293,16 @@ class CompatModule implements ServiceModule, ExtendingModule, ExecutableModule {
 		add_action(
 			'woocommerce_paypal_payments_gateway_migrate_on_update',
 			function () {
-				$payment_settings = get_option('woocommerce-ppcp-data-payment') ?: array();
-				$data_settings = get_option('woocommerce-ppcp-data-settings') ?: array();
+				$payment_settings = get_option( 'woocommerce-ppcp-data-payment' ) ?: array();
+				$data_settings    = get_option( 'woocommerce-ppcp-data-settings' ) ?: array();
 
 				// Move the setting.
 				$data_settings['three_d_secure'] = $payment_settings['three_d_secure'];
 				unset( $payment_settings['three_d_secure'] );
 
 				// Save both.
-				update_option('woocommerce-ppcp-data-settings', $data_settings);
-				update_option('woocommerce-ppcp-data-payment', $payment_settings);
+				update_option( 'woocommerce-ppcp-data-settings', $data_settings );
+				update_option( 'woocommerce-ppcp-data-payment', $payment_settings );
 			}
 		);
 	}
