@@ -393,50 +393,6 @@ class CreateOrderEndpoint implements EndpointInterface {
 	}
 
 	/**
-	 * Once the checkout has been validated we execute this method.
-	 *
-	 * @param array     $data The data.
-	 * @param \WP_Error $errors The errors, which occurred.
-	 *
-	 * @return array
-	 * @throws Exception On Error.
-	 */
-	public function after_checkout_validation( array $data, \WP_Error $errors ): array {
-		if ( ! $errors->errors ) {
-			try {
-				$order = $this->create_paypal_order();
-			} catch ( Exception $exception ) {
-				$this->logger->error( 'Order creation failed: ' . $exception->getMessage() );
-				throw $exception;
-			}
-
-			/**
-			 * In case we are onboarded and everything is fine with the \WC_Order
-			 * we want this order to be created. We will intercept it and leave it
-			 * in the "Pending payment" status though, which than later will change
-			 * during the "onApprove"-JS callback or the webhook listener.
-			 */
-			if ( ! $this->early_order_handler->should_create_early_order() ) {
-				wp_send_json_success( $this->make_response( $order ) );
-			}
-			$this->early_order_handler->register_for_order( $order );
-			return $data;
-		}
-
-		$this->logger->error( 'Checkout validation failed: ' . $errors->get_error_message() );
-
-		wp_send_json_error(
-			array(
-				'name'    => '',
-				'message' => $errors->get_error_message(),
-				'code'    => (int) $errors->get_error_code(),
-				'details' => array(),
-			)
-		);
-		return $data;
-	}
-
-	/**
 	 * Creates the order in the PayPal, uses data from WC order if provided.
 	 *
 	 * @param \WC_Order|null $wc_order WC order to get data from.
