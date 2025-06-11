@@ -2114,7 +2114,16 @@ return array(
 			$details = $container->get( 'settings.merchant-details' );
 			assert( $details instanceof MerchantDetails );
 
-			return 'US' === $details->get_merchant_country();
+			$enable_contact_module = 'US' === $details->get_merchant_country();
+
+			/**
+			 * The contact module is enabled for US-based merchants by default.
+			 * This filter provides the official way to opt-out of using it on this store.
+			 */
+			return (bool) apply_filters(
+				'woocommerce_paypal_payments_contact_module_enabled',
+				$enable_contact_module
+			);
 		};
 	},
 	/**
