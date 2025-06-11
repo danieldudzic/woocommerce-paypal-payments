@@ -21,6 +21,7 @@ use WooCommerce\PayPalCommerce\WcGateway\Helper\Environment;
 use WooCommerce\PayPalCommerce\WcGateway\Settings\Settings;
 use WooCommerce\PayPalCommerce\WcGateway\Helper\ConnectionState;
 use WooCommerce\PayPalCommerce\Settings\Data\GeneralSettings;
+use WooCommerce\PayPalCommerce\WcGateway\Helper\MerchantDetails;
 
 return array(
 	'api.paypal-host'                    => function( ContainerInterface $container ) : string {
@@ -102,7 +103,11 @@ return array(
 
 		return $state->get_environment();
 	},
+	'settings.merchant-details'          => static function ( ContainerInterface $container ) : MerchantDetails {
+		$woo_country = $container->get( 'api.shop.country' );
 
+		return new MerchantDetails( $woo_country, $woo_country );
+	},
 	'onboarding.assets'                  => function( ContainerInterface $container ) : OnboardingAssets {
 		$state                 = $container->get( 'onboarding.state' );
 		$login_seller_endpoint = $container->get( 'onboarding.endpoint.login-seller' );
