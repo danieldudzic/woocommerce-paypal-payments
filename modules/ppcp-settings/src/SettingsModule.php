@@ -611,7 +611,7 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 				}
 			},
 			10,
-			2
+			3
 		);
 
 		// Toggle payment gateways after onboarding based on flags.
