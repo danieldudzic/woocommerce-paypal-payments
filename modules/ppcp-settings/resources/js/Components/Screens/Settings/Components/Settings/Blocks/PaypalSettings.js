@@ -11,10 +11,12 @@ import Accordion from '../../../../../ReusableComponents/AccordionSection';
 import { SettingsHooks } from '../../../../../../data';
 import SoftDescriptorInput from '../../../../../ReusableComponents/Controls/SoftdescriptorInput';
 
-const PaypalSettings = () => {
+const PaypalSettings = ( { hasContactModule } ) => {
 	const {
 		savePaypalAndVenmo,
 		setSavePaypalAndVenmo,
+		contactModule,
+		setContactModule,
 		subtotalAdjustment,
 		setSubtotalAdjustment,
 		brandName,
@@ -29,6 +31,7 @@ const PaypalSettings = () => {
 	const siteData = useSelect( ( select ) => select( 'core' ).getSite(), [] );
 	const siteTitle = siteData?.title;
 	const buttonLanguageChoices = window.ppcpSettings.buttonLanguageChoices;
+
 	return (
 		<Accordion
 			className="ppcp--paypal-settings"
@@ -67,6 +70,21 @@ const PaypalSettings = () => {
 					) }
 					value={ savePaypalAndVenmo }
 					onChange={ setSavePaypalAndVenmo }
+				/>
+			</SettingsBlock>
+
+			<SettingsBlock visible={ hasContactModule }>
+				<ControlToggleButton
+					label={ __(
+						'Custom Shipping Contact',
+						'woocommerce-paypal-payments'
+					) }
+					description={ __(
+						'If enabled, customers can provide a custom shipping email and phone number when paying via PayPal. Order updates are delivered to the custom shipping email, and not to the billing email.',
+						'woocommerce-paypal-payments'
+					) }
+					value={ contactModule }
+					onChange={ setContactModule }
 				/>
 			</SettingsBlock>
 
