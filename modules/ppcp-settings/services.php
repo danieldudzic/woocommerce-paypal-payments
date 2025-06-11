@@ -672,6 +672,8 @@ return array(
 		$merchant_country = $data->get_merchant_country();
 		$woo_data         = $data->get_woo_settings();
 
-		return new MerchantDetails( $merchant_country, $woo_data['country'] );
+		$eligibility_checks = $container->get( 'wcgateway.feature-eligibility.list' );
+
+		return new MerchantDetails( $merchant_country, $woo_data['country'], $eligibility_checks );
 	},
 );
