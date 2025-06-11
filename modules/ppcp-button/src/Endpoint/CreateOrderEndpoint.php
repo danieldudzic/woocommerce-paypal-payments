@@ -441,8 +441,13 @@ class CreateOrderEndpoint implements EndpointInterface {
 			}
 		}
 
+		$payment_source_key = 'paypal';
+		if ( in_array( $funding_source, array( 'venmo' ), true ) ) {
+			$payment_source_key = $funding_source;
+		}
+
 		$payment_source = new PaymentSource(
-			'paypal',
+			$payment_source_key,
 			(object) array(
 				'experience_context' => $this->experience_context_builder
 					->with_default_paypal_config( $shipping_preference, $action )
