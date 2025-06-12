@@ -61,6 +61,8 @@ use WooCommerce\PayPalCommerce\Vendor\Psr\Container\ContainerInterface;
 use WooCommerce\PayPalCommerce\WcGateway\Settings\WcTasks\Registrar\TaskRegistrarInterface;
 use WooCommerce\PayPalCommerce\WcGateway\Helper\CardPaymentsConfiguration;
 use WooCommerce\PayPalCommerce\LocalAlternativePaymentMethods\LocalApmProductStatus;
+use WooCommerce\PayPalCommerce\WcGateway\Helper\MerchantDetails;
+use WooCommerce\PayPalCommerce\Settings\Data\SettingsModel;
 
 /**
  * Class WcGatewayModule
@@ -94,6 +96,7 @@ class WCGatewayModule implements ServiceModule, ExtendingModule, ExecutableModul
 		$this->register_checkout_paypal_address_preset( $c );
 		$this->register_wc_tasks( $c );
 		$this->register_void_button( $c );
+		$this->register_contact_module_integration( $c );
 
 		if ( ! $c->get( 'wcgateway.settings.admin-settings-enabled' ) ) {
 			add_action(
@@ -974,6 +977,48 @@ class WCGatewayModule implements ServiceModule, ExtendingModule, ExecutableModul
 				assert( $endpoint instanceof VoidOrderEndpoint );
 
 				$endpoint->handle_request();
+			}
+		);
+	}
+
+	/**
+	 * Registers the contact module integration.
+	 *
+	 * @param ContainerInterface $container DI container.
+	 */
+	private function register_contact_module_integration( ContainerInterface $container ) : void {
+		$merchant = $container->get( 'settings.merchant-details' );
+		assert( $merchant instanceof MerchantDetails );
+
+		$contact_module_active = true; // Default for legacy; can be disabled via eligibility hook.
+
+		if ( $container->has( 'settings.data.settings' ) ) {
+			$settings = $container->get( 'settings.data.settings' );
+			assert( $settings instanceof SettingsModel );
+
+			$contact_module_active = $settings->get_enable_contact_module();
+		}
+
+		/**
+		 * Extends the payload of the "create order" API call to include a
+		 * "contact_preference" flag. When present, the API response will include
+		 * additional details in the `purchase_units[].shipping` object.
+		 */
+		add_filter(
+			'ppcp_create_order_request_body_data',
+			static function ( array $data ) use ( $merchant, $contact_module_active ) : array {
+				if (
+					! $contact_module_active
+					|| ! isset( $data['payment_source']['paypal'], $data['payment_source']['paypal']->experience_context )
+					|| ! is_object( $data['payment_source']['paypal'] )
+					|| ! $merchant->is_eligible_for( MerchantDetails::FEATURE_CONTACT_MODULE )
+				) {
+					return $data;
+				}
+
+				$data['payment_source']['paypal']->experience_context['contact_preference'] = 'UPDATE_CONTACT_INFO';
+
+				return $data;
 			}
 		);
 	}
