@@ -106,6 +106,7 @@ class MerchantDetails {
 
 	/**
 	 * Tests, if the merchant is eligible to use a certain feature.
+	 * Feature checks are reliable _after_ the "plugins_loaded" action finished.
 	 *
 	 * Note:
 	 * To register features for detection by this method, the features must be
@@ -117,7 +118,7 @@ class MerchantDetails {
 	 * @return bool Whether the merchant can use the relevant feature.
 	 */
 	public function is_eligible_for( string $feature ) : bool {
-		if ( ! in_array( $feature, $this->eligibility_checks, true ) ) {
+		if ( ! array_key_exists( $feature, $this->eligibility_checks ) ) {
 			return false;
 		}
 
