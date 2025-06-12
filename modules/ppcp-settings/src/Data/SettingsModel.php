@@ -16,6 +16,8 @@ use WooCommerce\PayPalCommerce\Settings\Service\DataSanitizer;
  * Class SettingsModel
  *
  * Handles the storage and retrieval of PayPal Commerce settings in WordPress options table.
+ *
+ * DI Service: 'settings.data.settings'
  */
 class SettingsModel extends AbstractDataModel {
 
@@ -89,7 +91,7 @@ class SettingsModel extends AbstractDataModel {
 			'authorize_only'         => false,
 			'capture_virtual_orders' => false,
 			'save_paypal_and_venmo'  => false,
-			'enable_contact_module'  => false,
+			'enable_contact_module'  => true,
 			'save_card_details'      => false,
 			'enable_pay_now'         => false,
 			'enable_logging'         => false,
