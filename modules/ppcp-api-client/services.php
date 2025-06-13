@@ -682,6 +682,11 @@ return array(
 				'GB' => $default_currencies,
 				'US' => $default_currencies,
 				'NO' => $default_currencies,
+				'YT' => $default_currencies,
+				'RE' => $default_currencies,
+				'GP' => $default_currencies,
+				'GF' => $default_currencies,
+				'MQ' => $default_currencies,
 			)
 		);
 	},
