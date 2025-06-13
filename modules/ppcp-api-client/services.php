@@ -32,7 +32,6 @@ use WooCommerce\PayPalCommerce\ApiClient\Factory\RefundPayerFactory;
 use WooCommerce\PayPalCommerce\ApiClient\Factory\SellerPayableBreakdownFactory;
 use WooCommerce\PayPalCommerce\ApiClient\Factory\ShippingOptionFactory;
 use WooCommerce\PayPalCommerce\Session\SessionHandler;
-use WooCommerce\PayPalCommerce\Settings\Service\BrandedExperience\ActivationDetector;
 use WooCommerce\PayPalCommerce\Vendor\Psr\Container\ContainerInterface;
 use WooCommerce\PayPalCommerce\ApiClient\Authentication\Bearer;
 use WooCommerce\PayPalCommerce\ApiClient\Authentication\PayPalBearer;
