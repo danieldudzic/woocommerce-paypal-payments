@@ -19,7 +19,8 @@ class ExperienceContextTest extends TestCase
 			->with_landing_page('NO_PREFERENCE')
 			->with_shipping_preference('NO_SHIPPING')
 			->with_user_action('CONTINUE')
-			->with_payment_method_preference('UNRESTRICTED');
+			->with_payment_method_preference('UNRESTRICTED')
+			->with_contact_preference('NO_CONTACT_INFO');
 
 		$this->assertEmpty($empty->to_array());
 
@@ -32,6 +33,7 @@ class ExperienceContextTest extends TestCase
 			'shipping_preference' => 'NO_SHIPPING',
 			'user_action' => 'CONTINUE',
 			'payment_method_preference' => 'UNRESTRICTED',
+			'contact_preference' => 'NO_CONTACT_INFO',
 		], $result->to_array());
     }
 }
