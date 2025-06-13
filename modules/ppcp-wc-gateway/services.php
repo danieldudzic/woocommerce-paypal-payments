@@ -86,6 +86,7 @@ use WooCommerce\PayPalCommerce\Axo\Helper\PropertiesDictionary;
 use WooCommerce\PayPalCommerce\Applepay\ApplePayGateway;
 use WooCommerce\PayPalCommerce\WcGateway\Helper\CardPaymentsConfiguration;
 use WooCommerce\PayPalCommerce\WcGateway\Helper\ConnectionState;
+use WooCommerce\PayPalCommerce\WcGateway\Helper\MerchantDetails;
 
 return array(
 	'wcgateway.paypal-gateway'                             => static function ( ContainerInterface $container ): PayPalGateway {
@@ -1921,6 +1922,7 @@ return array(
 		assert( $settings instanceof Settings );
 
 		if ( apply_filters(
+			// phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- feature flags use this convention
 			'woocommerce.feature-flags.woocommerce_paypal_payments.settings_enabled',
 			getenv( 'PCP_SETTINGS_ENABLED' ) === '1'
 		) ) {
@@ -2130,6 +2132,54 @@ return array(
 
 	'wcgateway.settings.admin-settings-enabled'            => static function( ContainerInterface $container ): bool {
 		return $container->has( 'settings.url' ) && ! SettingsModule::should_use_the_old_ui();
+	},
+
+	'wcgateway.contact-module.eligibility.check'           => static function ( ContainerInterface $container ): callable {
+		$feature_enabled = (bool) apply_filters(
+			// phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- feature flags use this convention
+			'woocommerce.feature-flags.woocommerce_paypal_payments.contact_module_enabled',
+			getenv( 'PCP_CONTACT_MODULE_ENABLED' ) === '1'
+		);
+
+		/**
+		 * Decides, whether the current merchant is eligible to use the
+		 * "Contact Module" feature on this site.
+		 */
+		return static function () use ( $feature_enabled, $container ) {
+			if ( ! $feature_enabled ) {
+				return false;
+			}
+
+			$details = $container->get( 'settings.merchant-details' );
+			assert( $details instanceof MerchantDetails );
+
+			$enable_contact_module = 'US' === $details->get_merchant_country();
+
+			/**
+			 * The contact module is enabled for US-based merchants by default.
+			 * This filter provides the official way to opt-out of using it on this store.
+			 */
+			return (bool) apply_filters(
+				'woocommerce_paypal_payments_contact_module_enabled',
+				$enable_contact_module
+			);
+		};
+	},
+
+	/**
+	 * Returns a centralized list of feature eligibility checks.
+	 *
+	 * This is a helper service which is used by the `MerchantDetails` class and
+	 * should not be directly accessed.
+	 */
+	'wcgateway.feature-eligibility.list'                   => static function( ContainerInterface $container ): array {
+		return array(
+			MerchantDetails::FEATURE_SAVE_PAYPAL_VENMO => $container->get( 'save-payment-methods.eligibility.check' ),
+			MerchantDetails::FEATURE_ADVANCED_CARD_PROCESSING => $container->get( 'card-fields.eligibility.check' ),
+			MerchantDetails::FEATURE_GOOGLE_PAY        => $container->get( 'googlepay.eligibility.check' ),
+			MerchantDetails::FEATURE_APPLE_PAY         => $container->get( 'applepay.eligibility.check' ),
+			MerchantDetails::FEATURE_CONTACT_MODULE    => $container->get( 'wcgateway.contact-module.eligibility.check' ),
+		);
 	},
 
 	/**
