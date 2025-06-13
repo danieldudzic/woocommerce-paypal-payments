@@ -74,6 +74,12 @@ class ExperienceContext {
 	private ?string $payment_method_preference = null;
 
 	/**
+	 * Controls the contact module, and when defined, the API response will
+	 * include additional details in the `purchase_units[].shipping` object.
+	 */
+	private ?string $contact_preference = null;
+
+	/**
 	 * Returns the return URL.
 	 */
 	public function return_url(): ?string {
@@ -224,6 +230,28 @@ class ExperienceContext {
 		$obj = clone $this;
 
 		$obj->payment_method_preference = $new_value;
+		return $obj;
+	}
+
+	/**
+	 * Returns the contact preference.
+	 */
+	public function contact_preference(): ?string {
+		return $this->contact_preference;
+	}
+
+	/**
+	 * Sets the contact preference.
+	 *
+	 * This preference is only available for the payment source 'paypal' and 'venmo'.
+	 * https://developer.paypal.com/docs/api/orders/v2/#definition-paypal_wallet_experience_context
+	 *
+	 * @param string|null $new_value The value to set.
+	 */
+	public function with_contact_preference( ?string $new_value ): ExperienceContext {
+		$obj = clone $this;
+
+		$obj->contact_preference = $new_value;
 		return $obj;
 	}
 
