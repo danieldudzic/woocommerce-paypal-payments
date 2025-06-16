@@ -3,11 +3,10 @@
 ## Overview
 
 The tracking system provides comprehensive analytics for user interactions across onboarding, settings, and other flows. It features source-based field filtering, multi-funnel support, and extensible adapter architecture to prevent tracking loops and enable granular event control.
+
 It monitors WordPress data stores rather than adding code to frontend components, ensuring comprehensive coverage of all state changes regardless of their source (user actions, API responses, system updates) while maintaining clean separation of concerns.
 
-## Architecture Components
-
-### File/Folder Organization
+## File Organization
 
 ```
 src/
@@ -15,471 +14,332 @@ src/
 │   └── tracking/
 │       ├── registry.js                    # Central funnel registration
 │       ├── subscription-manager.js        # Store subscription management
-│       ├── utils.js                      # Field config helpers & utilities
+│       ├── utils/
+│       │   ├── field-config-helpers.js   # Field config helpers & utilities
+│       │   └── utils.js                  # Core tracking utilities
+│       ├── services/
+│       │   └── funnel-tracking.js        # Funnel tracking service
 │       ├── adapters/                     # Tracking destination adapters
 │       │   ├── woocommerce-tracks.js     # WooCommerce Tracks integration
 │       │   └── console-logger.js         # Console output
-│       └── funnels/                      # Funnel-specific configurations
-│           └── onboarding.js             # Onboarding funnel config & translations
-├── data/                                 # Enhanced Redux stores
-│   ├── onboarding/
-│   │   ├── actions.js                    # Enhanced with source parameter
-│   │   ├── reducer.js                    # Enhanced with field source tracking
-│   │   └── hooks.js                      # Enhanced to pass source values
-│   └── common/
-│       ├── actions.js                    # Enhanced with source parameter
-│       ├── reducer.js                    # Enhanced with field source tracking
-│       └── hooks.js                      # Enhanced to pass source values
+│       ├── funnels/                      # Funnel-specific configurations
+│       │   └── onboarding.js             # Onboarding funnel config & translations
+│       ├── index.js                      # Main exports
+│       └── init.js                       # Initialization system
+├── data/                                 # Redux stores
+│   ├── tracking/                         # Dedicated tracking store
+│   │   ├── actions.js                    # Field source tracking actions
+│   │   ├── reducer.js                    # Field source state management
+│   │   ├── selectors.js                  # Field source data access
+│   │   └── index.js                      # Store initialization
+│   ├── onboarding/                       # Clean business logic store
+│   │   ├── actions.js                    # Pure business actions
+│   │   ├── reducer.js                    # Clean business logic
+│   │   ├── selectors.js                  # Business data access
+│   │   └── hooks.js                      # Enhanced hooks with tracking
+│   ├── common/                           # Clean business logic store
+│   │   ├── actions.js                    # Pure business actions
+│   │   ├── reducer.js                    # Clean business logic
+│   │   ├── selectors.js                  # Business data access
+│   │   └── hooks.js                      # Enhanced hooks with tracking
+│   └── utils.js                          # Enhanced createHooksForStore
 └── components/                           # Enhanced to pass tracking sources
     └── **/*.js                          # Form components updated with source attribution
 ```
 
-### 1. Registry System (`src/services/tracking/registry.js`)
+## 1. Registry System (`registry.js`)
 
-The registry manages funnel registration and coordinates multiple tracking concerns without conflicts.
+Manages funnel registration and coordinates multiple tracking concerns without conflicts.
 
-#### Key Features
-- Registers tracking funnels with their configurations
-- Maps stores to funnels to prevent duplicate subscriptions
-- Provides centralized funnel validation and status monitoring
-- Enables dynamic funnel activation based on conditions
+### Store-to-Funnel Mapping
 
-#### Usage
 ```javascript
-import { registerTrackingFunnel } from '../services/tracking/registry';
+// Registry maintains mapping of stores to multiple funnels
+const trackingRegistry = {
+ funnels: {},
+ storeToFunnel: {}, // Store name -> array of funnel IDs
+ instances: {},
+};
 
-registerTrackingFunnel('onboarding', {
-    stores: ['wc/paypal/onboarding', 'wc/paypal/common'],
-    trackingCondition: {
-        store: 'wc/paypal/common',
-        selector: 'merchant',
-        field: 'isConnected',
-        expectedValue: false
-    },
-    fieldConfigs: {
-        'wc/paypal/onboarding': [
-            createFieldTrackingConfig('step', 'persistent', {
-                rules: { allowedSources: ['user', 'system'] }
-            })
-        ]
-    },
-    debug: false
-});
+// Example mapping:
+{
+ 'wc/paypal/onboarding': ['ppcp_onboarding', 'settings_funnel'],
+ 'wc/paypal/common': ['ppcp_onboarding', 'other_funnel'],
+}
 ```
 
-### 2. Subscription Manager (`src/services/tracking/subscription-manager.js`)
+### Usage
 
-Creates unified subscriptions to WordPress data stores and routes changes to relevant funnels.
-
-#### Key Features
-- Prevents subscription conflicts when multiple funnels track the same store
-- Routes store changes to relevant funnels based on configurations
-- Manages funnel lifecycle (activation/deactivation based on conditions)
-- Provides atomic state snapshots for consistent condition evaluation
-
-#### How It Works
 ```javascript
-// Single subscription handles multiple funnels
-const subscription = wp.data.subscribe(() => {
-    const registrations = this.storeRegistrations[storeName] || [];
-    registrations.forEach(registration => {
-        this.processFunnelForStore(storeName, registration, select, store);
-    });
-});
+import { registerFunnel } from '../services/tracking/registry';
+
+registerFunnel('ppcp_onboarding', onboardingConfig);
 ```
 
-### 3. Source-Based Field Filtering (`src/services/tracking/utils.js`, `subscription-manager.js`)
+## 2. Subscription Manager (`subscription-manager.js`)
 
-**Why Source Tracking?** Redux store subscriptions and internal system updates were creating noise in analytics by triggering tracking events for non-user actions.
+Creates **unified subscriptions** to WordPress data stores and routes changes to **multiple relevant funnels**.
 
-#### Implementation
-Field-level source rules define which change sources should trigger tracking events.
+### Single Subscription, Multiple Funnels
 
 ```javascript
-// Field rules configuration
+class SubscriptionManager {
+ constructor() {
+  this.storeSubscriptions = {};     // ONE subscription per store
+  this.storeRegistrations = {};     // MULTIPLE funnel registrations per store
+ }
+
+ ensureStoreSubscription(storeName) {
+  if (this.storeSubscriptions[storeName]) {
+   return; // Skip if subscription already exists
+  }
+
+  // Create unified subscription for all funnels tracking this store
+  const unsubscribe = wp.data.subscribe(() => {
+   this.handleStoreChange(storeName);
+  });
+ }
+}
+```
+
+### Benefits
+
+- **One subscription per store** regardless of funnel count
+- **Independent funnel logic** - each has its own rules and conditions
+- **Isolated state** - each funnel tracks its own previous values
+
+## 3. Tracking Store (`data/tracking/`)
+
+Separate Redux store handles all field source information.
+
+### State Structure
+
+```javascript
+// { storeName: { fieldName: { source, timestamp } } }
+{
+ 'wc/paypal/onboarding': {
+ 'step': { source: 'user', timestamp: 1638360000000 },
+ 'isCasualSeller': { source: 'user', timestamp: 1638360000000 }
+},
+ 'wc/paypal/common': {
+ 'useSandbox': { source: 'system', timestamp: 1638360000000 }
+}
+}
+```
+
+## 4. Universal Hook System (`data/utils.js`)
+
+`createHooksForStore` makes **any Redux store** tracking-compatible.
+
+```javascript
+// Works with ANY store
+const { usePersistent, useTransient } = createHooksForStore('wc/paypal/any-store');
+
+// In components
+const [ field, setField ] = usePersistent('fieldName');
+setField(newValue, 'user'); // Automatically tracked if configured
+```
+
+## 5. Source-Based Field Filtering
+
+Field-level rules define which change sources trigger tracking events.
+
+```javascript
+// Configuration
 fieldRules: {
-    step: { allowedSources: ['user', 'system'] },          // Track all changes
-    isCasualSeller: { allowedSources: ['user'] },          // Only user changes
-    products: { allowedSources: ['user', 'system'] }       // Track all changes
+ step: { allowedSources: ['user', 'system'] },        // Track all changes
+ isCasualSeller: { allowedSources: ['user'] },        // Only user changes
 }
 
-// Usage in components
-const { setIsCasualSeller } = useOnboardingHooks();
-setIsCasualSeller(true, 'user'); // Will be tracked
-setIsCasualSeller(false); // Will be filtered out
+// Usage
+setIsCasualSeller(true, 'user');  // Tracked
+setIsCasualSeller(false);         // Filtered out (no source)
 ```
 
-#### Source Types
-- `'user'` - Direct user interactions (form inputs, button clicks)
-- `'system'` - System-initiated changes (data loaded from settings, defaults)
+**Source Types:**
 
-### 4. Adapter Pattern (`src/services/tracking/adapters/`)
+- `'user'` - Direct user interactions
+- `'system'` - System-initiated changes
 
-Supports multiple tracking backends through a consistent interface.
+## 6. Funnel Configuration
 
-#### Available Adapters
+Uses `FunnelConfigBuilder` pattern:
 
-##### WooCommerce Tracks Adapter (`src/services/tracking/adapters/woocommerce-tracks.js`)
 ```javascript
-class WooCommerceTracksAdapter {
-    sendEvent(eventName, properties) {
-        if (window.wcTracks?.recordEvent) {
-            window.wcTracks.recordEvent(eventName, properties);
-        }
-    }
+// src/services/tracking/funnels/onboarding.js
+export const config = FunnelConfigBuilder.createBasicFunnel(FUNNEL_ID, {
+ debug: false,
+ adapters: ['woocommerce-tracks'],
+ eventPrefix: 'ppcp_onboarding',
+ trackingCondition: {
+  store: 'wc/paypal/common',
+  selector: 'merchant',
+  field: 'isConnected',
+  expectedValue: false
+ }
+})
+ .addEvents(EVENTS)
+ .addTranslations(TRANSLATIONS)
+ .addStore('wc/paypal/onboarding', [
+  createFieldTrackingConfig('step', 'persistent', {
+   rules: { allowedSources: ['user', 'system'] }
+  })
+ ])
+ .build();
+```
+
+## 7. Initialization (`init.js`)
+
+Required before store registration:
+
+```javascript
+import { registerFunnel } from './registry';
+
+export function initializeTrackingFunnels() {
+ if (initialized) return;
+
+ registerFunnel(ONBOARDING_FUNNEL_ID, onboardingConfig);
+ initialized = true;
 }
+
+// Auto-initialize
+initializeTrackingFunnels();
 ```
 
-##### Console Logger Adapter (`src/services/tracking/adapters/console-logger.js`)
+## 8. Store Registration
+
+Stores register with funnels in their index files:
+
 ```javascript
-class ConsoleLoggerAdapter {
-    sendEvent(eventName, properties) {
-        console.log(`🎯 ${eventName}`, properties);
-    }
-}
-```
+// src/data/onboarding/index.js
+import { addStoreToFunnel } from '../../services/tracking';
 
-#### Creating Custom Adapters
-```javascript
-// src/services/tracking/adapters/your-custom-adapter.js
-class CustomAnalyticsAdapter {
-    sendEvent(eventName, properties) {
-        // Your custom implementation
-        customAnalytics.track(eventName, properties);
-    }
-}
+export const initStore = () => {
+ const store = createReduxStore(STORE_NAME, { reducer, actions, selectors });
+ register(store);
 
-// Register in funnel configuration
-trackingService.addAdapter(new CustomAnalyticsAdapter());
-```
+ addStoreToFunnel(STORE_NAME, ONBOARDING_FUNNEL_ID);
 
-### 5. Funnel Configurations & Translation Functions (`src/services/tracking/funnels/`)
-
-Each funnel gets its own file containing both configuration and translation functions.
-
-#### Example: Onboarding Funnel (`src/services/tracking/funnels/onboarding.js`)
-```javascript
-import { createFieldTrackingConfig, createBooleanFieldConfig } from '../utils';
-
-// Translation functions for this funnel
-export const translations = {
-    isCasualSeller: (oldValue, newValue, metadata, trackingService) => {
-        const accountType = newValue === true ? 'personal' : 'business';
-        
-        const eventData = {
-            account_type: accountType,
-            step: metadata.step || 'unknown',
-            products: metadata.products || [],
-            timestamp: Date.now()
-        };
-
-        trackingService.sendToAdapters('ppcp_onboarding_account_type_select', eventData);
-    },
-
-    step: (oldValue, newValue, metadata, trackingService) => {
-        if (newValue > oldValue) {
-            const eventData = {
-                from_step: oldValue,
-                to_step: newValue,
-                account_type: metadata.isCasualSeller ? 'personal' : 'business'
-            };
-
-            trackingService.sendToAdapters('ppcp_onboarding_step_forward', eventData);
-        }
-    }
-};
-
-// Funnel configuration
-export const onboardingFunnelConfig = {
-    funnelId: 'onboarding',
-    stores: ['wc/paypal/onboarding', 'wc/paypal/common'],
-    
-    trackingCondition: {
-        store: 'wc/paypal/common',
-        selector: 'merchant', 
-        field: 'isConnected',
-        expectedValue: false
-    },
-    
-    fieldConfigs: {
-        'wc/paypal/onboarding': [
-            createFieldTrackingConfig('step', 'persistent', {
-                rules: { allowedSources: ['user', 'system'] }
-            }),
-            createBooleanFieldConfig('isCasualSeller', 'persistent', ['user'])
-        ]
-    },
-    
-    translations,
-    debug: process.env.NODE_ENV === 'development'
+ return Boolean(wp.data.select(STORE_NAME));
 };
 ```
 
-## Configuration
+## Adding Tracking to New Stores
 
-### Field Configuration Helpers
-
-The system provides helper functions to reduce boilerplate when configuring field tracking.
+### 1. Create Clean Business Store
 
 ```javascript
-import { 
-    createFieldTrackingConfig,
-    createBooleanFieldConfig,
-    createArrayFieldConfig,
-    createNestedFieldConfig
-} from '../services/tracking/utils';
-
-// Basic field configuration
-createFieldTrackingConfig('step', 'persistent', {
-    rules: { allowedSources: ['user', 'system'] }
+// actions.js
+export const setPersistent = (prop, value) => ({
+ type: ACTION_TYPES.SET_PERSISTENT,
+ payload: { [prop]: value },
 });
 
-// Boolean field with user-only tracking
-createBooleanFieldConfig('isCasualSeller', 'persistent', ['user']);
-
-// Array field tracking
-createArrayFieldConfig('products', 'persistent', ['user', 'system']);
-
-// Nested field tracking
-createNestedFieldConfig('merchant', 'persistent', 'isConnected', ['system']);
-```
-
-### Funnel Configuration
-
-Complete funnel configuration example:
-
-```javascript
-const onboardingFunnelConfig = {
-    funnelId: 'onboarding',
-    stores: ['wc/paypal/onboarding', 'wc/paypal/common'],
-    
-    // Only track when merchant is not connected
-    trackingCondition: {
-        store: 'wc/paypal/common',
-        selector: 'merchant',
-        field: 'isConnected',
-        expectedValue: false
-    },
-    
-    // Field configurations per store
-    fieldConfigs: {
-        'wc/paypal/onboarding': [
-            createFieldTrackingConfig('step', 'persistent', {
-                rules: { allowedSources: ['user', 'system'] }
-            }),
-            createBooleanFieldConfig('isCasualSeller', 'persistent', ['user']),
-            createArrayFieldConfig('products', 'persistent', ['user', 'system'])
-        ],
-        'wc/paypal/common': [
-            createNestedFieldConfig('merchant', 'persistent', 'isConnected', ['system'])
-        ]
-    },
-    
-    // Translation functions
-    translations,
-    
-    // Debug mode
-    debug: process.env.NODE_ENV === 'development'
-};
-```
-
-## Integration with Redux Stores
-
-### Action Enhancement (`src/data/{store}/actions.js`)
-
-Store actions for tracked fields have been enhanced to support source tracking. **Note:** Source tracking support must be manually added to specific actions when you want to track new fields or extend tracking to additional data stores.
-
-```javascript
-// src/data/onboarding/actions.js
-
-// Before
-export const setIsCasualSeller = (isCasualSeller) =>
-    setPersistent('isCasualSeller', isCasualSeller);
-
-// After  
-export const setIsCasualSeller = (isCasualSeller, source = 'user') =>
-    setPersistent('isCasualSeller', isCasualSeller, source);
-```
-
-#### Adding Source Support to New Fields
-
-To add source tracking to additional fields, you need to:
-
-1. **Update the action creator** (`src/data/{store}/actions.js`) to accept and pass the source parameter:
-```javascript
-// Add source parameter to action creator
-export const setNewField = (value, source = 'user') =>
-    setPersistent('newField', value, source);
-```
-
-2. **Update the hook** (`src/data/{store}/hooks.js`) to pass source values:
-```javascript
-// In hooks file
-const setNewField = async (value, source = 'user') => {
-    setNewFieldAction(value, source);
-    await dispatchActions.persist();
-};
-```
-
-3. **Add field configuration** to your funnel (`src/services/tracking/funnels/{funnel-name}.js`):
-```javascript
-fieldConfigs: {
-    'your-store-name': [
-        createFieldTrackingConfig('newField', 'persistent', {
-            rules: { allowedSources: ['user'] }
-        })
-    ]
-}
-```
-
-#### Adding Source Support to New Data Stores
-
-To extend tracking to a new data store:
-
-1. **Enhance the base actions** (`src/data/{new-store}/actions.js`) - add `setPersistent`/`setTransient` to handle source:
-```javascript
-// In your new store's actions.js
-export const setPersistent = (prop, value, source) => ({
-    type: ACTION_TYPES.SET_PERSISTENT,
-    payload: { [prop]: value },
-    source,
-    fieldName: prop,
+// reducer.js
+const reducer = createReducer(defaultTransient, defaultPersistent, {
+ [ACTION_TYPES.SET_PERSISTENT]: (state, payload) => changePersistent(state, payload),
 });
 ```
 
-2. **Update the reducer** (`src/data/{new-store}/reducer.js`) to track field sources:
-```javascript
-// In your reducer
-case ACTION_TYPES.SET_PERSISTENT:
-    const fieldName = action.fieldName;
-    let newState = changePersistent(state, action);
-    
-    // Add field source tracking
-    if (action?.source && fieldName) {
-        newState.fieldSources = updateFieldSources(
-            newState.fieldSources,
-            fieldName,
-            action.source
-        );
-    }
-    
-    return newState;
-```
-
-3. **Create enhanced hooks** (`src/data/{new-store}/hooks.js`) that pass source values:
-```javascript
-export const useNewStoreHooks = () => {
-    return {
-        setNewField: async (value, source = 'user') => {
-            setNewFieldAction(value, source);
-            await dispatchActions.persist();
-        }
-    };
-};
-```
-
-4. **Register the store** in your funnel configuration (`src/services/tracking/funnels/{funnel-name}.js`):
-```javascript
-registerTrackingFunnel('your-funnel', {
-    stores: ['your-new-store-name'],
-    // ... rest of configuration
-});
-```
-
-### Reducer Enhancement (`src/data/{onboarding,common}/reducer.js`)
-
-Reducers automatically handle field source tracking (only for onboarding and common data stores for now):
+### 2. Create Tracking-Enabled Hooks
 
 ```javascript
-case ACTION_TYPES.SET_PERSISTENT:
-    const fieldName = action.fieldName;
-    let newState = changePersistent(state, action);
-    
-    // Track field source if provided
-    if (action?.source && fieldName) {
-        newState.fieldSources = updateFieldSources(
-            newState.fieldSources,
-            fieldName,
-            action.source
-        );
-    }
-    
-    return newState;
+// hooks.js
+import { createHooksForStore } from '../utils';
+export const { usePersistent, useTransient } = createHooksForStore('wc/paypal/your-store');
 ```
 
-### Hook Integration (`src/data/{onboarding,common}/hooks.js`)
-
-Custom hooks pass appropriate source values (only for onboarding and common data stores for now):
+### 3. Register Store
 
 ```javascript
-// src/data/onboarding/hooks.js
-export const useOnboardingHooks = () => {
-    const { setIsCasualSeller: setIsCasualSellerAction } = useActions();
-    
-    return {
-        setIsCasualSeller: async (value, source = 'user') => {
-            setIsCasualSellerAction(value, source);
-            await dispatchActions.persist();
-        }
-    };
-};
+// index.js
+addStoreToFunnel(STORE_NAME, 'your-funnel-id');
 ```
 
-### Component Integration (`src/components/**/*.js`)
-
-Update form components and user interaction handlers to pass appropriate source values:
+### 4. Configure Funnel
 
 ```javascript
-// src/components/onboarding/AccountTypeSelector.js
-import { useOnboardingHooks } from '../../data/onboarding/hooks';
-
-const AccountTypeSelector = () => {
-    const { setIsCasualSeller } = useOnboardingHooks();
-    
-    const handleAccountTypeChange = (accountType) => {
-        const isCasual = accountType === 'personal';
-        setIsCasualSeller(isCasual, 'user'); // Specify 'user' source for tracking
-    };
-    
-    return (
-        <select onChange={(e) => handleAccountTypeChange(e.target.value)}>
-            <option value="business">Business</option>
-            <option value="personal">Personal</option>
-        </select>
-    );
-};
+// funnels/your-funnel.js
+export const config = FunnelConfigBuilder.createBasicFunnel('your-funnel', {
+ debug: false,
+ adapters: ['console'],
+})
+ .addStore('wc/paypal/your-store', [
+  createFieldTrackingConfig('yourField', 'persistent', {
+   rules: { allowedSources: ['user'] }
+  })
+ ])
+ .addTranslations({
+  yourField: (oldValue, newValue, metadata, trackingService) => {
+   trackingService.sendToAdapters('your_event_name', {
+    new_value: newValue,
+    old_value: oldValue
+   });
+  }
+ })
+ .build();
 ```
 
+## Multi-Funnel Example
 
-## Event Schema
+Multiple funnels tracking the same store:
 
-### Event Naming Convention
+```javascript
+// Both register interest in same store
+addStoreToFunnel('wc/paypal/onboarding', 'ppcp_onboarding');
+addStoreToFunnel('wc/paypal/onboarding', 'settings_funnel');
 
-Events follow the pattern: `ppcp_{funnel}_{action}_{object}`
+// Results in ONE subscription, TWO registrations with different rules:
+storeRegistrations = {
+ 'wc/paypal/onboarding': [
+  {
+   funnelId: 'ppcp_onboarding',
+   fieldRules: { step: {allowedSources: ['user', 'system']} },
+   trackingCondition: { field: 'isConnected', expectedValue: false },
+   previousValues: {} // Separate per funnel
+  },
+  {
+   funnelId: 'settings_funnel',
+   fieldRules: { step: {allowedSources: ['user']} },
+   trackingCondition: { field: 'isConnected', expectedValue: true },
+   previousValues: {} // Separate per funnel
+  }
+ ]
+}
+```
 
-Examples:
-- `ppcp_onboarding_account_type_select`
-- `ppcp_onboarding_step_forward`
-- `ppcp_onboarding_product_add`
-- `ppcp_settings_payment_method_toggle`
-
-## Testing and Debugging
+## Debugging
 
 ### Enable Debug Mode
 
-Set debug mode in funnel configuration:
-
 ```javascript
-registerTrackingFunnel('onboarding', {
-    // ... other config
-    debug: true
+export const config = FunnelConfigBuilder.createBasicFunnel('funnel', {
+ debug: true,
 });
 ```
 
-### WooCommerce Tracks Debug
-
-Enable WooCommerce Tracks debugging in browser console:
+### Inspect Tracking Store
 
 ```javascript
-localStorage.setItem('debug', 'wc-admin:*');
+const trackingStore = wp.data.select('wc/paypal/tracking');
+console.log('All sources:', trackingStore.getAllFieldSources());
+console.log('Store sources:', trackingStore.getStoreFieldSources('wc/paypal/onboarding'));
 ```
+
+### Check Registry Status
+
+```javascript
+import { getTrackingStatus, getMultiFunnelStores } from '../services/tracking';
+console.log('Status:', getTrackingStatus());
+console.log('Multi-funnel stores:', getMultiFunnelStores());
+```
+
+## Event Schema
+
+Events follow pattern: `ppcp_{funnel}_{action}_{object}`
+
+Examples:
+
+- `ppcp_onboarding_account_type_select`
+- `ppcp_onboarding_step_forward`
+- `ppcp_settings_payment_method_toggle`
