@@ -152,9 +152,8 @@ export class FunnelTrackingService {
 		if ( fieldRules ) {
 			return fieldRules.allowedSources.includes( source );
 		}
-
-		// Unknown fields are not tracked.
-		return false;
+		// No rules = accept all sources.
+		return true;
 	}
 
 	/**

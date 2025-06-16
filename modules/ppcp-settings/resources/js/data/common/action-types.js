@@ -18,7 +18,4 @@ export default {
 	// Activity management (advanced solution that replaces the isBusy state).
 	START_ACTIVITY: 'ppcp/common/START_ACTIVITY',
 	STOP_ACTIVITY: 'ppcp/common/STOP_ACTIVITY',
-
-	// Tracking.
-	CLEAR_FIELD_SOURCE: 'ppcp/common/CLEAR_FIELD_SOURCE',
 };

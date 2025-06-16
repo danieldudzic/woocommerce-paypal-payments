@@ -32,32 +32,6 @@ export const getActivityList = ( state ) => {
 	return Object.fromEntries( activities );
 };
 
-/**
- * Get the source information for a specific field.
- * @param {Object} state     - Store state
- * @param {string} fieldName
- */
-export const getFieldSource = ( state, fieldName ) => {
-	const fieldSources = state?.fieldSources || {};
-	const fieldSource = fieldSources[ fieldName ];
-
-	if ( ! fieldSource ) {
-		return null;
-	}
-
-	return fieldSource;
-};
-
-/**
- * Get all field sources for debugging.
- * @param {Object} state - Store state
- * @return {Object} All field source information
- */
-export const getAllFieldSources = ( state ) => {
-	const currentState = getState( state );
-	return currentState.fieldSources || {};
-};
-
 export const merchant = ( state ) => {
 	return getState( state ).merchant || EMPTY_OBJ;
 };

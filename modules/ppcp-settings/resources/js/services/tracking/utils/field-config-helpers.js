@@ -31,10 +31,7 @@ export const createFieldTrackingConfig = (
 						: select( storeName ).transientData();
 				return data?.[ fieldName ];
 			} ),
-		rules: {
-			allowedSources: [ 'user' ], // Default to user-only.
-			...options.rules,
-		},
+		...( options.rules && { rules: options.rules } ),
 		...options,
 	};
 };
