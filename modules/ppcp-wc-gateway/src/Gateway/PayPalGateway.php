@@ -55,6 +55,8 @@ class PayPalGateway extends \WC_Payment_Gateway {
 	public const REFUNDS_META_KEY              = '_ppcp_refunds';
 	public const THREE_D_AUTH_RESULT_META_KEY  = '_ppcp_paypal_3DS_auth_result';
 	public const FRAUD_RESULT_META_KEY         = '_ppcp_paypal_fraud_result';
+	public const CONTACT_EMAIL_META_KEY        = '_ppcp_paypal_contact_email';
+	public const CONTACT_PHONE_META_KEY        = '_ppcp_paypal_contact_phone';
 
 	/**
 	 * List of payment sources for which we are expected to store the payer email in the WC Order metadata.
