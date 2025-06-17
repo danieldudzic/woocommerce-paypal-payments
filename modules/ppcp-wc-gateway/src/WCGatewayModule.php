@@ -499,44 +499,7 @@ class WCGatewayModule implements ServiceModule, ExtendingModule, ExecutableModul
 		 */
 		add_filter(
 			'woocommerce_admin_billing_fields',
-			function ( $fields ) {
-				global $theorder;
-
-				if ( ! apply_filters( 'woocommerce_paypal_payments_order_details_show_paypal_email', true ) ) {
-					return $fields;
-				}
-
-				if ( ! is_array( $fields ) ) {
-					return $fields;
-				}
-
-				if ( ! $theorder instanceof WC_Order ) {
-					return $fields;
-				}
-
-				$email = $theorder->get_meta( PayPalGateway::ORDER_PAYER_EMAIL_META_KEY ) ?: '';
-
-				if ( ! $email ) {
-					return $fields;
-				}
-
-				// Is payment source is paypal exclude all non paypal funding sources.
-				$payment_source           = $theorder->get_meta( PayPalGateway::ORDER_PAYMENT_SOURCE_META_KEY ) ?: '';
-				$is_paypal_funding_source = ( strpos( $theorder->get_payment_method_title(), '(via PayPal)' ) === false );
-
-				if ( $payment_source === 'paypal' && ! $is_paypal_funding_source ) {
-					return $fields;
-				}
-
-				$fields['paypal_email'] = array(
-					'label'             => __( 'PayPal email address', 'woocommerce-paypal-payments' ),
-					'value'             => $email,
-					'wrapper_class'     => 'form-field-wide',
-					'custom_attributes' => array( 'disabled' => 'disabled' ),
-				);
-
-				return $fields;
-			}
+			fn( $fields ) => $this->insert_custom_order_fields( $fields )
 		);
 
 		add_action(
@@ -976,5 +939,50 @@ class WCGatewayModule implements ServiceModule, ExtendingModule, ExecutableModul
 				$endpoint->handle_request();
 			}
 		);
+	}
+
+	/**
+	 * @param mixed $fields The field-list provided by WooCommerce, should be an array.
+	 * @return array|mixed The filtered field list.
+	 *
+	 * @psalm-suppress MissingClosureParamType
+	 */
+	private function insert_custom_order_fields  ( $fields) {
+		global $theorder;
+
+		if ( ! apply_filters( 'woocommerce_paypal_payments_order_details_show_paypal_email', true ) ) {
+			return $fields;
+		}
+
+		if ( ! is_array( $fields ) ) {
+			return $fields;
+		}
+
+		if ( ! $theorder instanceof WC_Order ) {
+			return $fields;
+		}
+
+		$email = $theorder->get_meta( PayPalGateway::ORDER_PAYER_EMAIL_META_KEY ) ?: '';
+
+		if ( ! $email ) {
+			return $fields;
+		}
+
+		// Is payment source is paypal exclude all non paypal funding sources.
+		$payment_source           = $theorder->get_meta( PayPalGateway::ORDER_PAYMENT_SOURCE_META_KEY ) ?: '';
+		$is_paypal_funding_source = ( strpos( $theorder->get_payment_method_title(), '(via PayPal)' ) === false );
+
+		if ( $payment_source === 'paypal' && ! $is_paypal_funding_source ) {
+			return $fields;
+		}
+
+		$fields['paypal_email'] = array(
+			'label'             => __( 'PayPal email address', 'woocommerce-paypal-payments' ),
+			'value'             => $email,
+			'wrapper_class'     => 'form-field-wide',
+			'custom_attributes' => array( 'disabled' => 'disabled' ),
+		);
+
+		return $fields;
 	}
 }
