@@ -502,6 +502,16 @@ class WCGatewayModule implements ServiceModule, ExtendingModule, ExecutableModul
 			fn( $fields ) => $this->insert_custom_order_fields( 'billing', $fields )
 		);
 
+		/**
+		 * Param types removed to avoid third-party issues.
+		 *
+		 * @psalm-suppress MissingClosureParamType
+		 */
+		add_filter(
+			'woocommerce_admin_shipping_fields',
+			fn( $fields ) => $this->insert_custom_order_fields( 'shipping', $fields )
+		);
+
 		add_action(
 			'woocommerce_paypal_payments_gateway_migrate',
 			function( string $installed_plugin_version ) use ( $c ) {
@@ -961,12 +971,16 @@ class WCGatewayModule implements ServiceModule, ExtendingModule, ExecutableModul
 			return $fields;
 		}
 
+		/**
+		 * We use this filter to de-customize the order details - 'billing' and 'shipping' section.
+		 */
 		if ( ! apply_filters( 'woocommerce_paypal_payments_order_details_show_paypal_email', true ) ) {
 			return $fields;
 		}
 
 		$email = $theorder->get_meta( PayPalGateway::ORDER_PAYER_EMAIL_META_KEY ) ?: '';
 
+		// Relevant for 'billing' and 'shipping' sections, as a missing email indicates no PayPal payment.
 		if ( ! $email ) {
 			return $fields;
 		}
@@ -986,6 +1000,29 @@ class WCGatewayModule implements ServiceModule, ExtendingModule, ExecutableModul
 				'wrapper_class'     => 'form-field-wide',
 				'custom_attributes' => array( 'disabled' => 'disabled' ),
 			);
+		}
+
+		if ( 'shipping' === $section ) {
+			$contact_email = $theorder->get_meta( PayPalGateway::CONTACT_EMAIL_META_KEY ) ?: '';
+			$contact_phone = $theorder->get_meta( PayPalGateway::CONTACT_PHONE_META_KEY ) ?: '';
+
+			if ( $contact_phone ) {
+				$fields['phone'] = array(
+					'label'             => __( 'Phone', 'woocommerce-paypal-payments' ),
+					'value'             => $contact_phone,
+					'wrapper_class'     => 'form-field-wide',
+					'custom_attributes' => array( 'disabled' => 'disabled' ),
+				);
+			}
+
+			if ( $contact_email ) {
+				$fields['email'] = array(
+					'label'             => __( 'Email address', 'woocommerce-paypal-payments' ),
+					'value'             => $contact_email,
+					'wrapper_class'     => 'form-field-wide',
+					'custom_attributes' => array( 'disabled' => 'disabled' ),
+				);
+			}
 		}
 
 		return $fields;
