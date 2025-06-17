@@ -499,7 +499,7 @@ class WCGatewayModule implements ServiceModule, ExtendingModule, ExecutableModul
 		 */
 		add_filter(
 			'woocommerce_admin_billing_fields',
-			fn( $fields ) => $this->insert_custom_order_fields( $fields )
+			fn( $fields ) => $this->insert_custom_order_fields( 'billing', $fields )
 		);
 
 		add_action(
@@ -942,23 +942,26 @@ class WCGatewayModule implements ServiceModule, ExtendingModule, ExecutableModul
 	}
 
 	/**
-	 * @param mixed $fields The field-list provided by WooCommerce, should be an array.
+	 * Inserts custom fields into the order-detail view.
+	 *
+	 * @param string $section Whether to insert fields to 'billing' or 'shipping'.
+	 * @param mixed  $fields  The field-list provided by WooCommerce, should be an array.
 	 * @return array|mixed The filtered field list.
 	 *
 	 * @psalm-suppress MissingClosureParamType
 	 */
-	private function insert_custom_order_fields  ( $fields) {
+	private function insert_custom_order_fields( string $section, $fields ) {
 		global $theorder;
-
-		if ( ! apply_filters( 'woocommerce_paypal_payments_order_details_show_paypal_email', true ) ) {
-			return $fields;
-		}
 
 		if ( ! is_array( $fields ) ) {
 			return $fields;
 		}
 
 		if ( ! $theorder instanceof WC_Order ) {
+			return $fields;
+		}
+
+		if ( ! apply_filters( 'woocommerce_paypal_payments_order_details_show_paypal_email', true ) ) {
 			return $fields;
 		}
 
@@ -976,12 +979,14 @@ class WCGatewayModule implements ServiceModule, ExtendingModule, ExecutableModul
 			return $fields;
 		}
 
-		$fields['paypal_email'] = array(
-			'label'             => __( 'PayPal email address', 'woocommerce-paypal-payments' ),
-			'value'             => $email,
-			'wrapper_class'     => 'form-field-wide',
-			'custom_attributes' => array( 'disabled' => 'disabled' ),
-		);
+		if ( 'billing' === $section ) {
+			$fields['paypal_email'] = array(
+				'label'             => __( 'PayPal email address', 'woocommerce-paypal-payments' ),
+				'value'             => $email,
+				'wrapper_class'     => 'form-field-wide',
+				'custom_attributes' => array( 'disabled' => 'disabled' ),
+			);
+		}
 
 		return $fields;
 	}
