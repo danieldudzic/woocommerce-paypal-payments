@@ -74,6 +74,11 @@ return array(
 				'GB',
 				'US',
 				'NO',
+				'YT',
+				'RE',
+				'GP',
+				'GF',
+				'MQ',
 			)
 		);
 	},

@@ -398,7 +398,6 @@ return array(
 			'ML',
 			'MH',
 			'MR',
-			'YT',
 			'FM',
 			'MN',
 			'ME',
@@ -2022,6 +2021,49 @@ return array(
 		return new TaskRegistrar();
 	},
 
+	'wcgateway.settings.wc-tasks.pay-later-task-config'    => static function( ContainerInterface $container ): array {
+		$section_id = PayPalGateway::ID;
+		$pay_later_tab_id = Settings::PAY_LATER_TAB_ID;
+
+		if ( $container->has( 'paylater-configurator.is-available' ) && $container->get( 'paylater-configurator.is-available' ) ) {
+			return array(
+				array(
+					'id'           => 'pay-later-messaging-task',
+					'title'        => __( 'Configure PayPal Pay Later messaging', 'woocommerce-paypal-payments' ),
+					'description'  => __( 'Decide where you want dynamic Pay Later messaging to show up and how you want it to look on your site.', 'woocommerce-paypal-payments' ),
+					'redirect_url' => admin_url( "admin.php?page=wc-settings&tab=checkout&section={$section_id}&ppcp-tab={$pay_later_tab_id}" ),
+				),
+			);
+		}
+
+		return array();
+	},
+
+	'wcgateway.settings.wc-tasks.connect-task-config'      => static function( ContainerInterface $container ): array {
+		$is_connected = $container->get( 'settings.flag.is-connected' );
+		$is_current_country_send_only = $container->get( 'wcgateway.is-send-only-country' );
+
+		if ( ! $is_connected && ! $is_current_country_send_only ) {
+			return array(
+				array(
+					'id'           => 'connect-to-paypal-task',
+					'title'        => __( 'Connect PayPal to complete setup', 'woocommerce-paypal-payments' ),
+					'description'  => __( 'PayPal Payments is almost ready. To get started, connect your account with the Activate PayPal Payments button.', 'woocommerce-paypal-payments' ),
+					'redirect_url' => admin_url( 'admin.php?page=wc-settings&tab=checkout&section=ppcp-gateway&ppcp-tab=' . Settings::CONNECTION_TAB_ID ),
+				),
+			);
+		}
+
+		return array();
+	},
+
+	'wcgateway.settings.wc-tasks.task-config-services'     => static function(): array {
+		return array(
+			'wcgateway.settings.wc-tasks.pay-later-task-config',
+			'wcgateway.settings.wc-tasks.connect-task-config',
+		);
+	},
+
 	/**
 	 * A configuration for simple redirect wc tasks.
 	 *
@@ -2033,18 +2075,14 @@ return array(
 	 * }>
 	 */
 	'wcgateway.settings.wc-tasks.simple-redirect-tasks-config' => static function( ContainerInterface $container ): array {
-		$section_id       = PayPalGateway::ID;
-		$pay_later_tab_id = Settings::PAY_LATER_TAB_ID;
-
 		$list_of_config = array();
+		$task_config_services = $container->get( 'wcgateway.settings.wc-tasks.task-config-services' );
 
-		if ( $container->has( 'paylater-configurator.is-available' ) && $container->get( 'paylater-configurator.is-available' ) ) {
-			$list_of_config[] = array(
-				'id'           => 'pay-later-messaging-task',
-				'title'        => __( 'Configure PayPal Pay Later messaging', 'woocommerce-paypal-payments' ),
-				'description'  => __( 'Decide where you want dynamic Pay Later messaging to show up and how you want it to look on your site.', 'woocommerce-paypal-payments' ),
-				'redirect_url' => admin_url( "admin.php?page=wc-settings&tab=checkout&section={$section_id}&ppcp-tab={$pay_later_tab_id}" ),
-			);
+		foreach ( $task_config_services as $service_id ) {
+			if ( $container->has( $service_id ) ) {
+				$task_config = $container->get( $service_id );
+				$list_of_config = array_merge( $list_of_config, $task_config );
+			}
 		}
 
 		return $list_of_config;
@@ -2092,5 +2130,30 @@ return array(
 
 	'wcgateway.settings.admin-settings-enabled'            => static function( ContainerInterface $container ): bool {
 		return $container->has( 'settings.url' ) && ! SettingsModule::should_use_the_old_ui();
+	},
+
+	/**
+	 * Returns a prefix for the site, ensuring the same site always gets the same prefix (unless the URL changes).
+	 */
+	'wcgateway.settings.invoice-prefix'                    => static function( ContainerInterface $container ): string {
+		$site_url = get_site_url( get_current_blog_id() );
+		$hash     = md5( $site_url );
+		$letters  = preg_replace( '~\d~', '', $hash ) ?? '';
+		$prefix   = substr( $letters, 0, 6 );
+
+		return $prefix ? $prefix . '-' : '';
+	},
+
+	/**
+	 * Returns random 6 characters length alphabetic prefix, followed by a hyphen.
+	 */
+	'wcgateway.settings.invoice-prefix-random'             => static function( ContainerInterface $container ): string {
+		$characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+		$prefix = '';
+		for ( $i = 0; $i < 6; $i++ ) {
+			$prefix .= $characters[ wp_rand( 0, strlen( $characters ) - 1 ) ];
+		}
+
+		return $prefix . '-';
 	},
 );
