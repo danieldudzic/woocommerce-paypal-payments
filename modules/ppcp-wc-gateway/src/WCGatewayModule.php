@@ -1015,24 +1015,22 @@ class WCGatewayModule implements ServiceModule, ExtendingModule, ExecutableModul
 		}
 
 		if ( 'shipping' === $section ) {
-			$contact_email = $theorder->get_meta( PayPalGateway::CONTACT_EMAIL_META_KEY ) ?: '';
-			$contact_phone = $theorder->get_meta( PayPalGateway::CONTACT_PHONE_META_KEY ) ?: '';
+			$contact_email = $theorder->get_meta( PayPalGateway::ORIGINAL_EMAIL_META_KEY ) ?: '';
+			$contact_phone = $theorder->get_meta( PayPalGateway::ORIGINAL_PHONE_META_KEY ) ?: '';
 
 			if ( $contact_phone ) {
 				$fields['phone'] = array(
-					'label'             => __( 'Phone', 'woocommerce-paypal-payments' ),
-					'value'             => $contact_phone,
-					'wrapper_class'     => 'form-field-wide',
-					'custom_attributes' => array( 'disabled' => 'disabled' ),
+					'label'         => __( 'Phone', 'woocommerce-paypal-payments' ),
+					'value'         => $contact_phone,
+					'wrapper_class' => 'form-field-wide',
 				);
 			}
 
 			if ( $contact_email ) {
 				$fields['email'] = array(
-					'label'             => __( 'Email address', 'woocommerce-paypal-payments' ),
-					'value'             => $contact_email,
-					'wrapper_class'     => 'form-field-wide',
-					'custom_attributes' => array( 'disabled' => 'disabled' ),
+					'label'         => __( 'Email address', 'woocommerce-paypal-payments' ),
+					'value'         => $contact_email,
+					'wrapper_class' => 'form-field-wide',
 				);
 			}
 		}
@@ -1055,8 +1053,8 @@ class WCGatewayModule implements ServiceModule, ExtendingModule, ExecutableModul
 			return;
 		}
 
-		$contact_email = $order->get_meta( PayPalGateway::CONTACT_EMAIL_META_KEY ) ?: '';
-		$contact_phone = $order->get_meta( PayPalGateway::CONTACT_PHONE_META_KEY ) ?: '';
+		$contact_email = $order->get_meta( PayPalGateway::ORIGINAL_EMAIL_META_KEY ) ?: '';
+		$contact_phone = $order->get_meta( PayPalGateway::ORIGINAL_PHONE_META_KEY ) ?: '';
 		if ( ! $contact_email && ! $contact_phone ) {
 			return;
 		}
