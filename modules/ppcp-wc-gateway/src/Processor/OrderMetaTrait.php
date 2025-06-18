@@ -83,10 +83,10 @@ trait OrderMetaTrait {
 		$contact_phone = $shipping_details->phone_number();
 
 		if ( $contact_email ) {
-			$wc_order->update_meta_data( PayPalGateway::CONTACT_EMAIL_META_KEY, $contact_email );
+			$wc_order->set_billing_email( $contact_email );
 		}
 		if ( $contact_phone ) {
-			$wc_order->update_meta_data( PayPalGateway::CONTACT_PHONE_META_KEY, $contact_phone->national_number() );
+			$wc_order->set_billing_phone( $contact_phone->national_number() );
 		}
 	}
 
