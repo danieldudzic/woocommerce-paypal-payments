@@ -87,20 +87,25 @@ trait OrderMetaTrait {
 		$contact_email = $shipping_details->email_address();
 		$contact_phone = $shipping_details->phone_number();
 
-		if ( $contact_email ) {
+		if ( $contact_email && is_email( $contact_email ) ) {
 			$billing_email = $wc_order->get_billing_email();
-			$wc_order->update_meta_data( PayPalGateway::ORIGINAL_EMAIL_META_KEY, $billing_email );
+
+			if ( $billing_email && $billing_email !== $contact_email ) {
+				$wc_order->update_meta_data( PayPalGateway::ORIGINAL_EMAIL_META_KEY, $billing_email );
+			}
 
 			$wc_order->set_billing_email( $contact_email );
 		}
 
 		if ( $contact_phone ) {
-			$billing_phone = $wc_order->get_billing_phone();
-			if ( $billing_phone ) {
+			$billing_phone        = $wc_order->get_billing_phone();
+			$contact_phone_number = $contact_phone->national_number();
+
+			if ( $billing_phone && $billing_phone !== $contact_phone_number ) {
 				$wc_order->update_meta_data( PayPalGateway::ORIGINAL_PHONE_META_KEY, $billing_phone );
 			}
 
-			$wc_order->set_billing_phone( $contact_phone->national_number() );
+			$wc_order->set_billing_phone( $contact_phone_number );
 		}
 	}
 
