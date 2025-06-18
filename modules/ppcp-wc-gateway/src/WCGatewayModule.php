@@ -512,18 +512,6 @@ class WCGatewayModule implements ServiceModule, ExtendingModule, ExecutableModul
 			fn( $fields ) => $this->insert_custom_order_fields( 'shipping', $fields )
 		);
 
-		/**
-		 * Param types removed to avoid third-party issues.
-		 *
-		 * @psalm-suppress MissingClosureParamType
-		 */
-		add_action(
-			'woocommerce_order_details_after_customer_address',
-			fn( $section, $order ) => $this->display_custom_order_details( $section, $order ),
-			10,
-			2
-		);
-
 		add_action(
 			'woocommerce_paypal_payments_gateway_migrate',
 			function( string $installed_plugin_version ) use ( $c ) {
@@ -1036,40 +1024,5 @@ class WCGatewayModule implements ServiceModule, ExtendingModule, ExecutableModul
 		}
 
 		return $fields;
-	}
-
-	/**
-	 * Outputs custom contact details on the customer-facing order confirmation page.
-	 *
-	 * @param string|mixed   $section The order-detail section (billing/shipping).
-	 * @param WC_Order|mixed $order   The order object.
-	 * @return void
-	 */
-	private function display_custom_order_details( $section, $order ) : void {
-		if ( ! ( $order instanceof WC_Order ) ) {
-			return;
-		}
-		if ( 'shipping' !== $section ) {
-			return;
-		}
-
-		$contact_email = $order->get_meta( PayPalGateway::ORIGINAL_EMAIL_META_KEY ) ?: '';
-		$contact_phone = $order->get_meta( PayPalGateway::ORIGINAL_PHONE_META_KEY ) ?: '';
-		if ( ! $contact_email && ! $contact_phone ) {
-			return;
-		}
-
-		if ( $contact_phone ) {
-			printf(
-				'<p class="woocommerce-customer-details--phone">%s</p>',
-				esc_html( $contact_phone )
-			);
-		}
-		if ( $contact_email ) {
-			printf(
-				'<p class="woocommerce-customer-details--email">%s</p>',
-				esc_html( $contact_email )
-			);
-		}
 	}
 }
