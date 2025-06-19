@@ -91,7 +91,7 @@ class SettingsModel extends AbstractDataModel {
 			'subtotal_adjustment'    => 'correction', // Options: [correction|no_details].
 			'landing_page'           => 'any',          // Options: [any|login|guest_checkout].
 			'button_language'        => '',             // empty or a language locale code.
-			'three_d_secure'         => 'only-required-3d-secure', // Options: [no-3d-secure|only-required-3d-secure|always-3d-secure].
+			'three_d_secure'         => 'no-3d-secure', // Options: [no-3d-secure|only-required-3d-secure|always-3d-secure].
 
 			// Boolean flags.
 			'authorize_only'         => false,
