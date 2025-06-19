@@ -26,11 +26,9 @@ class VaultingSubscriptionsTest extends IntegrationMockedTestCase
 		parent::setUp();
 
 		// Common mock setup
-		$this->mockPaymentTokensEndpoint = $this->getMockBuilder(PaymentTokensEndpoint::class)
-			->disableOriginalConstructor()
-			->getMock();
+        $this->mockPaymentTokensEndpoint = \Mockery::mock(PaymentTokensEndpoint::class);
 
-		// Create customer and default product that can be reused
+        // Create customer and default product that can be reused
 		$this->customer_id = $this->createCustomerIfNotExists();
 		$this->default_product_id = $this->createAProductIfNotProvided();
 	}
@@ -67,8 +65,8 @@ class VaultingSubscriptionsTest extends IntegrationMockedTestCase
 	{
 		$paymentToken = $this->createAPaymentTokenForTheCustomer($customer_id, $gateway_id);
 
-		$this->mockPaymentTokensEndpoint->method('payment_tokens_for_customer')
-			->willReturn([
+		$this->mockPaymentTokensEndpoint->shouldReceive('payment_tokens_for_customer')
+			->andReturn([
 				[
 					'id' => $paymentToken->get_token(),
 					'payment_source' => new PaymentSource(
@@ -95,73 +93,76 @@ class VaultingSubscriptionsTest extends IntegrationMockedTestCase
 	 */
 	public function test_vaulting_is_enabled_when_subscription_mode_is_vaulting_api()
 	{
-		add_filter('user_has_cap', function ($allcaps, $caps, $args) {
-			if (isset($args[0]) && $args[0] === 'manage_woocommerce') {
-				$allcaps['manage_woocommerce'] = true;
-			}
-			return $allcaps;
-		}, 10, 3);
-		$billing_agreements_endpoint_mock = $this->getMockBuilder(BillingAgreementsEndpoint::class)
-			->disableOriginalConstructor()
-			->getMock();
+        $user_has_cap_callback = function ($allcaps, $caps, $args) {
+            if (isset($args[0]) && $args[0] === 'manage_woocommerce') {
+                $allcaps['manage_woocommerce'] = true;
+            }
+            return $allcaps;
+        };
+        add_filter('user_has_cap', $user_has_cap_callback, 10, 3);
 
-		$state_mock = $this->getMockBuilder(State::class)
-			->disableOriginalConstructor()
-			->getMock();
-		$state_mock->method('current_state')
-			->willReturn(State::STATE_ONBOARDED);
-		$token_mock = $this->getMockBuilder(Token::class)->disableOriginalConstructor()->getMock();
-		$token_mock->method('vaulting_available')->willReturn(true);
-		$bearer_mock = $this->getMockBuilder(Bearer::class)->disableOriginalConstructor()->getMock();
-		$bearer_mock->method('bearer')->willReturn($token_mock);
+        // Convert to Mockery mocks
+        $billing_agreements_endpoint_mock = \Mockery::mock(BillingAgreementsEndpoint::class);
+        $billing_agreements_endpoint_mock->shouldReceive('reference_transaction_enabled')
+            ->andReturn(true);
 
-		// Create and configure the SettingsListener
-		$c = $this->bootstrapModule([
-			'api.endpoint.billing-agreements' => function () use ($billing_agreements_endpoint_mock) {
-				return $billing_agreements_endpoint_mock;
-			},
-			'onboarding.state' => function () use ($state_mock) {
-				return $state_mock;
-			},
-			'wcgateway.current-ppcp-settings-page-id' => function () {
-				return '123';
-			},
-			'api.bearer' => function () use ($bearer_mock) {
-				return $bearer_mock;
-			},
-		]);
+        $state_mock = \Mockery::mock(State::class);
+        $state_mock->shouldReceive('current_state')
+            ->andReturn(State::STATE_ONBOARDED);
 
-		$settings = $c->get('wcgateway.settings');
+        $token_mock = \Mockery::mock(Token::class);
+        $token_mock->shouldReceive('vaulting_available')
+            ->andReturn(true);
 
-		// Store original settings to restore later
-		$original_subscription_mode = $settings->get('subscriptions_mode');
-		$original_vault_enabled = $settings->get('vault_enabled');
+        $bearer_mock = \Mockery::mock(Bearer::class);
+        $bearer_mock->shouldReceive('bearer')
+            ->andReturn($token_mock);
 
-		try {
-			$billing_agreements_endpoint_mock->method('reference_transaction_enabled')
-				->willReturn(true);
-			$settings_listener = $c->get('wcgateway.settings.listener');
-			$settings_listener->listen_for_vaulting_enabled();
-			$_POST['ppcp'] = [
-				'subscriptions_mode' => 'vaulting_api',
-				'vault_enabled' => '0' // Explicitly set to disabled
-			];
-			$_REQUEST['_wpnonce'] = wp_create_nonce('ppcp-settings');
-			$settings_listener->listen_for_vaulting_enabled();
+        // Create and configure the SettingsListener
+        $c = $this->bootstrapModule([
+            'api.endpoint.billing-agreements' => function () use ($billing_agreements_endpoint_mock) {
+                return $billing_agreements_endpoint_mock;
+            },
+            'onboarding.state' => function () use ($state_mock) {
+                return $state_mock;
+            },
+            'wcgateway.current-ppcp-settings-page-id' => function () {
+                return '123';
+            },
+            'api.bearer' => function () use ($bearer_mock) {
+                return $bearer_mock;
+            },
+        ]);
 
-			// THEN vaulting should be automatically enabled for the PayPal gateway
-			$this->assertTrue(
-				get_option('woocommerce-ppcp-settings')['vault_enabled'],
-				'Vaulting should be automatically enabled when subscription mode is set to vaulting_api'
-			);
+        $settings = $c->get('wcgateway.settings');
 
-		} finally {
-			// Clean up
-			unset($_POST['ppcp']);
-			$settings->set('subscriptions_mode', $original_subscription_mode);
-			$settings->set('vault_enabled', $original_vault_enabled);
-			$settings->persist();
-		}
+        // Store original settings to restore later
+        $original_subscription_mode = $settings->get('subscriptions_mode');
+        $original_vault_enabled = $settings->get('vault_enabled');
+
+        try {
+            $settings_listener = $c->get('wcgateway.settings.listener');
+            $settings_listener->listen_for_vaulting_enabled();
+            $_POST['ppcp'] = [
+                'subscriptions_mode' => 'vaulting_api',
+                'vault_enabled' => '0' // Explicitly set to disabled
+            ];
+            $_REQUEST['_wpnonce'] = wp_create_nonce('ppcp-settings');
+            $settings_listener->listen_for_vaulting_enabled();
+
+            // THEN vaulting should be automatically enabled for the PayPal gateway
+            $this->assertTrue(
+                get_option('woocommerce-ppcp-settings')['vault_enabled'],
+                'Vaulting should be automatically enabled when subscription mode is set to vaulting_api'
+            );
+
+        } finally {
+            unset($_POST['ppcp']);
+            $settings->set('subscriptions_mode', $original_subscription_mode);
+            $settings->set('vault_enabled', $original_vault_enabled);
+            $settings->persist();
+            remove_filter('user_has_cap', $user_has_cap_callback, 10);
+        }
 
 	}
 	/**
@@ -188,7 +189,7 @@ class VaultingSubscriptionsTest extends IntegrationMockedTestCase
 	{
 		$mockOrderEndpoint = $this->mockOrderEndpoint('CAPTURE', true);
 		$c = $this->setupTestContainer($mockOrderEndpoint);
-
+        $this->setupPaymentToken($this->customer_id, $gateway_id);
 		$subscription = $this->createSubscription($this->customer_id, $gateway_id);
 		$renewal_order = $this->createRenewalOrder($this->customer_id, $gateway_id, $subscription->get_id());
 
@@ -210,7 +211,7 @@ class VaultingSubscriptionsTest extends IntegrationMockedTestCase
 	{
 		$mockOrderEndpoint = $this->mockOrderEndpoint('CAPTURE', false);
 		$c = $this->setupTestContainer($mockOrderEndpoint);
-
+        $this->setupPaymentToken($this->customer_id);
 		$subscription = $this->createSubscription($this->customer_id, PayPalGateway::ID);
 		$renewal_order = $this->createRenewalOrder($this->customer_id, PayPalGateway::ID, $subscription->get_id());
 		$renewal_handler = $c->get('wc-subscriptions.renewal-handler');
@@ -234,6 +235,7 @@ class VaultingSubscriptionsTest extends IntegrationMockedTestCase
 		$c = $this->setupTestContainer($mockOrderEndpoint);
 
 		// Setup payment token and subscription
+        $this->setupPaymentToken($this->customer_id);
 		$subscription = $this->createSubscription($this->customer_id, PayPalGateway::ID);
 		$renewal_order = $this->createRenewalOrder($this->customer_id, PayPalGateway::ID, $subscription->get_id());
 

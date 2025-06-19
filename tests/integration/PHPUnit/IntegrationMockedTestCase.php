@@ -275,78 +275,60 @@ class IntegrationMockedTestCase extends TestCase
 	 */
 	public function mockOrderEndpoint(string $intent = 'CAPTURE', bool $success = true): object
 	{
-		$order_endpoint = $this->getMockBuilder(OrderEndpoint::class)
-			->disableOriginalConstructor()
-			->getMock();
+		$order_endpoint = \Mockery::mock(OrderEndpoint::class);
+		$order = \Mockery::mock(Order::class);
 
-		$order = $this->getMockBuilder(Order::class)
-			->disableOriginalConstructor()
-			->getMock();
+		$order->shouldReceive('id')->andReturn('TEST-ORDER-' . uniqid());
+		$order->shouldReceive('intent')->andReturn($intent);
 
-		$order->method('id')->willReturn('TEST-ORDER-' . uniqid());
-		$order->method('intent')->willReturn($intent);
-		$order_status = $this->getMockBuilder(OrderStatus::class)
-			->disableOriginalConstructor()
-			->getMock();
-		$order_status->method('is')->willReturn($success);
-		$order_status->method('name')->willReturn($success ? 'COMPLETED' : 'FAILED');
-		$order->method('status')->willReturn($order_status);
-		$payment_source = $this->getMockBuilder(PaymentSource::class)
-			->disableOriginalConstructor()
-			->getMock();
-		$payment_source->method('name')->willReturn('card');
-		$order->method('payment_source')->willReturn($payment_source);
-		$purchase_unit = $this->getMockBuilder(PurchaseUnit::class)
-			->disableOriginalConstructor()
-			->getMock();
-		$payments = $this->getMockBuilder(Payments::class)
-			->disableOriginalConstructor()
-			->getMock();
-		$capture = $this->getMockBuilder(Capture::class)
-			->disableOriginalConstructor()
-			->getMock();
+		$order_status = \Mockery::mock(OrderStatus::class);
+		$order_status->shouldReceive('is')->andReturn($success);
+		$order_status->shouldReceive('name')->andReturn($success ? 'COMPLETED' : 'FAILED');
+		$order->shouldReceive('status')->andReturn($order_status);
 
-		$capture->method('id')->willReturn('TEST-CAPTURE-' . uniqid());
-		$capture_status = $this->getMockBuilder(CaptureStatus::class)
-			->disableOriginalConstructor()
-			->getMock();
+		$payment_source = \Mockery::mock(PaymentSource::class);
+		$payment_source->shouldReceive('name')->andReturn('card');
+		$order->shouldReceive('payment_source')->andReturn($payment_source);
 
-		$capture_status->method('name')->willReturn($success ? 'COMPLETED' : 'DECLINED');
-		$capture->method('status')->willReturn($capture_status);
+		$purchase_unit = \Mockery::mock(PurchaseUnit::class);
+		$payments = \Mockery::mock(Payments::class);
+		$capture = \Mockery::mock(Capture::class);
+
+		$capture->shouldReceive('id')->andReturn('TEST-CAPTURE-' . uniqid());
+		$capture_status = \Mockery::mock(CaptureStatus::class);
+
+		$capture_status->shouldReceive('name')->andReturn($success ? 'COMPLETED' : 'DECLINED');
+		$capture->shouldReceive('status')->andReturn($capture_status);
 
 		// Mock authorizations for AUTHORIZE intent
 		if ($intent === 'AUTHORIZE') {
-			$authorization = $this->getMockBuilder(\WooCommerce\PayPalCommerce\ApiClient\Entity\Authorization::class)
-				->disableOriginalConstructor()
-				->getMock();
+			$authorization = \Mockery::mock(\WooCommerce\PayPalCommerce\ApiClient\Entity\Authorization::class);
 
-			$authorization->method('id')->willReturn('TEST-AUTH-' . uniqid());
-			$auth_status = $this->getMockBuilder(\WooCommerce\PayPalCommerce\ApiClient\Entity\AuthorizationStatus::class)
-				->disableOriginalConstructor()
-				->getMock();
+			$authorization->shouldReceive('id')->andReturn('TEST-AUTH-' . uniqid());
+			$auth_status = \Mockery::mock(\WooCommerce\PayPalCommerce\ApiClient\Entity\AuthorizationStatus::class);
 
-			$auth_status->method('name')->willReturn($success ? 'CREATED' : 'DENIED');
-			$auth_status->method('is')->willReturn($success);
-			$authorization->method('status')->willReturn($auth_status);
-			$payments->method('authorizations')->willReturn([$authorization]);
-			$payments->method('captures')->willReturn([]);
+			$auth_status->shouldReceive('name')->andReturn($success ? 'CREATED' : 'DENIED');
+			$auth_status->shouldReceive('is')->andReturn($success);
+			$authorization->shouldReceive('status')->andReturn($auth_status);
+			$payments->shouldReceive('authorizations')->andReturn([$authorization]);
+			$payments->shouldReceive('captures')->andReturn([]);
 		} else {
 			// For CAPTURE intent, set up captures but no authorizations
-			$payments->method('captures')->willReturn([$capture]);
-			$payments->method('authorizations')->willReturn([]);
+			$payments->shouldReceive('captures')->andReturn([$capture]);
+			$payments->shouldReceive('authorizations')->andReturn([]);
 		}
 
-		$purchase_unit->method('payments')->willReturn($payments);
-		$order->method('purchase_units')->willReturn([$purchase_unit]);
+		$purchase_unit->shouldReceive('payments')->andReturn($payments);
+		$order->shouldReceive('purchase_units')->andReturn([$purchase_unit]);
 
 		// Set up the order endpoint methods
-		$order_endpoint->method('create')->willReturn($order);
+		$order_endpoint->shouldReceive('create')->andReturn($order);
 		if ($intent === 'AUTHORIZE') {
-			$order_endpoint->method('authorize')->willReturn($order);
+			$order_endpoint->shouldReceive('authorize')->andReturn($order);
 		} else {
-			$order_endpoint->method('capture')->willReturn($order);
+			$order_endpoint->shouldReceive('capture')->andReturn($order);
 		}
-		$order_endpoint->method('order')->willReturn($order);
+		$order_endpoint->shouldReceive('order')->andReturn($order);
 
 		return $order_endpoint;
 	}

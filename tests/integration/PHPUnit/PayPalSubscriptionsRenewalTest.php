@@ -325,8 +325,6 @@ class PayPalSubscriptionsRenewalTest extends TestCase
 	 */
 	public function test_process_empty_subscriptions_array()
 	{
-		$c = $this->getContainer();
-
 		// Create a logger mock that expects no operations if no subscriptions
 		$logger_mock = \Mockery::mock(LoggerInterface::class);
 		// The logger should not be called at all with an empty array
