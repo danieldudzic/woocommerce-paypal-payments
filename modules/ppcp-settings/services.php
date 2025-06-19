@@ -120,8 +120,12 @@ return array(
 		return new PaymentSettings();
 	},
 	'settings.data.settings'                              => static function ( ContainerInterface $container ) : SettingsModel {
+		$environment = $container->get( 'settings.environment' );
+		assert( $environment instanceof Environment );
+
 		return new SettingsModel(
-			$container->get( 'settings.service.sanitizer' )
+			$container->get( 'settings.service.sanitizer' ),
+			$environment->is_sandbox() ? $container->get( 'wcgateway.settings.invoice-prefix-random' ) : $container->get( 'wcgateway.settings.invoice-prefix' )
 		);
 	},
 	'settings.data.paylater-messaging'                    => static function ( ContainerInterface $container ) : array {
@@ -481,12 +485,13 @@ return array(
 		assert( $general_settings instanceof GeneralSettings );
 
 		return array(
-			'apple_pay'   => ( $features['apple_pay']['enabled'] ?? false ) && ! $general_settings->own_brand_only(),
-			'google_pay'  => ( $features['google_pay']['enabled'] ?? false ) && ! $general_settings->own_brand_only(),
-			'acdc'        => ( $features['advanced_credit_and_debit_cards']['enabled'] ?? false ) && ! $general_settings->own_brand_only(),
-			'save_paypal' => $features['save_paypal_and_venmo']['enabled'] ?? false,
-			'apm'         => $features['alternative_payment_methods']['enabled'] ?? false,
-			'paylater'    => $features['pay_later_messaging']['enabled'] ?? false,
+			'apple_pay'    => ( $features['apple_pay']['enabled'] ?? false ) && ! $general_settings->own_brand_only(),
+			'google_pay'   => ( $features['google_pay']['enabled'] ?? false ) && ! $general_settings->own_brand_only(),
+			'acdc'         => ( $features['advanced_credit_and_debit_cards']['enabled'] ?? false ) && ! $general_settings->own_brand_only(),
+			'save_paypal'  => $features['save_paypal_and_venmo']['enabled'] ?? false,
+			'apm'          => $features['alternative_payment_methods']['enabled'] ?? false,
+			'paylater'     => $features['pay_later_messaging']['enabled'] ?? false,
+			'installments' => $features['installments']['enabled'] ?? false,
 		);
 	},
 
@@ -545,6 +550,7 @@ return array(
 			$container->get( 'googlepay.eligible' ) && $capabilities['acdc'] && ! $capabilities['google_pay'],                                       // Add Google Pay to your account.
 			$container->get( 'applepay.eligible' ) && $capabilities['apple_pay'] && ! $gateways['apple_pay'],                                       // Enable Apple Pay.
 			$container->get( 'googlepay.eligible' ) && $capabilities['google_pay'] && ! $gateways['google_pay'],
+			! $capabilities['installments'] && 'MX' === $container->get( 'settings.data.general' )->get_merchant_country() // Enable Installments for Mexico.
 		);
 	},
 	'settings.rest.features'                              => static function ( ContainerInterface $container ) : FeaturesRestEndpoint {
@@ -568,19 +574,22 @@ return array(
 		);
 		// Merchant capabilities, serve to show active or inactive badge and buttons.
 		$capabilities = array(
-			'apple_pay'   => $features['apple_pay']['enabled'] ?? false,
-			'google_pay'  => $features['google_pay']['enabled'] ?? false,
-			'acdc'        => $features['advanced_credit_and_debit_cards']['enabled'] ?? false,
-			'save_paypal' => $features['save_paypal_and_venmo']['enabled'] ?? false,
+			'apple_pay'                   => $features['apple_pay']['enabled'] ?? false,
+			'google_pay'                  => $features['google_pay']['enabled'] ?? false,
+			'acdc'                        => $features['advanced_credit_and_debit_cards']['enabled'] ?? false,
+			'save_paypal'                 => $features['save_paypal_and_venmo']['enabled'] ?? false,
+			'alternative_payment_methods' => $features['alternative_payment_methods']['enabled'] ?? false,
+			'installments'                => $features['installments']['enabled'] ?? false,
 		);
 
 		$merchant_capabilities = array(
-			'save_paypal' => $capabilities['save_paypal'], // Save PayPal and Venmo eligibility.
-			'acdc'        => $capabilities['acdc'] && ! $gateways['card-button'], // Advanced credit and debit cards eligibility.
-			'apm'         => ! $gateways['card-button'], // Alternative payment methods eligibility.
-			'google_pay'  => $capabilities['acdc'] && $capabilities['google_pay'], // Google Pay eligibility.
-			'apple_pay'   => $capabilities['acdc'] && $capabilities['apple_pay'], // Apple Pay eligibility.
-			'pay_later'   => $capabilities['acdc'] && ! $gateways['card-button'], // Pay Later eligibility.
+			'save_paypal'  => $capabilities['save_paypal'], // Save PayPal and Venmo eligibility.
+			'acdc'         => $capabilities['acdc'], // Advanced credit and debit cards eligibility.
+			'apm'          => $capabilities['alternative_payment_methods'], // Alternative payment methods eligibility.
+			'google_pay'   => $capabilities['acdc'] && $capabilities['google_pay'], // Google Pay eligibility.
+			'apple_pay'    => $capabilities['acdc'] && $capabilities['apple_pay'], // Apple Pay eligibility.
+			'pay_later'    => $capabilities['acdc'] && ! $gateways['card-button'], // Pay Later eligibility.
+			'installments' => $capabilities['installments'], // Installments eligibility.
 		);
 		return new FeaturesDefinition(
 			$container->get( 'settings.service.features_eligibilities' ),
@@ -606,6 +615,7 @@ return array(
 			$container->get( 'googlepay.eligibility.check' ), // Google Pay eligibility.
 			$container->get( 'applepay.eligibility.check' ), // Apple Pay eligibility.
 			$pay_later_eligible, // Pay Later eligibility.
+			'MX' === $container->get( 'settings.data.general' )->get_merchant_country(), // Installments eligibility.
 		);
 	},
 	'settings.service.todos_sorting'                      => static function ( ContainerInterface $container ) : TodosSortingAndFilteringService {

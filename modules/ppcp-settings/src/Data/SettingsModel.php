@@ -55,13 +55,23 @@ class SettingsModel extends AbstractDataModel {
 	protected DataSanitizer $sanitizer;
 
 	/**
+	 * Invoice prefix.
+	 *
+	 * @var string
+	 */
+	private string $invoice_prefix;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param DataSanitizer $sanitizer Data sanitizer service.
+	 * @param string        $invoice_prefix Invoice prefix.
 	 * @throws RuntimeException If the OPTION_KEY is not defined in the child class.
 	 */
-	public function __construct( DataSanitizer $sanitizer ) {
-		$this->sanitizer = $sanitizer;
+	public function __construct( DataSanitizer $sanitizer, string $invoice_prefix ) {
+		$this->sanitizer      = $sanitizer;
+		$this->invoice_prefix = $invoice_prefix;
+
 		parent::__construct();
 	}
 
@@ -73,7 +83,7 @@ class SettingsModel extends AbstractDataModel {
 	protected function get_defaults() : array {
 		return array(
 			// Free-form string values.
-			'invoice_prefix'         => '',
+			'invoice_prefix'         => $this->invoice_prefix,
 			'brand_name'             => '',
 			'soft_descriptor'        => '',
 
@@ -90,6 +100,7 @@ class SettingsModel extends AbstractDataModel {
 			'save_card_details'      => false,
 			'enable_pay_now'         => false,
 			'enable_logging'         => false,
+			'stay_updated'           => true,
 
 			// Array of string values.
 			'disabled_cards'         => array(),

@@ -13,8 +13,10 @@ use WC_Payment_Gateway;
 use Psr\Log\LoggerInterface;
 use WooCommerce\PayPalCommerce\ApiClient\Helper\DccApplies;
 use WooCommerce\PayPalCommerce\ApiClient\Helper\PartnerAttribution;
+use WooCommerce\PayPalCommerce\Applepay\ApplePayGateway;
 use WooCommerce\PayPalCommerce\Applepay\Assets\AppleProductStatus;
 use WooCommerce\PayPalCommerce\Axo\Gateway\AxoGateway;
+use WooCommerce\PayPalCommerce\Googlepay\GooglePayGateway;
 use WooCommerce\PayPalCommerce\Googlepay\Helper\ApmProductStatus;
 use WooCommerce\PayPalCommerce\LocalAlternativePaymentMethods\BancontactGateway;
 use WooCommerce\PayPalCommerce\LocalAlternativePaymentMethods\BlikGateway;
@@ -321,11 +323,13 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 
 				// Unset BCDC if merchant is eligible for ACDC and country is eligible for card fields.
 				$card_fields_eligible = $container->get( 'card-fields.eligible' );
-				if ( $dcc_product_status->is_active() && $card_fields_eligible ) {
-					unset( $payment_methods[ CardButtonGateway::ID ] );
-				} else {
-					// For non-ACDC regions unset ACDC.
-					unset( $payment_methods[ CreditCardGateway::ID ] );
+				if ( 'MX' !== $container->get( 'api.shop.country' ) ) {
+					if ( $dcc_product_status->is_active() && $card_fields_eligible ) {
+						unset( $payment_methods[ CardButtonGateway::ID ] );
+					} else {
+						// For non-ACDC regions unset ACDC.
+						unset( $payment_methods[ CreditCardGateway::ID ] );
+					}
 				}
 
 				// Unset Venmo when store location is not United States.
@@ -356,6 +360,18 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 				// Unset Pay Upon Invoice if merchant country is not Germany.
 				if ( 'DE' !== $merchant_country ) {
 					unset( $payment_methods[ PayUponInvoiceGateway::ID ] );
+				}
+
+				// Unset all APMs other than OXXO for Mexico.
+				if ( 'MX' === $merchant_country ) {
+					unset( $payment_methods[ BancontactGateway::ID ] );
+					unset( $payment_methods[ BlikGateway::ID ] );
+					unset( $payment_methods[ EPSGateway::ID ] );
+					unset( $payment_methods[ IDealGateway::ID ] );
+					unset( $payment_methods[ MyBankGateway::ID ] );
+					unset( $payment_methods[ P24Gateway::ID ] );
+					unset( $payment_methods[ TrustlyGateway::ID ] );
+					unset( $payment_methods[ MultibancoGateway::ID ] );
 				}
 
 				return $payment_methods;
@@ -539,9 +555,63 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 						$payment_methods->toggle_method_state( AxoGateway::ID, true );
 					}
 				}
+
+				$general_settings = $container->get( 'settings.data.general' );
+				assert( $general_settings instanceof GeneralSettings );
+
+				$merchant_data    = $general_settings->get_merchant_data();
+				$merchant_country = $merchant_data->merchant_country;
+
+				// Disable all extended checkout card methods if the store is in Mexico.
+				if ( 'MX' === $merchant_country ) {
+					$payment_methods->toggle_method_state( CreditCardGateway::ID, false );
+					$payment_methods->toggle_method_state( ApplePayGateway::ID, false );
+					$payment_methods->toggle_method_state( GooglePayGateway::ID, false );
+				}
 			},
 			10,
 			2
+		);
+
+		// Enable APMs after onboarding if the country is compatible.
+		add_action(
+			'woocommerce_paypal_payments_toggle_payment_gateways_apms',
+			function ( PaymentSettings $payment_methods, array $methods_apm, ConfigurationFlagsDTO $flags ) use ( $container ) {
+
+				$general_settings = $container->get( 'settings.data.general' );
+				assert( $general_settings instanceof GeneralSettings );
+
+				$merchant_data    = $general_settings->get_merchant_data();
+				$merchant_country = $merchant_data->merchant_country;
+
+				// Enable all APM methods.
+				foreach ( $methods_apm as $method ) {
+					if ( $flags->use_card_payments === false ) {
+						$payment_methods->toggle_method_state( $method['id'], $flags->use_card_payments );
+						continue;
+					}
+
+					// Skip PayUponInvoice if merchant is not in Germany.
+					if ( PayUponInvoiceGateway::ID === $method['id'] && 'DE' !== $merchant_country ) {
+						continue;
+					}
+
+					// For OXXO: enable ONLY if merchant is in Mexico.
+					if ( OXXO::ID === $method['id'] ) {
+						if ( 'MX' === $merchant_country ) {
+							$payment_methods->toggle_method_state( $method['id'], true );
+						}
+						continue;
+					}
+
+					// For all other APMs: enable only if merchant is NOT in Mexico.
+					if ( 'MX' !== $merchant_country ) {
+						$payment_methods->toggle_method_state( $method['id'], true );
+					}
+				}
+			},
+			10,
+			3
 		);
 
 		// Toggle payment gateways after onboarding based on flags.
