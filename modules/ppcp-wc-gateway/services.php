@@ -2166,4 +2166,12 @@ return array(
 			$container->get( 'wcgateway.shipping.callback.endpoint' )
 		);
 	},
+
+	'wcgateway.server-side-shipping-callback-enabled'      => static function( ContainerInterface $container ) : bool {
+		return apply_filters(
+			// phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores
+			'woocommerce.feature-flags.woocommerce_paypal_payments.server_side_shipping_callback_enabled',
+			getenv( 'PCP_SERVER_SIDE_SHIPPING_CALLBACK_ENABLED' ) === '1'
+		);
+	},
 );
