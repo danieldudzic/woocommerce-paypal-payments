@@ -216,11 +216,18 @@ const createAccountTypeTrackingConfig = () => {
 		transform: ( value ) => ( {
 			selected_value: value === true ? 'personal' : 'business',
 		} ),
+		rules: {
+			allowedSources: [ 'user' ],
+		},
 	} );
 };
 
 const createProductsTrackingConfig = () => {
-	return createArrayFieldTrackingConfig( 'products', 'persistent' );
+	return createArrayFieldTrackingConfig( 'products', 'persistent', {
+		rules: {
+			allowedSources: [ 'user' ],
+		},
+	} );
 };
 
 const createPaymentOptionsTrackingConfig = () => {
@@ -231,6 +238,9 @@ const createPaymentOptionsTrackingConfig = () => {
 			transform: ( value ) => ( {
 				selected_value: value === true ? 'expanded' : 'no_cards',
 			} ),
+			rules: {
+				allowedSources: [ 'user' ],
+			},
 		}
 	);
 };
@@ -240,6 +250,9 @@ const createCompletedTrackingConfig = () => {
 		transform: ( value ) => ( {
 			completed: value === true,
 		} ),
+		rules: {
+			allowedSources: [ 'system' ],
+		},
 	} );
 };
 
@@ -248,13 +261,20 @@ const createConnectionButtonTrackingConfig = () => {
 };
 
 const createSandboxTrackingConfig = () => {
-	return createBooleanFieldTrackingConfig( 'useSandbox', 'persistent' );
+	return createBooleanFieldTrackingConfig(
+		'useSandbox',
+		'persistent',
+		'enabled',
+		'disabled'
+	);
 };
 
 const createManualConnectionTrackingConfig = () => {
 	return createBooleanFieldTrackingConfig(
 		'useManualConnection',
-		'persistent'
+		'persistent',
+		'enabled',
+		'disabled'
 	);
 };
 

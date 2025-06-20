@@ -7,6 +7,7 @@ import * as Styling from './styling';
 import * as Todos from './todos';
 import * as PayLaterMessaging from './pay-later-messaging';
 import * as Features from './features';
+import * as Tracking from './tracking';
 
 // Initialize tracking funnels before any store initialization.
 import '../services/tracking/init';
@@ -20,6 +21,7 @@ const stores = [
 	Todos,
 	PayLaterMessaging,
 	Features,
+	Tracking,
 ];
 
 stores.forEach( ( store ) => {
@@ -55,6 +57,7 @@ export const StylingStoreName = Styling.STORE_NAME;
 export const TodosStoreName = Todos.STORE_NAME;
 export const PayLaterMessagingStoreName = PayLaterMessaging.STORE_NAME;
 export const FeaturesStoreName = Features.STORE_NAME;
+export const TrackingStoreName = Tracking.STORE_NAME;
 
 export * from './configuration';
 

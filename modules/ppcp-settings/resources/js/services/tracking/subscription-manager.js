@@ -7,7 +7,7 @@
  * @file
  */
 
-import { shouldTrackFieldSource, getFieldValue } from './utils';
+import { getFieldValue } from './utils';
 
 /**
  * Manages unified subscriptions for stores that are tracked by multiple funnels.
@@ -156,9 +156,6 @@ export class SubscriptionManager {
 					);
 				}
 			} );
-
-			// Handle field source clearing AFTER all funnels have processed.
-			this.handleFieldSourceClearing( storeName, store, registrations );
 		} catch ( error ) {
 			console.error(
 				`[SubscriptionManager] Error handling store change for ${ storeName }:`,
@@ -175,13 +172,8 @@ export class SubscriptionManager {
 	 * @param {Object}   store        - Store object.
 	 */
 	processFunnelForStore( storeName, registration, select, store ) {
-		const {
-			funnelId,
-			trackingService,
-			fieldRules,
-			fieldConfigs,
-			trackingCondition,
-		} = registration;
+		const { trackingService, fieldRules, fieldConfigs, trackingCondition } =
+			registration;
 
 		// Step 1: Evaluate tracking condition for this funnel.
 		const conditionMet = this.evaluateTrackingCondition(
@@ -241,6 +233,86 @@ export class SubscriptionManager {
 			fieldRules,
 			trackingService
 		);
+	}
+
+	/**
+	 * Process field changes for a specific funnel.
+	 * Retrieves field sources from the tracking store to determine tracking eligibility.
+	 * @param {Function} select          - WordPress data select function.
+	 * @param {Object}   store           - Store object.
+	 * @param {string}   storeName       - Store name.
+	 * @param {Object}   registration    - Funnel registration.
+	 * @param {Array}    fieldConfigs    - Field configurations.
+	 * @param {Object}   fieldRules      - Field rules.
+	 * @param {Object}   trackingService - Tracking service.
+	 */
+	processFieldChangesForFunnel(
+		select,
+		store,
+		storeName,
+		registration,
+		fieldConfigs,
+		fieldRules,
+		trackingService
+	) {
+		fieldConfigs.forEach( ( fieldConfig ) => {
+			try {
+				const currentValue = getFieldValue(
+					select,
+					storeName,
+					fieldConfig
+				);
+				const previousValue =
+					registration.previousValues[ fieldConfig.fieldName ];
+
+				// Skip if no change.
+				if ( currentValue === previousValue ) {
+					return;
+				}
+
+				// Get field source from the tracking store.
+				const trackingStore = select( 'wc/paypal/tracking' );
+				const fieldSource =
+					trackingStore?.getFieldSource?.(
+						storeName,
+						fieldConfig.fieldName
+					)?.source || '';
+
+				// Check if this source should be tracked for this funnel.
+				const shouldTrack = trackingService.shouldTrackFieldSource(
+					fieldConfig.fieldName,
+					fieldSource
+				);
+
+				if ( ! shouldTrack ) {
+					// Update previous value but don't track.
+					registration.previousValues[ fieldConfig.fieldName ] =
+						currentValue;
+					return;
+				}
+
+				// Process tracked change for this funnel.
+				this.processTrackedChangeForFunnel(
+					fieldConfig,
+					previousValue,
+					currentValue,
+					fieldSource,
+					trackingService,
+					select,
+					storeName,
+					registration
+				);
+
+				// Update previous value.
+				registration.previousValues[ fieldConfig.fieldName ] =
+					currentValue;
+			} catch ( error ) {
+				console.error(
+					`[SubscriptionManager] Error processing field ${ fieldConfig.fieldName } for funnel ${ registration.funnelId }:`,
+					error
+				);
+			}
+		} );
 	}
 
 	/**
@@ -338,24 +410,12 @@ export class SubscriptionManager {
 	 */
 	isStoreReadyForTracking( store, registration ) {
 		const isReady = store.transientData?.()?.isReady;
-		const hasHydrationSource = store.getAllFieldSources?.()?.hydrate;
-
-		const hasFieldSourceMethods =
-			typeof store.getFieldSource === 'function' &&
-			typeof store.getAllFieldSources === 'function';
-
-		if ( ! hasFieldSourceMethods ) {
-			return isReady || registration.initializationAttempts > 50;
-		}
 
 		if ( isReady ) {
 			return true;
 		}
 
-		if ( hasHydrationSource ) {
-			return true;
-		}
-
+		// Fallback for stores that take time to initialize.
 		return registration.initializationAttempts > 50;
 	}
 
@@ -436,83 +496,6 @@ export class SubscriptionManager {
 		return (
 			storeName.includes( 'onboarding' ) || storeName.includes( 'wizard' )
 		);
-	}
-
-	/**
-	 * Process field changes for a specific funnel.
-	 * @param {Function} select          - WordPress data select function.
-	 * @param {Object}   store           - Store object.
-	 * @param {string}   storeName       - Store name.
-	 * @param {Object}   registration    - Funnel registration.
-	 * @param {Array}    fieldConfigs    - Field configurations.
-	 * @param {Object}   fieldRules      - Field rules.
-	 * @param {Object}   trackingService - Tracking service.
-	 */
-	processFieldChangesForFunnel(
-		select,
-		store,
-		storeName,
-		registration,
-		fieldConfigs,
-		fieldRules,
-		trackingService
-	) {
-		fieldConfigs.forEach( ( fieldConfig ) => {
-			try {
-				const currentValue = getFieldValue(
-					select,
-					storeName,
-					fieldConfig
-				);
-				const previousValue =
-					registration.previousValues[ fieldConfig.fieldName ];
-
-				// Skip if no change.
-				if ( currentValue === previousValue ) {
-					return;
-				}
-
-				// Get field source.
-				const fieldSource =
-					store.getFieldSource?.( fieldConfig.fieldName )?.source ||
-					'';
-
-				// Check if this source should be tracked for this funnel.
-				const shouldTrack = shouldTrackFieldSource(
-					fieldConfig.fieldName,
-					fieldSource,
-					fieldRules
-				);
-
-				if ( ! shouldTrack ) {
-					// Update previous value but don't track.
-					registration.previousValues[ fieldConfig.fieldName ] =
-						currentValue;
-					return;
-				}
-
-				// Process tracked change for this funnel.
-				this.processTrackedChangeForFunnel(
-					fieldConfig,
-					previousValue,
-					currentValue,
-					fieldSource,
-					trackingService,
-					select,
-					storeName,
-					registration
-				);
-
-				// Update previous value.
-				registration.previousValues[ fieldConfig.fieldName ] =
-					currentValue;
-			} catch ( error ) {
-				console.error(
-					`[SubscriptionManager] Error processing field ${ fieldConfig.fieldName } for funnel ${ registration.funnelId }:`,
-					error
-				);
-			}
-		} );
 	}
 
 	/**
@@ -620,7 +603,7 @@ export class SubscriptionManager {
 				}
 			} );
 
-			// Add step information after aggregation
+			// Add step information after aggregation.
 			this.enhanceMetadataWithStepInfo( metadata, registration );
 
 			return metadata;
@@ -639,48 +622,33 @@ export class SubscriptionManager {
 	}
 
 	/**
-	 * Enhance metadata with step information from funnel configuration
-	 * @param {Object} metadata     - The metadata object to enhance
-	 * @param {Object} registration - Funnel registration object
+	 * Enhance metadata with step information from funnel configuration.
+	 * @param {Object} metadata     - The metadata object to enhance.
+	 * @param {Object} registration - Funnel registration object.
 	 */
 	enhanceMetadataWithStepInfo( metadata, registration ) {
 		try {
-			// Get the step number from aggregated data
+			// Get the step number from aggregated data.
 			const stepNumber = metadata.step;
 
-			// Get step info directly from registration
+			// Get step info directly from registration.
 			const stepInfo = registration.stepInfo || {};
 
-			// Add step name if we can map it
+			// Add step name if we can map it.
 			if ( typeof stepNumber === 'number' && stepInfo[ stepNumber ] ) {
 				const stepData = stepInfo[ stepNumber ];
 				metadata.stepName =
 					typeof stepData === 'string' ? stepData : stepData.name;
 			}
 
-			// Add currentStep alias for backward compatibility with existing translations
+			// Add currentStep alias for backward compatibility with existing translations.
 			metadata.currentStep = stepNumber;
 
-			// Ensure step fields are properly typed (not string 'null')
+			// Ensure step fields are properly typed (not string 'null').
 			if ( stepNumber === null || stepNumber === undefined ) {
 				metadata.step = null;
 				metadata.currentStep = null;
 			}
-
-			// Debug logging
-			console.log(
-				`[SubscriptionManager] Step enhancement debug for ${ registration.funnelId }:`,
-				{
-					stepNumber,
-					stepNumberType: typeof stepNumber,
-					currentStep: metadata.currentStep,
-					stepName: metadata.stepName,
-					stepInfo,
-					stepInfoKeys: Object.keys( stepInfo ),
-					allMetadataKeys: Object.keys( metadata ),
-					contributingStores: metadata.contributingStores,
-				}
-			);
 		} catch ( error ) {
 			console.warn(
 				`[SubscriptionManager] Error enhancing metadata with step info:`,
@@ -709,7 +677,7 @@ export class SubscriptionManager {
 	}
 
 	/**
-	 * Safely call a store method with fallback (moved from utils).
+	 * Safely call a store method with fallback.
 	 * @param {Object} store    - The store object.
 	 * @param {string} method   - The method name to call.
 	 * @param {*}      fallback - Fallback value if method fails.
@@ -724,45 +692,6 @@ export class SubscriptionManager {
 			return fallback;
 		} catch ( error ) {
 			return fallback;
-		}
-	}
-
-	/**
-	 * Handle field source clearing after all funnels have processed.
-	 * @param {string} storeName     - Store name.
-	 * @param {Object} store         - Store object.
-	 * @param {Array}  registrations - All funnel registrations for this store.
-	 */
-	handleFieldSourceClearing( storeName, store, registrations ) {
-		if ( ! store.clearFieldSource || ! store.getAllFieldSources ) {
-			return;
-		}
-
-		try {
-			// Get all field sources that were processed.
-			const allFieldSources = store.getAllFieldSources() || {};
-
-			// Collect all field names that any active funnel is tracking.
-			const trackedFields = new Set();
-			registrations.forEach( ( registration ) => {
-				if ( registration.isActive ) {
-					registration.fieldConfigs.forEach( ( fieldConfig ) => {
-						trackedFields.add( fieldConfig.fieldName );
-					} );
-				}
-			} );
-
-			// Clear sources for fields that were tracked.
-			Object.keys( allFieldSources ).forEach( ( fieldName ) => {
-				if ( trackedFields.has( fieldName ) ) {
-					store.clearFieldSource( fieldName );
-				}
-			} );
-		} catch ( error ) {
-			console.error(
-				`[SubscriptionManager] Error clearing field sources for ${ storeName }:`,
-				error
-			);
 		}
 	}
 

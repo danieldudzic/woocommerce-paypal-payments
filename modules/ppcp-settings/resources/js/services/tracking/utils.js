@@ -8,47 +8,6 @@
  */
 
 /**
- * Determines if a field with a given source should be tracked.
- *
- * @param {string} fieldName  - The name of the field.
- * @param {string} source     - The source of the field change.
- * @param {Object} storeRules - Rules for the specific store.
- * @return {boolean} Whether the field should be tracked.
- */
-export function shouldTrackFieldSource( fieldName, source, storeRules ) {
-	if ( ! source ) {
-		return false;
-	}
-
-	if ( ! storeRules ) {
-		return false;
-	}
-
-	if ( ! storeRules[ fieldName ] ) {
-		return false;
-	}
-
-	// Get and validate field rules.
-	const fieldRule = storeRules[ fieldName ];
-	const allowedSources = fieldRule.allowedSources;
-
-	if ( ! Array.isArray( allowedSources ) ) {
-		console.warn(
-			`[TRACK CHECK] Invalid allowedSources for ${ fieldName }:`,
-			{ allowedSources, type: typeof allowedSources }
-		);
-		return false;
-	}
-
-	if ( allowedSources.length === 0 ) {
-		return false;
-	}
-
-	// Check if source is allowed.
-	return allowedSources.includes( source );
-}
-
-/**
  * Get the value of a field from the store with comprehensive error handling.
  *
  * @param {Function} select      - WordPress data select function.
