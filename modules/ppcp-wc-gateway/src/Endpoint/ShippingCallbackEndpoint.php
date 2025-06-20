@@ -16,8 +16,8 @@ use WP_REST_Response;
  */
 class ShippingCallbackEndpoint {
 
-	const NAMESPACE = 'paypal/v1';
-	const ROUTE     = 'shipping-callback';
+	private const NAMESPACE = 'paypal/v1';
+	private const ROUTE     = 'shipping-callback';
 
 	private CartEndpoint $cart_endpoint;
 
