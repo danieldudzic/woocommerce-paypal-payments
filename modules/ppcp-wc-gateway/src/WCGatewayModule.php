@@ -23,6 +23,7 @@ use WooCommerce\PayPalCommerce\Vendor\Inpsyde\Modularity\Module\ModuleClassNameI
 use WooCommerce\PayPalCommerce\Vendor\Inpsyde\Modularity\Module\ServiceModule;
 use WooCommerce\PayPalCommerce\WcGateway\Assets\VoidButtonAssets;
 use WooCommerce\PayPalCommerce\WcGateway\Endpoint\RefreshFeatureStatusEndpoint;
+use WooCommerce\PayPalCommerce\WcGateway\Endpoint\ShippingCallbackEndpoint;
 use WooCommerce\PayPalCommerce\WcGateway\Endpoint\VoidOrderEndpoint;
 use WooCommerce\PayPalCommerce\WcGateway\Helper\InstallmentsProductStatus;
 use WooCommerce\PayPalCommerce\WcGateway\Notice\SendOnlyCountryNotice;
@@ -593,6 +594,16 @@ class WCGatewayModule implements ServiceModule, ExtendingModule, ExecutableModul
 				);
 
 				return $features;
+			}
+		);
+
+		add_action(
+			'rest_api_init',
+			static function () use ( $c ) {
+				$endpoint = $c->get( 'wcgateway.shipping.callback.endpoint' );
+				assert( $endpoint instanceof ShippingCallbackEndpoint );
+
+				$endpoint->register();
 			}
 		);
 

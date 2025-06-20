@@ -21,6 +21,7 @@ use WooCommerce\PayPalCommerce\Axo\Gateway\AxoGateway;
 use WooCommerce\PayPalCommerce\Button\Helper\MessagesDisclaimers;
 use WooCommerce\PayPalCommerce\Common\Pattern\SingletonDecorator;
 use WooCommerce\PayPalCommerce\Googlepay\GooglePayGateway;
+use WooCommerce\PayPalCommerce\WcGateway\Endpoint\ShippingCallbackEndpoint;
 use WooCommerce\PayPalCommerce\WcGateway\Helper\Environment;
 use WooCommerce\PayPalCommerce\Onboarding\Render\OnboardingOptionsRenderer;
 use WooCommerce\PayPalCommerce\Onboarding\State;
@@ -2149,5 +2150,20 @@ return array(
 	},
 	'wcgateway.store-api.factory.money'                    => static function( ContainerInterface $container ) : MoneyFactory {
 		return new MoneyFactory();
+	},
+
+	'wcgateway.shipping.callback.endpoint'                 => static function( ContainerInterface $container ) : ShippingCallbackEndpoint {
+		return new ShippingCallbackEndpoint(
+			$container->get( 'wcgateway.store-api.endpoint.cart' ),
+			$container->get( 'api.factory.amount' ),
+			$container->get( 'woocommerce.logger.woocommerce' )
+		);
+	},
+
+	'wcgateway.shipping.callback.factory.url'              => static function( ContainerInterface $container ) : ShippingCallbackUrlFactory {
+		return new ShippingCallbackUrlFactory(
+			$container->get( 'wcgateway.store-api.endpoint.cart' ),
+			$container->get( 'wcgateway.shipping.callback.endpoint' )
+		);
 	},
 );
