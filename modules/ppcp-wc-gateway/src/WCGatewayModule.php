@@ -1044,10 +1044,10 @@ class WCGatewayModule implements ServiceModule, ExtendingModule, ExecutableModul
 		?>
 		<div class="ppcp-original-contact-data address" style="clear:both">
 			<h3>
-				<?php esc_html_e( 'Other Contact', 'woocommerce-paypal-payments' ); ?>
+				<?php esc_html_e( 'Other', 'woocommerce-paypal-payments' ); ?>
 				<span
-					class="woocommerce-help-tip" tabindex="0"
-					data-tip="<?php esc_attr_e( 'Contact details entered by the customer, which were replaced by PayPal during order creation', 'woocommerce-paypal-payments' ); ?>"
+					class="woocommerce-help-tip alignright" tabindex="0"
+					data-tip="<?php esc_attr_e( 'The customer entered these contact details during checkout, but provided different details in the PayPal popup. These details are kept for reference only.', 'woocommerce-paypal-payments' ); ?>"
 				></span>
 			</h3>
 			<?php if ( ! empty( $contact_email ) ) : ?>
