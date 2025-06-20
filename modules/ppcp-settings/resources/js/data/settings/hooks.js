@@ -84,6 +84,9 @@ export const useSettings = () => {
 	const [ disabledCards, setDisabledCards ] =
 		usePersistent( 'disabledCards' );
 
+	const [ threeDSecure, setThreeDSecure ] = usePersistent( 'threeDSecure' );
+
+
 	return {
 		invoicePrefix,
 		setInvoicePrefix,
@@ -115,5 +118,7 @@ export const useSettings = () => {
 		setButtonLanguage,
 		disabledCards,
 		setDisabledCards,
+		threeDSecure,
+		setThreeDSecure,
 	};
 };
