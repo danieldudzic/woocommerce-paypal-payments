@@ -93,6 +93,10 @@ class SettingsRestEndpoint extends RestEndpoint {
 		'disabled_cards'         => array(
 			'js_name' => 'disabledCards',
 		),
+		'three_d_secure'         => array(
+			'js_name'  => 'threeDSecure',
+			'sanitize' => 'sanitize_text_field',
+		),
 	);
 
 	/**

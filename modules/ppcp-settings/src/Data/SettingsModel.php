@@ -41,6 +41,13 @@ class SettingsModel extends AbstractDataModel {
 	public const LANDING_PAGE_OPTIONS = array( 'any', 'login', 'guest_checkout' );
 
 	/**
+	 * Valid options for 3D Secure.
+	 *
+	 * @var array
+	 */
+	public const THREE_D_SECURE_OPTIONS = array( 'no-3d-secure', 'only-required-3d-secure', 'always-3d-secure' );
+
+	/**
 	 * Data sanitizer service.
 	 *
 	 * @var DataSanitizer
@@ -84,6 +91,7 @@ class SettingsModel extends AbstractDataModel {
 			'subtotal_adjustment'    => 'correction', // Options: [correction|no_details].
 			'landing_page'           => 'any',          // Options: [any|login|guest_checkout].
 			'button_language'        => '',             // empty or a language locale code.
+			'three_d_secure'         => 'no-3d-secure', // Options: [no-3d-secure|only-required-3d-secure|always-3d-secure].
 
 			// Boolean flags.
 			'authorize_only'         => false,
@@ -208,6 +216,24 @@ class SettingsModel extends AbstractDataModel {
 	 */
 	public function set_button_language( string $language ) : void {
 		$this->data['button_language'] = $this->sanitizer->sanitize_text( $language );
+	}
+
+	/**
+	 * Gets the 3D Secure setting.
+	 *
+	 * @return string The 3D Secure setting.
+	 */
+	public function get_three_d_secure() : string {
+		return $this->data['three_d_secure'];
+	}
+
+	/**
+	 * Sets the 3D Secure setting.
+	 *
+	 * @param string $setting The 3D Secure setting to set.
+	 */
+	public function set_three_d_secure( string $setting ) : void {
+		$this->data['three_d_secure'] = $this->sanitizer->sanitize_enum( $setting, self::THREE_D_SECURE_OPTIONS );
 	}
 
 	/**
