@@ -253,6 +253,49 @@ class AxoGateway extends WC_Payment_Gateway {
 
 			$order = $this->create_paypal_order( $wc_order, $token );
 
+			// Check if 3DS verification is required
+			$payer_action = '';
+			foreach ( $order->links() as $link ) {
+				if ( $link->rel === 'payer-action' ) {
+					$payer_action = $link->href;
+				}
+			}
+
+			$this->logger->debug(
+				'AXO order created',
+				array(
+					'result'       => 'success',
+					'return_url'   => $this->get_return_url( $wc_order ),
+					'payer_action' => $payer_action,
+				)
+			);
+
+			// If 3DS verification is required, append the redirect_uri and return the redirect URL
+			$this->logger->debug(
+				'AXO order created',
+				array(
+					'result'       => 'success',
+					'return_url'   => $this->get_return_url( $wc_order ),
+					'payer_action' => $payer_action,
+				)
+			);
+
+			// If 3DS verification is required, append the redirect_uri and return the redirect URL
+			if ( $payer_action ) {
+				$return_url = $this->get_return_url( $wc_order );
+
+				$redirect_url = add_query_arg(
+					'redirect_uri',
+					urlencode( $return_url ),
+					$payer_action
+				);
+
+				return array(
+					'result'   => 'success',
+					'redirect' => $redirect_url,
+				);
+			}
+
 			/**
 			 * This filter controls if the method 'process()' from OrderProcessor will be called.
 			 * So you can implement your own for example on subscriptions
@@ -286,6 +329,7 @@ class AxoGateway extends WC_Payment_Gateway {
 	 * @return Order The PayPal order.
 	 */
 	protected function create_paypal_order( WC_Order $wc_order, string $payment_token ) : Order {
+
 		$purchase_unit = $this->purchase_unit_factory->from_wc_order( $wc_order );
 
 		$shipping_preference = $this->shipping_preference_factory->from_state(
@@ -302,11 +346,20 @@ class AxoGateway extends WC_Payment_Gateway {
 			$payment_source_properties
 		);
 
+		$this->logger->debug(
+			'AXO full order endpoint data',
+			array(
+				'purchase_unit'       => $purchase_unit,
+				'shipping_preference' => $shipping_preference,
+				'payment_source'      => $payment_source,
+			)
+		);
+
 		return $this->order_endpoint->create(
 			array( $purchase_unit ),
 			$shipping_preference,
 			null,
-			'',
+			self::ID,
 			array(),
 			$payment_source
 		);

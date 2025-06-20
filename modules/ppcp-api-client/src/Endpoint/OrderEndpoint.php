@@ -169,6 +169,7 @@ class OrderEndpoint {
 	 * @param string             $payment_method WC payment method.
 	 * @param array              $request_data Request data.
 	 * @param PaymentSource|null $payment_source The payment source.
+	 * @param \WC_Order|null     $wc_order The WooCommerce order, if available.
 	 *
 	 * @return Order
 	 * @throws RuntimeException If the request fails.
@@ -179,7 +180,8 @@ class OrderEndpoint {
 		Payer $payer = null,
 		string $payment_method = '',
 		array $request_data = array(),
-		PaymentSource $payment_source = null
+		PaymentSource $payment_source = null,
+		$wc_order = null
 	): Order {
 		$bearer = $this->bearer->bearer();
 		$data   = array(
@@ -265,7 +267,45 @@ class OrderEndpoint {
 			throw $error;
 		}
 
-		$order = $this->order_factory->from_paypal_response( $json );
+		// Check if this is a PAYER_ACTION_REQUIRED response (3DS)
+		$is_3ds_response = isset( $json->status ) && $json->status === 'PAYER_ACTION_REQUIRED';
+
+		// Extract payer-action URL if present
+		$payer_action_url = '';
+		if ( isset( $json->links ) && is_array( $json->links ) ) {
+			foreach ( $json->links as $link ) {
+				if ( isset( $link->rel ) && $link->rel === 'payer-action' && isset( $link->href ) ) {
+					$payer_action_url = $link->href;
+					break;
+				}
+			}
+		}
+
+		// Store payer-action URL in WC order meta if available
+		if ( $wc_order && $payer_action_url ) {
+			$wc_order->add_meta_data( 'ppcp_axo_payer_action', $payer_action_url );
+			$wc_order->save_meta_data();
+
+			$this->logger->info(
+				sprintf(
+					'Saved payer-action URL to order meta: %s',
+					$payer_action_url
+				)
+			);
+		}
+
+		// Log the entire $json response for debugging
+		$this->logger->info(
+			sprintf(
+				'Order created successfully. PayPal API response: %s',
+				print_r( $json, true )
+			)
+		);
+
+		// Use appropriate factory method based on response type
+		$order = $is_3ds_response
+			? $this->order_factory->from_paypal_response_with_3ds( $json )
+			: $this->order_factory->from_paypal_response( $json );
 
 		do_action( 'woocommerce_paypal_payments_paypal_order_created', $order );
 

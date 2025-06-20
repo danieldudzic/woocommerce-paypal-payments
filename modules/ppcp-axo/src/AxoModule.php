@@ -11,6 +11,7 @@ namespace WooCommerce\PayPalCommerce\Axo;
 
 use Psr\Log\LoggerInterface;
 use WooCommerce\PayPalCommerce\ApiClient\Authentication\SdkClientToken;
+use WooCommerce\PayPalCommerce\ApiClient\Endpoint\OrderEndpoint;
 use WooCommerce\PayPalCommerce\ApiClient\Exception\PayPalApiException;
 use WooCommerce\PayPalCommerce\ApiClient\Exception\RuntimeException;
 use WooCommerce\PayPalCommerce\Axo\Assets\AxoManager;
@@ -19,6 +20,7 @@ use WooCommerce\PayPalCommerce\Button\Assets\SmartButtonInterface;
 use WooCommerce\PayPalCommerce\Button\Helper\ContextTrait;
 use WooCommerce\PayPalCommerce\Onboarding\Render\OnboardingOptionsRenderer;
 use WooCommerce\PayPalCommerce\Session\SessionHandler;
+use WooCommerce\PayPalCommerce\Settings\Data\SettingsModel;
 use WooCommerce\PayPalCommerce\Vendor\Inpsyde\Modularity\Module\ExecutableModule;
 use WooCommerce\PayPalCommerce\Vendor\Inpsyde\Modularity\Module\ExtendingModule;
 use WooCommerce\PayPalCommerce\Vendor\Inpsyde\Modularity\Module\ModuleClassNameIdTrait;
@@ -365,6 +367,43 @@ class AxoModule implements ServiceModule, ExtendingModule, ExecutableModule {
 
 				return $methods;
 			}
+		);
+
+		// Trigger 3D Secure verification.
+		add_filter(
+			'ppcp_create_order_request_body_data',
+			function( array $data, string $payment_method ) use ( $c ): array {
+				if ( ! $c->get( 'axo.uk.enabled' ) ) {
+					return $data;
+				}
+
+				$logger = $c->get( 'woocommerce.logger.woocommerce' );
+				assert( $logger instanceof LoggerInterface );
+
+				if ( $payment_method !== AxoGateway::ID ) {
+					return $data;
+				}
+
+				$settings_model = $c->get( 'settings.data.settings' );
+				assert( $settings_model instanceof SettingsModel );
+
+				$three_d_secure = $settings_model->get_three_d_secure_enum();
+
+				if (
+					$three_d_secure === 'SCA_ALWAYS'
+					|| $three_d_secure === 'SCA_WHEN_REQUIRED'
+				) {
+					$data['payment_source']['card']->attributes = array(
+						'verification' => array(
+							'method' => $three_d_secure,
+						),
+					);
+				}
+
+				return $data;
+			},
+			10,
+			2
 		);
 
 		return true;

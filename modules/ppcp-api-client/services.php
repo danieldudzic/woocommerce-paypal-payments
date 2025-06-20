@@ -428,9 +428,11 @@ return array(
 	'api.factory.order'                              => static function ( ContainerInterface $container ): OrderFactory {
 		$purchase_unit_factory          = $container->get( 'api.factory.purchase-unit' );
 		$payer_factory                  = $container->get( 'api.factory.payer' );
+		$logger                      = $container->get( 'woocommerce.logger.woocommerce' );
 		return new OrderFactory(
 			$purchase_unit_factory,
-			$payer_factory
+			$payer_factory,
+			$logger
 		);
 	},
 	'api.factory.payments'                           => static function ( ContainerInterface $container ): PaymentsFactory {

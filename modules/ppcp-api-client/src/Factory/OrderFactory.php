@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace WooCommerce\PayPalCommerce\ApiClient\Factory;
 
+use Psr\Log\LoggerInterface;
 use WooCommerce\PayPalCommerce\ApiClient\Entity\Order;
 use WooCommerce\PayPalCommerce\ApiClient\Entity\OrderStatus;
 use WooCommerce\PayPalCommerce\ApiClient\Entity\PaymentSource;
@@ -35,18 +36,28 @@ class OrderFactory {
 	private $payer_factory;
 
 	/**
+	 * The logger.
+	 *
+	 * @var LoggerInterface
+	 */
+	private $logger;
+
+	/**
 	 * OrderFactory constructor.
 	 *
-	 * @param PurchaseUnitFactory $purchase_unit_factory The PurchaseUnit factory.
-	 * @param PayerFactory        $payer_factory The Payer factory.
+	 * @param PurchaseUnitFactory          $purchase_unit_factory The PurchaseUnit factory.
+	 * @param PayerFactory                 $payer_factory The Payer factory.
+	 * @param LoggerInterface              $logger The logger.
 	 */
 	public function __construct(
 		PurchaseUnitFactory $purchase_unit_factory,
-		PayerFactory $payer_factory
+		PayerFactory $payer_factory,
+		LoggerInterface $logger
 	) {
 
-		$this->purchase_unit_factory = $purchase_unit_factory;
-		$this->payer_factory         = $payer_factory;
+		$this->purchase_unit_factory          = $purchase_unit_factory;
+		$this->payer_factory                  = $payer_factory;
+		$this->logger                         = $logger;
 	}
 
 	/**
@@ -96,6 +107,7 @@ class OrderFactory {
 				__( 'Order does not contain status.', 'woocommerce-paypal-payments' )
 			);
 		}
+
 		if ( ! isset( $order_data->intent ) ) {
 			throw new RuntimeException(
 				__( 'Order does not contain intent.', 'woocommerce-paypal-payments' )
@@ -145,6 +157,85 @@ class OrderFactory {
 			$order_data->intent,
 			$create_time,
 			$update_time
+		);
+	}
+
+	/**
+	 * Returns an Order object based off a PayPal 3DS Response.
+	 * Specifically tailored for PAYER_ACTION_REQUIRED responses.
+	 *
+	 * @param \stdClass $order_data The JSON object.
+	 *
+	 * @return Order
+	 * @throws RuntimeException When JSON object is malformed.
+	 */
+	/**
+	 * Returns an Order object based off a PayPal 3DS Response.
+	 * Specifically tailored for PAYER_ACTION_REQUIRED responses.
+	 *
+	 * @param \stdClass $order_data The JSON object.
+	 *
+	 * @return Order
+	 * @throws RuntimeException When JSON object is malformed.
+	 */
+	public function from_paypal_response_with_3ds( \stdClass $order_data ): Order {
+		// Only ID is strictly required
+		if ( ! isset( $order_data->id ) ) {
+			throw new RuntimeException(
+				__( 'Order does not contain an id.', 'woocommerce-paypal-payments' )
+			);
+		}
+
+		// Don't try to create purchase units for 3DS responses
+		// Use an empty array instead
+		$purchase_units = array();
+
+		// Status - should be PAYER_ACTION_REQUIRED
+		$status = new OrderStatus( $order_data->status ?? 'PAYER_ACTION_REQUIRED' );
+
+		// Use CAPTURE as default intent for 3DS responses
+		$intent = $order_data->intent ?? 'CAPTURE';
+
+		// All timestamps are null for 3DS responses
+		$create_time = null;
+		$update_time = null;
+
+		// Payer is typically null in 3DS responses
+		$payer = null;
+
+		// Application context is null in 3DS responses
+		$application_context = null;
+
+		// Handle payment source (card) if present
+		$payment_source = null;
+		if ( isset( $order_data->payment_source ) ) {
+			try {
+				// Extract the payment source name (usually "card")
+				$source_props = get_object_vars( $order_data->payment_source );
+				if ( ! empty( $source_props ) ) {
+					$source_name    = array_key_first( $source_props );
+					$payment_source = new PaymentSource(
+						$source_name,
+						$order_data->payment_source->$source_name
+					);
+				}
+			} catch ( \Exception $e ) {
+				$this->logger->warning( 'Could not create payment source: ' . $e->getMessage() );
+				// Continue without payment source
+			}
+		}
+
+		// Create the Order without including links parameter
+		return new Order(
+			$order_data->id,
+			$purchase_units,
+			$status,
+			$payment_source,
+			$payer,
+			$intent,
+			$create_time,
+			$update_time,
+			$order_data->links
 		);
 	}
 }
