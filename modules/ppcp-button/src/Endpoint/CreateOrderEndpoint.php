@@ -446,12 +446,15 @@ class CreateOrderEndpoint implements EndpointInterface {
 			$payment_source_key = $funding_source;
 		}
 
+		$experience_context = $this->experience_context_builder->with_default_paypal_config( $shipping_preference, $action );
+		if ( $shipping_preference === ExperienceContext::SHIPPING_PREFERENCE_GET_FROM_FILE ) {
+			$experience_context = $experience_context->with_shipping_callback();
+		}
+
 		$payment_source = new PaymentSource(
 			$payment_source_key,
 			(object) array(
-				'experience_context' => $this->experience_context_builder
-					->with_default_paypal_config( $shipping_preference, $action )
-					->build()->to_array(),
+				'experience_context' => $experience_context->build()->to_array(),
 			)
 		);
 

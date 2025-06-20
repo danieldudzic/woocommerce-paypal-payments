@@ -352,6 +352,8 @@ export const PayPalComponent = ( {
 	);
 
 	const getOnShippingOptionsChange = ( fundingSource ) => {
+		return null;
+
 		if ( fundingSource === 'venmo' ) {
 			return null;
 		}
@@ -364,6 +366,8 @@ export const PayPalComponent = ( {
 	};
 
 	const getOnShippingAddressChange = ( fundingSource ) => {
+		return null;
+
 		if ( fundingSource === 'venmo' ) {
 			return null;
 		}
