@@ -1,9 +1,18 @@
 import { Button } from '@wordpress/components';
 import { useEffect } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 import classNames from 'classnames';
 import { OpenSignup } from '../../../ReusableComponents/Icons';
 import { useHandleOnboardingButton } from '../../../../hooks/useHandleConnections';
 import BusyStateWrapper from '../../../ReusableComponents/BusyStateWrapper';
+import { Notice } from '../../../ReusableComponents/Elements';
+
+const useIsFirefox = () => {
+	if ( typeof window === 'undefined' ) {
+		return false;
+	}
+	return window.navigator.userAgent.toLowerCase().indexOf( 'firefox' ) > -1;
+};
 
 /**
  * Button component that outputs a placeholder button when no onboardingUrl is present yet - the
@@ -24,6 +33,8 @@ const ButtonOrPlaceholder = ( {
 	href,
 	children,
 } ) => {
+	const isFirefox = useIsFirefox();
+
 	const buttonProps = {
 		className,
 		variant,
@@ -34,6 +45,20 @@ const ButtonOrPlaceholder = ( {
 		buttonProps.href = href;
 		buttonProps[ 'data-paypal-button' ] = 'true';
 		buttonProps[ 'data-paypal-onboard-button' ] = 'true';
+	}
+
+	if ( isFirefox ) {
+		return (
+			<>
+				<Button { ...buttonProps }>{ children }</Button>
+				<Notice type={ 'error' }>
+					{ __(
+						'This button may not work in Firefox. Please use another browser, like Chrome, to complete this step.',
+						'woocommerce-paypal-payments'
+					) }
+				</Notice>
+			</>
+		);
 	}
 
 	return <Button { ...buttonProps }>{ children }</Button>;
