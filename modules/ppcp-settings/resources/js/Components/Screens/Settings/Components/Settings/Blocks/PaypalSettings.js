@@ -76,11 +76,11 @@ const PaypalSettings = ( { hasContactModule } ) => {
 			<SettingsBlock visible={ hasContactModule }>
 				<ControlToggleButton
 					label={ __(
-						'Custom Shipping Contact',
+						'Contact selection on payment',
 						'woocommerce-paypal-payments'
 					) }
 					description={ __(
-						'If enabled, customers can provide a custom shipping email and phone number when paying via PayPal. Order updates are delivered to the custom shipping email, and not to the billing email.',
+						'Allow customers to choose an alternative email and phone number from their PayPal contacts during payment. Order confirmations and tracking updates are sent to the selected contacts instead of checkout details. Perfect for gift orders.',
 						'woocommerce-paypal-payments'
 					) }
 					value={ contactModule }
