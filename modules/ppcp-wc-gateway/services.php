@@ -38,6 +38,12 @@ use WooCommerce\PayPalCommerce\WcGateway\Settings\WcTasks\Factory\SimpleRedirect
 use WooCommerce\PayPalCommerce\WcGateway\Settings\WcTasks\Registrar\TaskRegistrar;
 use WooCommerce\PayPalCommerce\WcGateway\Settings\WcTasks\Registrar\TaskRegistrarInterface;
 use WooCommerce\PayPalCommerce\WcGateway\Settings\WcTasks\Tasks\SimpleRedirectTask;
+use WooCommerce\PayPalCommerce\WcGateway\Shipping\ShippingCallbackUrlFactory;
+use WooCommerce\PayPalCommerce\WcGateway\StoreApi\Endpoint\CartEndpoint;
+use WooCommerce\PayPalCommerce\WcGateway\StoreApi\Factory\CartFactory;
+use WooCommerce\PayPalCommerce\WcGateway\StoreApi\Factory\CartTotalsFactory;
+use WooCommerce\PayPalCommerce\WcGateway\StoreApi\Factory\MoneyFactory;
+use WooCommerce\PayPalCommerce\WcGateway\StoreApi\Factory\ShippingRatesFactory;
 use WooCommerce\PayPalCommerce\WcSubscriptions\Helper\SubscriptionHelper;
 use WooCommerce\PayPalCommerce\Vendor\Psr\Container\ContainerInterface;
 use WooCommerce\PayPalCommerce\WcGateway\Admin\FeesRenderer;
@@ -2116,5 +2122,32 @@ return array(
 		}
 
 		return $prefix . '-';
+	},
+
+	'wcgateway.store-api.endpoint.cart'                    => static function( ContainerInterface $container ) : CartEndpoint {
+		return new CartEndpoint(
+			$container->get( 'wcgateway.store-api.factory.cart' ),
+			$container->get( 'woocommerce.logger.woocommerce' )
+		);
+	},
+
+	'wcgateway.store-api.factory.cart'                     => static function( ContainerInterface $container ) : CartFactory {
+		return new CartFactory(
+			$container->get( 'wcgateway.store-api.factory.cart-totals' ),
+			$container->get( 'wcgateway.store-api.factory.shipping-rates' )
+		);
+	},
+	'wcgateway.store-api.factory.cart-totals'              => static function( ContainerInterface $container ) : CartTotalsFactory {
+		return new CartTotalsFactory(
+			$container->get( 'wcgateway.store-api.factory.money' )
+		);
+	},
+	'wcgateway.store-api.factory.shipping-rates'           => static function( ContainerInterface $container ) : ShippingRatesFactory {
+		return new ShippingRatesFactory(
+			$container->get( 'wcgateway.store-api.factory.money' )
+		);
+	},
+	'wcgateway.store-api.factory.money'                    => static function( ContainerInterface $container ) : MoneyFactory {
+		return new MoneyFactory();
 	},
 );
