@@ -275,37 +275,37 @@ class IntegrationMockedTestCase extends TestCase
 	 */
 	public function mockOrderEndpoint(string $intent = 'CAPTURE', bool $success = true): object
 	{
-		$order_endpoint = \Mockery::mock(OrderEndpoint::class);
-		$order = \Mockery::mock(Order::class);
+		$order_endpoint = \Mockery::mock(OrderEndpoint::class)->shouldIgnoreMissing();
+		$order = \Mockery::mock(Order::class)->shouldIgnoreMissing();
 
 		$order->shouldReceive('id')->andReturn('TEST-ORDER-' . uniqid());
 		$order->shouldReceive('intent')->andReturn($intent);
 
-		$order_status = \Mockery::mock(OrderStatus::class);
+		$order_status = \Mockery::mock(OrderStatus::class)->shouldIgnoreMissing();
 		$order_status->shouldReceive('is')->andReturn($success);
 		$order_status->shouldReceive('name')->andReturn($success ? 'COMPLETED' : 'FAILED');
 		$order->shouldReceive('status')->andReturn($order_status);
 
-		$payment_source = \Mockery::mock(PaymentSource::class);
+		$payment_source = \Mockery::mock(PaymentSource::class)->shouldIgnoreMissing();
 		$payment_source->shouldReceive('name')->andReturn('card');
 		$order->shouldReceive('payment_source')->andReturn($payment_source);
 
-		$purchase_unit = \Mockery::mock(PurchaseUnit::class);
-		$payments = \Mockery::mock(Payments::class);
-		$capture = \Mockery::mock(Capture::class);
+		$purchase_unit = \Mockery::mock(PurchaseUnit::class)->shouldIgnoreMissing();
+		$payments = \Mockery::mock(Payments::class)->shouldIgnoreMissing();
+		$capture = \Mockery::mock(Capture::class)->shouldIgnoreMissing();
 
 		$capture->shouldReceive('id')->andReturn('TEST-CAPTURE-' . uniqid());
-		$capture_status = \Mockery::mock(CaptureStatus::class);
+		$capture_status = \Mockery::mock(CaptureStatus::class)->shouldIgnoreMissing();
 
 		$capture_status->shouldReceive('name')->andReturn($success ? 'COMPLETED' : 'DECLINED');
 		$capture->shouldReceive('status')->andReturn($capture_status);
 
 		// Mock authorizations for AUTHORIZE intent
 		if ($intent === 'AUTHORIZE') {
-			$authorization = \Mockery::mock(\WooCommerce\PayPalCommerce\ApiClient\Entity\Authorization::class);
+			$authorization = \Mockery::mock(\WooCommerce\PayPalCommerce\ApiClient\Entity\Authorization::class)->shouldIgnoreMissing();
 
 			$authorization->shouldReceive('id')->andReturn('TEST-AUTH-' . uniqid());
-			$auth_status = \Mockery::mock(\WooCommerce\PayPalCommerce\ApiClient\Entity\AuthorizationStatus::class);
+			$auth_status = \Mockery::mock(\WooCommerce\PayPalCommerce\ApiClient\Entity\AuthorizationStatus::class)->shouldIgnoreMissing();
 
 			$auth_status->shouldReceive('name')->andReturn($success ? 'CREATED' : 'DENIED');
 			$auth_status->shouldReceive('is')->andReturn($success);
