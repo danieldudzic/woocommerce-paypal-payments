@@ -574,6 +574,9 @@ class WCGatewayModule implements ServiceModule, ExtendingModule, ExecutableModul
 				$installments_product_status = $c->get( 'wcgateway.installments-product-status' );
 				assert( $installments_product_status instanceof InstallmentsProductStatus );
 
+				$contact_module_check = $c->get( 'wcgateway.contact-module.eligibility.check' );
+				assert( is_callable( $contact_module_check ) );
+
 				$features['save_paypal_and_venmo'] = array(
 					'enabled' => $billing_agreements_endpoint->reference_transaction_enabled(),
 				);
@@ -591,6 +594,10 @@ class WCGatewayModule implements ServiceModule, ExtendingModule, ExecutableModul
 
 				$features['installments'] = array(
 					'enabled' => $installments_product_status->is_active(),
+				);
+
+				$features['contact_module'] = array(
+					'enabled' => $contact_module_check(),
 				);
 
 				return $features;

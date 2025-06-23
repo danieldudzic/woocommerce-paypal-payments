@@ -36,7 +36,20 @@ const useStoreData = () => {
 	);
 };
 
-const useHooks = () => {
+export const useStore = () => {
+	const { select, dispatch, useTransient } = useStoreData();
+	const { persist, refresh } = dispatch;
+	const [ isReady ] = useTransient( 'isReady' );
+
+	// Load persistent data from REST if not done yet.
+	if ( ! isReady ) {
+		select.persistentData();
+	}
+
+	return { persist, refresh, isReady };
+};
+
+export const useSettings = () => {
 	const { usePersistent } = useStoreData();
 
 	// Persistent accessors.
@@ -58,6 +71,9 @@ const useHooks = () => {
 		usePersistent( 'captureVirtualOrders' );
 	const [ savePaypalAndVenmo, setSavePaypalAndVenmo ] =
 		usePersistent( 'savePaypalAndVenmo' );
+	const [ contactModule, setContactModule ] = usePersistent(
+		'enableContactModule'
+	);
 	const [ saveCardDetails, setSaveCardDetails ] =
 		usePersistent( 'saveCardDetails' );
 	const [ payNowExperience, setPayNowExperience ] =
@@ -70,86 +86,6 @@ const useHooks = () => {
 
 	const [ threeDSecure, setThreeDSecure ] = usePersistent( 'threeDSecure' );
 
-	return {
-		invoicePrefix,
-		setInvoicePrefix,
-		authorizeOnly,
-		setAuthorizeOnly,
-		captureVirtualOnlyOrders,
-		setCaptureVirtualOnlyOrders,
-		savePaypalAndVenmo,
-		setSavePaypalAndVenmo,
-		saveCardDetails,
-		setSaveCardDetails,
-		payNowExperience,
-		setPayNowExperience,
-		logging,
-		setLogging,
-		stayUpdated,
-		setStayUpdated,
-		subtotalAdjustment,
-		setSubtotalAdjustment,
-		brandName,
-		setBrandName,
-		softDescriptor,
-		setSoftDescriptor,
-		landingPage,
-		setLandingPage,
-		buttonLanguage,
-		setButtonLanguage,
-		disabledCards,
-		setDisabledCards,
-		threeDSecure,
-		setThreeDSecure,
-	};
-};
-
-export const useStore = () => {
-	const { select, dispatch, useTransient } = useStoreData();
-	const { persist, refresh } = dispatch;
-	const [ isReady ] = useTransient( 'isReady' );
-
-	// Load persistent data from REST if not done yet.
-	if ( ! isReady ) {
-		select.persistentData();
-	}
-
-	return { persist, refresh, isReady };
-};
-
-export const useSettings = () => {
-	const {
-		invoicePrefix,
-		setInvoicePrefix,
-		authorizeOnly,
-		setAuthorizeOnly,
-		captureVirtualOnlyOrders,
-		setCaptureVirtualOnlyOrders,
-		savePaypalAndVenmo,
-		setSavePaypalAndVenmo,
-		saveCardDetails,
-		setSaveCardDetails,
-		payNowExperience,
-		setPayNowExperience,
-		logging,
-		setLogging,
-		stayUpdated,
-		setStayUpdated,
-		subtotalAdjustment,
-		setSubtotalAdjustment,
-		brandName,
-		setBrandName,
-		softDescriptor,
-		setSoftDescriptor,
-		landingPage,
-		setLandingPage,
-		buttonLanguage,
-		setButtonLanguage,
-		disabledCards,
-		setDisabledCards,
-		threeDSecure,
-		setThreeDSecure,
-	} = useHooks();
 
 	return {
 		invoicePrefix,
@@ -160,6 +96,8 @@ export const useSettings = () => {
 		setCaptureVirtualOnlyOrders,
 		savePaypalAndVenmo,
 		setSavePaypalAndVenmo,
+		contactModule,
+		setContactModule,
 		saveCardDetails,
 		setSaveCardDetails,
 		payNowExperience,
