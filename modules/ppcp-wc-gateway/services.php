@@ -93,6 +93,7 @@ use WooCommerce\PayPalCommerce\Axo\Helper\PropertiesDictionary;
 use WooCommerce\PayPalCommerce\Applepay\ApplePayGateway;
 use WooCommerce\PayPalCommerce\WcGateway\Helper\CardPaymentsConfiguration;
 use WooCommerce\PayPalCommerce\WcGateway\Helper\ConnectionState;
+use WooCommerce\PayPalCommerce\WcGateway\Helper\MerchantDetails;
 
 return array(
 	'wcgateway.paypal-gateway'                             => static function ( ContainerInterface $container ): PayPalGateway {
@@ -2150,12 +2151,17 @@ return array(
 		/**
 		 * Decides, whether the current merchant is eligible to use the
 		 * "Contact Module" feature on this site.
-		 *
-		 * This check will change later:
-		 * - For the start, a feature flag will decide if the contact module can be accessed.
-		 * - Later, we will extend this check to also verify merchant details, like country.
 		 */
-		return static fn() => $feature_enabled;
+		return static function () use ( $feature_enabled, $container ) {
+			if ( ! $feature_enabled ) {
+				return false;
+			}
+
+			$details = $container->get( 'settings.merchant-details' );
+			assert( $details instanceof MerchantDetails );
+
+			return 'US' === $details->get_merchant_country();
+		};
 	},
 	/**
 	 * Returns a prefix for the site, ensuring the same site always gets the same prefix (unless the URL changes).
