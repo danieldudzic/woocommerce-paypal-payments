@@ -200,4 +200,27 @@ class ExperienceContextBuilderTest extends TestCase
 			ExperienceContext::PAYMENT_METHOD_IMMEDIATE_PAYMENT_REQUIRED,
 		];
 	}
+
+	/**
+	 * @dataProvider contactPreferenceDataProvider
+	 */
+	public function testContactPreference($preference) {
+		$result = $this->sut
+			->with_contact_preference($preference)
+			->build();
+
+		self::assertEquals([
+			'contact_preference' => $preference,
+		], $result->to_array());
+	}
+
+	public function contactPreferenceDataProvider()
+	{
+		yield [
+			ExperienceContext::CONTACT_PREFERENCE_NO_CONTACT_INFO,
+		];
+		yield [
+			ExperienceContext::CONTACT_PREFERENCE_UPDATE_CONTACT_INFO,
+		];
+	}
 }
