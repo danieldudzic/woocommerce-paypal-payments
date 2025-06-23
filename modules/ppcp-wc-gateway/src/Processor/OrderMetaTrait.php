@@ -66,7 +66,12 @@ trait OrderMetaTrait {
 	}
 
 	/**
-	 * Add order-meta entries with custom contact details
+	 * Swaps out the billing details with the custom contact details provided by PayPal via the
+	 * "Contact Module" integration.
+	 *
+	 * The contact module can provide a custom email and phone number via the shipping details;
+	 * Though it's part of the shipping object, these two properties are intended to be treated
+	 * as primary contact details.
 	 *
 	 * @param WC_Order $wc_order The WooCommerce order to update.
 	 * @param Order    $order    The PayPal order which provides the details.
@@ -82,11 +87,25 @@ trait OrderMetaTrait {
 		$contact_email = $shipping_details->email_address();
 		$contact_phone = $shipping_details->phone_number();
 
-		if ( $contact_email ) {
-			$wc_order->update_meta_data( PayPalGateway::CONTACT_EMAIL_META_KEY, $contact_email );
+		if ( $contact_email && is_email( $contact_email ) ) {
+			$billing_email = $wc_order->get_billing_email();
+
+			if ( $billing_email && $billing_email !== $contact_email ) {
+				$wc_order->update_meta_data( PayPalGateway::ORIGINAL_EMAIL_META_KEY, $billing_email );
+			}
+
+			$wc_order->set_billing_email( $contact_email );
 		}
+
 		if ( $contact_phone ) {
-			$wc_order->update_meta_data( PayPalGateway::CONTACT_PHONE_META_KEY, $contact_phone->national_number() );
+			$billing_phone        = $wc_order->get_billing_phone();
+			$contact_phone_number = $contact_phone->national_number();
+
+			if ( $billing_phone && $billing_phone !== $contact_phone_number ) {
+				$wc_order->update_meta_data( PayPalGateway::ORIGINAL_PHONE_META_KEY, $billing_phone );
+			}
+
+			$wc_order->set_billing_phone( $contact_phone_number );
 		}
 	}
 
