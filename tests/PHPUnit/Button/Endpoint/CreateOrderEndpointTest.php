@@ -172,6 +172,7 @@ class CreateOrderEndpointTest extends TestCase
 			false,
 			['checkout'],
 			false,
+			false,
 			['paypal'],
 			new NullLogger()
         );
