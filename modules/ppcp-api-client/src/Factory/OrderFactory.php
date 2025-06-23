@@ -45,9 +45,9 @@ class OrderFactory {
 	/**
 	 * OrderFactory constructor.
 	 *
-	 * @param PurchaseUnitFactory          $purchase_unit_factory The PurchaseUnit factory.
-	 * @param PayerFactory                 $payer_factory The Payer factory.
-	 * @param LoggerInterface              $logger The logger.
+	 * @param PurchaseUnitFactory $purchase_unit_factory The PurchaseUnit factory.
+	 * @param PayerFactory        $payer_factory The Payer factory.
+	 * @param LoggerInterface     $logger The logger.
 	 */
 	public function __construct(
 		PurchaseUnitFactory $purchase_unit_factory,
@@ -55,9 +55,9 @@ class OrderFactory {
 		LoggerInterface $logger
 	) {
 
-		$this->purchase_unit_factory          = $purchase_unit_factory;
-		$this->payer_factory                  = $payer_factory;
-		$this->logger                         = $logger;
+		$this->purchase_unit_factory = $purchase_unit_factory;
+		$this->payer_factory         = $payer_factory;
+		$this->logger                = $logger;
 	}
 
 	/**

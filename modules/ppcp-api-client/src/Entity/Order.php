@@ -101,15 +101,15 @@ class Order {
 		$links = null
 	) {
 
-		$this->id                  = $id;
-		$this->payer               = $payer;
-		$this->order_status        = $order_status;
-		$this->intent              = ( 'CAPTURE' === $intent ) ? 'CAPTURE' : 'AUTHORIZE';
-		$this->purchase_units      = $purchase_units;
-		$this->create_time         = $create_time;
-		$this->update_time         = $update_time;
-		$this->payment_source      = $payment_source;
-		$this->links               = $links;
+		$this->id             = $id;
+		$this->payer          = $payer;
+		$this->order_status   = $order_status;
+		$this->intent         = ( 'CAPTURE' === $intent ) ? 'CAPTURE' : 'AUTHORIZE';
+		$this->purchase_units = $purchase_units;
+		$this->create_time    = $create_time;
+		$this->update_time    = $update_time;
+		$this->payment_source = $payment_source;
+		$this->links          = $links;
 	}
 
 	/**

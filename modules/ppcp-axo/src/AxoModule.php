@@ -14,6 +14,7 @@ use WooCommerce\PayPalCommerce\ApiClient\Authentication\SdkClientToken;
 use WooCommerce\PayPalCommerce\ApiClient\Endpoint\OrderEndpoint;
 use WooCommerce\PayPalCommerce\ApiClient\Exception\PayPalApiException;
 use WooCommerce\PayPalCommerce\ApiClient\Exception\RuntimeException;
+use WooCommerce\PayPalCommerce\ApiClient\Factory\ExperienceContextBuilder;
 use WooCommerce\PayPalCommerce\Axo\Assets\AxoManager;
 use WooCommerce\PayPalCommerce\Axo\Gateway\AxoGateway;
 use WooCommerce\PayPalCommerce\Button\Assets\SmartButtonInterface;
@@ -398,6 +399,19 @@ class AxoModule implements ServiceModule, ExtendingModule, ExecutableModule {
 							'method' => $three_d_secure,
 						),
 					);
+
+					$experience_context_builder = $c->get( 'wcgateway.builder.experience-context' );
+					assert( $experience_context_builder instanceof ExperienceContextBuilder );
+
+					$data['experience_context'] = $experience_context_builder
+						->with_endpoint_return_urls()
+						->with_current_brand_name()
+						->with_current_locale()
+						->build()->to_array();
+
+						$data['transaction_context'] = array(
+							'soft_descriptor' => __( 'Card verification hold', 'woocommerce-paypal-payments' ),
+						);
 				}
 
 				return $data;
