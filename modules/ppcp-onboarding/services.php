@@ -104,9 +104,10 @@ return array(
 		return $state->get_environment();
 	},
 	'settings.merchant-details'          => static function ( ContainerInterface $container ) : MerchantDetails {
-		$woo_country = $container->get( 'api.shop.country' );
+		$woo_country        = $container->get( 'api.shop.country' );
+		$eligibility_checks = $container->get( 'wcgateway.feature-eligibility.list' );
 
-		return new MerchantDetails( $woo_country, $woo_country );
+		return new MerchantDetails( $woo_country, $woo_country, $eligibility_checks );
 	},
 	'onboarding.assets'                  => function( ContainerInterface $container ) : OnboardingAssets {
 		$state                 = $container->get( 'onboarding.state' );

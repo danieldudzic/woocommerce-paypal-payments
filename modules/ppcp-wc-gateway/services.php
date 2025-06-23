@@ -2172,6 +2172,23 @@ return array(
 			);
 		};
 	},
+
+	/**
+	 * Returns a centralized list of feature eligibility checks.
+	 *
+	 * This is a helper service which is used by the `MerchantDetails` class and
+	 * should not be directly accessed.
+	 */
+	'wcgateway.feature-eligibility.list'                   => static function( ContainerInterface $container ): array {
+		return array(
+			MerchantDetails::FEATURE_SAVE_PAYPAL_VENMO => $container->get( 'save-payment-methods.eligibility.check' ),
+			MerchantDetails::FEATURE_ADVANCED_CARD_PROCESSING => $container->get( 'card-fields.eligibility.check' ),
+			MerchantDetails::FEATURE_GOOGLE_PAY        => $container->get( 'googlepay.eligibility.check' ),
+			MerchantDetails::FEATURE_APPLE_PAY         => $container->get( 'applepay.eligibility.check' ),
+			MerchantDetails::FEATURE_CONTACT_MODULE    => $container->get( 'wcgateway.contact-module.eligibility.check' ),
+		);
+	},
+
 	/**
 	 * Returns a prefix for the site, ensuring the same site always gets the same prefix (unless the URL changes).
 	 */

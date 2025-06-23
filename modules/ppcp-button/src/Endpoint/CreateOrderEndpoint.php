@@ -37,6 +37,7 @@ use WooCommerce\PayPalCommerce\WcGateway\Gateway\CardButtonGateway;
 use WooCommerce\PayPalCommerce\WcGateway\Gateway\CreditCardGateway;
 use WooCommerce\PayPalCommerce\WcGateway\Gateway\PayPalGateway;
 use WooCommerce\PayPalCommerce\WcGateway\Settings\Settings;
+use WooCommerce\PayPalCommerce\ApiClient\Factory\ContactPreferenceFactory;
 
 /**
  * Class CreateOrderEndpoint
@@ -67,6 +68,11 @@ class CreateOrderEndpoint implements EndpointInterface {
 	 * @var ShippingPreferenceFactory
 	 */
 	private $shipping_preference_factory;
+
+	/**
+	 * The contact_preference factors.
+	 */
+	private ContactPreferenceFactory $contact_preference_factory;
 
 	/**
 	 * The ExperienceContextBuilder.
@@ -189,6 +195,7 @@ class CreateOrderEndpoint implements EndpointInterface {
 	 * @param RequestData               $request_data The RequestData object.
 	 * @param PurchaseUnitFactory       $purchase_unit_factory The PurchaseUnit factory.
 	 * @param ShippingPreferenceFactory $shipping_preference_factory The shipping_preference factory.
+	 * @param ContactPreferenceFactory  $contact_preference_factory The contact_preference factory.
 	 * @param ExperienceContextBuilder  $experience_context_builder The ExperienceContextBuilder.
 	 * @param OrderEndpoint             $order_endpoint The OrderEndpoint object.
 	 * @param PayerFactory              $payer_factory The PayerFactory object.
@@ -208,6 +215,7 @@ class CreateOrderEndpoint implements EndpointInterface {
 		RequestData $request_data,
 		PurchaseUnitFactory $purchase_unit_factory,
 		ShippingPreferenceFactory $shipping_preference_factory,
+		ContactPreferenceFactory $contact_preference_factory,
 		ExperienceContextBuilder $experience_context_builder,
 		OrderEndpoint $order_endpoint,
 		PayerFactory $payer_factory,
@@ -224,23 +232,24 @@ class CreateOrderEndpoint implements EndpointInterface {
 		LoggerInterface $logger
 	) {
 
-		$this->request_data                          = $request_data;
-		$this->purchase_unit_factory                 = $purchase_unit_factory;
-		$this->shipping_preference_factory           = $shipping_preference_factory;
-		$this->experience_context_builder            = $experience_context_builder;
-		$this->api_endpoint                          = $order_endpoint;
-		$this->payer_factory                         = $payer_factory;
-		$this->session_handler                       = $session_handler;
-		$this->settings                              = $settings;
-		$this->early_order_handler                   = $early_order_handler;
-		$this->registration_needed                   = $registration_needed;
-		$this->card_billing_data_mode                = $card_billing_data_mode;
-		$this->early_validation_enabled              = $early_validation_enabled;
-		$this->pay_now_contexts                      = $pay_now_contexts;
-		$this->handle_shipping_in_paypal             = $handle_shipping_in_paypal;
+		$this->request_data                     = $request_data;
+		$this->purchase_unit_factory            = $purchase_unit_factory;
+		$this->shipping_preference_factory      = $shipping_preference_factory;
+		$this->contact_preference_factory       = $contact_preference_factory;
+		$this->experience_context_builder       = $experience_context_builder;
+		$this->api_endpoint                     = $order_endpoint;
+		$this->payer_factory                    = $payer_factory;
+		$this->session_handler                  = $session_handler;
+		$this->settings                         = $settings;
+		$this->early_order_handler              = $early_order_handler;
+		$this->registration_needed              = $registration_needed;
+		$this->card_billing_data_mode           = $card_billing_data_mode;
+		$this->early_validation_enabled         = $early_validation_enabled;
+		$this->pay_now_contexts                 = $pay_now_contexts;
+		$this->handle_shipping_in_paypal        = $handle_shipping_in_paypal;
 		$this->server_side_shipping_callback_enabled = $server_side_shipping_callback_enabled;
-		$this->funding_sources_without_redirect      = $funding_sources_without_redirect;
-		$this->logger                                = $logger;
+		$this->funding_sources_without_redirect = $funding_sources_without_redirect;
+		$this->logger                           = $logger;
 	}
 
 	/**
@@ -449,12 +458,20 @@ class CreateOrderEndpoint implements EndpointInterface {
 			}
 		}
 
-		$payment_source_key = 'paypal';
-		if ( in_array( $funding_source, array( 'venmo' ), true ) ) {
-			$payment_source_key = $funding_source;
+		if ( 'venmo' === $funding_source ) {
+			$payment_source_key = 'venmo';
+		} else {
+			$payment_source_key = 'paypal';
 		}
 
-		$experience_context = $this->experience_context_builder->with_default_paypal_config( $shipping_preference, $action );
+		$contact_preference = $this->contact_preference_factory->from_state(
+			$payment_source_key
+		);
+
+		$experience_context = $this->experience_context_builder
+			->with_default_paypal_config( $shipping_preference, $action )
+			->with_contact_preference( $contact_preference );
+
 		if ( $this->server_side_shipping_callback_enabled
 			&& $shipping_preference === ExperienceContext::SHIPPING_PREFERENCE_GET_FROM_FILE ) {
 			$experience_context = $experience_context->with_shipping_callback();
