@@ -500,44 +500,29 @@ class WCGatewayModule implements ServiceModule, ExtendingModule, ExecutableModul
 		 */
 		add_filter(
 			'woocommerce_admin_billing_fields',
-			function ( $fields ) {
-				global $theorder;
+			fn( $fields ) => $this->insert_custom_order_fields( 'billing', $fields )
+		);
 
-				if ( ! apply_filters( 'woocommerce_paypal_payments_order_details_show_paypal_email', true ) ) {
-					return $fields;
-				}
+		/**
+		 * Param types removed to avoid third-party issues.
+		 *
+		 * @psalm-suppress MissingClosureParamType
+		 */
+		add_filter(
+			'woocommerce_admin_shipping_fields',
+			fn( $fields ) => $this->insert_custom_order_fields( 'shipping', $fields )
+		);
 
-				if ( ! is_array( $fields ) ) {
-					return $fields;
-				}
-
-				if ( ! $theorder instanceof WC_Order ) {
-					return $fields;
-				}
-
-				$email = $theorder->get_meta( PayPalGateway::ORDER_PAYER_EMAIL_META_KEY ) ?: '';
-
-				if ( ! $email ) {
-					return $fields;
-				}
-
-				// Is payment source is paypal exclude all non paypal funding sources.
-				$payment_source           = $theorder->get_meta( PayPalGateway::ORDER_PAYMENT_SOURCE_META_KEY ) ?: '';
-				$is_paypal_funding_source = ( strpos( $theorder->get_payment_method_title(), '(via PayPal)' ) === false );
-
-				if ( $payment_source === 'paypal' && ! $is_paypal_funding_source ) {
-					return $fields;
-				}
-
-				$fields['paypal_email'] = array(
-					'label'             => __( 'PayPal email address', 'woocommerce-paypal-payments' ),
-					'value'             => $email,
-					'wrapper_class'     => 'form-field-wide',
-					'custom_attributes' => array( 'disabled' => 'disabled' ),
-				);
-
-				return $fields;
-			}
+		/**
+		 * Param types removed to avoid third-party issues.
+		 *
+		 * @psalm-suppress MissingClosureParamType
+		 */
+		add_action(
+			'woocommerce_order_details_after_customer_address',
+			fn( $section, $order ) => $this->display_custom_order_details( $section, $order ),
+			10,
+			2
 		);
 
 		add_action(
@@ -987,5 +972,117 @@ class WCGatewayModule implements ServiceModule, ExtendingModule, ExecutableModul
 				$endpoint->handle_request();
 			}
 		);
+	}
+
+	/**
+	 * Inserts custom fields into the order-detail view.
+	 *
+	 * @param string $section Whether to insert fields to 'billing' or 'shipping'.
+	 * @param mixed  $fields  The field-list provided by WooCommerce, should be an array.
+	 * @return array|mixed The filtered field list.
+	 *
+	 * @psalm-suppress MissingClosureParamType
+	 */
+	private function insert_custom_order_fields( string $section, $fields ) {
+		global $theorder;
+
+		if ( ! is_array( $fields ) ) {
+			return $fields;
+		}
+
+		if ( ! $theorder instanceof WC_Order ) {
+			return $fields;
+		}
+
+		/**
+		 * We use this filter to de-customize the order details - 'billing' and 'shipping' section.
+		 */
+		if ( ! apply_filters( 'woocommerce_paypal_payments_order_details_show_paypal_email', true ) ) {
+			return $fields;
+		}
+
+		$email = $theorder->get_meta( PayPalGateway::ORDER_PAYER_EMAIL_META_KEY ) ?: '';
+
+		// Relevant for 'billing' and 'shipping' sections, as a missing email indicates no PayPal payment.
+		if ( ! $email ) {
+			return $fields;
+		}
+
+		// Is payment source is paypal exclude all non paypal funding sources.
+		$payment_source           = $theorder->get_meta( PayPalGateway::ORDER_PAYMENT_SOURCE_META_KEY ) ?: '';
+		$is_paypal_funding_source = ( strpos( $theorder->get_payment_method_title(), '(via PayPal)' ) === false );
+
+		if ( $payment_source === 'paypal' && ! $is_paypal_funding_source ) {
+			return $fields;
+		}
+
+		if ( 'billing' === $section ) {
+			$fields['paypal_email'] = array(
+				'label'             => __( 'PayPal email address', 'woocommerce-paypal-payments' ),
+				'value'             => $email,
+				'wrapper_class'     => 'form-field-wide',
+				'custom_attributes' => array( 'disabled' => 'disabled' ),
+			);
+		}
+
+		if ( 'shipping' === $section ) {
+			$contact_email = $theorder->get_meta( PayPalGateway::CONTACT_EMAIL_META_KEY ) ?: '';
+			$contact_phone = $theorder->get_meta( PayPalGateway::CONTACT_PHONE_META_KEY ) ?: '';
+
+			if ( $contact_phone ) {
+				$fields['phone'] = array(
+					'label'             => __( 'Phone', 'woocommerce-paypal-payments' ),
+					'value'             => $contact_phone,
+					'wrapper_class'     => 'form-field-wide',
+					'custom_attributes' => array( 'disabled' => 'disabled' ),
+				);
+			}
+
+			if ( $contact_email ) {
+				$fields['email'] = array(
+					'label'             => __( 'Email address', 'woocommerce-paypal-payments' ),
+					'value'             => $contact_email,
+					'wrapper_class'     => 'form-field-wide',
+					'custom_attributes' => array( 'disabled' => 'disabled' ),
+				);
+			}
+		}
+
+		return $fields;
+	}
+
+	/**
+	 * Outputs custom contact details on the customer-facing order confirmation page.
+	 *
+	 * @param string|mixed   $section The order-detail section (billing/shipping).
+	 * @param WC_Order|mixed $order   The order object.
+	 * @return void
+	 */
+	private function display_custom_order_details( $section, $order ) : void {
+		if ( ! ( $order instanceof WC_Order ) ) {
+			return;
+		}
+		if ( 'shipping' !== $section ) {
+			return;
+		}
+
+		$contact_email = $order->get_meta( PayPalGateway::CONTACT_EMAIL_META_KEY ) ?: '';
+		$contact_phone = $order->get_meta( PayPalGateway::CONTACT_PHONE_META_KEY ) ?: '';
+		if ( ! $contact_email && ! $contact_phone ) {
+			return;
+		}
+
+		if ( $contact_phone ) {
+			printf(
+				'<p class="woocommerce-customer-details--phone">%s</p>',
+				esc_html( $contact_phone )
+			);
+		}
+		if ( $contact_email ) {
+			printf(
+				'<p class="woocommerce-customer-details--email">%s</p>',
+				esc_html( $contact_email )
+			);
+		}
 	}
 }
