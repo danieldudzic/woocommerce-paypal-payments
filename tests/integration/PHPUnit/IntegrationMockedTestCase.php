@@ -18,6 +18,8 @@ use WooCommerce\PayPalCommerce\ApiClient\Entity\PurchaseUnit;
 use WooCommerce\PayPalCommerce\Helper\RedirectorStub;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use WooCommerce\PayPalCommerce\PPCP;
+use WooCommerce\PayPalCommerce\Tests\Integration\Traits\CreateTestOrders;
+use WooCommerce\PayPalCommerce\Tests\Integration\Traits\CreateTestProducts;
 use WooCommerce\PayPalCommerce\Vendor\Inpsyde\Modularity\Module\ExecutableModule;
 use WooCommerce\PayPalCommerce\Vendor\Inpsyde\Modularity\Module\ModuleClassNameIdTrait;
 use WooCommerce\PayPalCommerce\Vendor\Inpsyde\Modularity\Module\ServiceModule;
@@ -25,98 +27,25 @@ use WooCommerce\PayPalCommerce\Vendor\Psr\Container\ContainerInterface;
 
 class IntegrationMockedTestCase extends TestCase
 {
-	use MockeryPHPUnitIntegration;
+	use MockeryPHPUnitIntegration, CreateTestOrders, CreateTestProducts;
 
 	public function setUp(): void
 	{
 		parent::setUp();
-		$this->default_product_id = $this->createAProductIfNotProvided();
+        //$this->default_product_id = $this->createAProductIfNotProvided();
+        $this->customer_id = $this->createCustomerIfNotExists();
+
+
+        $this->createTestProducts();
+        //$this->createTestCoupons();
 	}
 
-	/**
-	 * @param int $customer_id
-	 * @param string $payment_method
-	 * @param int $product_id
-	 * @param bool $set_paid
-	 * @return \WC_Order|\WP_Error
-	 * @throws \WC_Data_Exception
-	 */
-	public function getMockedOrder(int $customer_id, string $payment_method, int $product_id, bool $set_paid = true)
-	{
-		$order = wc_create_order([
-			'customer_id' => $customer_id,
-			'set_paid' => $set_paid,
-			'billing' => [
-				'first_name' => 'John',
-				'last_name' => 'Doe',
-				'address_1' => '969 Market',
-				'address_2' => '',
-				'city' => 'San Francisco',
-				'state' => 'CA',
-				'postcode' => '94103',
-				'country' => 'US',
-				'email' => 'john.doe@example.com',
-				'phone' => '(555) 555-5555'
-			],
-			'line_items' => [
-				[
-					'product_id' => $product_id,
-					'quantity' => 1
-				]
-			],
-		]);
-		$order->set_payment_method($payment_method);
-		// Make sure the order is properly saved
-		$order->save();
-
-		// Add the product to the order
-		$item = new WC_Order_Item_Product();
-		$item->set_props([
-			'product_id' => $product_id,
-			'quantity' => 1,
-			'subtotal' => 10,
-			'total' => 10,
-		]);
-		$order->add_item($item);
-		$order->calculate_totals();
-		$order->save();
-		return $order;
-	}
-
-	/**
-	 * @param string $sku
-	 * @return int
-	 */
-	public function createAProductIfNotProvided(string $sku = 'DUMMY SUB SKU'): int
-	{
-		$product_id = wc_get_product_id_by_sku($sku);
-		if (!$product_id) {
-			$product = new \WC_Product_Subscription();
-			$product->set_props([
-				'name' => 'Dummy Subscription Product',
-				'regular_price' => 10,
-				'price' => 10,
-				'sku' => 'DUMMY SUB SKU',
-				'manage_stock' => false,
-				'tax_status' => 'taxable',
-				'downloadable' => false,
-				'virtual' => false,
-				'stock_status' => 'instock',
-				'weight' => '1.1',
-				// Subscription-specific properties
-				'subscription_period' => 'month',
-				'subscription_period_interval' => 1,
-				'subscription_length' => 0, // 0 means unlimited
-				'subscription_trial_period' => '',
-				'subscription_trial_length' => 0,
-				'subscription_price' => 10,
-				'subscription_sign_up_fee' => 0,
-			]);
-			$product->save();
-			$product_id = $product->get_id();
-		}
-		return $product_id;
-	}
+    public function tearDown(): void
+    {
+        // This cleans up everything created during tests
+        //$this->cleanupTestData();
+        parent::tearDown();
+    }
 
 	/**
 	 * @param array<string, callable> $overriddenServices
@@ -219,11 +148,13 @@ class IntegrationMockedTestCase extends TestCase
 	 */
 	public function createSubscription(int $customer_id = 1, string $payment_method = 'ppcp-gateway', $sku = 'DUMMY SUB SKU'): WC_Subscription
 	{
-		// Create a product if not provided
-		$product_id = $this->createAProductIfNotProvided($sku);
+		$product_id = wc_get_product_id_by_sku($sku);
 
-		$order = $this->getMockedOrder($customer_id, $payment_method, $product_id, $set_paid = true);
-
+        $order = $this->getConfiguredOrder(
+            $this->customer_id,
+            $payment_method,
+            ['subscription']
+        );
 		$subscription = new WC_Subscription();
 		$subscription->set_customer_id($customer_id);
 		$subscription->set_payment_method($payment_method);
@@ -259,7 +190,14 @@ class IntegrationMockedTestCase extends TestCase
 	 */
 	protected function createRenewalOrder(int $customer_id, string $gateway_id, int $subscription_id): WC_Order
 	{
-		$renewal_order = $this->getMockedOrder($customer_id, $gateway_id, $this->default_product_id, false);
+        $renewal_order = $this->getConfiguredOrder(
+            $customer_id,
+            $gateway_id,
+            ['subscription'],
+            [],
+            false
+        );
+        $renewal_order->update_meta_data('_subscription_renewal', $subscription_id);
 		$renewal_order->update_meta_data('_subscription_renewal', $subscription_id);
 		$renewal_order->save();
 

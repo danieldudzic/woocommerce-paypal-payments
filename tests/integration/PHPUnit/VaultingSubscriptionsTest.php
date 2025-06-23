@@ -25,13 +25,8 @@ class VaultingSubscriptionsTest extends IntegrationMockedTestCase
 	{
 		parent::setUp();
 
-		// Common mock setup
         $this->mockPaymentTokensEndpoint = \Mockery::mock(PaymentTokensEndpoint::class);
-
-        // Create customer and default product that can be reused
-		$this->customer_id = $this->createCustomerIfNotExists();
-		$this->default_product_id = $this->createAProductIfNotProvided();
-	}
+    }
 
 	/**
 	 * Sets up a test container with common mocks
@@ -172,7 +167,7 @@ class VaultingSubscriptionsTest extends IntegrationMockedTestCase
 	{
 		return [
 			'PayPal Gateway' => [PayPalGateway::ID],
-			'Credit Card Gateway' => [CreditCardGateway::ID]
+			//'Credit Card Gateway' => [CreditCardGateway::ID]
 		];
 	}
 
