@@ -8,12 +8,15 @@ use WooCommerce\PayPalCommerce\ApiClient\Factory\ExperienceContextBuilder;
 use WooCommerce\PayPalCommerce\TestCase;
 use WooCommerce\PayPalCommerce\WcGateway\Endpoint\ReturnUrlEndpoint;
 use WooCommerce\PayPalCommerce\WcGateway\Settings\Settings;
+use WooCommerce\PayPalCommerce\WcGateway\Shipping\ShippingCallbackUrlFactory;
 use function Brain\Monkey\Functions\expect;
 use Mockery;
 
 class ExperienceContextBuilderTest extends TestCase
 {
 	private $settings;
+
+	private $shipping_callback_url_factory;
 
 	private $sut;
 
@@ -22,8 +25,9 @@ class ExperienceContextBuilderTest extends TestCase
 		parent::setUp();
 
 		$this->settings = Mockery::mock(Settings::class);
+		$this->shipping_callback_url_factory = Mockery::mock(ShippingCallbackUrlFactory::class);
 
-		$this->sut = new ExperienceContextBuilder($this->settings);
+		$this->sut = new ExperienceContextBuilder($this->settings, $this->shipping_callback_url_factory);
 	}
 
 	public function testOrderReturnUrls()
