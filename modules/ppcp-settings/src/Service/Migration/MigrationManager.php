@@ -16,8 +16,6 @@ namespace WooCommerce\PayPalCommerce\Settings\Service\Migration;
  */
 class MigrationManager {
 
-	public const OPTION_NAME_IS_MIGRATION_RUNNING = 'woocommerce_ppcp-settings-is-migration-running';
-
 	protected GeneralSettingsMigration $general_settings_migration;
 	protected SettingsTabMigration $settings_tab_migration;
 	protected StylingSettingsMigration $styling_settings_migration;

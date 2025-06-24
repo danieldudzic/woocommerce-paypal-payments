@@ -60,22 +60,17 @@ class SwitchSettingsUiEndpoint {
 			return;
 		}
 
-		update_option( MigrationManager::OPTION_NAME_IS_MIGRATION_RUNNING, true );
-
 		try {
 			$this->request_data->read_request( $this->nonce() );
 			update_option( self::OPTION_NAME_SHOULD_USE_OLD_UI, 'no' );
 
 			$this->onboarding_profile->set_completed( true );
-			$this->onboarding_profile->set_gateways_synced( true );
+			$this->onboarding_profile->set_gateways_refreshed(true);
 			$this->onboarding_profile->save();
 
 			$this->settings_data_migration->migrate();
-
-			delete_option(MigrationManager::OPTION_NAME_IS_MIGRATION_RUNNING);
 			wp_send_json_success();
 		} catch ( Exception $error ) {
-			delete_option(MigrationManager::OPTION_NAME_IS_MIGRATION_RUNNING);
 			wp_send_json_error(array('message' => $error->getMessage()), 500);
 		}
 	}
