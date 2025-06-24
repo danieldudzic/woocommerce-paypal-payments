@@ -31,8 +31,8 @@ class SettingsTabMigration {
 		SettingsModel $settings_tab,
 		SettingsTabMapHelper $settings_tab_map_helper
 	) {
-		$this->settings = $settings;
-		$this->settings_tab   = $settings_tab;
+		$this->settings                = $settings;
+		$this->settings_tab            = $settings_tab;
 		$this->settings_tab_map_helper = $settings_tab_map_helper;
 	}
 
@@ -44,19 +44,19 @@ class SettingsTabMigration {
 	public function migrate(): void {
 		$data = array();
 
-		foreach ($this->settings_tab_map_helper->map() as $old_key => $new_key) {
+		foreach ( $this->settings_tab_map_helper->map() as $old_key => $new_key ) {
 			if ( ! $this->settings->has( $old_key ) ) {
 				continue;
 			}
 
 			switch ( $old_key ) {
 				case 'subtotal_mismatch_behavior':
-					$value = $this->settings->get( $old_key );
-					$data[$new_key] = $value === PurchaseUnitSanitizer::MODE_EXTRA_LINE ? 'correction' : 'no_details';
+					$value            = $this->settings->get( $old_key );
+					$data[ $new_key ] = $value === PurchaseUnitSanitizer::MODE_EXTRA_LINE ? 'correction' : 'no_details';
 					break;
 				case 'landing_page':
-					$value = $this->settings->get( $old_key );
-					$data[$new_key] = $value === ExperienceContext::LANDING_PAGE_LOGIN
+					$value            = $this->settings->get( $old_key );
+					$data[ $new_key ] = $value === ExperienceContext::LANDING_PAGE_LOGIN
 						? 'login'
 						: ( $value === ExperienceContext::LANDING_PAGE_GUEST_CHECKOUT
 							? 'guest_checkout'
@@ -64,19 +64,19 @@ class SettingsTabMigration {
 						);
 					break;
 				case 'intent':
-					$value = $this->settings->get( $old_key );
+					$value                          = $this->settings->get( $old_key );
 					$data['authorize_only']         = $value === 'AUTHORIZE';
 					$data['capture_virtual_orders'] = $value === 'CAPTURE';
 					break;
 				case 'blocks_final_review_enabled':
-					$data[$new_key] = ! $this->settings->get( $old_key );
+					$data[ $new_key ] = ! $this->settings->get( $old_key );
 					break;
 				default:
-					$data[$new_key] = $this->settings->get( $old_key );
+					$data[ $new_key ] = $this->settings->get( $old_key );
 			}
 		}
 
-		$this->settings_tab->from_array($data);
+		$this->settings_tab->from_array( $data );
 		$this->settings_tab->save();
 	}
 }

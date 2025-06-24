@@ -38,9 +38,9 @@ class PaymentSettingsMigration {
 		PaymentSettings $payment_settings,
 		array $local_apms
 	) {
-		$this->settings = $settings;
-		$this->payment_settings   = $payment_settings;
-		$this->local_apms = $local_apms;
+		$this->settings         = $settings;
+		$this->payment_settings = $payment_settings;
+		$this->local_apms       = $local_apms;
 	}
 
 	/**
@@ -49,14 +49,14 @@ class PaymentSettingsMigration {
 	 * @return void
 	 */
 	public function migrate(): void {
-		if ( $this->settings->has('disable_funding') ) {
-			$disable_funding = $this->settings->get('disable_funding');
-			if ( ! in_array('venmo', $disable_funding, true) ) {
+		if ( $this->settings->has( 'disable_funding' ) ) {
+			$disable_funding = $this->settings->get( 'disable_funding' );
+			if ( ! in_array( 'venmo', $disable_funding, true ) ) {
 				$this->payment_settings->toggle_method_state( 'venmo', true );
 			}
 
 			foreach ( $this->local_apms as $apm ) {
-				if ( ! in_array($apm['id'], $disable_funding, true) ) {
+				if ( ! in_array( $apm['id'], $disable_funding, true ) ) {
 					$this->payment_settings->toggle_method_state( $apm['id'], true );
 				}
 			}

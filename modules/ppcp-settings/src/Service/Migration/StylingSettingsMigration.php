@@ -26,9 +26,9 @@ class StylingSettingsMigration {
 	protected Settings $settings;
 	protected StylingSettings $styling_settings;
 
-	public function __construct( Settings $settings,  StylingSettings $styling_settings ) {
-		$this->settings = $settings;
-		$this->styling_settings   = $styling_settings;
+	public function __construct( Settings $settings, StylingSettings $styling_settings ) {
+		$this->settings         = $settings;
+		$this->styling_settings = $styling_settings;
 	}
 
 	/**
@@ -39,12 +39,12 @@ class StylingSettingsMigration {
 	public function migrate(): void {
 		$location_styles = array();
 
-		$styling_per_location = $this->settings->has('smart_button_enable_styling_per_location') && $this->settings->get('smart_button_enable_styling_per_location');
+		$styling_per_location = $this->settings->has( 'smart_button_enable_styling_per_location' ) && $this->settings->get( 'smart_button_enable_styling_per_location' );
 
 		foreach ( $this->locations_map() as $old_location => $new_location ) {
 			$context = $styling_per_location ? $old_location : 'general';
 
-			$location_styles[$new_location] = new LocationStylingDTO(
+			$location_styles[ $new_location ] = new LocationStylingDTO(
 				$new_location,
 				$this->is_button_enabled_for_location( $old_location, 'smart' ),
 				$this->enabled_methods( $old_location ),
@@ -70,15 +70,15 @@ class StylingSettingsMigration {
 	 * @return string[] The list of enabled payment method IDs.
 	 */
 	protected function enabled_methods( string $location ): array {
-		$methods = array(PayPalGateway::ID);
+		$methods = array( PayPalGateway::ID );
 
 		if ( $this->is_button_enabled_for_location( $location, 'pay_later' ) ) {
 			$methods[] = 'pay-later';
 		}
 
-		if ( $this->settings->has('disable_funding') ) {
-			$disable_funding = $this->settings->get('disable_funding');
-			if ( ! in_array('venmo', $disable_funding, true) ) {
+		if ( $this->settings->has( 'disable_funding' ) ) {
+			$disable_funding = $this->settings->get( 'disable_funding' );
+			if ( ! in_array( 'venmo', $disable_funding, true ) ) {
 				$methods[] = 'venmo';
 			}
 		}

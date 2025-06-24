@@ -78,7 +78,7 @@ use WooCommerce\PayPalCommerce\WcGateway\Helper\ConnectionState;
 use WooCommerce\PayPalCommerce\Settings\Service\InternalRestService;
 use WooCommerce\PayPalCommerce\WcGateway\Helper\MerchantDetails;
 
-$services =  array(
+$services = array(
 	'settings.url'                                        => static function ( ContainerInterface $container ) : string {
 		/**
 		 * The path cannot be false.
@@ -371,27 +371,27 @@ $services =  array(
 		$partner_attribution = $container->get( 'api.helper.partner-attribution' );
 		return new ScriptDataHandler( $settings, $settings_url, $paylater_is_available, $store_country, $merchant_id, $button_language_choices, $partner_attribution );
 	},
-	'settings.service.data-migration'                    => static fn( ContainerInterface $c ): MigrationManager => new MigrationManager(
+	'settings.service.data-migration'                     => static fn( ContainerInterface $c ): MigrationManager => new MigrationManager(
 		$c->get( 'settings.service.data-migration.general-settings' ),
 		$c->get( 'settings.service.data-migration.settings-tab' ),
 		$c->get( 'settings.service.data-migration.styling' ),
 		$c->get( 'settings.service.data-migration.payment-settings' ),
 	),
-	'settings.service.data-migration.settings-tab'       => static fn( ContainerInterface $c ): SettingsTabMigration => new SettingsTabMigration(
+	'settings.service.data-migration.settings-tab'        => static fn( ContainerInterface $c ): SettingsTabMigration => new SettingsTabMigration(
 		$c->get( 'wcgateway.settings' ),
 		$c->get( 'settings.data.settings' ),
 		$c->get( 'compat.settings.settings_tab_map_helper' ),
 	),
-	'settings.service.data-migration.styling'       => static fn( ContainerInterface $c ): StylingSettingsMigration => new StylingSettingsMigration(
+	'settings.service.data-migration.styling'             => static fn( ContainerInterface $c ): StylingSettingsMigration => new StylingSettingsMigration(
 		$c->get( 'wcgateway.settings' ),
 		$c->get( 'settings.data.styling' ),
 	),
-	'settings.service.data-migration.payment-settings'       => static fn( ContainerInterface $c ): PaymentSettingsMigration => new PaymentSettingsMigration(
+	'settings.service.data-migration.payment-settings'    => static fn( ContainerInterface $c ): PaymentSettingsMigration => new PaymentSettingsMigration(
 		$c->get( 'wcgateway.settings' ),
 		$c->get( 'settings.data.payment' ),
 		$c->get( 'ppcp-local-apms.payment-methods' ),
 	),
-	'settings.service.data-migration.general-settings'       => static fn( ContainerInterface $c ): GeneralSettingsMigration => new GeneralSettingsMigration(
+	'settings.service.data-migration.general-settings'    => static fn( ContainerInterface $c ): GeneralSettingsMigration => new GeneralSettingsMigration(
 		$c->get( 'wcgateway.settings' ),
 		$c->get( 'settings.data.general' ),
 		$c->get( 'api.endpoint.partners' ),

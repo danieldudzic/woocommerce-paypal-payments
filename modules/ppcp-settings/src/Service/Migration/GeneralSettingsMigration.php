@@ -32,8 +32,8 @@ class GeneralSettingsMigration {
 		GeneralSettings $general_settings,
 		PartnersEndpoint $partners_endpoint
 	) {
-		$this->settings = $settings;
-		$this->general_settings   = $general_settings;
+		$this->settings          = $settings;
+		$this->general_settings  = $general_settings;
 		$this->partners_endpoint = $partners_endpoint;
 	}
 
@@ -43,9 +43,9 @@ class GeneralSettingsMigration {
 	 * @return void
 	 */
 	public function migrate(): void {
-		if ( !$this->settings->has( 'client_id' )
-		|| !$this->settings->has( 'client_secret' )
-		|| !$this->settings->has( 'merchant_id' ) ) {
+		if ( ! $this->settings->has( 'client_id' )
+		|| ! $this->settings->has( 'client_secret' )
+		|| ! $this->settings->has( 'merchant_id' ) ) {
 			return;
 		}
 
@@ -72,29 +72,28 @@ class GeneralSettingsMigration {
 	 * @param SellerStatus $seller_status
 	 * @return 'business' | 'unknown' The merchant account type (SellerTypeEnum constant).
 	 */
-	protected function merchant_account_type(SellerStatus $seller_status): string
-	{
-		if ($this->has_capability_active($seller_status, 'COMMERCIAL_ENTITY')) {
+	protected function merchant_account_type( SellerStatus $seller_status ): string {
+		if ( $this->has_capability_active( $seller_status, 'COMMERCIAL_ENTITY' ) ) {
 			return SellerTypeEnum::BUSINESS;
 		}
 
-		$business_capabilities = [
+		$business_capabilities = array(
 			'CUSTOM_CARD_PROCESSING',
 			'CARD_PROCESSING_VIRTUAL_TERMINAL',
 			'FRAUD_TOOL_ACCESS',
 			'PAY_UPON_INVOICE',
-			'SEND_INVOICE'
-		];
+			'SEND_INVOICE',
+		);
 
-		foreach ($business_capabilities as $capability) {
-			if ($this->has_capability_active($seller_status, $capability)) {
+		foreach ( $business_capabilities as $capability ) {
+			if ( $this->has_capability_active( $seller_status, $capability ) ) {
 				return SellerTypeEnum::BUSINESS;
 			}
 		}
 
-		foreach ($seller_status->products() as $product) {
-			if ($product->name() === 'PPCP_CUSTOM' &&
-				$product->vetting_status() === 'SUBSCRIBED') {
+		foreach ( $seller_status->products() as $product ) {
+			if ( $product->name() === 'PPCP_CUSTOM' &&
+				$product->vetting_status() === 'SUBSCRIBED' ) {
 				return SellerTypeEnum::BUSINESS;
 			}
 		}
@@ -109,11 +108,10 @@ class GeneralSettingsMigration {
 	 * @param string       $capability_name
 	 * @return bool True if the capability is active, false otherwise.
 	 */
-	private function has_capability_active(SellerStatus $seller_status, string $capability_name): bool
-	{
-		foreach ($seller_status->capabilities() as $capability) {
-			if ($capability->name() === $capability_name &&
-				$capability->status() === 'ACTIVE') {
+	private function has_capability_active( SellerStatus $seller_status, string $capability_name ): bool {
+		foreach ( $seller_status->capabilities() as $capability ) {
+			if ( $capability->name() === $capability_name &&
+				$capability->status() === 'ACTIVE' ) {
 				return true;
 			}
 		}

@@ -65,13 +65,13 @@ class SwitchSettingsUiEndpoint {
 			update_option( self::OPTION_NAME_SHOULD_USE_OLD_UI, 'no' );
 
 			$this->onboarding_profile->set_completed( true );
-			$this->onboarding_profile->set_gateways_refreshed(true);
+			$this->onboarding_profile->set_gateways_refreshed( true );
 			$this->onboarding_profile->save();
 
 			$this->settings_data_migration->migrate();
 			wp_send_json_success();
 		} catch ( Exception $error ) {
-			wp_send_json_error(array('message' => $error->getMessage()), 500);
+			wp_send_json_error( array( 'message' => $error->getMessage() ), 500 );
 		}
 	}
 

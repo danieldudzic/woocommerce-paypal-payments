@@ -72,7 +72,7 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 		}
 
 		// Existing merchants can opt-in to see the new UI.
-		$opt_out_choice = 'yes' === get_option( SwitchSettingsUiEndpoint::OPTION_NAME_SHOULD_USE_OLD_UI );;
+		$opt_out_choice = 'yes' === get_option( SwitchSettingsUiEndpoint::OPTION_NAME_SHOULD_USE_OLD_UI );
 
 		return apply_filters(
 			'woocommerce_paypal_payments_should_use_the_old_ui',
@@ -139,7 +139,7 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 
 			add_action(
 				'wc_ajax_' . SwitchSettingsUiEndpoint::ENDPOINT,
-				static function () use ($container): void {
+				static function () use ( $container ): void {
 					$endpoint = $container->get( 'settings.ajax.switch_ui' ) ? $container->get( 'settings.ajax.switch_ui' ) : null;
 					assert( $endpoint instanceof SwitchSettingsUiEndpoint );
 

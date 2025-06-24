@@ -28,7 +28,7 @@ class MigrationManager {
 		PaymentSettingsMigration $payment_settings_migration
 	) {
 		$this->general_settings_migration = $general_settings_migration;
-		$this->settings_tab_migration = $settings_tab_migration;
+		$this->settings_tab_migration     = $settings_tab_migration;
 		$this->styling_settings_migration = $styling_settings_migration;
 		$this->payment_settings_migration = $payment_settings_migration;
 	}
