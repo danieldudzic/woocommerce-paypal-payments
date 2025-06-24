@@ -76,6 +76,7 @@ use WooCommerce\PayPalCommerce\PayLaterConfigurator\Endpoint\SaveConfig;
 use WooCommerce\PayPalCommerce\WcGateway\Helper\Environment;
 use WooCommerce\PayPalCommerce\WcGateway\Helper\ConnectionState;
 use WooCommerce\PayPalCommerce\Settings\Service\InternalRestService;
+use WooCommerce\PayPalCommerce\WcGateway\Helper\MerchantDetails;
 
 $services =  array(
 	'settings.url'                                        => static function ( ContainerInterface $container ) : string {
@@ -619,6 +620,7 @@ $services =  array(
 		assert( $messages_apply instanceof MessagesApply );
 		$pay_later_eligible = $messages_apply->for_country();
 
+		// TODO: Variable "merchant_country" contains "shop-country". Which is correct?
 		$merchant_country = $container->get( 'api.shop.country' );
 		$ineligible_countries = array( 'RU', 'BR', 'JP' );
 		$apm_eligible = ! in_array( $merchant_country, $ineligible_countries, true );
@@ -677,6 +679,17 @@ $services =  array(
 			$container->get( 'settings.service.branded-experience.activation-detector' ),
 			$container->get( 'settings.data.general' )
 		);
+	},
+	'settings.merchant-details'                           => static function ( ContainerInterface $container ) : MerchantDetails {
+		$data = $container->get( 'settings.data.general' );
+		assert( $data instanceof GeneralSettings );
+
+		$merchant_country = $data->get_merchant_country();
+		$woo_data         = $data->get_woo_settings();
+
+		$eligibility_checks = $container->get( 'wcgateway.feature-eligibility.list' );
+
+		return new MerchantDetails( $merchant_country, $woo_data['country'], $eligibility_checks );
 	},
 );
 

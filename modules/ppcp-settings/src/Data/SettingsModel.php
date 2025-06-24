@@ -16,6 +16,8 @@ use WooCommerce\PayPalCommerce\Settings\Service\DataSanitizer;
  * Class SettingsModel
  *
  * Handles the storage and retrieval of PayPal Commerce settings in WordPress options table.
+ *
+ * DI Service: 'settings.data.settings'
  */
 class SettingsModel extends AbstractDataModel {
 
@@ -39,6 +41,13 @@ class SettingsModel extends AbstractDataModel {
 	 * @var array
 	 */
 	public const LANDING_PAGE_OPTIONS = array( 'any', 'login', 'guest_checkout' );
+
+	/**
+	 * Valid options for 3D Secure.
+	 *
+	 * @var array
+	 */
+	public const THREE_D_SECURE_OPTIONS = array( 'no-3d-secure', 'only-required-3d-secure', 'always-3d-secure' );
 
 	/**
 	 * Data sanitizer service.
@@ -84,11 +93,13 @@ class SettingsModel extends AbstractDataModel {
 			'subtotal_adjustment'    => 'correction', // Options: [correction|no_details].
 			'landing_page'           => 'any',          // Options: [any|login|guest_checkout].
 			'button_language'        => '',             // empty or a language locale code.
+			'three_d_secure'         => 'no-3d-secure', // Options: [no-3d-secure|only-required-3d-secure|always-3d-secure].
 
 			// Boolean flags.
 			'authorize_only'         => false,
 			'capture_virtual_orders' => false,
 			'save_paypal_and_venmo'  => false,
+			'enable_contact_module'  => true,
 			'save_card_details'      => false,
 			'enable_pay_now'         => false,
 			'enable_logging'         => false,
@@ -211,6 +222,24 @@ class SettingsModel extends AbstractDataModel {
 	}
 
 	/**
+	 * Gets the 3D Secure setting.
+	 *
+	 * @return string The 3D Secure setting.
+	 */
+	public function get_three_d_secure() : string {
+		return $this->data['three_d_secure'];
+	}
+
+	/**
+	 * Sets the 3D Secure setting.
+	 *
+	 * @param string $setting The 3D Secure setting to set.
+	 */
+	public function set_three_d_secure( string $setting ) : void {
+		$this->data['three_d_secure'] = $this->sanitizer->sanitize_enum( $setting, self::THREE_D_SECURE_OPTIONS );
+	}
+
+	/**
 	 * Gets the authorize only setting.
 	 *
 	 * @return bool True if authorize only is enabled, false otherwise.
@@ -262,6 +291,24 @@ class SettingsModel extends AbstractDataModel {
 	 */
 	public function set_save_paypal_and_venmo( bool $save ) : void {
 		$this->data['save_paypal_and_venmo'] = $this->sanitizer->sanitize_bool( $save );
+	}
+
+	/**
+	 * Gets the custom-shipping-contact flag ("Contact Module").
+	 *
+	 * @return bool True if the contact module feature is enabled, false otherwise.
+	 */
+	public function get_enable_contact_module() : bool {
+		return $this->data['enable_contact_module'];
+	}
+
+	/**
+	 * Sets the custom-shipping-contact flag ("Contact Module").
+	 *
+	 * @param bool $save Whether to use the contact module feature.
+	 */
+	public function set_enable_contact_module( bool $save ) : void {
+		$this->data['enable_contact_module'] = $this->sanitizer->sanitize_bool( $save );
 	}
 
 	/**
