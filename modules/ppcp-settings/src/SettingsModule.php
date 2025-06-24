@@ -35,6 +35,7 @@ use WooCommerce\PayPalCommerce\Settings\Handler\ConnectionListener;
 use WooCommerce\PayPalCommerce\Settings\Service\BrandedExperience\PathRepository;
 use WooCommerce\PayPalCommerce\Settings\Service\GatewayRedirectService;
 use WooCommerce\PayPalCommerce\Settings\Service\LoadingScreenService;
+use WooCommerce\PayPalCommerce\Settings\Service\Migration\MigrationManager;
 use WooCommerce\PayPalCommerce\Vendor\Inpsyde\Modularity\Module\ExecutableModule;
 use WooCommerce\PayPalCommerce\Vendor\Inpsyde\Modularity\Module\ModuleClassNameIdTrait;
 use WooCommerce\PayPalCommerce\Vendor\Inpsyde\Modularity\Module\ServiceModule;
@@ -70,7 +71,7 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 		}
 
 		// Existing merchants can opt-in to see the new UI.
-		$opt_out_choice = 'yes' === get_option( SwitchSettingsUiEndpoint::OPTION_NAME_SHOULD_USE_OLD_UI );
+		$opt_out_choice = 'yes' === get_option( SwitchSettingsUiEndpoint::OPTION_NAME_SHOULD_USE_OLD_UI );;
 
 		return apply_filters(
 			'woocommerce_paypal_payments_should_use_the_old_ui',
@@ -135,15 +136,14 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 				}
 			);
 
-			$endpoint = $container->get( 'settings.ajax.switch_ui' ) ? $container->get( 'settings.ajax.switch_ui' ) : null;
-			assert( $endpoint instanceof SwitchSettingsUiEndpoint );
-
 			add_action(
 				'wc_ajax_' . SwitchSettingsUiEndpoint::ENDPOINT,
-				array(
-					$endpoint,
-					'handle_request',
-				)
+				static function () use ($container): void {
+					$endpoint = $container->get( 'settings.ajax.switch_ui' ) ? $container->get( 'settings.ajax.switch_ui' ) : null;
+					assert( $endpoint instanceof SwitchSettingsUiEndpoint );
+
+					$endpoint->handle_request();
+				}
 			);
 
 			return true;
