@@ -48,10 +48,10 @@ class StylingSettingsMigration {
 				$new_location,
 				$this->is_button_enabled_for_location( $old_location, 'smart' ),
 				$this->enabled_methods( $old_location ),
-				$this->style_for_context( 'shape', $context ) ?? 'rect',
-				$this->style_for_context( 'label', $context ) ?? 'pay',
-				$this->style_for_context( 'color', $context ) ?? 'gold',
-				$this->style_for_context( 'layout', $context ) ?? 'vertical',
+				(string) ( $this->style_for_context( 'shape', $context ) ?? 'rect' ),
+				(string) ( $this->style_for_context( 'label', $context ) ?? 'pay' ),
+				(string) ( $this->style_for_context( 'color', $context ) ?? 'gold' ),
+				(string) ( $this->style_for_context( 'layout', $context ) ?? 'vertical' ),
 				(bool) ( $this->style_for_context( 'tagline', $context ) ?? false )
 			);
 		}
@@ -139,7 +139,7 @@ class StylingSettingsMigration {
 	 *
 	 * @param string $style    The name of the style property ('shape', 'label', 'color', etc.).
 	 * @param string $location The location name ('cart', 'checkout', etc.).
-	 * @return string|int|null The style value or null if not found.
+	 * @return string|bool|null The style value or null if not found.
 	 */
 	private function style_for_context( string $style, string $location ) {
 		if ( $location === 'cart' ) {
@@ -155,7 +155,7 @@ class StylingSettingsMigration {
 	 * Retrieves a style property value from legacy settings.
 	 *
 	 * @param string $key The style property key in the settings.
-	 * @return string|int|null The style value or null if not found.
+	 * @return string|bool|null The style value or null if not found.
 	 */
 	private function get_style_value( string $key ) {
 		if ( ! $this->settings->has( $key ) ) {
