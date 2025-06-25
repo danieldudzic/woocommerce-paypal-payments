@@ -122,7 +122,7 @@ private $testee;
 				[$purchaseUnit],
 				$shippingPreference,
 				null,
-				'ppcp-oxxo-gateway',
+				OXXOGateway::ID,
 				['processing_instruction' => 'ORDER_COMPLETE_ON_PAYMENT_APPROVAL'],
 				Mockery::any()
 			)
