@@ -32,12 +32,9 @@ class IntegrationMockedTestCase extends TestCase
 	public function setUp(): void
 	{
 		parent::setUp();
-        //$this->default_product_id = $this->createAProductIfNotProvided();
         $this->customer_id = $this->createCustomerIfNotExists();
-
-
         $this->createTestProducts();
-        //$this->createTestCoupons();
+        $this->createTestCoupons();
 	}
 
     public function tearDown(): void
@@ -211,20 +208,20 @@ class IntegrationMockedTestCase extends TestCase
 	 * @param bool $success Whether the order was successful
 	 * @return object The mocked OrderEndpoint
 	 */
-	public function mockOrderEndpoint(string $intent = 'CAPTURE', bool $success = true): object
+	public function mockOrderEndpoint(string $intent = 'CAPTURE', bool $order_success = true, bool $capture_success = true): object
 	{
-		$order_endpoint = \Mockery::mock(OrderEndpoint::class)->shouldIgnoreMissing();
+		$order_endpoint = \Mockery::mock(OrderEndpoint::class);
 		$order = \Mockery::mock(Order::class)->shouldIgnoreMissing();
 
 		$order->shouldReceive('id')->andReturn('TEST-ORDER-' . uniqid());
 		$order->shouldReceive('intent')->andReturn($intent);
 
-		$order_status = \Mockery::mock(OrderStatus::class)->shouldIgnoreMissing();
-		$order_status->shouldReceive('is')->andReturn($success);
-		$order_status->shouldReceive('name')->andReturn($success ? 'COMPLETED' : 'FAILED');
+		$order_status = \Mockery::mock(OrderStatus::class);
+		$order_status->shouldReceive('is')->andReturn($order_success);
+		$order_status->shouldReceive('name')->andReturn($order_success ? 'COMPLETED' : 'FAILED');
 		$order->shouldReceive('status')->andReturn($order_status);
 
-		$payment_source = \Mockery::mock(PaymentSource::class)->shouldIgnoreMissing();
+		$payment_source = \Mockery::mock(PaymentSource::class);
 		$payment_source->shouldReceive('name')->andReturn('card');
 		$order->shouldReceive('payment_source')->andReturn($payment_source);
 
@@ -235,7 +232,8 @@ class IntegrationMockedTestCase extends TestCase
 		$capture->shouldReceive('id')->andReturn('TEST-CAPTURE-' . uniqid());
 		$capture_status = \Mockery::mock(CaptureStatus::class)->shouldIgnoreMissing();
 
-		$capture_status->shouldReceive('name')->andReturn($success ? 'COMPLETED' : 'DECLINED');
+		$capture_status->shouldReceive('name')->andReturn($capture_success ? 'COMPLETED' : 'DECLINED');
+        $capture_status->shouldReceive('details')->andReturn(null);
 		$capture->shouldReceive('status')->andReturn($capture_status);
 
 		// Mock authorizations for AUTHORIZE intent
@@ -245,8 +243,8 @@ class IntegrationMockedTestCase extends TestCase
 			$authorization->shouldReceive('id')->andReturn('TEST-AUTH-' . uniqid());
 			$auth_status = \Mockery::mock(\WooCommerce\PayPalCommerce\ApiClient\Entity\AuthorizationStatus::class)->shouldIgnoreMissing();
 
-			$auth_status->shouldReceive('name')->andReturn($success ? 'CREATED' : 'DENIED');
-			$auth_status->shouldReceive('is')->andReturn($success);
+			$auth_status->shouldReceive('name')->andReturn($capture_success ? 'CREATED' : 'DENIED');
+			$auth_status->shouldReceive('is')->andReturn($capture_success);
 			$authorization->shouldReceive('status')->andReturn($auth_status);
 			$payments->shouldReceive('authorizations')->andReturn([$authorization]);
 			$payments->shouldReceive('captures')->andReturn([]);
@@ -267,7 +265,7 @@ class IntegrationMockedTestCase extends TestCase
 			$order_endpoint->shouldReceive('capture')->andReturn($order);
 		}
 		$order_endpoint->shouldReceive('order')->andReturn($order);
-
+        $order_endpoint->shouldReceive('patch_order_with')->andReturn($order);
 		return $order_endpoint;
 	}
 }
