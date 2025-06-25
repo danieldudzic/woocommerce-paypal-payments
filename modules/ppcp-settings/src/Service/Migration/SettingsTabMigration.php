@@ -60,11 +60,16 @@ class SettingsTabMigration implements SettingsMigrationInterface {
 					break;
 				case 'intent':
 					$value                          = $this->settings->get( $old_key );
-					$data['authorize_only']         = $value === 'AUTHORIZE';
-					$data['capture_virtual_orders'] = $value === 'CAPTURE';
+					$data['authorize_only']         = $value === 'authorize';
+					$data['capture_virtual_orders'] = $value === 'capture';
 					break;
 				case 'blocks_final_review_enabled':
 					$data[ $new_key ] = ! $this->settings->get( $old_key );
+					break;
+				case '3d_secure_contingency':
+					$value                    = $this->settings->get( $old_key );
+					$old_to_new_3d_secure_map = array_flip( SettingsTabMapHelper::THREE_D_SECURE_VALUES_MAP );
+					$data[ $new_key ]         = $old_to_new_3d_secure_map[ $value ] ?? 'NO_3D_SECURE';
 					break;
 				default:
 					$data[ $new_key ] = $this->settings->get( $old_key );
