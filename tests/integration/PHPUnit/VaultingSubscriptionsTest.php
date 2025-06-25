@@ -182,7 +182,7 @@ class VaultingSubscriptionsTest extends IntegrationMockedTestCase
 	 */
 	public function test_renewal_payment_processing(string $gateway_id)
 	{
-		$mockOrderEndpoint = $this->mockOrderEndpoint('CAPTURE', true);
+		$mockOrderEndpoint = $this->mockOrderEndpoint();
 		$c = $this->setupTestContainer($mockOrderEndpoint);
         $this->setupPaymentToken($this->customer_id, $gateway_id);
 		$subscription = $this->createSubscription($this->customer_id, $gateway_id);
@@ -204,7 +204,7 @@ class VaultingSubscriptionsTest extends IntegrationMockedTestCase
 	 */
 	public function test_renewal_handles_failed_payment()
 	{
-		$mockOrderEndpoint = $this->mockOrderEndpoint('CAPTURE', false);
+		$mockOrderEndpoint = $this->mockOrderEndpoint('CAPTURE', false, false);
 		$c = $this->setupTestContainer($mockOrderEndpoint);
         $this->setupPaymentToken($this->customer_id);
 		$subscription = $this->createSubscription($this->customer_id, PayPalGateway::ID);
@@ -226,7 +226,7 @@ class VaultingSubscriptionsTest extends IntegrationMockedTestCase
 	public function test_authorize_only_subscription_renewal()
 	{
 		// Mock the OrderEndpoint with AUTHORIZE intent
-		$mockOrderEndpoint = $this->mockOrderEndpoint('AUTHORIZE', true);
+		$mockOrderEndpoint = $this->mockOrderEndpoint('AUTHORIZE', false, true);
 		$c = $this->setupTestContainer($mockOrderEndpoint);
 
 		// Setup payment token and subscription
