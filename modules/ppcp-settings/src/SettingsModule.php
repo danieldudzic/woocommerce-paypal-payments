@@ -149,8 +149,12 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 						'ppcp-switch-settings-ui',
 						'ppcpSwitchSettingsUi',
 						array(
-							'endpoint' => \WC_AJAX::get_endpoint( SwitchSettingsUiEndpoint::ENDPOINT ),
-							'nonce'    => wp_create_nonce( SwitchSettingsUiEndpoint::nonce() ),
+							'endpoint'       => \WC_AJAX::get_endpoint( SwitchSettingsUiEndpoint::ENDPOINT ),
+							'nonce'          => wp_create_nonce( SwitchSettingsUiEndpoint::nonce() ),
+							'confirmMessage' => __(
+								'Are you sure you want to switch to the new settings interface?This action cannot be undone.',
+								'woocommerce-paypal-payments'
+							),
 						)
 					);
 
