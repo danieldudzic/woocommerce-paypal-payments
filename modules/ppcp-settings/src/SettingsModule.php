@@ -11,6 +11,8 @@ namespace WooCommerce\PayPalCommerce\Settings;
 
 use WC_Payment_Gateway;
 use Psr\Log\LoggerInterface;
+use WooCommerce\PayPalCommerce\AdminNotices\Entity\Message;
+use WooCommerce\PayPalCommerce\AdminNotices\Repository\Repository;
 use WooCommerce\PayPalCommerce\ApiClient\Helper\DccApplies;
 use WooCommerce\PayPalCommerce\ApiClient\Helper\PartnerAttribution;
 use WooCommerce\PayPalCommerce\Applepay\ApplePayGateway;
@@ -98,6 +100,29 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 					'<a href="#" class="button button-settings-switch-ui">%s</a>',
 					esc_html__( 'Switch to new settings UI', 'woocommerce-paypal-payments' )
 				)
+			);
+
+			/**
+			 * Adds new settings discovery notice.
+			 *
+			 * @param Message[] $notices
+			 * @return Message[]
+			 */
+			add_filter(
+				Repository::NOTICES_FILTER,
+				static function ( array $notices ): array {
+					$message = sprintf(
+					// translators: %1$s is the URL for the startup guide.
+						__(
+							'🎉 <strong>Discover the new PayPal Payments settings!</strong> Enjoy a cleaner, faster interface. Check out the <a href="%1$s" target="_blank">Startup Guide</a>, then click <a class="settings-switch-ui" href=""><strong>Switch to New Settings</strong></a> to activate it.',
+							'woocommerce-paypal-payments'
+						),
+						'https://woocommerce.com/document/woocommerce-paypal-payments/paypal-payments-startup-guide/'
+					);
+
+					$notices[] = new Message( $message, 'info', false, 'ppcp-notice-wrapper' );
+					return $notices;
+				}
 			);
 
 			add_action(
