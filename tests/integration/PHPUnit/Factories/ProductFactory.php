@@ -113,34 +113,32 @@ class ProductFactory
 	 */
 	private function createSubscriptionProduct(array $preset): \WC_Product_Subscription
 	{
-		$product = new \WC_Product_Subscription();
-		$product_id = wc_get_product_id_by_sku($preset['sku']);
-		$product->set_id($product_id);
-		$product->set_name($preset['name']);
-		$product->set_regular_price($preset['price']);
-		$product->set_price($preset['price']);
-		$product->set_sku($preset['sku']);
-		$product->set_manage_stock(false);
-		$product->set_tax_status('taxable');
-		$product->set_downloadable(false);
-		$product->set_virtual(false);
-		$product->set_stock_status('instock');
-		$product->set_weight('1.1');
 
-		// Subscription-specific properties
-		$product->set_subscription_period($preset['subscription_period']);
-		$product->set_subscription_period_interval($preset['subscription_period_interval']);
-		$product->set_subscription_length($preset['subscription_length']);
-		$product->set_subscription_trial_period($preset['subscription_trial_period']);
-		$product->set_subscription_trial_length($preset['subscription_trial_length']);
-		$product->set_subscription_price($preset['subscription_price']);
-		$product->set_subscription_sign_up_fee($preset['subscription_sign_up_fee']);
+		$product = new \WC_Product_Subscription();
+        $product->set_props([
+            'name' => $preset['name'],
+            'regular_price' => $preset['price'],
+            'price' => $preset['price'],
+            'sku' => $preset['sku'],
+            'manage_stock' => false,
+            'tax_status' => 'taxable',
+            'downloadable' => false,
+            'virtual' => false,
+            'stock_status' => 'instock',
+            'weight' => '1.1',
+            'subscription_period' => $preset['subscription_period'],
+            'subscription_period_interval' => $preset['subscription_period_interval'],
+            'subscription_length' => $preset['subscription_length'],
+            'subscription_trial_period' => $preset['subscription_trial_period'],
+            'subscription_trial_length' => $preset['subscription_trial_length'],
+            'subscription_price' => $preset['subscription_price'],
+            'subscription_sign_up_fee' => $preset['subscription_sign_up_fee'],
+        ]);
 
 		$product->set_status('publish');
 		$product->save();
 
-		$this->created_product_ids[] = $product_id;
-
+		$this->created_product_ids[] = $product->get_id();
 		return $product;
 	}
 
