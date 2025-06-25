@@ -21,7 +21,7 @@ use WooCommerce\PayPalCommerce\WcGateway\Settings\Settings;
  *
  * Handles migration of styling settings.
  */
-class StylingSettingsMigration {
+class StylingSettingsMigration implements SettingsMigrationInterface {
 
 	protected Settings $settings;
 	protected StylingSettings $styling_settings;
@@ -31,11 +31,6 @@ class StylingSettingsMigration {
 		$this->styling_settings = $styling_settings;
 	}
 
-	/**
-	 * Migrates legacy styling settings to new data structure.
-	 *
-	 * @return void
-	 */
 	public function migrate(): void {
 		$location_styles = array();
 

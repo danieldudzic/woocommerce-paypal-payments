@@ -52,7 +52,7 @@ use WooCommerce\PayPalCommerce\Settings\Service\ConnectionUrlGenerator;
 use WooCommerce\PayPalCommerce\Settings\Service\FeaturesEligibilityService;
 use WooCommerce\PayPalCommerce\Settings\Service\GatewayRedirectService;
 use WooCommerce\PayPalCommerce\Settings\Service\LoadingScreenService;
-use WooCommerce\PayPalCommerce\Settings\Service\Migration\GeneralSettingsMigration;
+use WooCommerce\PayPalCommerce\Settings\Service\Migration\SettingsMigration;
 use WooCommerce\PayPalCommerce\Settings\Service\Migration\MigrationManager;
 use WooCommerce\PayPalCommerce\Settings\Service\Migration\PaymentSettingsMigration;
 use WooCommerce\PayPalCommerce\Settings\Service\Migration\SettingsTabMigration;
@@ -391,7 +391,7 @@ $services = array(
 		$c->get( 'settings.data.payment' ),
 		$c->get( 'ppcp-local-apms.payment-methods' ),
 	),
-	'settings.service.data-migration.general-settings'    => static fn( ContainerInterface $c ): GeneralSettingsMigration => new GeneralSettingsMigration(
+	'settings.service.data-migration.general-settings'    => static fn( ContainerInterface $c ): SettingsMigration => new SettingsMigration(
 		$c->get( 'wcgateway.settings' ),
 		$c->get( 'settings.data.general' ),
 		$c->get( 'api.endpoint.partners' ),

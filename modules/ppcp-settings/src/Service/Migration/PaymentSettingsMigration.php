@@ -21,7 +21,7 @@ use WooCommerce\PayPalCommerce\WcGateway\Settings\Settings;
  *
  * Handles migration of payment settings.
  */
-class PaymentSettingsMigration {
+class PaymentSettingsMigration implements SettingsMigrationInterface {
 
 	protected Settings $settings;
 	protected PaymentSettings $payment_settings;
@@ -43,11 +43,6 @@ class PaymentSettingsMigration {
 		$this->local_apms       = $local_apms;
 	}
 
-	/**
-	 * Migrates legacy payment settings to new data structure.
-	 *
-	 * @return void
-	 */
 	public function migrate(): void {
 		if ( $this->settings->has( 'disable_funding' ) ) {
 			$disable_funding = $this->settings->get( 'disable_funding' );
@@ -72,7 +67,7 @@ class PaymentSettingsMigration {
 	}
 
 	/**
-	 * Maps old setting keys to new payment method settings names.
+	 * Maps old setting keys to new payment method names.
 	 *
 	 * @return array<string, string>
 	 */

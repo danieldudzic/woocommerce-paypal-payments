@@ -14,15 +14,15 @@ namespace WooCommerce\PayPalCommerce\Settings\Service\Migration;
  *
  * Manages migration operations for plugin settings.
  */
-class MigrationManager {
+class MigrationManager implements SettingsMigrationInterface {
 
-	protected GeneralSettingsMigration $general_settings_migration;
+	protected SettingsMigration $general_settings_migration;
 	protected SettingsTabMigration $settings_tab_migration;
 	protected StylingSettingsMigration $styling_settings_migration;
 	protected PaymentSettingsMigration $payment_settings_migration;
 
 	public function __construct(
-		GeneralSettingsMigration $general_settings_migration,
+		SettingsMigration $general_settings_migration,
 		SettingsTabMigration $settings_tab_migration,
 		StylingSettingsMigration $styling_settings_migration,
 		PaymentSettingsMigration $payment_settings_migration
@@ -33,11 +33,6 @@ class MigrationManager {
 		$this->payment_settings_migration = $payment_settings_migration;
 	}
 
-	/**
-	 * Executes migration for all settings areas/tabs.
-	 *
-	 * @return void
-	 */
 	public function migrate(): void {
 		$this->general_settings_migration->migrate();
 		$this->settings_tab_migration->migrate();

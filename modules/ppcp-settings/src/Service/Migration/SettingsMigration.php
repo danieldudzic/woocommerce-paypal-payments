@@ -1,6 +1,6 @@
 <?php
 /**
- * Handles migration of general PayPal settings from legacy format to new structure.
+ * Handles migration of general settings from legacy format to new structure.
  *
  * @package WooCommerce\PayPalCommerce\Settings\Service\Migration
  */
@@ -21,7 +21,7 @@ use WooCommerce\PayPalCommerce\WcGateway\Settings\Settings;
  *
  * Handles migration of general plugin settings.
  */
-class GeneralSettingsMigration {
+class SettingsMigration implements SettingsMigrationInterface {
 
 	protected Settings $settings;
 	protected GeneralSettings $general_settings;
@@ -37,11 +37,6 @@ class GeneralSettingsMigration {
 		$this->partners_endpoint = $partners_endpoint;
 	}
 
-	/**
-	 * Migrates legacy connection settings to new data structure.
-	 *
-	 * @return void
-	 */
 	public function migrate(): void {
 		if ( ! $this->settings->has( 'client_id' )
 		|| ! $this->settings->has( 'client_secret' )

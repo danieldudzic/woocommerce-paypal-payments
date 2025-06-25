@@ -20,7 +20,7 @@ use WooCommerce\PayPalCommerce\WcGateway\Settings\Settings;
  *
  * Handles migration of settings tab settings.
  */
-class SettingsTabMigration {
+class SettingsTabMigration implements SettingsMigrationInterface {
 
 	protected Settings $settings;
 	protected SettingsModel $settings_tab;
@@ -36,11 +36,6 @@ class SettingsTabMigration {
 		$this->settings_tab_map_helper = $settings_tab_map_helper;
 	}
 
-	/**
-	 * Migrates legacy settings tab settings to new data structure.
-	 *
-	 * @return void
-	 */
 	public function migrate(): void {
 		$data = array();
 
