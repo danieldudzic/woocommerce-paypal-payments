@@ -34,8 +34,6 @@ class OrderFactory {
 	 */
 	private $payer_factory;
 
-
-
 	/**
 	 * OrderFactory constructor.
 	 *
