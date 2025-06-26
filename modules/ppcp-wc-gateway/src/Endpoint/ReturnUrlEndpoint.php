@@ -78,15 +78,14 @@ class ReturnUrlEndpoint {
 	 * Handles the incoming request.
 	 */
 	public function handle_request(): void {
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended
 		if ( ! isset( $_GET['token'] ) ) {
 			wc_add_notice( __( 'Payment session expired. Please try placing your order again.', 'woocommerce-paypal-payments' ), 'error' );
 			wp_safe_redirect( wc_get_checkout_url() );
 			exit();
 		}
-
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		$token = sanitize_text_field( wp_unslash( $_GET['token'] ) );
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 
 		try {
 			$order = $this->order_endpoint->order( $token );
@@ -135,7 +134,6 @@ class ReturnUrlEndpoint {
 			exit();
 		}
 
-		// Handle different gateway types.
 		if ( $wc_order->get_payment_method() === OXXOGateway::ID ) {
 			$this->session_handler->destroy_session_data();
 			wp_safe_redirect( wc_get_checkout_url() );
@@ -190,7 +188,6 @@ class ReturnUrlEndpoint {
 	 */
 	private function complete_3ds_verification( $order ) {
 		try {
-			// Capture the order.
 			$captured_order = $this->order_endpoint->capture( $order );
 
 			// Check if capture actually succeeded vs. payment declined.
@@ -201,7 +198,6 @@ class ReturnUrlEndpoint {
 				throw new Exception( __( 'Payment was declined by the payment provider. Please try a different payment method.', 'woocommerce-paypal-payments' ) );
 			}
 		} catch ( DomainException $e ) {
-			// Handle 3DS authentication failures.
 			throw new Exception( __( '3D Secure authentication was unavailable or failed. Please try a different payment method or contact your bank.', 'woocommerce-paypal-payments' ) );
 		} catch ( RuntimeException $e ) {
 			if ( strpos( $e->getMessage(), 'declined' ) !== false ||

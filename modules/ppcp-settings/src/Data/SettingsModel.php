@@ -248,7 +248,7 @@ class SettingsModel extends AbstractDataModel {
 			'always-3d-secure'        => 'SCA_ALWAYS',
 		);
 
-		return $map[ $three_d_secure ] ?? 'SCA_WHEN_REQUIRED'; // Default to SCA_WHEN_REQUIRED if mapping not found.
+		return $map[ $three_d_secure ] ?? 'SCA_WHEN_REQUIRED';
 	}
 
 	/**

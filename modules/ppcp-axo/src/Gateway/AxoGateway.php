@@ -29,6 +29,7 @@ use WooCommerce\PayPalCommerce\WcGateway\Processor\OrderMetaTrait;
 use WooCommerce\PayPalCommerce\WcGateway\Processor\OrderProcessor;
 use WooCommerce\PayPalCommerce\WcGateway\Settings\SettingsRenderer;
 use WooCommerce\PayPalCommerce\WcGateway\Gateway\ProcessPaymentTrait;
+use WooCommerce\PayPalCommerce\WcGateway\Exception\GatewayGenericException;
 use WooCommerce\PayPalCommerce\Session\SessionHandler;
 use WooCommerce\PayPalCommerce\WcGateway\Helper\CardPaymentsConfiguration;
 use DomainException;
@@ -235,9 +236,9 @@ class AxoGateway extends WC_Payment_Gateway {
 		$wc_order = wc_get_order( $order_id );
 
 		if ( ! is_a( $wc_order, WC_Order::class ) ) {
-			return array(
-				'result'  => 'failure',
-				'message' => __( 'Order not found. Please try again.', 'woocommerce-paypal-payments' ),
+			return $this->handle_payment_failure(
+				null,
+				new GatewayGenericException( new Exception( 'WC order was not found.' ) ),
 			);
 		}
 
@@ -424,7 +425,6 @@ class AxoGateway extends WC_Payment_Gateway {
 	 * @return Order The PayPal order.
 	 */
 	protected function create_paypal_order( WC_Order $wc_order, string $payment_token ) : Order {
-
 		$purchase_unit = $this->purchase_unit_factory->from_wc_order( $wc_order );
 
 		$shipping_preference = $this->shipping_preference_factory->from_state(
