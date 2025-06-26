@@ -78,12 +78,14 @@ class ReturnUrlEndpoint {
 	 * Handles the incoming request.
 	 */
 	public function handle_request(): void {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		if ( ! isset( $_GET['token'] ) ) {
 			wc_add_notice( __( 'Payment session expired. Please try placing your order again.', 'woocommerce-paypal-payments' ), 'error' );
 			wp_safe_redirect( wc_get_checkout_url() );
 			exit();
 		}
 
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		$token = sanitize_text_field( wp_unslash( $_GET['token'] ) );
 
 		try {
@@ -184,6 +186,7 @@ class ReturnUrlEndpoint {
 	 * @param mixed $order The PayPal order.
 	 * @return mixed The processed order.
 	 * @throws Exception When 3DS completion fails.
+	 * @throws RuntimeException When API errors occur that don't match decline patterns.
 	 */
 	private function complete_3ds_verification( $order ) {
 		try {

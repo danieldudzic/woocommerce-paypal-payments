@@ -245,7 +245,6 @@ class AxoGateway extends WC_Payment_Gateway {
 			);
 		}
 
-		// Check for tokens to determine if this is a 3DS return or initial payment.
 		// phpcs:ignore WordPress.Security.NonceVerification.Missing
 		$axo_nonce = wc_clean( wp_unslash( $_POST['axo_nonce'] ?? '' ) );
 		// phpcs:ignore WordPress.Security.NonceVerification.Missing
