@@ -167,7 +167,7 @@ class VaultingSubscriptionsTest extends IntegrationMockedTestCase
 	{
 		return [
 			'PayPal Gateway' => [PayPalGateway::ID],
-			//'Credit Card Gateway' => [CreditCardGateway::ID]
+			'Credit Card Gateway' => [CreditCardGateway::ID]
 		];
 	}
 

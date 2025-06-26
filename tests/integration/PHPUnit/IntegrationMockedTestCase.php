@@ -220,9 +220,13 @@ class IntegrationMockedTestCase extends TestCase
 		$order_status->shouldReceive('is')->andReturn($order_success);
 		$order_status->shouldReceive('name')->andReturn($order_success ? 'COMPLETED' : 'FAILED');
 		$order->shouldReceive('status')->andReturn($order_status);
-
+        $card_properties = new \stdClass();
+        $card_properties->brand = 'VISA';
+        $card_properties->last_digits = '1234';
+        $card_properties->expiry = '2026-12';
 		$payment_source = \Mockery::mock(PaymentSource::class);
 		$payment_source->shouldReceive('name')->andReturn('card');
+        $payment_source->shouldReceive('properties')->andReturn($card_properties);
 		$order->shouldReceive('payment_source')->andReturn($payment_source);
 
 		$purchase_unit = \Mockery::mock(PurchaseUnit::class)->shouldIgnoreMissing();
