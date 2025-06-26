@@ -10,7 +10,6 @@ namespace WooCommerce\PayPalCommerce;
 use WooCommerce\PayPalCommerce\PayLaterBlock\PayLaterBlockModule;
 use WooCommerce\PayPalCommerce\PayLaterWCBlocks\PayLaterWCBlocksModule;
 use WooCommerce\PayPalCommerce\PayLaterConfigurator\PayLaterConfiguratorModule;
-use WooCommerce\PayPalCommerce\Settings\SettingsModule;
 
 return function ( string $root_dir ): iterable {
 	$modules_dir = "$root_dir/modules";
@@ -92,7 +91,12 @@ return function ( string $root_dir ): iterable {
 		$modules[] = ( require "$modules_dir/ppcp-axo-block/module.php" )();
 	}
 
-	$modules[] = ( require "$modules_dir/ppcp-settings/module.php" )();
+	if ( apply_filters(
+		'woocommerce.feature-flags.woocommerce_paypal_payments.settings_enabled',
+		true
+	) ) {
+		$modules[] = ( require "$modules_dir/ppcp-settings/module.php" )();
+	}
 
 	return $modules;
 };
