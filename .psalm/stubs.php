@@ -153,3 +153,26 @@ class WP_HTML_Tag_Processor {
 		return '';
 	}
 }
+
+/**
+ * WooCommerce Session stubs for Psalm
+ */
+class WC_Session {
+	/**
+	 * Get session cookie.
+	 *
+	 * @return string|false
+	 */
+	public function get_session_cookie() {
+		return '';
+	}
+
+	/**
+	 * Set customer session cookie.
+	 *
+	 * @param bool $set Whether to set the cookie.
+	 * @return void
+	 */
+	public function set_customer_session_cookie( $set ) {
+	}
+}

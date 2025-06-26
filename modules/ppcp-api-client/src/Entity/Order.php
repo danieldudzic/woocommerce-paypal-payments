@@ -185,6 +185,11 @@ class Order {
 		return $this->payment_source;
 	}
 
+	/**
+	 * Returns the links.
+	 *
+	 * @return mixed|null
+	 */
 	public function links() {
 		return $this->links;
 	}

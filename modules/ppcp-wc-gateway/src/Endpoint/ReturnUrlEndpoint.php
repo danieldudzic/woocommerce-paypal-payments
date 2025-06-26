@@ -83,7 +83,8 @@ class ReturnUrlEndpoint {
 			WC()->initialize_session();
 		}
 
-		if ( ! WC()->session->get_session_cookie() ) {
+		// Set customer session cookie if not already set.
+		if ( WC()->session && ! WC()->session->get_session_cookie() ) {
 			WC()->session->set_customer_session_cookie( true );
 		}
 
@@ -98,7 +99,7 @@ class ReturnUrlEndpoint {
 				$wc_order_id = (int) $order->purchase_units()[0]->custom_id();
 				$wc_order    = wc_get_order( $wc_order_id );
 
-				if ( ! $wc_order ) {
+				if ( ! $wc_order || ! is_a( $wc_order, \WC_Order::class ) ) {
 					wc_add_notice( __( 'Order information is missing. Please try placing your order again.', 'woocommerce-paypal-payments' ), 'error' );
 					wp_safe_redirect( wc_get_checkout_url() );
 					exit();
