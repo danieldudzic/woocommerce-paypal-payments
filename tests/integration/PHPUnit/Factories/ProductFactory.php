@@ -27,7 +27,6 @@ class ProductFactory
 
 		$preset = $presets[$preset_name];
 
-		// Check if product already exists by SKU
 		if (isset($preset['sku'])) {
 			$existing_product_id = wc_get_product_id_by_sku($preset['sku']);
 			if ($existing_product_id) {
@@ -38,7 +37,6 @@ class ProductFactory
 			}
 		}
 
-		// Check if product already exists by ID
 		if (isset($preset['product_id'])) {
 			$existing_product = wc_get_product($preset['product_id']);
 			if ($existing_product) {
@@ -46,6 +44,9 @@ class ProductFactory
 			}
 		}
 
+        if ($preset['type'] === 'subscription' && !class_exists('\WC_Product_Subscription')) {
+            return $this->createSimpleProduct($preset);
+        }
 		switch ($preset['type']) {
 			case 'variable':
 				return $this->createVariableProduct($preset);
@@ -113,7 +114,6 @@ class ProductFactory
 	 */
 	private function createSubscriptionProduct(array $preset): \WC_Product_Subscription
 	{
-
 		$product = new \WC_Product_Subscription();
         $product->set_props([
             'name' => $preset['name'],
