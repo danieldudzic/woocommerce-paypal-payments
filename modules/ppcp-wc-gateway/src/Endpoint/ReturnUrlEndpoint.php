@@ -78,17 +78,6 @@ class ReturnUrlEndpoint {
 	 * Handles the incoming request.
 	 */
 	public function handle_request(): void {
-		// Initialize WC session for AJAX endpoints.
-		if ( ! WC()->session ) {
-			WC()->initialize_session();
-		}
-
-		// Set customer session cookie if not already set.
-		if ( WC()->session && ! WC()->session->get_session_cookie() ) {
-			WC()->session->set_customer_session_cookie( true );
-		}
-
-		// Check for token parameter - required for all returns.
 		if ( ! isset( $_GET['token'] ) ) {
 			wc_add_notice( __( 'Payment session expired. Please try placing your order again.', 'woocommerce-paypal-payments' ), 'error' );
 			wp_safe_redirect( wc_get_checkout_url() );
@@ -158,9 +147,7 @@ class ReturnUrlEndpoint {
 			exit();
 		}
 
-		$this->logger->info( 'ReturnUrlEndpoint calling process_payment for gateway: ' . get_class( $payment_gateway ) );
 		$success = $payment_gateway->process_payment( $wc_order_id );
-		$this->logger->info( 'ReturnUrlEndpoint process_payment result: ' . wp_json_encode( $success ) );
 
 		if ( isset( $success['result'] ) && 'success' === $success['result'] ) {
 			add_filter(

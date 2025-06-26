@@ -357,7 +357,6 @@ class AxoGateway extends WC_Payment_Gateway {
 			if ( $process ) {
 				$this->order_processor->process_captured_and_authorized( $wc_order, $paypal_order );
 			}
-
 		} catch ( Exception $exception ) {
 			$this->logger->error( '[AXO] 3DS return processing failed: ' . $exception->getMessage() );
 			return array(
