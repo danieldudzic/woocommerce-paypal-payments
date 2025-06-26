@@ -86,8 +86,21 @@ class OrderFactory
 	private function addProductsToOrder(WC_Order $order, array $products): void
 	{
 		foreach ($products as $product_data) {
-			$product_sku = $product_data['sku'];
-			$product_id = wc_get_product_id_by_sku($product_sku);
+            $product_id = null;
+
+            if (!empty($product_data['sku'])) {
+                $product_sku = $product_data['sku'];
+                $product_id = wc_get_product_id_by_sku($product_sku);
+            }
+
+            if (!$product_id && isset($product_data['id'])) {
+                $product_id = $product_data['id'];
+            }
+
+            if (!$product_id) {
+                throw new \WC_Data_Exception('invalid_product', "Product not found - no valid SKU or ID provided");
+            }
+
 			$variation_id = $product_data['variation_id'] ?? 0;
 			$product_type = $product_data['type'] ?? 'simple';
 
