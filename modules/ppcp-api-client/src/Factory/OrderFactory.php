@@ -111,12 +111,12 @@ class OrderFactory {
 		$this->validate_order_id( $order_data );
 
 		$purchase_units = $this->create_purchase_units( $order_data, $is_3ds_response );
-		$status = $this->create_order_status( $order_data, $is_3ds_response );
-		$intent = $this->get_intent( $order_data, $is_3ds_response );
-		$timestamps = $this->create_timestamps( $order_data, $is_3ds_response );
-		$payer = $this->create_payer( $order_data, $is_3ds_response );
+		$status         = $this->create_order_status( $order_data, $is_3ds_response );
+		$intent         = $this->get_intent( $order_data, $is_3ds_response );
+		$timestamps     = $this->create_timestamps( $order_data, $is_3ds_response );
+		$payer          = $this->create_payer( $order_data, $is_3ds_response );
 		$payment_source = $this->create_payment_source( $order_data );
-		$links = $is_3ds_response ? ( $order_data->links ?? null ) : null;
+		$links          = $is_3ds_response ? ( $order_data->links ?? null ) : null;
 
 		return new Order(
 			$order_data->id,
