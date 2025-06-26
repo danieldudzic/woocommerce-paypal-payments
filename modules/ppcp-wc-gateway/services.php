@@ -2145,7 +2145,7 @@ return array(
 		$feature_enabled = (bool) apply_filters(
 			// phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- feature flags use this convention
 			'woocommerce.feature-flags.woocommerce_paypal_payments.contact_module_enabled',
-			getenv( 'PCP_CONTACT_MODULE_ENABLED' ) === '1'
+			getenv( 'PCP_CONTACT_MODULE_ENABLED' ) !== '0'
 		);
 
 		/**
