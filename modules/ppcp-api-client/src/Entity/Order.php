@@ -222,7 +222,7 @@ class Order {
 		}
 
 		if ( $this->links ) {
-			$this->links()->to_array();
+			$order['links'] = $this->links();
 		}
 
 		return $order;

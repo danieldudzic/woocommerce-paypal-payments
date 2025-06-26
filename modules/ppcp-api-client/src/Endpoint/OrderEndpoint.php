@@ -169,7 +169,6 @@ class OrderEndpoint {
 	 * @param string             $payment_method WC payment method.
 	 * @param array              $request_data Request data.
 	 * @param PaymentSource|null $payment_source The payment source.
-	 * @param \WC_Order|null     $wc_order The WooCommerce order, if available.
 	 *
 	 * @return Order
 	 * @throws RuntimeException If the request fails.
@@ -180,8 +179,7 @@ class OrderEndpoint {
 		Payer $payer = null,
 		string $payment_method = '',
 		array $request_data = array(),
-		PaymentSource $payment_source = null,
-		?\WC_Order $wc_order = null
+		PaymentSource $payment_source = null
 	): Order {
 		$bearer = $this->bearer->bearer();
 		$data   = array(
