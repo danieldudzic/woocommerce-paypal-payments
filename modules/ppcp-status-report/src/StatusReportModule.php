@@ -11,7 +11,7 @@ namespace WooCommerce\PayPalCommerce\StatusReport;
 
 use WooCommerce\PayPalCommerce\ApiClient\Authentication\Bearer;
 use WooCommerce\PayPalCommerce\ApiClient\Exception\RuntimeException;
-use WooCommerce\PayPalCommerce\ApiClient\Helper\BillingAgreementsEndpoint;
+use WooCommerce\PayPalCommerce\ApiClient\Helper\ReferenceTransactionStatus;
 use WooCommerce\PayPalCommerce\ApiClient\Helper\DccApplies;
 use WooCommerce\PayPalCommerce\Button\Helper\MessagesApply;
 use WooCommerce\PayPalCommerce\Compat\PPEC\PPECHelper;
@@ -76,7 +76,7 @@ class StatusReportModule implements ServiceModule, ExtendingModule, ExecutableMo
 				assert( $last_webhook_storage instanceof WebhookEventStorage );
 
 				$billing_agreements_endpoint = $c->get( 'api.endpoint.billing-agreements' );
-				assert( $billing_agreements_endpoint instanceof BillingAgreementsEndpoint );
+				assert( $billing_agreements_endpoint instanceof ReferenceTransactionStatus );
 
 				/* @var Renderer $renderer The renderer. */
 				$renderer = $c->get( 'status-report.renderer' );
@@ -278,9 +278,9 @@ class StatusReportModule implements ServiceModule, ExtendingModule, ExecutableMo
 	/**
 	 * Checks if reference transactions are enabled in account.
 	 *
-	 * @param BillingAgreementsEndpoint $billing_agreements_endpoint The endpoint.
+	 * @param ReferenceTransactionStatus $billing_agreements_endpoint The endpoint.
 	 */
-	private function reference_transaction_enabled( BillingAgreementsEndpoint $billing_agreements_endpoint ): bool {
+	private function reference_transaction_enabled( ReferenceTransactionStatus $billing_agreements_endpoint ): bool {
 		try {
 			return $billing_agreements_endpoint->reference_transaction_enabled();
 		} catch ( RuntimeException $exception ) {

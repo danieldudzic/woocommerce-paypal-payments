@@ -5,7 +5,7 @@ namespace WooCommerce\PayPalCommerce\WcGateway\Settings;
 use Mockery;
 use Psr\Log\LoggerInterface;
 use WooCommerce\PayPalCommerce\ApiClient\Authentication\Bearer;
-use WooCommerce\PayPalCommerce\ApiClient\Helper\BillingAgreementsEndpoint;
+use WooCommerce\PayPalCommerce\ApiClient\Helper\ReferenceTransactionStatus;
 use WooCommerce\PayPalCommerce\ApiClient\Helper\Cache;
 use WooCommerce\PayPalCommerce\Helper\RedirectorStub;
 use WooCommerce\PayPalCommerce\ModularTestCase;
@@ -43,7 +43,7 @@ class SettingsListenerTest extends ModularTestCase
 		$signup_link_ids = array();
         $pui_status_cache = Mockery::mock(Cache::class);
         $dcc_status_cache = Mockery::mock(Cache::class);
-		$billing_agreement_endpoint = Mockery::mock(BillingAgreementsEndpoint::class);
+		$billing_agreement_endpoint = Mockery::mock(ReferenceTransactionStatus::class);
 		$subscription_helper = Mockery::mock(SubscriptionHelper::class);
 		$logger = Mockery::mock(LoggerInterface::class);
 		$client_credentials_cache = Mockery::mock(Cache::class);

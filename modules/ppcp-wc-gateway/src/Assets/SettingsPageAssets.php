@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace WooCommerce\PayPalCommerce\WcGateway\Assets;
 
-use WooCommerce\PayPalCommerce\ApiClient\Helper\BillingAgreementsEndpoint;
+use WooCommerce\PayPalCommerce\ApiClient\Helper\ReferenceTransactionStatus;
 use WooCommerce\PayPalCommerce\ApiClient\Helper\CurrencyGetter;
 use WooCommerce\PayPalCommerce\WcGateway\Endpoint\RefreshFeatureStatusEndpoint;
 use WooCommerce\PayPalCommerce\WcGateway\Helper\Environment;
@@ -107,7 +107,7 @@ class SettingsPageAssets {
 	/**
 	 * Billing Agreements endpoint.
 	 *
-	 * @var BillingAgreementsEndpoint
+	 * @var ReferenceTransactionStatus
 	 */
 	private $billing_agreements_endpoint;
 
@@ -133,7 +133,7 @@ class SettingsPageAssets {
 	 * @param array                     $all_funding_sources The list of all existing funding sources.
 	 * @param bool                      $is_settings_page Whether it's a settings page of this plugin.
 	 * @param bool                      $is_acdc_enabled Whether the ACDC gateway is enabled.
-	 * @param BillingAgreementsEndpoint $billing_agreements_endpoint Billing Agreements endpoint.
+	 * @param ReferenceTransactionStatus $billing_agreements_endpoint Billing Agreements endpoint.
 	 * @param bool                      $is_paypal_payment_method_page Whether we're on a settings page for our plugin's payment methods.
 	 */
 	public function __construct(
@@ -149,7 +149,7 @@ class SettingsPageAssets {
 		array $all_funding_sources,
 		bool $is_settings_page,
 		bool $is_acdc_enabled,
-		BillingAgreementsEndpoint $billing_agreements_endpoint,
+		ReferenceTransactionStatus $billing_agreements_endpoint,
 		bool $is_paypal_payment_method_page
 	) {
 		$this->module_url                    = $module_url;

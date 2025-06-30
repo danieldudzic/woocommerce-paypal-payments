@@ -62,7 +62,7 @@ use WooCommerce\PayPalCommerce\ApiClient\Factory\ShippingOptionFactory;
 use WooCommerce\PayPalCommerce\ApiClient\Factory\ShippingPreferenceFactory;
 use WooCommerce\PayPalCommerce\ApiClient\Factory\WebhookEventFactory;
 use WooCommerce\PayPalCommerce\ApiClient\Factory\WebhookFactory;
-use WooCommerce\PayPalCommerce\ApiClient\Helper\BillingAgreementsEndpoint;
+use WooCommerce\PayPalCommerce\ApiClient\Helper\ReferenceTransactionStatus;
 use WooCommerce\PayPalCommerce\ApiClient\Helper\Cache;
 use WooCommerce\PayPalCommerce\ApiClient\Helper\CurrencyGetter;
 use WooCommerce\PayPalCommerce\ApiClient\Helper\DccApplies;
@@ -274,8 +274,8 @@ return array(
 			$container->get( 'woocommerce.logger.woocommerce' )
 		);
 	},
-	'api.endpoint.billing-agreements'                => static function ( ContainerInterface $container ): BillingAgreementsEndpoint {
-		return new BillingAgreementsEndpoint(
+	'api.endpoint.billing-agreements'                => static function ( ContainerInterface $container ): ReferenceTransactionStatus {
+		return new ReferenceTransactionStatus(
 			$container->get( 'api.host' ),
 			$container->get( 'api.bearer' ),
 			$container->get( 'woocommerce.logger.woocommerce' )

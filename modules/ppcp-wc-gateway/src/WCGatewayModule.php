@@ -19,7 +19,7 @@ use WooCommerce\PayPalCommerce\ApiClient\Entity\Authorization;
 use WooCommerce\PayPalCommerce\ApiClient\Entity\Capture;
 use WooCommerce\PayPalCommerce\ApiClient\Entity\OrderStatus;
 use WooCommerce\PayPalCommerce\ApiClient\Exception\RuntimeException;
-use WooCommerce\PayPalCommerce\ApiClient\Helper\BillingAgreementsEndpoint;
+use WooCommerce\PayPalCommerce\ApiClient\Helper\ReferenceTransactionStatus;
 use WooCommerce\PayPalCommerce\ApiClient\Helper\Cache;
 use WooCommerce\PayPalCommerce\ApiClient\Helper\DccApplies;
 use WooCommerce\PayPalCommerce\LocalAlternativePaymentMethods\LocalApmProductStatus;
@@ -537,7 +537,7 @@ class WCGatewayModule implements ServiceModule, ExtendingModule, ExecutableModul
 				}
 
 				$billing_agreements_endpoint = $c->get( 'api.endpoint.billing-agreements' );
-				assert( $billing_agreements_endpoint instanceof BillingAgreementsEndpoint );
+				assert( $billing_agreements_endpoint instanceof ReferenceTransactionStatus );
 
 				$dcc_product_status = $c->get( 'wcgateway.helper.dcc-product-status' );
 				assert( $dcc_product_status instanceof DCCProductStatus );

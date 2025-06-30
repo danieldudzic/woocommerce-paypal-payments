@@ -14,7 +14,7 @@ namespace WooCommerce\PayPalCommerce\WcGateway;
 use WooCommerce\PayPalCommerce\ApiClient\Endpoint\PayUponInvoiceOrderEndpoint;
 use WooCommerce\PayPalCommerce\ApiClient\Entity\ExperienceContext;
 use WooCommerce\PayPalCommerce\ApiClient\Exception\RuntimeException;
-use WooCommerce\PayPalCommerce\ApiClient\Helper\BillingAgreementsEndpoint;
+use WooCommerce\PayPalCommerce\ApiClient\Helper\ReferenceTransactionStatus;
 use WooCommerce\PayPalCommerce\ApiClient\Helper\Cache;
 use WooCommerce\PayPalCommerce\ApiClient\Helper\DccApplies;
 use WooCommerce\PayPalCommerce\Applepay\ApplePayGateway;
@@ -1774,7 +1774,7 @@ return array(
 		assert( $environment instanceof Environment );
 
 		$billing_agreements_endpoint = $container->get( 'api.endpoint.billing-agreements' );
-		assert( $billing_agreements_endpoint instanceof BillingAgreementsEndpoint );
+		assert( $billing_agreements_endpoint instanceof ReferenceTransactionStatus );
 
 		$enabled = $billing_agreements_endpoint->reference_transaction_enabled();
 

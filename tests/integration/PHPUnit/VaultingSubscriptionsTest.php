@@ -8,7 +8,7 @@ use WooCommerce\PayPalCommerce\ApiClient\Endpoint\OrderEndpoint;
 use WooCommerce\PayPalCommerce\ApiClient\Endpoint\PaymentTokensEndpoint;
 use WooCommerce\PayPalCommerce\ApiClient\Entity\PaymentSource;
 use WooCommerce\PayPalCommerce\ApiClient\Entity\Token;
-use WooCommerce\PayPalCommerce\ApiClient\Helper\BillingAgreementsEndpoint;
+use WooCommerce\PayPalCommerce\ApiClient\Helper\ReferenceTransactionStatus;
 use WooCommerce\PayPalCommerce\Onboarding\State;
 use WooCommerce\PayPalCommerce\Vendor\Psr\Container\ContainerInterface;
 use WooCommerce\PayPalCommerce\WcGateway\Gateway\CreditCardGateway;
@@ -97,7 +97,7 @@ class VaultingSubscriptionsTest extends IntegrationMockedTestCase
         add_filter('user_has_cap', $user_has_cap_callback, 10, 3);
 
         // Convert to Mockery mocks
-        $billing_agreements_endpoint_mock = \Mockery::mock(BillingAgreementsEndpoint::class);
+        $billing_agreements_endpoint_mock = \Mockery::mock(ReferenceTransactionStatus::class);
         $billing_agreements_endpoint_mock->shouldReceive('reference_transaction_enabled')
             ->andReturn(true);
 

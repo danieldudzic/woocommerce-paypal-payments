@@ -14,7 +14,7 @@ use WooCommerce\PayPalCommerce\ApiClient\Authentication\Bearer;
 use WooCommerce\PayPalCommerce\ApiClient\Authentication\PayPalBearer;
 use WooCommerce\PayPalCommerce\ApiClient\Authentication\SdkClientToken;
 use WooCommerce\PayPalCommerce\ApiClient\Exception\RuntimeException;
-use WooCommerce\PayPalCommerce\ApiClient\Helper\BillingAgreementsEndpoint;
+use WooCommerce\PayPalCommerce\ApiClient\Helper\ReferenceTransactionStatus;
 use WooCommerce\PayPalCommerce\ApiClient\Helper\Cache;
 use WooCommerce\PayPalCommerce\Http\RedirectorInterface;
 use WooCommerce\PayPalCommerce\Onboarding\Helper\OnboardingUrl;
@@ -154,7 +154,7 @@ class SettingsListener {
 	/**
 	 * Billing Agreements endpoint.
 	 *
-	 * @var BillingAgreementsEndpoint
+	 * @var ReferenceTransactionStatus
 	 */
 	private $billing_agreements_endpoint;
 
@@ -189,7 +189,7 @@ class SettingsListener {
 	 * @param RedirectorInterface       $redirector The HTTP redirector.
 	 * @param string                    $partner_merchant_id_production Partner merchant ID production.
 	 * @param string                    $partner_merchant_id_sandbox Partner merchant ID sandbox.
-	 * @param BillingAgreementsEndpoint $billing_agreements_endpoint Billing Agreements endpoint.
+	 * @param ReferenceTransactionStatus $billing_agreements_endpoint Billing Agreements endpoint.
 	 * @param ?LoggerInterface          $logger The logger.
 	 * @param Cache                     $client_credentials_cache The client credentials cache.
 	 */
@@ -208,7 +208,7 @@ class SettingsListener {
 		RedirectorInterface $redirector,
 		string $partner_merchant_id_production,
 		string $partner_merchant_id_sandbox,
-		BillingAgreementsEndpoint $billing_agreements_endpoint,
+		ReferenceTransactionStatus $billing_agreements_endpoint,
 		LoggerInterface $logger = null,
 		Cache $client_credentials_cache
 	) {

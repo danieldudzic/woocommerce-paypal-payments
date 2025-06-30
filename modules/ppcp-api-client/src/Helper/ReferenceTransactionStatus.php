@@ -20,7 +20,7 @@ use WooCommerce\PayPalCommerce\ApiClient\Exception\RuntimeException;
 /**
  * Class BillingAgreementsEndpoint
  */
-class BillingAgreementsEndpoint {
+class ReferenceTransactionStatus {
 	use RequestTrait;
 
 	/**
