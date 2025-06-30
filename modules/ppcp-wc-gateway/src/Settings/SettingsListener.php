@@ -151,12 +151,7 @@ class SettingsListener {
 	 */
 	private $partner_merchant_id_sandbox;
 
-	/**
-	 * Billing Agreements endpoint.
-	 *
-	 * @var ReferenceTransactionStatus
-	 */
-	private $billing_agreements_endpoint;
+	private $reference_transaction_status;
 
 	/**
 	 * The logger.
@@ -189,7 +184,7 @@ class SettingsListener {
 	 * @param RedirectorInterface       $redirector The HTTP redirector.
 	 * @param string                    $partner_merchant_id_production Partner merchant ID production.
 	 * @param string                    $partner_merchant_id_sandbox Partner merchant ID sandbox.
-	 * @param ReferenceTransactionStatus $billing_agreements_endpoint Billing Agreements endpoint.
+	 * @param ReferenceTransactionStatus $reference_transaction_status
 	 * @param ?LoggerInterface          $logger The logger.
 	 * @param Cache                     $client_credentials_cache The client credentials cache.
 	 */
@@ -208,7 +203,7 @@ class SettingsListener {
 		RedirectorInterface $redirector,
 		string $partner_merchant_id_production,
 		string $partner_merchant_id_sandbox,
-		ReferenceTransactionStatus $billing_agreements_endpoint,
+		ReferenceTransactionStatus $reference_transaction_status,
 		LoggerInterface $logger = null,
 		Cache $client_credentials_cache
 	) {
@@ -229,7 +224,7 @@ class SettingsListener {
 		$this->redirector                     = $redirector;
 		$this->partner_merchant_id_production = $partner_merchant_id_production;
 		$this->partner_merchant_id_sandbox    = $partner_merchant_id_sandbox;
-		$this->billing_agreements_endpoint    = $billing_agreements_endpoint;
+		$this->reference_transaction_status    = $reference_transaction_status;
 		$this->logger                         = $logger ?: new NullLogger();
 		$this->client_credentials_cache       = $client_credentials_cache;
 	}
@@ -393,9 +388,7 @@ class SettingsListener {
 		$vault_enabled     = wc_clean( wp_unslash( $_POST['ppcp']['vault_enabled'] ?? '' ) );
 		$subscription_mode = wc_clean( wp_unslash( $_POST['ppcp']['subscriptions_mode'] ?? '' ) );
 
-		$reference_transaction_enabled = $this->billing_agreements_endpoint->reference_transaction_enabled();
-
-		if ( $reference_transaction_enabled !== true ) {
+		if ( ! $this->reference_transaction_status->reference_transaction_enabled() ) {
 			$this->settings->set( 'vault_enabled', false );
 
 			/**

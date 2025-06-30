@@ -9,110 +9,16 @@ declare(strict_types=1);
 
 namespace WooCommerce\PayPalCommerce\ApiClient\Helper;
 
-use Exception;
 use Psr\Log\LoggerInterface;
-use stdClass;
-use WooCommerce\PayPalCommerce\ApiClient\Authentication\Bearer;
-use WooCommerce\PayPalCommerce\ApiClient\Endpoint\RequestTrait;
-use WooCommerce\PayPalCommerce\ApiClient\Exception\PayPalApiException;
+use WooCommerce\PayPalCommerce\ApiClient\Endpoint\PartnersEndpoint;
 use WooCommerce\PayPalCommerce\ApiClient\Exception\RuntimeException;
 
-/**
- * Class BillingAgreementsEndpoint
- */
 class ReferenceTransactionStatus {
-	use RequestTrait;
 
-	/**
-	 * The host.
-	 *
-	 * @var string
-	 */
-	private $host;
+	protected PartnersEndpoint $partners_endpoint;
 
-	/**
-	 * The bearer.
-	 *
-	 * @var Bearer
-	 */
-	private $bearer;
-
-	/**
-	 * The logger.
-	 *
-	 * @var LoggerInterface
-	 */
-	private $logger;
-
-	/**
-	 * BillingAgreementsEndpoint constructor.
-	 *
-	 * @param string          $host The host.
-	 * @param Bearer          $bearer The bearer.
-	 * @param LoggerInterface $logger The logger.
-	 */
-	public function __construct(
-		string $host,
-		Bearer $bearer,
-		LoggerInterface $logger
-	) {
-		$this->host   = $host;
-		$this->bearer = $bearer;
-		$this->logger = $logger;
-	}
-
-	/**
-	 * Creates a billing agreement token.
-	 *
-	 * @param string $description The description.
-	 * @param string $return_url The return URL.
-	 * @param string $cancel_url The cancel URL.
-	 *
-	 * @throws RuntimeException If the request fails.
-	 * @throws PayPalApiException If the request fails.
-	 */
-	public function create_token( string $description, string $return_url, string $cancel_url ): stdClass {
-		$data = array(
-			'description' => $description,
-			'payer'       => array(
-				'payment_method' => 'PAYPAL',
-			),
-			'plan'        => array(
-				'type'                 => 'MERCHANT_INITIATED_BILLING',
-				'merchant_preferences' => array(
-					'return_url'            => $return_url,
-					'cancel_url'            => $cancel_url,
-					'skip_shipping_address' => true,
-				),
-			),
-		);
-
-		$bearer   = $this->bearer->bearer();
-		$url      = trailingslashit( $this->host ) . 'v1/billing-agreements/agreement-tokens';
-		$args     = array(
-			'method'  => 'POST',
-			'headers' => array(
-				'Authorization' => 'Bearer ' . $bearer->token(),
-				'Content-Type'  => 'application/json',
-			),
-			'body'    => wp_json_encode( $data ),
-		);
-		$response = $this->request( $url, $args );
-
-		if ( is_wp_error( $response ) || ! is_array( $response ) ) {
-			throw new RuntimeException( 'Not able to create a billing agreement token.' );
-		}
-
-		$json        = json_decode( $response['body'] );
-		$status_code = (int) wp_remote_retrieve_response_code( $response );
-		if ( 201 !== $status_code ) {
-			throw new PayPalApiException(
-				$json,
-				$status_code
-			);
-		}
-
-		return $json;
+	public function __construct( PartnersEndpoint $partners_endpoint ) {
+		$this->partners_endpoint = $partners_endpoint;
 	}
 
 	/**
@@ -122,27 +28,18 @@ class ReferenceTransactionStatus {
 	 */
 	public function reference_transaction_enabled(): bool {
 		try {
-			if ( wc_string_to_bool( get_transient( 'ppcp_reference_transaction_enabled' ) ) === true ) {
-				return true;
+			foreach ( $this->partners_endpoint->seller_status()->capabilities() as $capability ) {
+				if (
+					$capability->name() === 'PAYPAL_WALLET_VAULTING_ADVANCED' &&
+					$capability->status() === 'ACTIVE'
+				) {
+					return true;
+				}
 			}
-
-			$this->is_request_logging_enabled = false;
-
-			try {
-				$this->create_token(
-					'Checking if reference transactions are enabled',
-					'https://example.com/return',
-					'https://example.com/cancel'
-				);
-			} finally {
-				$this->is_request_logging_enabled = true;
-			}
-
-			set_transient( 'ppcp_reference_transaction_enabled', true, MONTH_IN_SECONDS );
-			return true;
-		} catch ( Exception $exception ) {
-			set_transient( 'ppcp_reference_transaction_enabled', false, HOUR_IN_SECONDS );
+		} catch ( RuntimeException $exception ) {
 			return false;
 		}
+
+		return false;
 	}
 }

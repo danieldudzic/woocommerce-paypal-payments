@@ -547,7 +547,7 @@ return array(
 			$container->get( 'http.redirector' ),
 			$container->get( 'api.partner_merchant_id-production' ),
 			$container->get( 'api.partner_merchant_id-sandbox' ),
-			$container->get( 'api.endpoint.billing-agreements' ),
+			$container->get( 'api.reference-transaction-status' ),
 			$container->get( 'woocommerce.logger.woocommerce' ),
 			new Cache( 'ppcp-client-credentials-cache' )
 		);
@@ -651,9 +651,10 @@ return array(
 	'wcgateway.settings.fields.subscriptions_mode'         => static function ( ContainerInterface $container ): array {
 		$subscription_mode_options = $container->get( 'wcgateway.settings.fields.subscriptions_mode_options' );
 
-		$billing_agreements_endpoint = $container->get( 'api.endpoint.billing-agreements' );
-		$reference_transaction_enabled = $billing_agreements_endpoint->reference_transaction_enabled();
-		if ( $reference_transaction_enabled !== true ) {
+		$reference_transaction_status = $container->get( 'api.reference-transaction-status' );
+		assert( $reference_transaction_status instanceof ReferenceTransactionStatus );
+
+		if ( ! $reference_transaction_status->reference_transaction_enabled() ) {
 			unset( $subscription_mode_options['vaulting_api'] );
 		}
 
@@ -1773,10 +1774,10 @@ return array(
 		$environment = $container->get( 'settings.environment' );
 		assert( $environment instanceof Environment );
 
-		$billing_agreements_endpoint = $container->get( 'api.endpoint.billing-agreements' );
-		assert( $billing_agreements_endpoint instanceof ReferenceTransactionStatus );
+		$reference_transaction_status = $container->get( 'api.reference-transaction-status' );
+		assert( $reference_transaction_status instanceof ReferenceTransactionStatus );
 
-		$enabled = $billing_agreements_endpoint->reference_transaction_enabled();
+		$enabled = $reference_transaction_status->reference_transaction_enabled();
 
 		$enabled_status_text  = esc_html__( 'Status: Available', 'woocommerce-paypal-payments' );
 		$disabled_status_text = esc_html__( 'Status: Not yet enabled', 'woocommerce-paypal-payments' );

@@ -274,13 +274,9 @@ return array(
 			$container->get( 'woocommerce.logger.woocommerce' )
 		);
 	},
-	'api.endpoint.billing-agreements'                => static function ( ContainerInterface $container ): ReferenceTransactionStatus {
-		return new ReferenceTransactionStatus(
-			$container->get( 'api.host' ),
-			$container->get( 'api.bearer' ),
-			$container->get( 'woocommerce.logger.woocommerce' )
-		);
-	},
+	'api.reference-transaction-status' => static fn ( ContainerInterface $container ): ReferenceTransactionStatus => new ReferenceTransactionStatus(
+		$container->get( 'api.endpoint.partners' )
+	),
 	'api.endpoint.catalog-products'                  => static function ( ContainerInterface $container ): CatalogProducts {
 		return new CatalogProducts(
 			$container->get( 'api.host' ),

@@ -69,10 +69,10 @@ class SavePaymentMethodsModule implements ServiceModule, ExtendingModule, Execut
 				$settings = $c->get( 'wcgateway.settings' );
 				assert( $settings instanceof Settings );
 
-				$billing_agreements_endpoint = $c->get( 'api.endpoint.billing-agreements' );
-				assert( $billing_agreements_endpoint instanceof ReferenceTransactionStatus );
-				$reference_transaction_enabled = $billing_agreements_endpoint->reference_transaction_enabled();
-				if ( $reference_transaction_enabled !== true ) {
+				$reference_transaction_status = $c->get( 'api.reference-transaction-status' );
+				assert( $reference_transaction_status instanceof ReferenceTransactionStatus );
+
+				if ( ! $reference_transaction_status->reference_transaction_enabled() ) {
 					$settings->set( 'vault_enabled', false );
 					$settings->persist();
 				}

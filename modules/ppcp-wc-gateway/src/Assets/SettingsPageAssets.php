@@ -104,12 +104,7 @@ class SettingsPageAssets {
 	 */
 	private $is_acdc_enabled;
 
-	/**
-	 * Billing Agreements endpoint.
-	 *
-	 * @var ReferenceTransactionStatus
-	 */
-	private $billing_agreements_endpoint;
+	private $reference_transaction_status;
 
 	/**
 	 * Whether we're on a settings page for our plugin's payment methods.
@@ -133,7 +128,7 @@ class SettingsPageAssets {
 	 * @param array                     $all_funding_sources The list of all existing funding sources.
 	 * @param bool                      $is_settings_page Whether it's a settings page of this plugin.
 	 * @param bool                      $is_acdc_enabled Whether the ACDC gateway is enabled.
-	 * @param ReferenceTransactionStatus $billing_agreements_endpoint Billing Agreements endpoint.
+	 * @param ReferenceTransactionStatus $reference_transaction_status
 	 * @param bool                      $is_paypal_payment_method_page Whether we're on a settings page for our plugin's payment methods.
 	 */
 	public function __construct(
@@ -149,7 +144,7 @@ class SettingsPageAssets {
 		array $all_funding_sources,
 		bool $is_settings_page,
 		bool $is_acdc_enabled,
-		ReferenceTransactionStatus $billing_agreements_endpoint,
+		ReferenceTransactionStatus $reference_transaction_status,
 		bool $is_paypal_payment_method_page
 	) {
 		$this->module_url                    = $module_url;
@@ -164,7 +159,7 @@ class SettingsPageAssets {
 		$this->all_funding_sources           = $all_funding_sources;
 		$this->is_settings_page              = $is_settings_page;
 		$this->is_acdc_enabled               = $is_acdc_enabled;
-		$this->billing_agreements_endpoint   = $billing_agreements_endpoint;
+		$this->reference_transaction_status   = $reference_transaction_status;
 		$this->is_paypal_payment_method_page = $is_paypal_payment_method_page;
 	}
 
@@ -239,7 +234,7 @@ class SettingsPageAssets {
 							),
 						),
 					),
-					'reference_transaction_enabled'  => $this->billing_agreements_endpoint->reference_transaction_enabled(),
+					'reference_transaction_enabled'  => $this->reference_transaction_status->reference_transaction_enabled(),
 					'vaulting_must_enable_advanced_wallet_message' => sprintf(
 						// translators: %1$s and %2$s are the opening and closing of HTML <a> tag.
 						esc_html__( 'Your PayPal account must be eligible to %1$ssave PayPal and Venmo payment methods%2$s to enable PayPal Vaulting.', 'woocommerce-paypal-payments' ),
