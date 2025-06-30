@@ -1,18 +1,22 @@
 <?php
 /**
- * The billing agreements endpoint.
+ * Reference transaction status helper class.
  *
- * @package WooCommerce\PayPalCommerce\ApiClient\Endpoint
+ * @package WooCommerce\PayPalCommerce\ApiClient\Helper
  */
 
 declare(strict_types=1);
 
 namespace WooCommerce\PayPalCommerce\ApiClient\Helper;
 
-use Psr\Log\LoggerInterface;
 use WooCommerce\PayPalCommerce\ApiClient\Endpoint\PartnersEndpoint;
 use WooCommerce\PayPalCommerce\ApiClient\Exception\RuntimeException;
 
+/**
+ * Class ReferenceTransactionStatus
+ *
+ * Helper class to check reference transaction capabilities for PayPal merchant accounts.
+ */
 class ReferenceTransactionStatus {
 
 	protected PartnersEndpoint $partners_endpoint;
@@ -22,9 +26,12 @@ class ReferenceTransactionStatus {
 	}
 
 	/**
-	 * Checks if reference transactions are enabled in account.
+	 * Checks if reference transactions are enabled in the merchant account.
 	 *
-	 * @throws RuntimeException If the request fails (no auth, no connection, etc.).
+	 * This method verifies if the merchant has the PAYPAL_WALLET_VAULTING_ADVANCED
+	 * capability active, which is required for processing reference transactions.
+	 *
+	 * @return bool True if reference transactions are enabled, false otherwise.
 	 */
 	public function reference_transaction_enabled(): bool {
 		try {
