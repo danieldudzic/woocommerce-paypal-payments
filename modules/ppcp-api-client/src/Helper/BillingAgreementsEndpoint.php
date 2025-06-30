@@ -7,14 +7,15 @@
 
 declare(strict_types=1);
 
-namespace WooCommerce\PayPalCommerce\ApiClient\Endpoint;
+namespace WooCommerce\PayPalCommerce\ApiClient\Helper;
 
 use Exception;
+use Psr\Log\LoggerInterface;
 use stdClass;
 use WooCommerce\PayPalCommerce\ApiClient\Authentication\Bearer;
+use WooCommerce\PayPalCommerce\ApiClient\Endpoint\RequestTrait;
 use WooCommerce\PayPalCommerce\ApiClient\Exception\PayPalApiException;
 use WooCommerce\PayPalCommerce\ApiClient\Exception\RuntimeException;
-use Psr\Log\LoggerInterface;
 
 /**
  * Class BillingAgreementsEndpoint

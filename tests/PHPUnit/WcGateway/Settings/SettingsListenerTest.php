@@ -2,14 +2,14 @@
 
 namespace WooCommerce\PayPalCommerce\WcGateway\Settings;
 
+use Mockery;
 use Psr\Log\LoggerInterface;
 use WooCommerce\PayPalCommerce\ApiClient\Authentication\Bearer;
-use WooCommerce\PayPalCommerce\ApiClient\Endpoint\BillingAgreementsEndpoint;
+use WooCommerce\PayPalCommerce\ApiClient\Helper\BillingAgreementsEndpoint;
 use WooCommerce\PayPalCommerce\ApiClient\Helper\Cache;
 use WooCommerce\PayPalCommerce\Helper\RedirectorStub;
 use WooCommerce\PayPalCommerce\ModularTestCase;
 use WooCommerce\PayPalCommerce\Onboarding\State;
-use Mockery;
 use WooCommerce\PayPalCommerce\WcGateway\Gateway\PayPalGateway;
 use WooCommerce\PayPalCommerce\WcSubscriptions\Helper\SubscriptionHelper;
 use WooCommerce\PayPalCommerce\Webhooks\WebhookRegistrar;
