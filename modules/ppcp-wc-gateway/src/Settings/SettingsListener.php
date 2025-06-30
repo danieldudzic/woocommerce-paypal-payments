@@ -151,7 +151,7 @@ class SettingsListener {
 	 */
 	private $partner_merchant_id_sandbox;
 
-	private $reference_transaction_status;
+	private ReferenceTransactionStatus $reference_transaction_status;
 
 	/**
 	 * The logger.
@@ -405,7 +405,9 @@ class SettingsListener {
 			$this->settings->persist();
 		}
 
-		if ( $subscription_mode === 'vaulting_api' && $vault_enabled !== '1' && $reference_transaction_enabled === true ) {
+		$reference_transaction_enabled = $this->reference_transaction_status->reference_transaction_enabled();
+
+		if ( $subscription_mode === 'vaulting_api' && $vault_enabled !== '1' && $reference_transaction_enabled ) {
 			$this->settings->set( 'vault_enabled', true );
 			$this->settings->persist();
 		}
