@@ -170,23 +170,23 @@ class SettingsListener {
 	/**
 	 * SettingsListener constructor.
 	 *
-	 * @param Settings                  $settings The settings.
-	 * @param array                     $setting_fields The setting fields.
-	 * @param WebhookRegistrar          $webhook_registrar The Webhook Registrar.
-	 * @param Cache                     $cache The Cache.
-	 * @param State                     $state The state.
-	 * @param Bearer                    $bearer The bearer.
-	 * @param string                    $page_id ID of the current PPCP gateway settings page, or empty if it is not such page.
-	 * @param Cache                     $signup_link_cache The signup link cache.
-	 * @param array                     $signup_link_ids Signup link ids.
-	 * @param Cache                     $pui_status_cache The PUI status cache.
-	 * @param Cache                     $dcc_status_cache The DCC status cache.
-	 * @param RedirectorInterface       $redirector The HTTP redirector.
-	 * @param string                    $partner_merchant_id_production Partner merchant ID production.
-	 * @param string                    $partner_merchant_id_sandbox Partner merchant ID sandbox.
+	 * @param Settings                   $settings The settings.
+	 * @param array                      $setting_fields The setting fields.
+	 * @param WebhookRegistrar           $webhook_registrar The Webhook Registrar.
+	 * @param Cache                      $cache The Cache.
+	 * @param State                      $state The state.
+	 * @param Bearer                     $bearer The bearer.
+	 * @param string                     $page_id ID of the current PPCP gateway settings page, or empty if it is not such page.
+	 * @param Cache                      $signup_link_cache The signup link cache.
+	 * @param array                      $signup_link_ids Signup link ids.
+	 * @param Cache                      $pui_status_cache The PUI status cache.
+	 * @param Cache                      $dcc_status_cache The DCC status cache.
+	 * @param RedirectorInterface        $redirector The HTTP redirector.
+	 * @param string                     $partner_merchant_id_production Partner merchant ID production.
+	 * @param string                     $partner_merchant_id_sandbox Partner merchant ID sandbox.
 	 * @param ReferenceTransactionStatus $reference_transaction_status
-	 * @param ?LoggerInterface          $logger The logger.
-	 * @param Cache                     $client_credentials_cache The client credentials cache.
+	 * @param ?LoggerInterface           $logger The logger.
+	 * @param Cache                      $client_credentials_cache The client credentials cache.
 	 */
 	public function __construct(
 		Settings $settings,
@@ -224,7 +224,7 @@ class SettingsListener {
 		$this->redirector                     = $redirector;
 		$this->partner_merchant_id_production = $partner_merchant_id_production;
 		$this->partner_merchant_id_sandbox    = $partner_merchant_id_sandbox;
-		$this->reference_transaction_status    = $reference_transaction_status;
+		$this->reference_transaction_status   = $reference_transaction_status;
 		$this->logger                         = $logger ?: new NullLogger();
 		$this->client_credentials_cache       = $client_credentials_cache;
 	}

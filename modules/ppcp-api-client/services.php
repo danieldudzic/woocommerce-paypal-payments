@@ -274,7 +274,7 @@ return array(
 			$container->get( 'woocommerce.logger.woocommerce' )
 		);
 	},
-	'api.reference-transaction-status' => static fn ( ContainerInterface $container ): ReferenceTransactionStatus => new ReferenceTransactionStatus(
+	'api.reference-transaction-status'               => static fn ( ContainerInterface $container ): ReferenceTransactionStatus => new ReferenceTransactionStatus(
 		$container->get( 'api.endpoint.partners' )
 	),
 	'api.endpoint.catalog-products'                  => static function ( ContainerInterface $container ): CatalogProducts {

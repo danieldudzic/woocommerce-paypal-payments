@@ -116,20 +116,20 @@ class SettingsPageAssets {
 	/**
 	 * Assets constructor.
 	 *
-	 * @param string                    $module_url The url of this module.
-	 * @param string                    $version                            The assets version.
-	 * @param SubscriptionHelper        $subscription_helper The subscription helper.
-	 * @param string                    $client_id The PayPal SDK client ID.
-	 * @param CurrencyGetter            $currency The getter of the 3-letter currency code of the shop.
-	 * @param string                    $country 2-letter country code of the shop.
-	 * @param Environment               $environment The environment object.
-	 * @param bool                      $is_pay_later_button_enabled Whether Pay Later button is enabled either for checkout, cart or product page.
-	 * @param array                     $disabled_sources The list of disabled funding sources.
-	 * @param array                     $all_funding_sources The list of all existing funding sources.
-	 * @param bool                      $is_settings_page Whether it's a settings page of this plugin.
-	 * @param bool                      $is_acdc_enabled Whether the ACDC gateway is enabled.
+	 * @param string                     $module_url The url of this module.
+	 * @param string                     $version                            The assets version.
+	 * @param SubscriptionHelper         $subscription_helper The subscription helper.
+	 * @param string                     $client_id The PayPal SDK client ID.
+	 * @param CurrencyGetter             $currency The getter of the 3-letter currency code of the shop.
+	 * @param string                     $country 2-letter country code of the shop.
+	 * @param Environment                $environment The environment object.
+	 * @param bool                       $is_pay_later_button_enabled Whether Pay Later button is enabled either for checkout, cart or product page.
+	 * @param array                      $disabled_sources The list of disabled funding sources.
+	 * @param array                      $all_funding_sources The list of all existing funding sources.
+	 * @param bool                       $is_settings_page Whether it's a settings page of this plugin.
+	 * @param bool                       $is_acdc_enabled Whether the ACDC gateway is enabled.
 	 * @param ReferenceTransactionStatus $reference_transaction_status
-	 * @param bool                      $is_paypal_payment_method_page Whether we're on a settings page for our plugin's payment methods.
+	 * @param bool                       $is_paypal_payment_method_page Whether we're on a settings page for our plugin's payment methods.
 	 */
 	public function __construct(
 		string $module_url,
@@ -159,7 +159,7 @@ class SettingsPageAssets {
 		$this->all_funding_sources           = $all_funding_sources;
 		$this->is_settings_page              = $is_settings_page;
 		$this->is_acdc_enabled               = $is_acdc_enabled;
-		$this->reference_transaction_status   = $reference_transaction_status;
+		$this->reference_transaction_status  = $reference_transaction_status;
 		$this->is_paypal_payment_method_page = $is_paypal_payment_method_page;
 	}
 
