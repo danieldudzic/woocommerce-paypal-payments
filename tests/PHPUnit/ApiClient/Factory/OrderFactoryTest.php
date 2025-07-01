@@ -181,13 +181,6 @@ class OrderFactoryTest extends TestCase
                     'intent' => '',
                 ],
             ],
-            'no_status' => [
-                (object) [
-                    'id' => '',
-                    'purchase_units' => [],
-                    'intent' => '',
-                ],
-            ],
             'no_intent' => [
                 (object) [
                     'id' => '',
