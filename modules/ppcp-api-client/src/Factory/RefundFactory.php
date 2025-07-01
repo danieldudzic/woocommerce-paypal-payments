@@ -63,6 +63,7 @@ class RefundFactory {
 	 * @param \stdClass $data The PayPal response.
 	 *
 	 * @return Refund
+	 * @throws RuntimeException When refund amount data is invalid.
 	 */
 	public function from_paypal_response( \stdClass $data ) : Refund {
 		$reason                   = $data->status_details->reason ?? null;
