@@ -283,7 +283,7 @@ class AxoGateway extends WC_Payment_Gateway {
 
 				$redirect_url = add_query_arg(
 					'redirect_uri',
-					urlencode( $return_url ),
+					rawurlencode( $return_url ),
 					$payer_action
 				);
 

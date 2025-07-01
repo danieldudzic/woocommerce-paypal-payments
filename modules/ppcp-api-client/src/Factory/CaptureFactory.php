@@ -64,6 +64,7 @@ class CaptureFactory {
 	 * @param \stdClass $data The PayPal response.
 	 *
 	 * @return Capture
+	 * @throws RuntimeException When capture amount data is invalid.
 	 */
 	public function from_paypal_response( \stdClass $data ) : Capture {
 		$reason                      = $data->status_details->reason ?? null;
