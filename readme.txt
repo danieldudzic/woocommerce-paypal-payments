@@ -156,8 +156,8 @@ If you encounter issues with the PayPal buttons not appearing after an update, p
 
 == Changelog ==
 
-= 3.0.7 - xxxx-xx-xx =
-* Enhancement - Remove`application_context` in favor of `experience_context` object #3431
+= 3.0.7 - 2025-07-01 =
+* Enhancement - Remove `application_context` in favor of `experience_context` object #3431
  **NOTE**: If you were modifying the `application_context` object programmatically, you may need to update your code to utilize `experience_context` for your customizations. 
 * Enhancement - Add Contact Module feature
 * Enhancement - Add WooCommerce Tracks integration
