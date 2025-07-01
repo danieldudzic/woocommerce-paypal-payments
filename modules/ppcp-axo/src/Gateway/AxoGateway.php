@@ -306,7 +306,6 @@ class AxoGateway extends WC_Payment_Gateway {
 				$this->order_processor->process_captured_and_authorized( $wc_order, $order );
 			}
 		} catch ( Exception $exception ) {
-			// Error handling for payment failures.
 			$this->logger->error( '[AXO] Payment processing failed: ' . $exception->getMessage() );
 			return array(
 				'result'  => 'failure',
@@ -399,8 +398,11 @@ class AxoGateway extends WC_Payment_Gateway {
 
 	/**
 	 * Extract payer action URL from PayPal order.
+	 *
+	 * @param Order $order The PayPal order.
+	 * @return string The payer action URL or an empty string if not found.
 	 */
-	private function get_payer_action_url( Order $order ) {
+	private function get_payer_action_url( Order $order ) : string {
 		$links = $order->links();
 
 		if ( ! $links ) {

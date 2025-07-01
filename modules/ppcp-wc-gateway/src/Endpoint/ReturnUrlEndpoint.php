@@ -13,6 +13,7 @@ use DomainException;
 use Psr\Log\LoggerInterface;
 use Exception;
 use WooCommerce\PayPalCommerce\ApiClient\Endpoint\OrderEndpoint;
+use WooCommerce\PayPalCommerce\ApiClient\Entity\Order;
 use WooCommerce\PayPalCommerce\ApiClient\Entity\OrderStatus;
 use WooCommerce\PayPalCommerce\Session\SessionHandler;
 use WooCommerce\PayPalCommerce\ApiClient\Exception\RuntimeException;
@@ -108,7 +109,6 @@ class ReturnUrlEndpoint {
 			}
 		}
 
-		// Get WooCommerce order ID.
 		$wc_order_id = (int) $order->purchase_units()[0]->custom_id();
 		if ( ! $wc_order_id ) {
 			// We cannot finish processing here without WC order, but at least go into the continuation mode.
@@ -170,10 +170,10 @@ class ReturnUrlEndpoint {
 	/**
 	 * Check if order needs 3DS completion.
 	 *
-	 * @param mixed $order The PayPal order.
+	 * @param Order $order The PayPal order.
 	 * @return bool
 	 */
-	private function needs_3ds_completion( $order ): bool {
+	private function needs_3ds_completion( Order $order ): bool {
 		// If order is still CREATED after 3DS redirect, it needs to be captured.
 		return $order->status()->is( OrderStatus::CREATED );
 	}

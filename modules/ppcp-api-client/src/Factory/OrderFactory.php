@@ -81,7 +81,25 @@ class OrderFactory {
 	 * @throws RuntimeException When JSON object is malformed.
 	 */
 	public function from_paypal_response( \stdClass $order_data ): Order {
-		return $this->create_order_from_response( $order_data, false );
+		$this->validate_order_id( $order_data );
+
+		$purchase_units = $this->create_purchase_units( $order_data );
+		$status         = $this->create_order_status( $order_data );
+		$intent         = $this->get_intent( $order_data );
+		$timestamps     = $this->create_timestamps( $order_data );
+		$payer          = $this->create_payer( $order_data );
+		$payment_source = $this->create_payment_source( $order_data );
+
+		return new Order(
+			$order_data->id,
+			$purchase_units,
+			$status,
+			$payment_source,
+			$payer,
+			$intent,
+			$timestamps['create_time'],
+			$timestamps['update_time']
+		);
 	}
 
 	/**
@@ -93,28 +111,15 @@ class OrderFactory {
 	 * @throws RuntimeException When JSON object is malformed.
 	 */
 	public function from_paypal_response_with_3ds( \stdClass $order_data ): Order {
-		return $this->create_order_from_response( $order_data, true );
-	}
-
-	/**
-	 * Creates an Order object from PayPal response data.
-	 *
-	 * @param \stdClass $order_data The JSON object.
-	 * @param bool      $is_3ds_response Whether this is a 3DS response.
-	 *
-	 * @return Order
-	 * @throws RuntimeException When JSON object is malformed.
-	 */
-	private function create_order_from_response( \stdClass $order_data, bool $is_3ds_response ): Order {
 		$this->validate_order_id( $order_data );
 
-		$purchase_units = $this->create_purchase_units( $order_data, $is_3ds_response );
-		$status         = $this->create_order_status( $order_data, $is_3ds_response );
-		$intent         = $this->get_intent( $order_data, $is_3ds_response );
-		$timestamps     = $this->create_timestamps( $order_data, $is_3ds_response );
-		$payer          = $this->create_payer( $order_data, $is_3ds_response );
+		$purchase_units = $this->create_purchase_units( $order_data );
+		$status         = $this->create_order_status( $order_data );
+		$intent         = $this->get_intent( $order_data );
+		$timestamps     = $this->create_timestamps( $order_data );
+		$payer          = $this->create_payer( $order_data );
 		$payment_source = $this->create_payment_source( $order_data );
-		$links          = $is_3ds_response ? ( $order_data->links ?? null ) : null;
+		$links          = $order_data->links ?? null;
 
 		return new Order(
 			$order_data->id,
@@ -148,94 +153,56 @@ class OrderFactory {
 	 * Creates purchase units from order data.
 	 *
 	 * @param \stdClass $order_data The order data.
-	 * @param bool      $is_3ds_response Whether this is a 3DS response.
 	 *
 	 * @return array Array of PurchaseUnit objects.
-	 * @throws RuntimeException When purchase units are required but missing.
 	 */
-	private function create_purchase_units( \stdClass $order_data, bool $is_3ds_response ): array {
-		// 3DS responses don't contain purchase units.
-		if ( $is_3ds_response ) {
+	private function create_purchase_units( \stdClass $order_data ): array {
+		if ( ! isset( $order_data->purchase_units ) || ! is_array( $order_data->purchase_units ) ) {
 			return array();
 		}
 
-		if ( ! isset( $order_data->purchase_units ) || ! is_array( $order_data->purchase_units ) ) {
-			throw new RuntimeException(
-				__( 'Order does not contain items.', 'woocommerce-paypal-payments' )
-			);
+		$purchase_units = array();
+		foreach ( $order_data->purchase_units as $data ) {
+			$purchase_unit = $this->purchase_unit_factory->from_paypal_response( $data );
+			if ( null !== $purchase_unit ) {
+				$purchase_units[] = $purchase_unit;
+			}
 		}
 
-		return array_map(
-			function ( \stdClass $data ): PurchaseUnit {
-				return $this->purchase_unit_factory->from_paypal_response( $data );
-			},
-			$order_data->purchase_units
-		);
+		return $purchase_units;
 	}
 
 	/**
 	 * Creates order status from order data.
 	 *
 	 * @param \stdClass $order_data The order data.
-	 * @param bool      $is_3ds_response Whether this is a 3DS response.
 	 *
 	 * @return OrderStatus
-	 * @throws RuntimeException When status is required but missing.
 	 */
-	private function create_order_status( \stdClass $order_data, bool $is_3ds_response ): OrderStatus {
-		if ( $is_3ds_response ) {
-			$status_value = $order_data->status ?? 'PAYER_ACTION_REQUIRED';
-			return new OrderStatus( $status_value );
-		}
-
-		if ( ! isset( $order_data->status ) ) {
-			throw new RuntimeException(
-				__( 'Order does not contain status.', 'woocommerce-paypal-payments' )
-			);
-		}
-
-		return new OrderStatus( $order_data->status );
+	private function create_order_status( \stdClass $order_data ): OrderStatus {
+		$status_value = $order_data->status ?? 'PAYER_ACTION_REQUIRED';
+		return new OrderStatus( $status_value );
 	}
 
 	/**
 	 * Gets the intent from order data.
 	 *
 	 * @param \stdClass $order_data The order data.
-	 * @param bool      $is_3ds_response Whether this is a 3DS response.
 	 *
 	 * @return string
-	 * @throws RuntimeException When intent is required but missing.
 	 */
-	private function get_intent( \stdClass $order_data, bool $is_3ds_response ): string {
-		if ( $is_3ds_response ) {
-			return $order_data->intent ?? 'CAPTURE';
-		}
-
-		if ( ! isset( $order_data->intent ) ) {
-			throw new RuntimeException(
-				__( 'Order does not contain intent.', 'woocommerce-paypal-payments' )
-			);
-		}
-
-		return $order_data->intent;
+	private function get_intent( \stdClass $order_data ): string {
+		return $order_data->intent ?? 'CAPTURE';
 	}
 
 	/**
 	 * Creates timestamps from order data.
 	 *
 	 * @param \stdClass $order_data The order data.
-	 * @param bool      $is_3ds_response Whether this is a 3DS response.
 	 *
 	 * @return array Array with 'create_time' and 'update_time' keys.
 	 */
-	private function create_timestamps( \stdClass $order_data, bool $is_3ds_response ): array {
-		if ( $is_3ds_response ) {
-			return array(
-				'create_time' => null,
-				'update_time' => null,
-			);
-		}
-
+	private function create_timestamps( \stdClass $order_data ): array {
 		$create_time = isset( $order_data->create_time ) ?
 			\DateTime::createFromFormat( 'Y-m-d\TH:i:sO', $order_data->create_time ) :
 			null;
@@ -254,15 +221,10 @@ class OrderFactory {
 	 * Creates payer from order data.
 	 *
 	 * @param \stdClass $order_data The order data.
-	 * @param bool      $is_3ds_response Whether this is a 3DS response.
 	 *
 	 * @return mixed Payer object or null.
 	 */
-	private function create_payer( \stdClass $order_data, bool $is_3ds_response ) {
-		if ( $is_3ds_response ) {
-			return null;
-		}
-
+	private function create_payer( \stdClass $order_data ) {
 		return isset( $order_data->payer ) ?
 			$this->payer_factory->from_paypal_response( $order_data->payer ) :
 			null;

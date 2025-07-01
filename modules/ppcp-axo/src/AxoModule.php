@@ -384,16 +384,21 @@ class AxoModule implements ServiceModule, ExtendingModule, ExecutableModule {
 					return $data;
 				}
 
+				if ( ! isset( $data['payment_source'] ) || ! isset( $data['payment_source']['card'] ) || ! is_object( $data['payment_source']['card'] ) ) {
+					return $data;
+				}
+
 				$settings_model = $c->get( 'settings.data.settings' );
 				assert( $settings_model instanceof SettingsModel );
 
 				$three_d_secure = $settings_model->get_three_d_secure_enum();
+				$card           = $data['payment_source']['card'];
 
 				if (
 					$three_d_secure === 'SCA_ALWAYS'
 					|| $three_d_secure === 'SCA_WHEN_REQUIRED'
 				) {
-					$data['payment_source']['card']->attributes = array(
+					$card->attributes = array(
 						'verification' => array(
 							'method' => $three_d_secure,
 						),
@@ -408,9 +413,9 @@ class AxoModule implements ServiceModule, ExtendingModule, ExecutableModule {
 						->with_current_locale()
 						->build()->to_array();
 
-						$data['transaction_context'] = array(
-							'soft_descriptor' => __( 'Card verification hold', 'woocommerce-paypal-payments' ),
-						);
+					$data['transaction_context'] = array(
+						'soft_descriptor' => __( 'Card verification hold', 'woocommerce-paypal-payments' ),
+					);
 				}
 
 				return $data;
@@ -418,7 +423,6 @@ class AxoModule implements ServiceModule, ExtendingModule, ExecutableModule {
 			10,
 			2
 		);
-
 		return true;
 	}
 
