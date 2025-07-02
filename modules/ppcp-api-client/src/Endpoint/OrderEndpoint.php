@@ -265,12 +265,7 @@ class OrderEndpoint {
 			throw $error;
 		}
 
-		// Check if this is a PAYER_ACTION_REQUIRED response (3DS).
-		$is_3ds_response = isset( $json->status ) && $json->status === 'PAYER_ACTION_REQUIRED';
-
-		$order = $is_3ds_response
-			? $this->order_factory->from_paypal_response_with_3ds( $json )
-			: $this->order_factory->from_paypal_response( $json );
+		$order = $this->order_factory->from_paypal_response( $json );
 
 		do_action( 'woocommerce_paypal_payments_paypal_order_created', $order );
 

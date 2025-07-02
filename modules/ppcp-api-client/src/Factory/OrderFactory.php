@@ -68,7 +68,8 @@ class OrderFactory {
 			$order->payer(),
 			$order->intent(),
 			$order->create_time(),
-			$order->update_time()
+			$order->update_time(),
+			$order->links()
 		);
 	}
 
@@ -81,36 +82,6 @@ class OrderFactory {
 	 * @throws RuntimeException When JSON object is malformed.
 	 */
 	public function from_paypal_response( \stdClass $order_data ): Order {
-		$this->validate_order_id( $order_data );
-
-		$purchase_units = $this->create_purchase_units( $order_data );
-		$status         = $this->create_order_status( $order_data );
-		$intent         = $this->get_intent( $order_data );
-		$timestamps     = $this->create_timestamps( $order_data );
-		$payer          = $this->create_payer( $order_data );
-		$payment_source = $this->create_payment_source( $order_data );
-
-		return new Order(
-			$order_data->id,
-			$purchase_units,
-			$status,
-			$payment_source,
-			$payer,
-			$intent,
-			$timestamps['create_time'],
-			$timestamps['update_time']
-		);
-	}
-
-	/**
-	 * Returns an Order object based off a PayPal 3DS Response.
-	 *
-	 * @param \stdClass $order_data The JSON object.
-	 *
-	 * @return Order
-	 * @throws RuntimeException When JSON object is malformed.
-	 */
-	public function from_paypal_response_with_3ds( \stdClass $order_data ): Order {
 		$this->validate_order_id( $order_data );
 
 		$purchase_units = $this->create_purchase_units( $order_data );
