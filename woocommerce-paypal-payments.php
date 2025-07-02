@@ -44,6 +44,42 @@ define( 'PPCP_PAYPAL_BN_CODE', 'Woo_PPCP' );
 	}
 
 	/**
+	 * Displays an admin notice and optionally deactivates the current plugin.
+	 *
+	 * This function registers a callback to display administrative notices on both
+	 * single-site and network admin areas. It's typically used to show error messages
+	 * when plugin requirements are not met, followed by automatic plugin deactivation.
+	 *
+	 * @param callable $notice_callback The callback function that outputs the admin notice HTML.
+	 *                                  Should echo/print the notice markup directly.
+	 * @param bool     $auto_deactivate Optional. Whether to automatically deactivate the plugin
+	 *                                  after displaying the notice. Default true.
+	 *
+	 * @return void
+	 */
+	function show_admin_notice_and_deactivate( callable $notice_callback, bool $auto_deactivate = true ): void {
+		if ( ! is_callable( $notice_callback ) ) {
+			return;
+		}
+
+		$admin_notice_hooks = array( 'admin_notices', 'network_admin_notices' );
+
+		foreach ( $admin_notice_hooks as $hook ) {
+			add_action(
+				$hook,
+				static function () use ( $notice_callback, $auto_deactivate ) {
+					$notice_callback();
+
+					if ( $auto_deactivate ) {
+						deactivate_plugins( plugin_basename( __FILE__ ) );
+						unset( $_GET['activate'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+					}
+				}
+			);
+		}
+	}
+
+	/**
 	 * Initialize the plugin and its modules.
 	 */
 	function init(): void {
