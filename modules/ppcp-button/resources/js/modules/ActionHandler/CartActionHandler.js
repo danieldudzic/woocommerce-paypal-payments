@@ -1,6 +1,7 @@
 import onApprove from '../OnApproveHandler/onApproveForContinue.js';
 import { payerData } from '../Helper/PayerData';
 import { PaymentMethods } from '../Helper/CheckoutMethodState';
+import ResumeFlowHelper from '../Helper/ResumeFlowHelper';
 
 class CartActionHandler {
 	constructor( config, errorHandler ) {
@@ -89,8 +90,15 @@ class CartActionHandler {
 		return {
 			createOrder,
 			onApprove: onApprove( this, this.errorHandler ),
-			onError: ( error ) => {
+			onError: () => {
 				this.errorHandler.genericError();
+
+				if ( ResumeFlowHelper.isResumeFlow() ) {
+					ResumeFlowHelper.cleanHashParams();
+					jQuery( this.config.button.wrapper ).trigger(
+						'ppcp-reload-buttons'
+					);
+				}
 			},
 		};
 	}
