@@ -275,7 +275,8 @@ return array(
 		);
 	},
 	'api.reference-transaction-status'               => static fn ( ContainerInterface $container ): ReferenceTransactionStatus => new ReferenceTransactionStatus(
-		$container->get( 'api.endpoint.partners' )
+		$container->get( 'api.endpoint.partners' ),
+		$container->get( 'api.reference-transaction-status-cache' )
 	),
 	'api.endpoint.catalog-products'                  => static function ( ContainerInterface $container ): CatalogProducts {
 		return new CatalogProducts(
@@ -870,6 +871,9 @@ return array(
 	},
 	'api.user-id-token-cache'                        => static function( ContainerInterface $container ): Cache {
 		return new Cache( 'ppcp-id-token-cache' );
+	},
+	'api.reference-transaction-status-cache'         => static function( ContainerInterface $container ): Cache {
+		return new Cache( 'ppcp-reference-transaction-status-cache' );
 	},
 	'api.user-id-token'                              => static function( ContainerInterface $container ): UserIdToken {
 		return new UserIdToken(
