@@ -489,8 +489,12 @@ class WCGatewayModule implements ServiceModule, ExtendingModule, ExecutableModul
 					$pui_product_status->clear( $settings );
 				}
 
+				$reference_transaction_status_cache = $c->get( 'api.reference-transaction-status-cache' );
+				assert( $reference_transaction_status_cache instanceof Cache );
 				// Clear Reference Transaction status.
-				delete_transient( 'ppcp_reference_transaction_enabled' );
+				if ( $reference_transaction_status_cache->has( ReferenceTransactionStatus::CACHE_KEY ) ) {
+					$reference_transaction_status_cache->delete( ReferenceTransactionStatus::CACHE_KEY );
+				}
 			}
 		);
 
