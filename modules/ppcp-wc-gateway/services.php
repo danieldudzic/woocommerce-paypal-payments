@@ -549,7 +549,8 @@ return array(
 			$container->get( 'api.partner_merchant_id-sandbox' ),
 			$container->get( 'api.reference-transaction-status' ),
 			$container->get( 'woocommerce.logger.woocommerce' ),
-			new Cache( 'ppcp-client-credentials-cache' )
+			new Cache( 'ppcp-client-credentials-cache' ),
+			$container->get( 'api.reference-transaction-status-cache' )
 		);
 	},
 	'wcgateway.order-processor'                            => static function ( ContainerInterface $container ): OrderProcessor {

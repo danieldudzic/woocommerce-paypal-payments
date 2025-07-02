@@ -167,6 +167,8 @@ class SettingsListener {
 	 */
 	private $client_credentials_cache;
 
+	protected Cache $reference_transaction_status_cache;
+
 	/**
 	 * SettingsListener constructor.
 	 *
@@ -187,6 +189,7 @@ class SettingsListener {
 	 * @param ReferenceTransactionStatus $reference_transaction_status
 	 * @param ?LoggerInterface           $logger The logger.
 	 * @param Cache                      $client_credentials_cache The client credentials cache.
+	 * @param Cache                      $reference_transaction_status_cache The client credentials cache.
 	 */
 	public function __construct(
 		Settings $settings,
@@ -205,28 +208,30 @@ class SettingsListener {
 		string $partner_merchant_id_sandbox,
 		ReferenceTransactionStatus $reference_transaction_status,
 		LoggerInterface $logger = null,
-		Cache $client_credentials_cache
+		Cache $client_credentials_cache,
+		Cache $reference_transaction_status_cache
 	) {
 
 		// This is a legacy settings class, it's correctly relying on the `Status` class.
 
-		$this->settings                       = $settings;
-		$this->setting_fields                 = $setting_fields;
-		$this->webhook_registrar              = $webhook_registrar;
-		$this->cache                          = $cache;
-		$this->state                          = $state;
-		$this->bearer                         = $bearer;
-		$this->page_id                        = $page_id;
-		$this->signup_link_cache              = $signup_link_cache;
-		$this->signup_link_ids                = $signup_link_ids;
-		$this->pui_status_cache               = $pui_status_cache;
-		$this->dcc_status_cache               = $dcc_status_cache;
-		$this->redirector                     = $redirector;
-		$this->partner_merchant_id_production = $partner_merchant_id_production;
-		$this->partner_merchant_id_sandbox    = $partner_merchant_id_sandbox;
-		$this->reference_transaction_status   = $reference_transaction_status;
-		$this->logger                         = $logger ?: new NullLogger();
-		$this->client_credentials_cache       = $client_credentials_cache;
+		$this->settings                           = $settings;
+		$this->setting_fields                     = $setting_fields;
+		$this->webhook_registrar                  = $webhook_registrar;
+		$this->cache                              = $cache;
+		$this->state                              = $state;
+		$this->bearer                             = $bearer;
+		$this->page_id                            = $page_id;
+		$this->signup_link_cache                  = $signup_link_cache;
+		$this->signup_link_ids                    = $signup_link_ids;
+		$this->pui_status_cache                   = $pui_status_cache;
+		$this->dcc_status_cache                   = $dcc_status_cache;
+		$this->redirector                         = $redirector;
+		$this->partner_merchant_id_production     = $partner_merchant_id_production;
+		$this->partner_merchant_id_sandbox        = $partner_merchant_id_sandbox;
+		$this->reference_transaction_status       = $reference_transaction_status;
+		$this->logger                             = $logger ?: new NullLogger();
+		$this->client_credentials_cache           = $client_credentials_cache;
+		$this->reference_transaction_status_cache = $reference_transaction_status_cache;
 	}
 
 	/**
@@ -523,9 +528,8 @@ class SettingsListener {
 		 */
 		do_action( 'woocommerce_paypal_payments_on_listening_request' );
 
-		$ppcp_reference_transaction_enabled = get_transient( 'ppcp_reference_transaction_enabled' ) ?? '';
-		if ( $ppcp_reference_transaction_enabled ) {
-			delete_transient( 'ppcp_reference_transaction_enabled' );
+		if ( $this->reference_transaction_status_cache->has( ReferenceTransactionStatus::CACHE_KEY ) ) {
+			$this->reference_transaction_status_cache->delete( ReferenceTransactionStatus::CACHE_KEY );
 		}
 
 		$redirect_url = false;
