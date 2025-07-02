@@ -112,11 +112,15 @@ define( 'PPCP_PAYPAL_BN_CODE', 'Woo_PPCP' );
 			return;
 		}
 		if ( version_compare( PHP_VERSION, '7.4', '<' ) ) {
-			add_action(
-				'admin_notices',
-				function() {
-					echo '<div class="error"><p>' . esc_html__( 'WooCommerce PayPal Payments requires PHP 7.4 or above.', 'woocommerce-paypal-payments' ), '</p></div>';
-				}
+			show_admin_notice_and_deactivate(
+				static fn() => printf(
+					'<div class="notice notice-error"><span class="notice-title">%1$s</span><p>%2$s</p></div>',
+					esc_html__(
+						'The plugin WooCommerce PayPal Payments has been deactivated',
+						'woocommerce-paypal-payments'
+					),
+					esc_html__( 'WooCommerce PayPal Payments requires PHP 7.4 or above.', 'woocommerce-paypal-payments' )
+				)
 			);
 
 			return;
