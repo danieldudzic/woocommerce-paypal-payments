@@ -146,6 +146,11 @@ define( 'PPCP_PAYPAL_BN_CODE', 'Woo_PPCP' );
 		'plugins_loaded',
 		function () {
 			init();
+
+			if ( ! is_woocommerce_activated() ) {
+				return;
+			}
+
 			add_action(
 				'init',
 				function () {
