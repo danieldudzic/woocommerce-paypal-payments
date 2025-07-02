@@ -5,7 +5,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 	);
 	const link = document.querySelector( 'a.settings-switch-ui' );
 
-	if ( ! typeof config || ( ! button && ! link ) ) {
+	if ( typeof config === 'undefined' || ( ! button && ! link ) ) {
 		return;
 	}
 
