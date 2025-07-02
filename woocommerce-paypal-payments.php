@@ -86,12 +86,27 @@ define( 'PPCP_PAYPAL_BN_CODE', 'Woo_PPCP' );
 		$root_dir = __DIR__;
 
 		if ( ! is_woocommerce_activated() ) {
-			add_action(
-				'admin_notices',
-				function() {
-					/* translators: 1. URL link. */
-					echo '<div class="error"><p><strong>' . sprintf( esc_html__( 'WooCommerce PayPal Payments requires WooCommerce to be installed and active. You can download %s here.', 'woocommerce-paypal-payments' ), '<a href="https://woocommerce.com/" target="_blank">WooCommerce</a>' ) . '</strong></p></div>';
-				}
+			show_admin_notice_and_deactivate(
+				static fn() => printf(
+					'<div class="notice notice-error"><span class="notice-title">%1$s</span><p>%2$s</p></div>',
+					esc_html__(
+						'The plugin WooCommerce PayPal Payments has been deactivated',
+						'woocommerce-paypal-payments'
+					),
+					wp_kses(
+						sprintf(
+						// translators: %s is a link to WooCommerce.com.
+							esc_html__( 'WooCommerce PayPal Payments requires WooCommerce to be installed and active. You can download %s here.', 'woocommerce-paypal-payments' ),
+							'<a href="https://woocommerce.com/" target="_blank">WooCommerce</a>'
+						),
+						array(
+							'a' => array(
+								'href'   => array(),
+								'target' => array(),
+							),
+						)
+					)
+				)
 			);
 
 			return;
