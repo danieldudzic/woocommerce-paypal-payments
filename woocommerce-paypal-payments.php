@@ -95,9 +95,13 @@ define( 'PPCP_PAYPAL_BN_CODE', 'Woo_PPCP' );
 					),
 					wp_kses(
 						sprintf(
-						// translators: %s is a link to WooCommerce.com.
-							esc_html__( 'WooCommerce PayPal Payments requires WooCommerce to be installed and active. You can download %s here.', 'woocommerce-paypal-payments' ),
-							'<a href="https://woocommerce.com/" target="_blank">WooCommerce</a>'
+						// translators: %s is a link to install WooCommerce.
+							esc_html__( 'WooCommerce PayPal Payments requires WooCommerce to be installed and active. %s', 'woocommerce-paypal-payments' ),
+							sprintf(
+								'<a href="%s">%s</a>',
+								esc_url( network_admin_url( 'plugin-install.php?tab=plugin-information&plugin=woocommerce' ) ),
+								esc_html__( 'You can download WooCommerce here.', 'woocommerce-paypal-payments' )
+							)
 						),
 						array(
 							'a' => array(
