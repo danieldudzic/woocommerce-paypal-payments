@@ -216,13 +216,13 @@ export default class PaymentButton {
 	/**
 	 * Factory method to create a new PaymentButton while limiting a single instance per context.
 	 *
-	 * @param {string}  context          - Button context name.
-	 * @param {unknown} externalHandler  - Handler object.
-	 * @param {Object}  buttonConfig     - Payment button specific configuration.
-	 * @param {Object}  ppcpConfig       - Plugin wide configuration object.
-	 * @param {unknown} contextHandler   - Handler object.
-	 * @param {Object}  buttonAttributes - Button attributes.
-	 * @param           onClick
+	 * @param {string}   context          - Button context name.
+	 * @param {unknown}  externalHandler  - Handler object.
+	 * @param {Object}   buttonConfig     - Payment button specific configuration.
+	 * @param {Object}   ppcpConfig       - Plugin wide configuration object.
+	 * @param {unknown}  contextHandler   - Handler object.
+	 * @param {Object}   buttonAttributes - Button attributes.
+	 * @param {Function} onClick          - Event from WC component.
 	 * @return {PaymentButton} The button instance.
 	 */
 	static createButton(
@@ -289,13 +289,13 @@ export default class PaymentButton {
 	 * to avoid multiple button instances handling the same context.
 	 *
 	 * @private
-	 * @param {string} context          - Button context name.
-	 * @param {Object} externalHandler  - Handler object.
-	 * @param {Object} buttonConfig     - Payment button specific configuration.
-	 * @param {Object} ppcpConfig       - Plugin wide configuration object.
-	 * @param {Object} contextHandler   - Handler object.
-	 * @param          onClick
-	 * @param {Object} buttonAttributes - Button attributes.
+	 * @param {string}   context          - Button context name.
+	 * @param {Object}   externalHandler  - Handler object.
+	 * @param {Object}   buttonConfig     - Payment button specific configuration.
+	 * @param {Object}   ppcpConfig       - Plugin wide configuration object.
+	 * @param {Object}   contextHandler   - Handler object.
+	 * @param {Function} onClick          - Event from WC component.
+	 * @param {Object}   buttonAttributes - Button attributes.
 	 */
 	constructor(
 		context,
