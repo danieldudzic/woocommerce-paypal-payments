@@ -4,9 +4,8 @@ import { PaymentMethodsBlock } from '../../../../ReusableComponents/SettingsBloc
 import usePaymentDependencyState from '../../../../../hooks/usePaymentDependencyState';
 import useSettingDependencyState from '../../../../../hooks/useSettingDependencyState';
 import usePaymentMethodsToggle from '../../../../../hooks/usePaymentMethodsToggle';
+import useDependencyMessages from '../../../../../hooks/useDependencyMessages';
 import BulkPaymentToggle from './BulkPaymentToggle';
-import PaymentDependencyMessage from './PaymentDependencyMessage';
-import SettingDependencyMessage from './SettingDependencyMessage';
 import SpinnerOverlay from '../../../../ReusableComponents/SpinnerOverlay';
 import {
 	PaymentHooks,
@@ -60,6 +59,13 @@ const PaymentMethodCard = ( {
 
 	const settingDependencies = useSettingDependencyState( methods );
 
+	const dependencyMessagesMap = useDependencyMessages(
+		methods,
+		paymentDependencies,
+		settingDependencies,
+		isDisabled
+	);
+
 	// Initialize the bulk toggle functionality.
 	const { allEnabled, toggleAllMethods, methodCount } =
 		usePaymentMethodsToggle( {
@@ -86,37 +92,17 @@ const PaymentMethodCard = ( {
 		return <SpinnerOverlay asModal={ true } />;
 	}
 
-	// Process methods with dependencies.
+	// Process methods with dependencies from the pre-computed map.
 	const processedMethods = methods.map( ( method ) => {
-		const paymentDependency = paymentDependencies?.[ method.id ];
-		const settingDependency = settingDependencies?.[ method.id ];
-
-		let dependencyMessage = null;
-		let isMethodDisabled = method.isDisabled || isDisabled;
-
-		if ( paymentDependency ) {
-			dependencyMessage = (
-				<PaymentDependencyMessage
-					parentId={ paymentDependency.parentId }
-					parentName={ paymentDependency.parentName }
-				/>
-			);
-			isMethodDisabled = true;
-		} else if ( settingDependency?.isDisabled ) {
-			dependencyMessage = (
-				<SettingDependencyMessage
-					settingId={ settingDependency.settingId }
-					requiredValue={ settingDependency.requiredValue }
-					methodId={ method.id }
-				/>
-			);
-			isMethodDisabled = true;
-		}
+		const dependencyInfo = dependencyMessagesMap[ method.id ] || {};
 
 		return {
 			...method,
-			isDisabled: isMethodDisabled,
-			disabledMessage: dependencyMessage,
+			isDisabled:
+				dependencyInfo.isMethodDisabled ||
+				method.isDisabled ||
+				isDisabled,
+			disabledMessage: dependencyInfo.dependencyMessage,
 		};
 	} );
 

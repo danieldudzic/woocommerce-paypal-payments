@@ -42,7 +42,8 @@ const PaymentFlow = ( {
 			/>
 		);
 	}
-const description = useAcdc ? optionalDescription : '';
+	const description =
+		useAcdc && 'MX' !== storeCountry ? optionalDescription : '';
 	return (
 		<div className="ppcp-r-welcome-docs__wrapper">
 			<DefaultMethodsSection

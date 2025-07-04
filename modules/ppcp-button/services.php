@@ -167,6 +167,7 @@ return array(
 			$container->get( 'api.endpoint.payment-tokens' ),
 			$container->get( 'woocommerce.logger.woocommerce' ),
 			$container->get( 'button.handle-shipping-in-paypal' ),
+			$container->get( 'wcgateway.server-side-shipping-callback-enabled' ),
 			$container->get( 'button.helper.disabled-funding-sources' ),
 			$container->get( 'wcgateway.configuration.card-configuration' ),
 			$container->get( 'api.helper.partner-attribution' )
@@ -227,6 +228,8 @@ return array(
 			$request_data,
 			$purchase_unit_factory,
 			$container->get( 'api.factory.shipping-preference' ),
+			$container->get( 'api.factory.contact-preference' ),
+			$container->get( 'wcgateway.builder.experience-context' ),
 			$order_endpoint,
 			$payer_factory,
 			$session_handler,
@@ -237,6 +240,7 @@ return array(
 			$container->get( 'button.early-wc-checkout-validation-enabled' ),
 			$container->get( 'button.pay-now-contexts' ),
 			$container->get( 'button.handle-shipping-in-paypal' ),
+			$container->get( 'wcgateway.server-side-shipping-callback-enabled' ),
 			$container->get( 'wcgateway.funding-sources-without-redirect' ),
 			$logger
 		);
@@ -346,7 +350,8 @@ return array(
 		return new DisabledFundingSources(
 			$container->get( 'wcgateway.settings' ),
 			$container->get( 'wcgateway.all-funding-sources' ),
-			$container->get( 'wcgateway.configuration.card-configuration' )
+			$container->get( 'wcgateway.configuration.card-configuration' ),
+			$container->get( 'api.shop.country' )
 		);
 	},
 	'button.is-logged-in'                         => static function ( ContainerInterface $container ): bool {

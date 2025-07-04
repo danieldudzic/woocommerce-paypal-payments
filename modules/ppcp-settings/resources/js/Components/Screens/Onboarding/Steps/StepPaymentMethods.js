@@ -10,13 +10,13 @@ import PaymentFlow from '../Components/PaymentFlow';
 const StepPaymentMethods = () => {
 	const { optionalMethods, setOptionalMethods } =
 		OnboardingHooks.useOptionalPaymentMethods();
-	const { ownBrandOnly } = CommonHooks.useWooSettings();
+	const { ownBrandOnly, storeCountry } = CommonHooks.useWooSettings();
 	const { isCasualSeller } = OnboardingHooks.useBusiness();
 	const { canUseCardPayments } = OnboardingHooks.useFlags();
 
 	const optionalMethodTitle = useMemo( () => {
-		// The BCDC flow does not show a title. !acdc does not show a title.
-		if ( isCasualSeller || ! canUseCardPayments ) {
+		// The BCDC flow does not show a title. !acdc does not show a title. Mexico does not show a title.
+		if ( isCasualSeller || ! canUseCardPayments || 'MX' === storeCountry ) {
 			return null;
 		}
 
@@ -24,7 +24,7 @@ const StepPaymentMethods = () => {
 			'Available with additional application',
 			'woocommerce-paypal-payments'
 		);
-	}, [ isCasualSeller, canUseCardPayments ] );
+	}, [ isCasualSeller, canUseCardPayments, storeCountry ] );
 
 	const methodChoices = [
 		{
@@ -34,7 +34,7 @@ const StepPaymentMethods = () => {
 		},
 		{
 			title:
-				ownBrandOnly || ! canUseCardPayments
+				ownBrandOnly || ! canUseCardPayments || 'MX' === storeCountry
 					? __(
 							'No thanks, I prefer to use a different provider for local payment methods',
 							'woocommerce-paypal-payments'
@@ -47,6 +47,10 @@ const StepPaymentMethods = () => {
 		},
 	];
 
+	const handleMethodChange = ( value ) => {
+		setOptionalMethods( value, 'user' );
+	};
+
 	return (
 		<div className="ppcp-r-page-optional-payment-methods">
 			<OnboardingHeader
@@ -56,7 +60,7 @@ const StepPaymentMethods = () => {
 				<OptionSelector
 					multiSelect={ false }
 					options={ methodChoices }
-					onChange={ setOptionalMethods }
+					onChange={ handleMethodChange }
 					value={ optionalMethods }
 				/>
 
@@ -87,7 +91,9 @@ const OptionalMethodDescription = () => {
 	return (
 		<PaymentFlow
 			onlyOptional={ true }
-			useAcdc={ ! isCasualSeller && canUseCardPayments }
+			useAcdc={
+				! isCasualSeller && canUseCardPayments && 'MX' !== storeCountry
+			}
 			isFastlane={ true }
 			isPayLater={ true }
 			ownBrandOnly={ ownBrandOnly }

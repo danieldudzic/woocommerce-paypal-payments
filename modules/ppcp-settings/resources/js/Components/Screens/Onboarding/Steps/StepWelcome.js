@@ -23,7 +23,7 @@ const StepWelcome = ( { setStep, currentStep } ) => {
 	);
 
 	const onboardingHeaderDescription =
-		canUseCardPayments && ! ownBrandOnly
+		canUseCardPayments && ! ownBrandOnly && 'MX' !== storeCountry
 			? __(
 					'Your all-in-one integration for PayPal checkout solutions that enable buyers to pay via PayPal, Pay Later, all major credit/debit cards, Apple Pay, Google Pay, and more.',
 					'woocommerce-paypal-payments'
@@ -32,6 +32,11 @@ const StepWelcome = ( { setStep, currentStep } ) => {
 					'Your all-in-one integration for PayPal checkout solutions that enable buyers to pay via PayPal, Pay Later, and more.',
 					'woocommerce-paypal-payments'
 			  );
+
+	const handleActivatePayPal = () => {
+		const nextStep = currentStep + 1;
+		setStep( nextStep, 'user' );
+	};
 
 	return (
 		<div className="ppcp-r-page-welcome">
@@ -55,7 +60,7 @@ const StepWelcome = ( { setStep, currentStep } ) => {
 					<Button
 						className="ppcp-r-button-activate-paypal"
 						variant="primary"
-						onClick={ () => setStep( currentStep + 1 ) }
+						onClick={ handleActivatePayPal }
 					>
 						{ __(
 							'Activate PayPal Payments',

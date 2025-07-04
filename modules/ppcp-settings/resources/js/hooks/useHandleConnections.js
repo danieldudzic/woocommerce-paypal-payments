@@ -31,9 +31,11 @@ export const useHandleOnboardingButton = ( isSandbox ) => {
 	const { onboardingUrl } = isSandbox
 		? CommonHooks.useSandbox()
 		: CommonHooks.useProduction();
-	const { ownBrandOnly } = CommonHooks.useWooSettings();
-	const { products, options } =
-		OnboardingHooks.useDetermineProducts( ownBrandOnly );
+	const { ownBrandOnly, storeCountry } = CommonHooks.useWooSettings();
+	const { products, options } = OnboardingHooks.useDetermineProducts(
+		ownBrandOnly,
+		storeCountry
+	);
 	const { startActivity } = CommonHooks.useBusyState();
 	const { authenticateWithOAuth } = CommonHooks.useAuthentication();
 	const [ onboardingUrlState, setOnboardingUrl ] = useState( '' );

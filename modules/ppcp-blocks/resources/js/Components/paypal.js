@@ -98,7 +98,7 @@ export const PayPalComponent = ( {
 
 		// this useEffect should run only once, but adding this in case of some kind of full re-rendering
 		setContinuationFilled( true );
-	}, [ shippingData, continuationFilled ] );
+	}, [ shippingData.needsShipping, continuationFilled ] );
 
 	const getCheckoutRedirectUrl = () => {
 		const checkoutUrl = new URL( config.scriptData.redirect );
@@ -352,6 +352,10 @@ export const PayPalComponent = ( {
 	);
 
 	const getOnShippingOptionsChange = ( fundingSource ) => {
+		if ( config.scriptData.server_side_shipping_callback.enabled ) {
+			return null;
+		}
+
 		if ( fundingSource === 'venmo' ) {
 			return null;
 		}
@@ -364,6 +368,10 @@ export const PayPalComponent = ( {
 	};
 
 	const getOnShippingAddressChange = ( fundingSource ) => {
+		if ( config.scriptData.server_side_shipping_callback.enabled ) {
+			return null;
+		}
+
 		if ( fundingSource === 'venmo' ) {
 			return null;
 		}
