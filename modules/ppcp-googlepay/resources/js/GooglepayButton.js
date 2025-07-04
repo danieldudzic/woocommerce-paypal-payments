@@ -551,7 +551,7 @@ class GooglepayButton extends PaymentButton {
 	 * Show Google Pay payment sheet when Google Pay payment button is clicked
 	 * @param onClick
 	 */
-	async onButtonClick( onClick ) {
+	async onButtonClick() {
 		this.logGroup( 'onButtonClick' );
 
 		const initiatePaymentRequest = async () => {
