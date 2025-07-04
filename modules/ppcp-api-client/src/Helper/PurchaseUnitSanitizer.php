@@ -193,22 +193,15 @@ class PurchaseUnitSanitizer {
 			$item_mismatch = $this->calculate_item_mismatch();
 
 			if ( $item_mismatch > 0 ) {
-				// Do not convert a purely digital basket to a physical one.
-				$mismatch_category = Item::DIGITAL_GOODS;
-
-				foreach ( $this->purchase_unit['items'] as $item ) {
-					if ( $item['category'] !== Item::DIGITAL_GOODS ) {
-						$mismatch_category = Item::PHYSICAL_GOODS;
-						break;
-					}
-				}
+				// Use appropriate category to preserve purely digital or physical goods baskets.
+				$rounding_item_category = $this->determine_rounding_item_category();
 
 				// Add extra line item with roundings.
 				$line_name       = $this->extra_line_name;
 				$roundings_money = new Money( $item_mismatch, $this->currency_code() );
 
 				$this->purchase_unit['items'][] = (
-						new Item( $line_name, $roundings_money, 1, '', null, '', $mismatch_category )
+						new Item( $line_name, $roundings_money, 1, '', null, '', $rounding_item_category )
 					)->to_array();
 
 				$this->set_last_message(
@@ -228,6 +221,24 @@ class PurchaseUnitSanitizer {
 				);
 			}
 		}
+	}
+
+	/**
+	 * Determines the appropriate category for rounding items based on existing items.
+	 *
+	 * @return string The category (Item::DIGITAL_GOODS or Item::PHYSICAL_GOODS)
+	 */
+	private function determine_rounding_item_category(): string {
+		// Check if all items are digital goods.
+		foreach ( $this->items() as $item ) {
+			$category = $item['category'] ?? Item::PHYSICAL_GOODS;
+			if ( $category !== Item::DIGITAL_GOODS ) {
+				return Item::PHYSICAL_GOODS;
+			}
+		}
+
+		// All items are digital goods.
+		return Item::DIGITAL_GOODS;
 	}
 
 	/**
