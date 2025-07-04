@@ -189,7 +189,8 @@ class GooglepayButton extends PaymentButton {
 		buttonConfig,
 		ppcpConfig,
 		contextHandler,
-		buttonAttributes
+		buttonAttributes,
+		onClick = null
 	) {
 		// Disable debug output in the browser console:
 		// buttonConfig.is_debug = false;
@@ -200,12 +201,14 @@ class GooglepayButton extends PaymentButton {
 			buttonConfig,
 			ppcpConfig,
 			contextHandler,
-			buttonAttributes
+			buttonAttributes,
+			onClick
 		);
 
 		this.init = this.init.bind( this );
 		this.onPaymentDataChanged = this.onPaymentDataChanged.bind( this );
 		this.onButtonClick = this.onButtonClick.bind( this );
+		this.onClick = onClick;
 
 		this.log( 'Create instance' );
 	}
@@ -546,12 +549,26 @@ class GooglepayButton extends PaymentButton {
 
 	/**
 	 * Show Google Pay payment sheet when Google Pay payment button is clicked
+	 * @param onClick
 	 */
-	async onButtonClick() {
+	async onButtonClick( onClick ) {
 		this.logGroup( 'onButtonClick' );
 
 		const initiatePaymentRequest = async () => {
 			window.ppcpFundingSource = 'googlepay';
+
+			let activePaymentMethod = wp.data
+				.select( 'wc/store/payment' )
+				.getActivePaymentMethod();
+			console.log( activePaymentMethod, 'activePaymentMethod' );
+
+			this.onClick();
+
+			activePaymentMethod = wp.data
+				.select( 'wc/store/payment' )
+				.getActivePaymentMethod();
+			console.log( activePaymentMethod, 'activePaymentMethod' );
+
 			const paymentDataRequest = this.paymentDataRequest();
 
 			this.log(

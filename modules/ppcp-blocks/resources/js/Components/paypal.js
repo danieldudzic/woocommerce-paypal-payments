@@ -136,7 +136,17 @@ export const PayPalComponent = ( {
 
 		window.ppcpFundingSource = data.fundingSource;
 
+		let activePaymentMethod = wp.data
+			.select( 'wc/store/payment' )
+			.getActivePaymentMethod();
+		console.log( activePaymentMethod, 'activePaymentMethod' );
+
 		onClick();
+
+		activePaymentMethod = wp.data
+			.select( 'wc/store/payment' )
+			.getActivePaymentMethod();
+		console.log( activePaymentMethod, 'activePaymentMethod' );
 	};
 
 	const shouldHandleShippingInPayPal = () => {
