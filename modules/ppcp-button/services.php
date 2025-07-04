@@ -29,6 +29,7 @@ use WooCommerce\PayPalCommerce\Button\Endpoint\ApproveOrderEndpoint;
 use WooCommerce\PayPalCommerce\Button\Endpoint\ChangeCartEndpoint;
 use WooCommerce\PayPalCommerce\Button\Endpoint\CreateOrderEndpoint;
 use WooCommerce\PayPalCommerce\Button\Endpoint\DataClientIdEndpoint;
+use WooCommerce\PayPalCommerce\Button\Endpoint\GetOrderEndpoint;
 use WooCommerce\PayPalCommerce\Button\Endpoint\RequestData;
 use WooCommerce\PayPalCommerce\Button\Endpoint\StartPayPalVaultingEndpoint;
 use WooCommerce\PayPalCommerce\Button\Exception\RuntimeException;
@@ -329,6 +330,16 @@ return array(
 		return new CartScriptParamsEndpoint(
 			$container->get( 'button.smart-button' ),
 			$container->get( 'woocommerce.logger.woocommerce' )
+		);
+	},
+	'button.endpoint.get-order'                   => static function ( ContainerInterface $container ): GetOrderEndpoint {
+		$request_data   = $container->get( 'button.request-data' );
+		$order_endpoint = $container->get( 'api.endpoint.order' );
+		$logger         = $container->get( 'woocommerce.logger.woocommerce' );
+		return new GetOrderEndpoint(
+			$request_data,
+			$order_endpoint,
+			$logger
 		);
 	},
 	'button.helper.cart-products'                 => static function ( ContainerInterface $container ): CartProductsHelper {
