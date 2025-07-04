@@ -90,8 +90,7 @@ if ( buttonConfig?.is_enabled ) {
 			'Eligible users will see the PayPal button.',
 			'woocommerce-paypal-payments'
 		),
-		gatewayId: buttonData.id,
-		paymentMethodId: buttonData.id,
+		gatewayId: 'ppcp-gateway',
 		label: <div dangerouslySetInnerHTML={ { __html: buttonData.title } } />,
 		content: <GooglePayComponent isEditing={ false } />,
 		edit: <GooglePayComponent isEditing={ true } />,
