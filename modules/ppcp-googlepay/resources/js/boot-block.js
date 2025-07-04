@@ -91,6 +91,7 @@ if ( buttonConfig?.is_enabled ) {
 			'woocommerce-paypal-payments'
 		),
 		gatewayId: 'ppcp-gateway',
+		paymentMethodId: 'ppcp-gateway',
 		label: <div dangerouslySetInnerHTML={ { __html: buttonData.title } } />,
 		content: <GooglePayComponent isEditing={ false } />,
 		edit: <GooglePayComponent isEditing={ true } />,

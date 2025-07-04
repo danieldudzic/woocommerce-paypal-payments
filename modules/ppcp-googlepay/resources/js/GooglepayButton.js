@@ -549,7 +549,6 @@ class GooglepayButton extends PaymentButton {
 
 	/**
 	 * Show Google Pay payment sheet when Google Pay payment button is clicked
-	 * @param onClick
 	 */
 	async onButtonClick() {
 		this.logGroup( 'onButtonClick' );
@@ -557,17 +556,8 @@ class GooglepayButton extends PaymentButton {
 		const initiatePaymentRequest = async () => {
 			window.ppcpFundingSource = 'googlepay';
 
-			let activePaymentMethod = wp.data
-				.select( 'wc/store/payment' )
-				.getActivePaymentMethod();
-			console.log( activePaymentMethod, 'activePaymentMethod' );
-
+			// Set active payment method the paymentMethodId in registerExpressPaymentMethod.
 			this.onClick();
-
-			activePaymentMethod = wp.data
-				.select( 'wc/store/payment' )
-				.getActivePaymentMethod();
-			console.log( activePaymentMethod, 'activePaymentMethod' );
 
 			const paymentDataRequest = this.paymentDataRequest();
 
