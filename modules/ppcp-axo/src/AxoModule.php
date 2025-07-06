@@ -13,14 +13,12 @@ use Psr\Log\LoggerInterface;
 use WooCommerce\PayPalCommerce\ApiClient\Authentication\SdkClientToken;
 use WooCommerce\PayPalCommerce\ApiClient\Exception\PayPalApiException;
 use WooCommerce\PayPalCommerce\ApiClient\Exception\RuntimeException;
-use WooCommerce\PayPalCommerce\ApiClient\Factory\ExperienceContextBuilder;
 use WooCommerce\PayPalCommerce\Axo\Assets\AxoManager;
 use WooCommerce\PayPalCommerce\Axo\Gateway\AxoGateway;
 use WooCommerce\PayPalCommerce\Button\Assets\SmartButtonInterface;
 use WooCommerce\PayPalCommerce\Button\Helper\ContextTrait;
 use WooCommerce\PayPalCommerce\Onboarding\Render\OnboardingOptionsRenderer;
 use WooCommerce\PayPalCommerce\Session\SessionHandler;
-use WooCommerce\PayPalCommerce\Settings\Data\SettingsModel;
 use WooCommerce\PayPalCommerce\Vendor\Inpsyde\Modularity\Module\ExecutableModule;
 use WooCommerce\PayPalCommerce\Vendor\Inpsyde\Modularity\Module\ExtendingModule;
 use WooCommerce\PayPalCommerce\Vendor\Inpsyde\Modularity\Module\ModuleClassNameIdTrait;
@@ -369,60 +367,6 @@ class AxoModule implements ServiceModule, ExtendingModule, ExecutableModule {
 			}
 		);
 
-		// Trigger 3D Secure verification.
-		add_filter(
-			'ppcp_create_order_request_body_data',
-			function( array $data, string $payment_method ) use ( $c ): array {
-				if ( ! $c->get( 'axo.uk.enabled' ) ) {
-					return $data;
-				}
-
-				$logger = $c->get( 'woocommerce.logger.woocommerce' );
-				assert( $logger instanceof LoggerInterface );
-
-				if ( $payment_method !== AxoGateway::ID ) {
-					return $data;
-				}
-
-				if ( ! isset( $data['payment_source'] ) || ! isset( $data['payment_source']['card'] ) || ! is_object( $data['payment_source']['card'] ) ) {
-					return $data;
-				}
-
-				$settings_model = $c->get( 'settings.data.settings' );
-				assert( $settings_model instanceof SettingsModel );
-
-				$three_d_secure = $settings_model->get_three_d_secure_enum();
-				$card           = $data['payment_source']['card'];
-
-				if (
-					$three_d_secure === 'SCA_ALWAYS'
-					|| $three_d_secure === 'SCA_WHEN_REQUIRED'
-				) {
-					$card->attributes = array(
-						'verification' => array(
-							'method' => $three_d_secure,
-						),
-					);
-
-					$experience_context_builder = $c->get( 'wcgateway.builder.experience-context' );
-					assert( $experience_context_builder instanceof ExperienceContextBuilder );
-
-					$data['experience_context'] = $experience_context_builder
-						->with_endpoint_return_urls()
-						->with_current_brand_name()
-						->with_current_locale()
-						->build()->to_array();
-
-					$data['transaction_context'] = array(
-						'soft_descriptor' => __( 'Card verification hold', 'woocommerce-paypal-payments' ),
-					);
-				}
-
-				return $data;
-			},
-			10,
-			2
-		);
 		return true;
 	}
 

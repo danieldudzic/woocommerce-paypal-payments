@@ -99,7 +99,9 @@ return array(
 			$container->get( 'api.factory.shipping-preference' ),
 			$container->get( 'wcgateway.transaction-url-provider' ),
 			$container->get( 'settings.environment' ),
-			$container->get( 'woocommerce.logger.woocommerce' )
+			$container->get( 'woocommerce.logger.woocommerce' ),
+			$container->get( 'wcgateway.builder.experience-context' ),
+			$container->get( 'settings.data.settings' )
 		);
 	},
 

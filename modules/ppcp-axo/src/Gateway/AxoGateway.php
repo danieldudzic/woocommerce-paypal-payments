@@ -19,6 +19,7 @@ use WooCommerce\PayPalCommerce\ApiClient\Entity\PaymentSource;
 use WooCommerce\PayPalCommerce\ApiClient\Entity\OrderStatus;
 use WooCommerce\PayPalCommerce\ApiClient\Factory\PurchaseUnitFactory;
 use WooCommerce\PayPalCommerce\ApiClient\Factory\ShippingPreferenceFactory;
+use WooCommerce\PayPalCommerce\ApiClient\Factory\ExperienceContextBuilder;
 use WooCommerce\PayPalCommerce\ApiClient\Entity\Order;
 use WooCommerce\PayPalCommerce\WcGateway\Endpoint\ReturnUrlEndpoint;
 use WooCommerce\PayPalCommerce\WcGateway\Helper\Environment;
@@ -32,6 +33,7 @@ use WooCommerce\PayPalCommerce\WcGateway\Gateway\ProcessPaymentTrait;
 use WooCommerce\PayPalCommerce\WcGateway\Exception\GatewayGenericException;
 use WooCommerce\PayPalCommerce\Session\SessionHandler;
 use WooCommerce\PayPalCommerce\WcGateway\Helper\CardPaymentsConfiguration;
+use WooCommerce\PayPalCommerce\Settings\Data\SettingsModel;
 use DomainException;
 
 /**
@@ -134,6 +136,20 @@ class AxoGateway extends WC_Payment_Gateway {
 	protected $session_handler;
 
 	/**
+	 * The experience context builder.
+	 *
+	 * @var ExperienceContextBuilder
+	 */
+	protected $experience_context_builder;
+
+	/**
+	 * The settings model.
+	 *
+	 * @var SettingsModel
+	 */
+	protected $settings_model;
+
+	/**
 	 * AXOGateway constructor.
 	 *
 	 * @param SettingsRenderer          $settings_renderer           The settings renderer.
@@ -149,6 +165,8 @@ class AxoGateway extends WC_Payment_Gateway {
 	 * @param TransactionUrlProvider    $transaction_url_provider    The transaction url provider.
 	 * @param Environment               $environment                 The environment.
 	 * @param LoggerInterface           $logger                      The logger.
+	 * @param ExperienceContextBuilder  $experience_context_builder  The experience context builder.
+	 * @param SettingsModel             $settings_model              The settings model.
 	 */
 	public function __construct(
 		SettingsRenderer $settings_renderer,
@@ -163,17 +181,21 @@ class AxoGateway extends WC_Payment_Gateway {
 		ShippingPreferenceFactory $shipping_preference_factory,
 		TransactionUrlProvider $transaction_url_provider,
 		Environment $environment,
-		LoggerInterface $logger
+		LoggerInterface $logger,
+		ExperienceContextBuilder $experience_context_builder,
+		SettingsModel $settings_model
 	) {
 		$this->id = self::ID;
 
-		$this->settings_renderer    = $settings_renderer;
-		$this->ppcp_settings        = $ppcp_settings;
-		$this->dcc_configuration    = $dcc_configuration;
-		$this->wcgateway_module_url = $wcgateway_module_url;
-		$this->session_handler      = $session_handler;
-		$this->order_processor      = $order_processor;
-		$this->card_icons           = $card_icons;
+		$this->settings_renderer          = $settings_renderer;
+		$this->ppcp_settings              = $ppcp_settings;
+		$this->dcc_configuration          = $dcc_configuration;
+		$this->wcgateway_module_url       = $wcgateway_module_url;
+		$this->session_handler            = $session_handler;
+		$this->order_processor            = $order_processor;
+		$this->card_icons                 = $card_icons;
+		$this->experience_context_builder = $experience_context_builder;
+		$this->settings_model             = $settings_model;
 
 		$this->method_title       = __( 'Fastlane Debit & Credit Cards', 'woocommerce-paypal-payments' );
 		$this->method_description = __( 'Fastlane accelerates the checkout experience for guest shoppers and autofills their details so they can pay in seconds. When enabled, Fastlane is presented as the default payment method for guests.', 'woocommerce-paypal-payments' );
@@ -244,7 +266,7 @@ class AxoGateway extends WC_Payment_Gateway {
 
 		// phpcs:ignore WordPress.Security.NonceVerification.Missing
 		$axo_nonce = wc_clean( wp_unslash( $_POST['axo_nonce'] ?? '' ) );
-		// phpcs:ignore WordPress.Security.NonceVerification.Missing
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		$token_param = wc_clean( wp_unslash( $_GET['token'] ?? '' ) );
 
 		if ( empty( $axo_nonce ) && ! empty( $token_param ) ) {
@@ -434,9 +456,8 @@ class AxoGateway extends WC_Payment_Gateway {
 			'checkout'
 		);
 
-		$payment_source_properties = (object) array(
-			'single_use_token' => $payment_token,
-		);
+		// Build payment source with 3DS verification if needed.
+		$payment_source_properties = $this->build_payment_source_properties( $payment_token );
 
 		$payment_source = new PaymentSource(
 			'card',
@@ -448,10 +469,61 @@ class AxoGateway extends WC_Payment_Gateway {
 			$shipping_preference,
 			null,
 			self::ID,
-			array(),
+			$this->build_order_data(),
 			$payment_source,
 			$wc_order
 		);
+	}
+
+	/**
+	 * Build payment source properties.
+	 *
+	 * @param string $payment_token The payment token.
+	 * @return object The payment source properties.
+	 */
+	protected function build_payment_source_properties( string $payment_token ): object {
+		$properties = array(
+			'single_use_token' => $payment_token,
+		);
+
+			$three_d_secure = $this->settings_model->get_three_d_secure_enum();
+
+		if ( 'SCA_ALWAYS' === $three_d_secure || 'SCA_WHEN_REQUIRED' === $three_d_secure ) {
+			$properties['attributes'] = array(
+				'verification' => array(
+					'method' => $three_d_secure,
+				),
+			);
+		}
+
+		return (object) $properties;
+	}
+
+	/**
+	 * Build additional order data for experience context and 3DS verification.
+	 *
+	 * @return array The order data.
+	 */
+	protected function build_order_data(): array {
+		$data = array();
+
+		$experience_context = $this->experience_context_builder
+			->with_endpoint_return_urls()
+			->with_current_brand_name()
+			->with_current_locale()
+			->build();
+
+		$data['experience_context'] = $experience_context->to_array();
+
+			$three_d_secure = $this->settings_model->get_three_d_secure_enum();
+
+		if ( $three_d_secure === 'SCA_ALWAYS' || $three_d_secure === 'SCA_WHEN_REQUIRED' ) {
+			$data['transaction_context'] = array(
+				'soft_descriptor' => __( 'Card verification hold', 'woocommerce-paypal-payments' ),
+			);
+		}
+
+		return $data;
 	}
 
 	/**
