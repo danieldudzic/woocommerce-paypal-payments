@@ -20,7 +20,7 @@ use WooCommerce\PayPalCommerce\ApiClient\Exception\RuntimeException;
  */
 class GetOrderEndpoint implements EndpointInterface {
 
-	const ENDPOINT = 'ppc-get-order';
+	public const ENDPOINT = 'ppc-get-order';
 
 	private RequestData $request_data;
 

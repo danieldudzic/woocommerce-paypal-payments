@@ -70,12 +70,7 @@ class CreateOrderEndpoint implements EndpointInterface {
 	 */
 	private $shipping_preference_factory;
 
-	/**
-	 * The return URL factory.
-	 *
-	 * @var ReturnUrlFactory
-	 */
-	private $return_url_factory;
+	private ReturnUrlFactory $return_url_factory;
 
 	/**
 	 * The contact_preference factors.
