@@ -556,7 +556,7 @@ class GooglepayButton extends PaymentButton {
 		const initiatePaymentRequest = async () => {
 			window.ppcpFundingSource = 'googlepay';
 
-			// Sets paymentMethodId in registerExpressPaymentMethod as active payment method.
+			// Sets paymentMethodId from registerExpressPaymentMethod as active payment method.
 			this.onClick?.();
 
 			const paymentDataRequest = this.paymentDataRequest();

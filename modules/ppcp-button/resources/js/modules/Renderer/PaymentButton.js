@@ -222,7 +222,7 @@ export default class PaymentButton {
 	 * @param {Object}   ppcpConfig       - Plugin wide configuration object.
 	 * @param {unknown}  contextHandler   - Handler object.
 	 * @param {Object}   buttonAttributes - Button attributes.
-	 * @param {Function} onClick          - Event from WC component.
+	 * @param {Function} onClick          - Event from content component registered in registerExpressPaymentMethod.
 	 * @return {PaymentButton} The button instance.
 	 */
 	static createButton(
@@ -294,8 +294,8 @@ export default class PaymentButton {
 	 * @param {Object}   buttonConfig     - Payment button specific configuration.
 	 * @param {Object}   ppcpConfig       - Plugin wide configuration object.
 	 * @param {Object}   contextHandler   - Handler object.
-	 * @param {Function} onClick          - Event from WC component.
 	 * @param {Object}   buttonAttributes - Button attributes.
+	 * @param {Function} onClick          - Event from content component registered in registerExpressPaymentMethod.
 	 */
 	constructor(
 		context,
