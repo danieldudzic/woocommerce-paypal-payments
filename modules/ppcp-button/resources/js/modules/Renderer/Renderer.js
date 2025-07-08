@@ -252,7 +252,7 @@ class Renderer {
 	shouldEnableAppSwitch = () => {
 		// AppSwitch should only be enabled in Pay Now flows with server side shipping callback.
 		return (
-			this.defaultSettings.should_handle_shipping_in_paypal &&
+			! this.defaultSettings.final_review_enabled &&
 			this.defaultSettings.server_side_shipping_callback.enabled
 		);
 	};
