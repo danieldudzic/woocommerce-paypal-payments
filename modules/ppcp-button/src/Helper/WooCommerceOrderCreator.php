@@ -143,7 +143,6 @@ class WooCommerceOrderCreator {
 				$item->add_meta_data( '_bundle_cart_key', $cart_item['key'], true );
 			}
 
-
 			if ( $variation_id ) {
 				$item->set_variation_id( $variation_id );
 				$item->set_variation( $variation_attributes );
