@@ -89,8 +89,9 @@ class WooCommerceOrderCreator {
 		}
 
 		try {
-			$payer    = $order->payer();
-			$shipping = $order->purchase_units()[0]->shipping();
+			$payer          = $order->payer();
+			$purchase_units = $order->purchase_units();
+			$shipping       = ! empty( $purchase_units ) ? $purchase_units[0]->shipping() : null;
 
 			$this->configure_payment_source( $wc_order );
 			$this->configure_customer( $wc_order );
