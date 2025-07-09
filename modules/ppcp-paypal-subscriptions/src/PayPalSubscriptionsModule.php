@@ -501,9 +501,10 @@ class PayPalSubscriptionsModule implements ServiceModule, ExtendingModule, Execu
 				if ( ! is_string( $hook ) || wcs_is_manual_renewal_enabled() ) {
 					return;
 				}
+
 				$settings          = $c->get( 'wcgateway.settings' );
 				$subscription_mode = $settings->has( 'subscriptions_mode' ) ? $settings->get( 'subscriptions_mode' ) : '';
-				if ( $hook !== 'post.php' && $hook !== 'post-new.php' && $subscription_mode !== 'subscriptions_api' ) {
+				if ( ! in_array( $hook, array( 'post.php', 'post-new.php' ), true ) || $subscription_mode !== 'subscriptions_api' ) {
 					return;
 				}
 
