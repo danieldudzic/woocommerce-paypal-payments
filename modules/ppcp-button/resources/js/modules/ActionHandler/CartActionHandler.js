@@ -8,14 +8,14 @@ class CartActionHandler {
 		this.errorHandler = errorHandler;
 	}
 
-	subscriptionsConfiguration( subscription_plan_id ) {
+	subscriptionsConfiguration( subscriptionPlanId ) {
 		return {
 			createSubscription: ( data, actions ) => {
 				return actions.subscription.create( {
-					plan_id: subscription_plan_id,
+					plan_id: subscriptionPlanId,
 				} );
 			},
-			onApprove: ( data, actions ) => {
+			onApprove: ( data ) => {
 				fetch( this.config.ajax.approve_subscription.endpoint, {
 					method: 'POST',
 					credentials: 'same-origin',
@@ -24,7 +24,7 @@ class CartActionHandler {
 						order_id: data.orderID,
 						subscription_id: data.subscriptionID,
 						should_create_wc_order:
-							! context.config.vaultingEnabled ||
+							! this.config.vaultingEnabled ||
 							data.paymentSource !== 'venmo',
 					} ),
 				} )
@@ -33,7 +33,6 @@ class CartActionHandler {
 					} )
 					.then( ( data ) => {
 						if ( ! data.success ) {
-							console.log( data );
 							throw Error( data.data.message );
 						}
 
@@ -41,7 +40,7 @@ class CartActionHandler {
 
 						location.href = orderReceivedUrl
 							? orderReceivedUrl
-							: context.config.redirect;
+							: this.config.redirect;
 					} );
 			},
 			onError: ( err ) => {
@@ -51,7 +50,7 @@ class CartActionHandler {
 	}
 
 	configuration() {
-		const createOrder = ( data, actions ) => {
+		const createOrder = () => {
 			const payer = payerData();
 			const bnCode =
 				typeof this.config.bn_codes[ this.config.context ] !==
@@ -89,7 +88,7 @@ class CartActionHandler {
 		return {
 			createOrder,
 			onApprove: onApprove( this, this.errorHandler ),
-			onError: ( error ) => {
+			onError: () => {
 				this.errorHandler.genericError();
 			},
 		};
