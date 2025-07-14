@@ -29,6 +29,7 @@ use WooCommerce\PayPalCommerce\Button\Endpoint\ApproveOrderEndpoint;
 use WooCommerce\PayPalCommerce\Button\Endpoint\ChangeCartEndpoint;
 use WooCommerce\PayPalCommerce\Button\Endpoint\CreateOrderEndpoint;
 use WooCommerce\PayPalCommerce\Button\Endpoint\DataClientIdEndpoint;
+use WooCommerce\PayPalCommerce\Button\Endpoint\GetOrderEndpoint;
 use WooCommerce\PayPalCommerce\Button\Endpoint\RequestData;
 use WooCommerce\PayPalCommerce\Button\Endpoint\StartPayPalVaultingEndpoint;
 use WooCommerce\PayPalCommerce\Button\Exception\RuntimeException;
@@ -170,7 +171,8 @@ return array(
 			$container->get( 'wcgateway.server-side-shipping-callback-enabled' ),
 			$container->get( 'button.helper.disabled-funding-sources' ),
 			$container->get( 'wcgateway.configuration.card-configuration' ),
-			$container->get( 'api.helper.partner-attribution' )
+			$container->get( 'api.helper.partner-attribution' ),
+			$container->get( 'blocks.settings.final_review_enabled' )
 		);
 	},
 	'button.url'                                  => static function ( ContainerInterface $container ): string {
@@ -228,6 +230,7 @@ return array(
 			$request_data,
 			$purchase_unit_factory,
 			$container->get( 'api.factory.shipping-preference' ),
+			$container->get( 'api.factory.return-url' ),
 			$container->get( 'api.factory.contact-preference' ),
 			$container->get( 'wcgateway.builder.experience-context' ),
 			$order_endpoint,
@@ -328,6 +331,16 @@ return array(
 		return new CartScriptParamsEndpoint(
 			$container->get( 'button.smart-button' ),
 			$container->get( 'woocommerce.logger.woocommerce' )
+		);
+	},
+	'button.endpoint.get-order'                   => static function ( ContainerInterface $container ): GetOrderEndpoint {
+		$request_data   = $container->get( 'button.request-data' );
+		$order_endpoint = $container->get( 'api.endpoint.order' );
+		$logger         = $container->get( 'woocommerce.logger.woocommerce' );
+		return new GetOrderEndpoint(
+			$request_data,
+			$order_endpoint,
+			$logger
 		);
 	},
 	'button.helper.cart-products'                 => static function ( ContainerInterface $container ): CartProductsHelper {

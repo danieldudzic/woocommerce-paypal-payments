@@ -29,6 +29,7 @@ use WooCommerce\PayPalCommerce\Button\Endpoint\CartScriptParamsEndpoint;
 use WooCommerce\PayPalCommerce\Button\Endpoint\ChangeCartEndpoint;
 use WooCommerce\PayPalCommerce\Button\Endpoint\CreateOrderEndpoint;
 use WooCommerce\PayPalCommerce\Button\Endpoint\DataClientIdEndpoint;
+use WooCommerce\PayPalCommerce\Button\Endpoint\GetOrderEndpoint;
 use WooCommerce\PayPalCommerce\Button\Endpoint\RequestData;
 use WooCommerce\PayPalCommerce\Button\Endpoint\SaveCheckoutFormEndpoint;
 use WooCommerce\PayPalCommerce\Button\Endpoint\SimulateCartEndpoint;
@@ -259,6 +260,11 @@ class SmartButton implements SmartButtonInterface {
 	private bool $server_side_shipping_callback_enabled;
 
 	/**
+	 * Whether the final review is enabled in blocks settings.
+	 */
+	private bool $final_review_enabled;
+
+	/**
 	 * SmartButton constructor.
 	 *
 	 * @param string                    $module_url                        The URL to the module.
@@ -288,6 +294,7 @@ class SmartButton implements SmartButtonInterface {
 	 * @param DisabledFundingSources    $disabled_funding_sources          List of funding sources to be disabled.
 	 * @param CardPaymentsConfiguration $dcc_configuration                 The DCC Gateway Configuration.
 	 * @param PartnerAttribution        $partner_attribution The PayPal Partner Attribution Helper.
+	 * @param bool                      $final_review_enabled              Whether the final review is enabled in blocks settings.
 	 */
 	public function __construct(
 		string $module_url,
@@ -316,7 +323,8 @@ class SmartButton implements SmartButtonInterface {
 		bool $server_side_shipping_callback_enabled,
 		DisabledFundingSources $disabled_funding_sources,
 		CardPaymentsConfiguration $dcc_configuration,
-		PartnerAttribution $partner_attribution
+		PartnerAttribution $partner_attribution,
+		bool $final_review_enabled
 	) {
 		$this->module_url                            = $module_url;
 		$this->version                               = $version;
@@ -345,6 +353,7 @@ class SmartButton implements SmartButtonInterface {
 		$this->disabled_funding_sources              = $disabled_funding_sources;
 		$this->dcc_configuration                     = $dcc_configuration;
 		$this->partner_attribution                   = $partner_attribution;
+		$this->final_review_enabled                  = $final_review_enabled;
 	}
 
 	/**
@@ -1181,6 +1190,10 @@ document.querySelector("#payment").before(document.querySelector(".ppcp-messages
 					'endpoint' => \WC_AJAX::get_endpoint( ApproveOrderEndpoint::ENDPOINT ),
 					'nonce'    => wp_create_nonce( ApproveOrderEndpoint::nonce() ),
 				),
+				'get_order'                      => array(
+					'endpoint' => \WC_AJAX::get_endpoint( GetOrderEndpoint::ENDPOINT ),
+					'nonce'    => wp_create_nonce( GetOrderEndpoint::nonce() ),
+				),
 				'approve_subscription'           => array(
 					'endpoint' => \WC_AJAX::get_endpoint( ApproveSubscriptionEndpoint::ENDPOINT ),
 					'nonce'    => wp_create_nonce( ApproveSubscriptionEndpoint::nonce() ),
@@ -1356,6 +1369,7 @@ document.querySelector("#payment").before(document.querySelector(".ppcp-messages
 			'vaultingEnabled'                         => $this->settings->has( 'vault_enabled' ) && $this->settings->get( 'vault_enabled' ),
 			'productType'                             => null,
 			'manualRenewalEnabled'                    => $this->subscription_helper->accept_manual_renewals(),
+			'final_review_enabled'                    => $this->final_review_enabled,
 		);
 
 		if ( is_product() ) {
