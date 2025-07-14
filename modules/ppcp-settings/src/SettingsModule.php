@@ -75,7 +75,7 @@ class SettingsModule implements ServiceModule, ExecutableModule {
 		if ( ! apply_filters(
 			// phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores -- feature flags use this convention
 			'woocommerce.feature-flags.woocommerce_paypal_payments.settings_enabled',
-			getenv('PCP_SETTINGS_ENABLED') !== '1'
+			getenv( 'PCP_SETTINGS_ENABLED' ) !== '1'
 		) ) {
 			return true;
 		}
