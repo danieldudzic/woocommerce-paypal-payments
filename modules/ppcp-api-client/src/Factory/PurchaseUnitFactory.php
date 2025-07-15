@@ -88,7 +88,7 @@ class PurchaseUnitFactory {
 		PaymentsFactory $payments_factory,
 		string $prefix = 'WC-',
 		string $soft_descriptor = '',
-		PurchaseUnitSanitizer $sanitizer = null
+		?PurchaseUnitSanitizer $sanitizer = null
 	) {
 
 		$this->amount_factory   = $amount_factory;

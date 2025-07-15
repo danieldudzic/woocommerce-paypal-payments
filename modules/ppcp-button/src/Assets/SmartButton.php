@@ -810,7 +810,7 @@ document.querySelector("#payment").before(document.querySelector(".ppcp-messages
 	 * @param string      $gateway_id The gateway ID, like 'ppcp-gateway'.
 	 * @param string|null $action_name The action name to be called.
 	 */
-	public function button_renderer( string $gateway_id, string $action_name = null ) {
+	public function button_renderer( string $gateway_id, ?string $action_name = null ) {
 
 		$available_gateways = WC()->payment_gateways->get_available_payment_gateways();
 
@@ -1968,7 +1968,7 @@ document.querySelector("#payment").before(document.querySelector(".ppcp-messages
 	 * @param array       $context_data The context data for this filter.
 	 * @return bool
 	 */
-	public function is_button_disabled( string $context = null, array $context_data = array() ): bool {
+	public function is_button_disabled( ?string $context = null, array $context_data = array() ): bool {
 		if ( null === $context ) {
 			$context = $this->context();
 		}

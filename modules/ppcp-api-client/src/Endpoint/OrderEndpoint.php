@@ -176,10 +176,10 @@ class OrderEndpoint {
 	public function create(
 		array $items,
 		string $shipping_preference,
-		Payer $payer = null,
+		?Payer $payer = null,
 		string $payment_method = '',
 		array $request_data = array(),
-		PaymentSource $payment_source = null
+		?PaymentSource $payment_source = null
 	): Order {
 		$bearer = $this->bearer->bearer();
 		$data   = array(
