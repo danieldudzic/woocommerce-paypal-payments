@@ -241,7 +241,8 @@ class ApplepayModule implements ServiceModule, ExtendingModule, ExecutableModule
 			$validation_string = $this->validation_string( $is_sandbox );
 			nocache_headers();
 			header( 'Content-Type: text/plain', true, 200 );
-			echo $validation_string;// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo $validation_string;
 			exit;
 		}
 	}
