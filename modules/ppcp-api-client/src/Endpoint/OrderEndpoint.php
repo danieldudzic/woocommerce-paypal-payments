@@ -444,9 +444,7 @@ class OrderEndpoint {
 		}
 		$response = $this->request( $url, $args );
 		if ( is_wp_error( $response ) ) {
-			$error = new RuntimeException(
-				__( 'Could not retrieve order.', 'woocommerce-paypal-payments' )
-			);
+			$error = new RuntimeException( 'Could not retrieve order.' );
 			$this->logger->warning( $error->getMessage() );
 
 			throw $error;
@@ -456,7 +454,7 @@ class OrderEndpoint {
 
 		if ( 404 === $status_code || empty( $response['body'] ) ) {
 			$error = new RuntimeException(
-				__( 'Could not retrieve order.', 'woocommerce-paypal-payments' ),
+				'Could not retrieve order.',
 				404
 			);
 			$this->logger->warning(

@@ -245,8 +245,7 @@ class AmountFactory {
 			if ( ! isset( $item->value ) || ! is_numeric( $item->value ) ) {
 				throw new RuntimeException(
 					sprintf(
-					// translators: %s is the current breakdown key.
-						__( 'No value given for breakdown %s', 'woocommerce-paypal-payments' ),
+						'No value given for breakdown %s',
 						$key
 					)
 				);
@@ -254,8 +253,7 @@ class AmountFactory {
 			if ( ! isset( $item->currency_code ) ) {
 				throw new RuntimeException(
 					sprintf(
-					// translators: %s is the current breakdown key.
-						__( 'No currency given for breakdown %s', 'woocommerce-paypal-payments' ),
+						'No currency given for breakdown %s',
 						$key
 					)
 				);

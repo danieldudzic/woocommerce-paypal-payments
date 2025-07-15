@@ -77,7 +77,7 @@ class RefundFactory {
 
 		$amount = $this->amount_factory->from_paypal_response( $data->amount );
 		if ( null === $amount ) {
-			throw new RuntimeException( __( 'Invalid refund amount data.', 'woocommerce-paypal-payments' ) );
+			throw new RuntimeException( 'Invalid refund amount data.' );
 		}
 
 		return new Refund(
