@@ -1926,8 +1926,10 @@ document.querySelector("#payment").before(document.querySelector(".ppcp-messages
 			$variations = $product->get_available_variations( 'objects' );
 			$in_stock   = $this->has_in_stock_variation( $variations );
 		}
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended
 		$enable_button = ! $product->is_type( array( 'external', 'grouped' ) ) && $in_stock &&
 			! ( ( $product->is_type( 'subscription' ) || $product->is_type( 'variable-subscription' ) ) && ! empty( $_GET['switch-subscription'] ) );
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 
 		/**
 		 * Allows to filter if PayPal buttons/messages can be rendered for the given product.
