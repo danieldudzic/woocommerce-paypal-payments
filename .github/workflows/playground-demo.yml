@@ -1,37 +1,10 @@
-name: CI
+name: PR Playground Demo
 on:
-  push:
   pull_request:
+    types: [opened, synchronize, reopened]
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        php-versions: ['7.4', '8.0', '8.1', '8.2', '8.3', '8.4']
-    name: PHP ${{ matrix.php-versions }}
-    steps:
-      - uses: actions/checkout@v2
-      - name: Setup PHP
-        uses: shivammathur/setup-php@0f7f1d08e3e32076e51cae65eb0b0c871405b16e
-        with:
-          php-version: ${{ matrix.php-versions }}
-      - name: Validate composer.json and composer.lock
-        run: composer validate
-      - name: Install dependencies
-        uses: ramsey/composer-install@a7320a0581dcd0432930c48a0e7ced67e6ec17e8
-        with:
-          composer-options: "--prefer-dist"
-      - name: Run PHPUnit
-        run: vendor/bin/phpunit
-      - name: Psalm
-        if: ${{ matrix.php-versions == '7.4' }}
-        run: ./vendor/bin/psalm --show-info=false --threads=8 --diff
-      - name: Run PHPCS
-        run: ./vendor/bin/phpcs --runtime-set ignore_warnings_on_exit 1 src modules woocommerce-paypal-payments.php --extensions=php
-
   check_pr_version:
-    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.version.outputs.version }}
@@ -45,8 +18,7 @@ jobs:
           echo "version=$PR_VERSION" >> $GITHUB_OUTPUT
 
   build_pr_package:
-    if: github.event_name == 'pull_request'
-    needs: [test, check_pr_version]
+    needs: check_pr_version
     uses: inpsyde/reusable-workflows/.github/workflows/build-plugin-archive.yml@a9af34f34e95cbe18703198c7e972e97ebcd7473
     with:
       PHP_VERSION: 7.4
@@ -55,12 +27,15 @@ jobs:
       PLUGIN_VERSION: ${{ needs.check_pr_version.outputs.version }}
       PLUGIN_FOLDER_NAME: woocommerce-paypal-payments
       ARCHIVE_NAME: woocommerce-paypal-payments-${{ needs.check_pr_version.outputs.version }}
-      COMPILE_ASSETS_ARGS: '-vv --env=root'
+      COMPILE_ASSETS_ARGS: "-vv --mode=root"
 
   playground_demo:
-    if: github.event_name == 'pull_request'
     needs: [check_pr_version, build_pr_package]
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
     steps:
       - uses: actions/checkout@v4
 
@@ -76,12 +51,15 @@ jobs:
           ZIP_FILE=$(find ./plugin-build -name "*.zip" | head -1)
           if [ ! -f "$ZIP_FILE" ]; then
             echo "No zip file found in artifact"
+            echo "Available files:"
+            find ./plugin-build -type f
             exit 1
           fi
 
+          echo "Found plugin zip: $ZIP_FILE"
           ZIP_BASE64=$(base64 -w 0 "$ZIP_FILE")
 
-          cat > index.html << EOF
+          cat > index.html << 'EOF'
           <!DOCTYPE html>
           <html>
           <head>
@@ -182,7 +160,7 @@ jobs:
                               pluginZipFile: {
                                   resource: "literal",
                                   name: "woocommerce-paypal-payments.zip",
-                                  data: "base64:$ZIP_BASE64"
+                                  data: "base64:ZIP_BASE64_PLACEHOLDER"
                               },
                               options: {
                                   activate: true
@@ -205,11 +183,15 @@ jobs:
                   } catch (error) {
                       document.getElementById('playground-container').innerHTML =
                           '<div class="loading"><h3>❌ Error loading playground</h3><p>' + error.message + '</p></div>';
+                      console.error('Playground error:', error);
                   }
               </script>
           </body>
           </html>
           EOF
+
+          # Replace the placeholder with actual base64 data
+          sed -i "s/ZIP_BASE64_PLACEHOLDER/$ZIP_BASE64/g" index.html
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
@@ -222,7 +204,6 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            // Check if comment already exists
             const comments = await github.rest.issues.listComments({
               issue_number: context.issue.number,
               owner: context.repo.owner,
@@ -255,7 +236,6 @@ jobs:
             <sub>🤖 Auto-generated for commit ${{ github.event.pull_request.head.sha }}</sub>`;
 
             if (botComment) {
-              // Update existing comment
               await github.rest.issues.updateComment({
                 comment_id: botComment.id,
                 owner: context.repo.owner,
@@ -263,7 +243,6 @@ jobs:
                 body: commentBody
               });
             } else {
-              // Create new comment
               await github.rest.issues.createComment({
                 issue_number: context.issue.number,
                 owner: context.repo.owner,
