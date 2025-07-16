@@ -1,0 +1,273 @@
+name: CI
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php-versions: ['7.4', '8.0', '8.1', '8.2', '8.3', '8.4']
+    name: PHP ${{ matrix.php-versions }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup PHP
+        uses: shivammathur/setup-php@0f7f1d08e3e32076e51cae65eb0b0c871405b16e
+        with:
+          php-version: ${{ matrix.php-versions }}
+      - name: Validate composer.json and composer.lock
+        run: composer validate
+      - name: Install dependencies
+        uses: ramsey/composer-install@a7320a0581dcd0432930c48a0e7ced67e6ec17e8
+        with:
+          composer-options: "--prefer-dist"
+      - name: Run PHPUnit
+        run: vendor/bin/phpunit
+      - name: Psalm
+        if: ${{ matrix.php-versions == '7.4' }}
+        run: ./vendor/bin/psalm --show-info=false --threads=8 --diff
+      - name: Run PHPCS
+        run: ./vendor/bin/phpcs --runtime-set ignore_warnings_on_exit 1 src modules woocommerce-paypal-payments.php --extensions=php
+
+  check_pr_version:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set PR version
+        id: version
+        run: |
+          BASE_VERSION=$(sed -nE '/Version:/s/.* ([0-9.]+).*/\1/p' woocommerce-paypal-payments.php)
+          PR_VERSION="${BASE_VERSION}-pr${{ github.event.pull_request.number }}"
+          echo "version=$PR_VERSION" >> $GITHUB_OUTPUT
+
+  build_pr_package:
+    if: github.event_name == 'pull_request'
+    needs: [test, check_pr_version]
+    uses: inpsyde/reusable-workflows/.github/workflows/build-plugin-archive.yml@a9af34f34e95cbe18703198c7e972e97ebcd7473
+    with:
+      PHP_VERSION: 7.4
+      NODE_VERSION: 22
+      PLUGIN_MAIN_FILE: ./woocommerce-paypal-payments.php
+      PLUGIN_VERSION: ${{ needs.check_pr_version.outputs.version }}
+      PLUGIN_FOLDER_NAME: woocommerce-paypal-payments
+      ARCHIVE_NAME: woocommerce-paypal-payments-${{ needs.check_pr_version.outputs.version }}
+      COMPILE_ASSETS_ARGS: '-vv --env=root'
+
+  playground_demo:
+    if: github.event_name == 'pull_request'
+    needs: [check_pr_version, build_pr_package]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download plugin artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: woocommerce-paypal-payments-${{ needs.check_pr_version.outputs.version }}
+          path: ./plugin-build
+
+      - name: Create playground demo
+        run: |
+          # Find the zip file in the downloaded artifact
+          ZIP_FILE=$(find ./plugin-build -name "*.zip" | head -1)
+          if [ ! -f "$ZIP_FILE" ]; then
+            echo "No zip file found in artifact"
+            exit 1
+          fi
+
+          ZIP_BASE64=$(base64 -w 0 "$ZIP_FILE")
+
+          cat > index.html << EOF
+          <!DOCTYPE html>
+          <html>
+          <head>
+              <title>WooCommerce PayPal Payments Demo - PR #${{ github.event.pull_request.number }}</title>
+              <style>
+                  body {
+                      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                      margin: 20px;
+                      line-height: 1.6;
+                  }
+                  .header {
+                      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                      color: white;
+                      padding: 20px;
+                      border-radius: 8px;
+                      margin-bottom: 20px;
+                  }
+                  .info {
+                      background: #f8f9fa;
+                      padding: 15px;
+                      margin: 15px 0;
+                      border-radius: 8px;
+                      border-left: 4px solid #007cba;
+                  }
+                  .credentials {
+                      background: #fff3cd;
+                      border: 1px solid #ffeaa7;
+                      padding: 10px;
+                      border-radius: 5px;
+                      margin: 10px 0;
+                  }
+                  #playground-container {
+                      width: 100%;
+                      height: 700px;
+                      border: 2px solid #ddd;
+                      border-radius: 8px;
+                      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+                  }
+                  .loading {
+                      text-align: center;
+                      padding: 50px;
+                      color: #666;
+                  }
+                  ul { list-style-type: none; padding-left: 0; }
+                  li:before { content: "✅ "; margin-right: 8px; }
+              </style>
+          </head>
+          <body>
+              <div class="header">
+                  <h1>🎮 WordPress Playground Demo</h1>
+                  <p>Testing PR #${{ github.event.pull_request.number }} - ${{ github.event.pull_request.title }}</p>
+              </div>
+
+              <div class="info">
+                  <strong>📦 What's included:</strong>
+                  <ul>
+                      <li>WordPress (latest)</li>
+                      <li>WooCommerce (latest from WordPress.org)</li>
+                      <li>PayPal Payments plugin v${{ needs.check_pr_version.outputs.version }}</li>
+                  </ul>
+              </div>
+
+              <div class="credentials">
+                  <strong>🔑 Login credentials:</strong><br>
+                  Username: <code>admin</code><br>
+                  Password: <code>password</code>
+              </div>
+
+              <div id="playground-container">
+                  <div class="loading">
+                      <h3>🚀 Loading WordPress Playground...</h3>
+                      <p>Setting up WordPress with WooCommerce and your plugin changes.</p>
+                  </div>
+              </div>
+
+              <script type="module">
+                  import { startPlaygroundWeb } from 'https://playground.wordpress.net/client/index.js';
+
+                  const blueprint = {
+                      landingPage: "/wp-admin/",
+                      preferredVersions: {
+                          php: "8.0",
+                          wp: "latest"
+                      },
+                      steps: [
+                          {
+                              step: "installPlugin",
+                              pluginData: {
+                                  resource: "wordpress.org/plugins",
+                                  slug: "woocommerce"
+                              },
+                              options: {
+                                  activate: true
+                              }
+                          },
+                          {
+                              step: "installPlugin",
+                              pluginZipFile: {
+                                  resource: "literal",
+                                  name: "woocommerce-paypal-payments.zip",
+                                  data: "base64:$ZIP_BASE64"
+                              },
+                              options: {
+                                  activate: true
+                              }
+                          },
+                          {
+                              step: "login",
+                              username: "admin",
+                              password: "password"
+                          }
+                      ]
+                  };
+
+                  try {
+                      await startPlaygroundWeb({
+                          iframe: document.getElementById('playground-container'),
+                          remoteUrl: 'https://playground.wordpress.net/remote.html',
+                          blueprint: blueprint
+                      });
+                  } catch (error) {
+                      document.getElementById('playground-container').innerHTML =
+                          '<div class="loading"><h3>❌ Error loading playground</h3><p>' + error.message + '</p></div>';
+                  }
+              </script>
+          </body>
+          </html>
+          EOF
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./
+          destination_dir: pr-${{ github.event.pull_request.number }}
+
+      - name: Comment on PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            // Check if comment already exists
+            const comments = await github.rest.issues.listComments({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+            });
+
+            const botComment = comments.data.find(comment =>
+              comment.user.type === 'Bot' &&
+              comment.body.includes('🎮 WordPress Playground Demo Ready!')
+            );
+
+            const commentBody = `## 🎮 WordPress Playground Demo Ready!
+
+            Test this PR in a live WordPress environment with WooCommerce:
+
+            **🔗 [Launch Demo](https://${{ github.actor }}.github.io/${{ github.event.repository.name }}/pr-${{ github.event.pull_request.number }}/)**
+
+            ### What's included:
+            - ✅ WordPress (latest)
+            - ✅ WooCommerce (latest)
+            - ✅ PayPal Payments plugin v${{ needs.check_pr_version.outputs.version }}
+
+            ### Login credentials:
+            - **Username:** \`admin\`
+            - **Password:** \`password\`
+
+            > 💡 The demo environment resets each time you refresh. Perfect for testing!
+
+            ---
+            <sub>🤖 Auto-generated for commit ${{ github.event.pull_request.head.sha }}</sub>`;
+
+            if (botComment) {
+              // Update existing comment
+              await github.rest.issues.updateComment({
+                comment_id: botComment.id,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: commentBody
+              });
+            } else {
+              // Create new comment
+              await github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: commentBody
+              });
+            }
