@@ -475,7 +475,7 @@ class WCGatewayModule implements ServiceModule, ExtendingModule, ExecutableModul
 		// Clears product status when appropriate.
 		add_action(
 			'woocommerce_paypal_payments_clear_apm_product_status',
-			function( Settings $settings = null ) use ( $c ): void {
+			function( ?Settings $settings = null ) use ( $c ): void {
 
 				// Clear DCC Product status.
 				$dcc_product_status = $c->get( 'wcgateway.helper.dcc-product-status' );

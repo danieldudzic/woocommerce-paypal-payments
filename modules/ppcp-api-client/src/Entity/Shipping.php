@@ -54,7 +54,13 @@ class Shipping {
 	 * @param Phone|null       $phone_number  Contact phone.
 	 * @param ShippingOption[] $options       Shipping methods.
 	 */
-	public function __construct( string $name, Address $address, string $email_address = null, Phone $phone_number = null, array $options = array() ) {
+	public function __construct(
+		string $name,
+		Address $address,
+		?string $email_address = null,
+		?Phone $phone_number = null,
+		array $options = array()
+	) {
 		$this->name          = $name;
 		$this->address       = $address;
 		$this->email_address = $email_address;

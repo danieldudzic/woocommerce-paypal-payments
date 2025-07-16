@@ -236,7 +236,7 @@ class SettingsModel extends AbstractDataModel {
 	 * @param string|null $three_d_secure The 3D Secure setting ('no-3d-secure', 'only-required-3d-secure', 'always-3d-secure').
 	 * @return string The corresponding API enum string ('NO_3D_SECURE', 'SCA_WHEN_REQUIRED', 'SCA_ALWAYS').
 	 */
-	public function get_three_d_secure_enum( string $three_d_secure = null ): string {
+	public function get_three_d_secure_enum( ?string $three_d_secure = null ): string {
 		// If no value is provided, use the current setting.
 		if ( $three_d_secure === null ) {
 			$three_d_secure = $this->get_three_d_secure();

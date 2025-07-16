@@ -9,6 +9,8 @@ declare(strict_types=1);
 
 namespace WooCommerce\PayPalCommerce\ApiClient\Entity;
 
+use DateTime;
+
 /**
  * Class Order
  */
@@ -25,7 +27,7 @@ class Order {
 	/**
 	 * The create time.
 	 *
-	 * @var \DateTime|null
+	 * @var DateTime|null
 	 */
 	private $create_time;
 
@@ -60,7 +62,7 @@ class Order {
 	/**
 	 * The update time.
 	 *
-	 * @var \DateTime|null
+	 * @var DateTime|null
 	 */
 	private $update_time;
 
@@ -86,18 +88,18 @@ class Order {
 	 * @param PaymentSource|null $payment_source The payment source.
 	 * @param Payer|null         $payer The payer.
 	 * @param string             $intent The intent.
-	 * @param \DateTime|null     $create_time The create time.
-	 * @param \DateTime|null     $update_time The update time.
+	 * @param DateTime|null      $create_time The create time.
+	 * @param DateTime|null      $update_time The update time.
 	 */
 	public function __construct(
 		string $id,
 		array $purchase_units,
 		OrderStatus $order_status,
-		PaymentSource $payment_source = null,
-		Payer $payer = null,
+		?PaymentSource $payment_source = null,
+		?Payer $payer = null,
 		string $intent = 'CAPTURE',
-		\DateTime $create_time = null,
-		\DateTime $update_time = null,
+		?DateTime $create_time = null,
+		?DateTime $update_time = null,
 		$links = null
 	) {
 
@@ -124,7 +126,7 @@ class Order {
 	/**
 	 * Returns the create time.
 	 *
-	 * @return \DateTime|null
+	 * @return DateTime|null
 	 */
 	public function create_time() {
 		return $this->create_time;
@@ -133,7 +135,7 @@ class Order {
 	/**
 	 * Returns the update time.
 	 *
-	 * @return \DateTime|null
+	 * @return DateTime|null
 	 */
 	public function update_time() {
 		return $this->update_time;

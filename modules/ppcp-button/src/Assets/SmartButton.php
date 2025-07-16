@@ -810,7 +810,7 @@ document.querySelector("#payment").before(document.querySelector(".ppcp-messages
 	 * @param string      $gateway_id The gateway ID, like 'ppcp-gateway'.
 	 * @param string|null $action_name The action name to be called.
 	 */
-	public function button_renderer( string $gateway_id, string $action_name = null ) {
+	public function button_renderer( string $gateway_id, ?string $action_name = null ) {
 
 		$available_gateways = WC()->payment_gateways->get_available_payment_gateways();
 
@@ -1926,8 +1926,10 @@ document.querySelector("#payment").before(document.querySelector(".ppcp-messages
 			$variations = $product->get_available_variations( 'objects' );
 			$in_stock   = $this->has_in_stock_variation( $variations );
 		}
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended
 		$enable_button = ! $product->is_type( array( 'external', 'grouped' ) ) && $in_stock &&
 			! ( ( $product->is_type( 'subscription' ) || $product->is_type( 'variable-subscription' ) ) && ! empty( $_GET['switch-subscription'] ) );
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 
 		/**
 		 * Allows to filter if PayPal buttons/messages can be rendered for the given product.
@@ -1966,7 +1968,7 @@ document.querySelector("#payment").before(document.querySelector(".ppcp-messages
 	 * @param array       $context_data The context data for this filter.
 	 * @return bool
 	 */
-	public function is_button_disabled( string $context = null, array $context_data = array() ): bool {
+	public function is_button_disabled( ?string $context = null, array $context_data = array() ): bool {
 		if ( null === $context ) {
 			$context = $this->context();
 		}

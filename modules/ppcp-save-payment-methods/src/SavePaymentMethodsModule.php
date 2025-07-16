@@ -285,7 +285,8 @@ class SavePaymentMethodsModule implements ServiceModule, ExtendingModule, Execut
 								? apply_filters( 'woocommerce_paypal_payments_three_d_secure_contingency', $settings->get( '3d_secure_contingency' ) )
 								: '';
 
-							$change_payment_method = wc_clean( wp_unslash( $_GET['change_payment_method'] ?? '' ) ); // phpcs:ignore WordPress.Security.NonceVerification
+							// phpcs:ignore WordPress.Security.NonceVerification
+							$change_payment_method = wc_clean( wp_unslash( $_GET['change_payment_method'] ?? '' ) );
 
 							wp_localize_script(
 								'ppcp-add-payment-method',

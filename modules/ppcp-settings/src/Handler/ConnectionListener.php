@@ -105,7 +105,7 @@ class ConnectionListener {
 		OnboardingUrlManager $url_manager,
 		AuthenticationManager $authentication_manager,
 		RedirectorInterface $redirector,
-		LoggerInterface $logger = null
+		?LoggerInterface $logger = null
 	) {
 		$this->settings_page_id       = $settings_page_id;
 		$this->url_manager            = $url_manager;

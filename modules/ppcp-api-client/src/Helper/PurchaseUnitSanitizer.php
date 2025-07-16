@@ -81,7 +81,7 @@ class PurchaseUnitSanitizer {
 	 * @param string|null $mode The mismatch handling mode, ditch or extra_line.
 	 * @param string|null $extra_line_name The name of the extra line.
 	 */
-	public function __construct( string $mode = null, string $extra_line_name = null ) {
+	public function __construct( ?string $mode = null, ?string $extra_line_name = null ) {
 
 		if ( ! in_array( $mode, self::VALID_MODES, true ) ) {
 			$mode = self::MODE_DITCH;

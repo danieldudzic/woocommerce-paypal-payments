@@ -47,7 +47,7 @@ class OnboardingUrlManager {
 	 * @param Cache            $cache  Cache instance for onboarding token.
 	 * @param ?LoggerInterface $logger The logger, for debugging purposes.
 	 */
-	public function __construct( Cache $cache, LoggerInterface $logger = null ) {
+	public function __construct( Cache $cache, ?LoggerInterface $logger = null ) {
 		$this->cache  = $cache;
 		$this->logger = $logger ?: new NullLogger();
 	}

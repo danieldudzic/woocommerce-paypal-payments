@@ -121,7 +121,7 @@ class ScriptDataHandler {
 			true
 		);
 
-		wp_enqueue_script( 'ppcp-admin-settings', '', array( 'wp-i18n' ), $script_asset_file['version'] );
+		wp_enqueue_script( 'ppcp-admin-settings', '', array( 'wp-i18n' ), $script_asset_file['version'], true );
 		wp_set_script_translations(
 			'ppcp-admin-settings',
 			'woocommerce-paypal-payments',

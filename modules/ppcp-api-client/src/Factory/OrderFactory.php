@@ -114,9 +114,7 @@ class OrderFactory {
 	 */
 	private function validate_order_id( \stdClass $order_data ): void {
 		if ( ! isset( $order_data->id ) ) {
-			throw new RuntimeException(
-				__( 'Order does not contain an id.', 'woocommerce-paypal-payments' )
-			);
+			throw new RuntimeException( 'Order does not contain an id.' );
 		}
 	}
 

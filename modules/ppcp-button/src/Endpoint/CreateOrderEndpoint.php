@@ -13,6 +13,7 @@ use Exception;
 use Psr\Log\LoggerInterface;
 use stdClass;
 use Throwable;
+use WC_Order;
 use WooCommerce\PayPalCommerce\ApiClient\Endpoint\OrderEndpoint;
 use WooCommerce\PayPalCommerce\ApiClient\Entity\Amount;
 use WooCommerce\PayPalCommerce\ApiClient\Entity\ExperienceContext;
@@ -254,8 +255,8 @@ class CreateOrderEndpoint implements EndpointInterface {
 		$this->pay_now_contexts                      = $pay_now_contexts;
 		$this->handle_shipping_in_paypal             = $handle_shipping_in_paypal;
 		$this->server_side_shipping_callback_enabled = $server_side_shipping_callback_enabled;
-		$this->funding_sources_without_redirect = $funding_sources_without_redirect;
-		$this->logger                           = $logger;
+		$this->funding_sources_without_redirect      = $funding_sources_without_redirect;
+		$this->logger                                = $logger;
 	}
 
 	/**
@@ -282,7 +283,7 @@ class CreateOrderEndpoint implements EndpointInterface {
 			$wc_order                  = null;
 			if ( 'pay-now' === $data['context'] ) {
 				$wc_order = wc_get_order( (int) $data['order_id'] );
-				if ( ! is_a( $wc_order, \WC_Order::class ) ) {
+				if ( ! is_a( $wc_order, WC_Order::class ) ) {
 					wp_send_json_error(
 						array(
 							'name'    => 'order-not-found',
@@ -359,7 +360,7 @@ class CreateOrderEndpoint implements EndpointInterface {
 				$this->early_order_handler->register_for_order( $order );
 			}
 
-			if ( 'pay-now' === $data['context'] && is_a( $wc_order, \WC_Order::class ) ) {
+			if ( 'pay-now' === $data['context'] && is_a( $wc_order, WC_Order::class ) ) {
 				$wc_order->update_meta_data( PayPalGateway::ORDER_ID_META_KEY, $order->id() );
 				$wc_order->update_meta_data( PayPalGateway::INTENT_META_KEY, $order->intent() );
 
@@ -418,9 +419,9 @@ class CreateOrderEndpoint implements EndpointInterface {
 	/**
 	 * Creates the order in the PayPal, uses data from WC order if provided.
 	 *
-	 * @param \WC_Order|null $wc_order WC order to get data from.
-	 * @param string         $payment_method WC payment method.
-	 * @param array          $data Request data.
+	 * @param WC_Order|null $wc_order WC order to get data from.
+	 * @param string        $payment_method WC payment method.
+	 * @param array         $data Request data.
 	 *
 	 * @return Order Created PayPal order.
 	 *
@@ -429,7 +430,7 @@ class CreateOrderEndpoint implements EndpointInterface {
 	 *
 	 * phpcs:disable Squiz.Commenting.FunctionCommentThrowTag.WrongNumber
 	 */
-	private function create_paypal_order( \WC_Order $wc_order = null, string $payment_method = '', array $data = array() ): Order {
+	private function create_paypal_order( ?WC_Order $wc_order = null, string $payment_method = '', array $data = array() ): Order {
 		assert( $this->purchase_unit instanceof PurchaseUnit );
 
 		$funding_source = $this->parsed_request_data['funding_source'] ?? '';
@@ -540,12 +541,12 @@ class CreateOrderEndpoint implements EndpointInterface {
 	/**
 	 * Returns the Payer entity based on the request data.
 	 *
-	 * @param array          $data The request data.
-	 * @param \WC_Order|null $wc_order The order.
+	 * @param array         $data The request data.
+	 * @param WC_Order|null $wc_order The order.
 	 *
 	 * @return Payer|null
 	 */
-	private function payer( array $data, \WC_Order $wc_order = null ) {
+	private function payer( array $data, ?WC_Order $wc_order = null ) {
 		if ( 'pay-now' === $data['context'] ) {
 			$payer = $this->payer_factory->from_wc_order( $wc_order );
 			return $payer;

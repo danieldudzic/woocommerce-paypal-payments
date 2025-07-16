@@ -207,7 +207,7 @@ class SettingsListener {
 		string $partner_merchant_id_production,
 		string $partner_merchant_id_sandbox,
 		ReferenceTransactionStatus $reference_transaction_status,
-		LoggerInterface $logger = null,
+		?LoggerInterface $logger,
 		Cache $client_credentials_cache,
 		Cache $reference_transaction_status_cache
 	) {

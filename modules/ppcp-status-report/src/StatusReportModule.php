@@ -85,6 +85,8 @@ class StatusReportModule implements ServiceModule, ExtendingModule, ExecutableMo
 
 				$subscription_mode_options = $c->get( 'wcgateway.settings.fields.subscriptions_mode_options' );
 
+				// Feature flag convention.
+				// phpcs:disable WordPress.NamingConventions.ValidHookName.UseUnderscores
 				$items = array(
 					array(
 						'label'          => esc_html__( 'Onboarded', 'woocommerce-paypal-payments' ),

@@ -36,9 +36,7 @@ class ReturnUrlFactory {
 					}
 				}
 
-				throw new RuntimeException(
-					__( 'Product URL is required but not provided in the request data.', 'woocommerce-paypal-payments' )
-				);
+				throw new RuntimeException( 'Product URL is required but not provided in the request data.' );
 			case 'pay-now':
 				if ( ! empty( $request_data['order_id'] ) ) {
 					$order = wc_get_order( $request_data['order_id'] );
@@ -47,9 +45,7 @@ class ReturnUrlFactory {
 					}
 				}
 
-				throw new RuntimeException(
-					__( 'The order ID is invalid.', 'woocommerce-paypal-payments' )
-				);
+				throw new RuntimeException( 'The order ID is invalid.' );
 			default:
 				return wc_get_checkout_url();
 		}
