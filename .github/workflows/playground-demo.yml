@@ -47,16 +47,24 @@ jobs:
 
       - name: Create playground demo
         run: |
-          # Find the zip file in the downloaded artifact
-          ZIP_FILE=$(find ./plugin-build -name "*.zip" | head -1)
-          if [ ! -f "$ZIP_FILE" ]; then
-            echo "No zip file found in artifact"
+          # The artifact contains the plugin directory, not a zip file
+          # We need to create the zip ourselves
+          PLUGIN_DIR="./plugin-build/woocommerce-paypal-payments"
+
+          if [ ! -d "$PLUGIN_DIR" ]; then
+            echo "Plugin directory not found"
             echo "Available files:"
-            find ./plugin-build -type f
+            find ./plugin-build -type f | head -20
             exit 1
           fi
 
-          echo "Found plugin zip: $ZIP_FILE"
+          echo "Creating zip from plugin directory: $PLUGIN_DIR"
+          cd ./plugin-build
+          zip -r woocommerce-paypal-payments.zip woocommerce-paypal-payments/
+          cd ..
+
+          ZIP_FILE="./plugin-build/woocommerce-paypal-payments.zip"
+          echo "Created plugin zip: $ZIP_FILE"
           ZIP_BASE64=$(base64 -w 0 "$ZIP_FILE")
 
           cat > index.html << 'EOF'
