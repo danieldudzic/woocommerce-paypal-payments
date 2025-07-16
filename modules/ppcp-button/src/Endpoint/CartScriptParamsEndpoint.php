@@ -76,7 +76,8 @@ class CartScriptParamsEndpoint implements EndpointInterface {
 				wc_maybe_define_constant( 'WOOCOMMERCE_CART', true );
 			}
 
-			$include_shipping = (bool) wc_clean( wp_unslash( $_GET['shipping'] ?? '' ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$include_shipping = (bool) wc_clean( wp_unslash( $_GET['shipping'] ?? '' ) );
 
 			$script_data = $this->smart_button->script_data();
 			if ( ! $script_data ) {

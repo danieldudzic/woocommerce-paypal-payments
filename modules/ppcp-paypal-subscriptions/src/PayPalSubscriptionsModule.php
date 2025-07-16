@@ -167,6 +167,7 @@ class PayPalSubscriptionsModule implements ServiceModule, ExtendingModule, Execu
 					return;
 				}
 
+				// phpcs:ignore WordPress.Security.NonceVerification
 				$nonce = wc_clean( wp_unslash( $_POST['_wcsnonce'] ?? '' ) );
 				if (
 					$subscriptions_mode !== 'subscriptions_api'
@@ -250,6 +251,7 @@ class PayPalSubscriptionsModule implements ServiceModule, ExtendingModule, Execu
 			 * @psalm-suppress MissingClosureParamType
 			 */
 			function( $variation_id ) use ( $c ) {
+				// phpcs:ignore WordPress.Security.NonceVerification
 				$wcsnonce_save_variations = wc_clean( wp_unslash( $_POST['_wcsnonce_save_variations'] ?? '' ) );
 
 				if (

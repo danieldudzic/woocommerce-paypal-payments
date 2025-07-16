@@ -264,9 +264,9 @@ class AxoGateway extends WC_Payment_Gateway {
 			);
 		}
 
-		// phpcs:ignore WordPress.Security.NonceVerification.Missing
-		$axo_nonce = wc_clean( wp_unslash( $_POST['axo_nonce'] ?? '' ) );
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		// phpcs:disable WordPress.Security.NonceVerification
+
+		$axo_nonce   = wc_clean( wp_unslash( $_POST['axo_nonce'] ?? '' ) );
 		$token_param = wc_clean( wp_unslash( $_GET['token'] ?? '' ) );
 
 		if ( empty( $axo_nonce ) && ! empty( $token_param ) ) {
@@ -274,7 +274,6 @@ class AxoGateway extends WC_Payment_Gateway {
 		}
 
 		try {
-			// phpcs:ignore WordPress.Security.NonceVerification.Missing
 			$fastlane_member = wc_clean( wp_unslash( $_POST['fastlane_member'] ?? '' ) );
 			if ( $fastlane_member ) {
 				$payment_method_title = __( 'Debit & Credit Cards (via Fastlane by PayPal)', 'woocommerce-paypal-payments' );
@@ -341,6 +340,7 @@ class AxoGateway extends WC_Payment_Gateway {
 			'result'   => 'success',
 			'redirect' => $this->get_return_url( $wc_order ),
 		);
+		// phpcs:enable WordPress.Security.NonceVerification
 	}
 
 	/**
