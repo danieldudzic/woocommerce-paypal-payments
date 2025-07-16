@@ -27,7 +27,7 @@ jobs:
       PLUGIN_VERSION: ${{ needs.check_pr_version.outputs.version }}
       PLUGIN_FOLDER_NAME: woocommerce-paypal-payments
       ARCHIVE_NAME: woocommerce-paypal-payments-${{ needs.check_pr_version.outputs.version }}
-      COMPILE_ASSETS_ARGS: "-vv --mode=root"
+      COMPILE_ASSETS_ARGS: "-vv --env=root"
 
   playground_demo:
     needs: [check_pr_version, build_pr_package]
@@ -45,27 +45,18 @@ jobs:
           name: woocommerce-paypal-payments-${{ needs.check_pr_version.outputs.version }}
           path: ./plugin-build
 
-      - name: Debug artifact contents
-        run: |
-          echo "=== Artifact contents ==="
-          ls -la ./plugin-build/
-          echo "=== Looking for zip files ==="
-          find ./plugin-build -name "*.zip" -type f
-          echo "=== All files ==="
-          find ./plugin-build -type f | head -20
-
       - name: Create playground demo
         run: |
           echo "Contents of plugin-build directory:"
           ls -la ./plugin-build/
 
-          # Look for zip file first (expected from reusable workflow)
+          # Look for zip file (should exist with --env=root parameter)
           ZIP_FILE=$(find ./plugin-build -name "*.zip" -type f | head -1)
 
           if [ -f "$ZIP_FILE" ]; then
             echo "Found zip file: $ZIP_FILE"
           else
-            echo "No zip file found, looking for other files..."
+            echo "No zip file found! Available files:"
             find ./plugin-build -type f | head -10
             exit 1
           fi
