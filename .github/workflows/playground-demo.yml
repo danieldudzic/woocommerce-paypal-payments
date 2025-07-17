@@ -209,8 +209,31 @@ jobs:
           </html>
           EOF
 
-          # Replace the placeholder with actual base64 data
-          sed -i "s/ZIP_BASE64_PLACEHOLDER/$ZIP_BASE64/g" index.html
+          # Replace the placeholder with actual base64 data using Python
+          # This avoids 'Argument list too long' errors with large base64 strings
+          python3 << EOF
+          import re
+
+          # Read the base64 data
+          with open('temp_base64.txt', 'w') as f:
+              f.write('$ZIP_BASE64')
+
+          with open('temp_base64.txt', 'r') as f:
+              base64_data = f.read().strip()
+
+          # Read the HTML file
+          with open('index.html', 'r') as f:
+              html_content = f.read()
+
+          # Replace the placeholder
+          html_content = html_content.replace('ZIP_BASE64_PLACEHOLDER', base64_data)
+
+          # Write back the HTML file
+          with open('index.html', 'w') as f:
+              f.write(html_content)
+          EOF
+
+          rm -f temp_base64.txt
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
