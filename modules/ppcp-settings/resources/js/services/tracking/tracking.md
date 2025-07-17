@@ -32,19 +32,7 @@ src/
 │   │   ├── reducer.js                    # Field source state management
 │   │   ├── selectors.js                  # Field source data access
 │   │   └── index.js                      # Store initialization
-│   ├── onboarding/                       # Clean business logic store
-│   │   ├── actions.js                    # Pure business actions
-│   │   ├── reducer.js                    # Clean business logic
-│   │   ├── selectors.js                  # Business data access
-│   │   └── hooks.js                      # Enhanced hooks with tracking
-│   ├── common/                           # Clean business logic store
-│   │   ├── actions.js                    # Pure business actions
-│   │   ├── reducer.js                    # Clean business logic
-│   │   ├── selectors.js                  # Business data access
-│   │   └── hooks.js                      # Enhanced hooks with tracking
 │   └── utils.js                          # Enhanced createHooksForStore
-└── components/                           # Enhanced to pass tracking sources
-    └── **/*.js                          # Form components updated with source attribution
 ```
 
 ## 1. Registry System (`registry.js`)
