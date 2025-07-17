@@ -133,7 +133,7 @@ jobs:
             const pluginUrl = `https://github-proxy.com/proxy/?repo=${context.repo.owner}/${context.repo.repo}&release=${{ needs.check_pr_version.outputs.release_tag }}&asset=woocommerce-paypal-payments.zip`;
 
             const blueprint = {
-              landingPage: '/wp-admin/admin.php?page=wc-settings&tab=checkout&section=ppcp-gateway',
+              landingPage: '/wp-admin/admin.php?page=wc-settings&tab=advanced&section=blueprint',
               preferredVersions: {
                 php: '8.0',
                 wp: 'latest',
