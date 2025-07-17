@@ -17,7 +17,7 @@ jobs:
           PR_VERSION="${BASE_VERSION}-pr${{ github.event.pull_request.number }}"
           echo "version=$PR_VERSION" >> $GITHUB_OUTPUT
 
-  build_pr_package:
+  create_archive:
     needs: check_pr_version
     uses: inpsyde/reusable-workflows/.github/workflows/build-plugin-archive.yml@a9af34f34e95cbe18703198c7e972e97ebcd7473
     with:
@@ -30,7 +30,7 @@ jobs:
       COMPILE_ASSETS_ARGS: "-vv --env=root"
 
   playground_demo:
-    needs: [check_pr_version, build_pr_package]
+    needs: [check_pr_version, create_archive]
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -50,16 +50,29 @@ jobs:
           echo "Contents of plugin-build directory:"
           ls -la ./plugin-build/
 
-          # Look for zip file (should exist with --env=root parameter)
+          # Try to find zip file first (like original workflow)
           ZIP_FILE=$(find ./plugin-build -name "*.zip" -type f | head -1)
 
           if [ -f "$ZIP_FILE" ]; then
-            echo "Found zip file: $ZIP_FILE"
+            echo "Found existing zip file: $ZIP_FILE"
           else
-            echo "No zip file found! Available files:"
-            find ./plugin-build -type f | head -10
-            exit 1
+            echo "No zip file found, creating from directory..."
+            PLUGIN_DIR="./plugin-build/woocommerce-paypal-payments"
+
+            if [ ! -d "$PLUGIN_DIR" ]; then
+              echo "Plugin directory not found!"
+              exit 1
+            fi
+
+            echo "Creating zip from plugin directory..."
+            cd ./plugin-build
+            zip -r woocommerce-paypal-payments.zip woocommerce-paypal-payments/
+            cd ..
+
+            ZIP_FILE="./plugin-build/woocommerce-paypal-payments.zip"
           fi
+
+          echo "Using zip file: $ZIP_FILE ($(ls -lh "$ZIP_FILE" | awk '{print $5}'))"
 
           # Convert to base64 for WordPress Playground
           echo "Converting zip to base64..."
