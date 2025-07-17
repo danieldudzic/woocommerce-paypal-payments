@@ -43,8 +43,6 @@ src/
 │   │   ├── selectors.js                  # Business data access
 │   │   └── hooks.js                      # Enhanced hooks with tracking
 │   └── utils.js                          # Enhanced createHooksForStore
-└── components/                           # Enhanced to pass tracking sources
-    └── **/*.js                          # Form components updated with source attribution
 ```
 
 ## 1. Registry System (`registry.js`)
