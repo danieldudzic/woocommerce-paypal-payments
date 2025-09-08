@@ -86,7 +86,7 @@ jobs:
               if (blueprintUrl) {
                 steps.push({
                   step: 'runWpCliCommand',
-                  command: `wc blueprint import ${blueprintUrl}`
+                  command: `wp wc blueprint import ${blueprintUrl}`
                 });
               }
 
