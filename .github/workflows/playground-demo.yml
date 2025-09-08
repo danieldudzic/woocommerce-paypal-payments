@@ -43,8 +43,52 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            const generatePlaygroundBlueprint = (runId, prNumber, repoOwner, repoName, artifactName) => {
+            const generatePlaygroundBlueprint = (runId, prNumber, repoOwner, repoName, artifactName, blueprintUrl) => {
               const pluginProxyUrl = `https://playground.wordpress.net/plugin-proxy.php?org=${repoOwner}&repo=${repoName}&workflow=PR%20Playground%20Demo&artifact=${artifactName}&pr=${prNumber}`;
+
+              const steps = [
+                {
+                  step: 'installPlugin',
+                  pluginData: {
+                    resource: 'wordpress.org/plugins',
+                    slug: 'woocommerce'
+                  },
+                  options: {
+                    activate: true
+                  }
+                },
+                {
+                  step: 'installPlugin',
+                  pluginZipFile: {
+                    resource: 'url',
+                    url: pluginProxyUrl,
+                  },
+                  options: {
+                    activate: true,
+                  },
+                },
+                {
+                  step: 'setSiteOptions',
+                  options: {
+                    woocommerce_onboarding_profile: {
+                      skipped: true,
+                    },
+                  },
+                },
+                {
+                  step: 'login',
+                  username: 'admin',
+                  password: 'password',
+                }
+              ];
+
+              // Add WooCommerce blueprint import if URL is found in PR description
+              if (blueprintUrl) {
+                steps.push({
+                  step: 'runWpCliCommand',
+                  command: `wc blueprint import ${blueprintUrl}`
+                });
+              }
 
               return {
                 landingPage: '/wp-admin/admin.php?page=wc-settings&tab=checkout&section=ppcp-gateway',
@@ -54,47 +98,24 @@ jobs:
                 },
                 phpExtensionBundles: ['kitchen-sink'],
                 features: { networking: true },
-                steps: [
-                  {
-                    step: 'installPlugin',
-                    pluginData: {
-                      resource: 'wordpress.org/plugins',
-                      slug: 'woocommerce'
-                    },
-                    options: {
-                      activate: true
-                    }
-                  },
-                  {
-                    step: 'installPlugin',
-                    pluginZipFile: {
-                      resource: 'url',
-                      url: pluginProxyUrl,
-                    },
-                    options: {
-                      activate: true,
-                    },
-                  },
-                  {
-                    step: 'setSiteOptions',
-                    options: {
-                      woocommerce_onboarding_profile: {
-                        skipped: true,
-                      },
-                    },
-                  },
-                  {
-                    step: 'login',
-                    username: 'admin',
-                    password: 'password',
-                  },
-                  {
-                    step: 'runWpCliCommand',
-                    command: 'wc blueprint import https://github.com/user-attachments/files/22206448/paypal-blueprint.json'
-                  }
-                ],
+                steps: steps,
               };
             };
+
+            // Get PR description and search for blueprint.json URLs
+            const prData = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number,
+            });
+
+            const prDescription = prData.data.body || '';
+
+            // Search for blueprint.json URLs in PR description
+            // Matches URLs ending with blueprint.json or containing blueprint.json
+            const blueprintRegex = /https?:\/\/[^\s]+blueprint\.json/gi;
+            const blueprintMatches = prDescription.match(blueprintRegex);
+            const blueprintUrl = blueprintMatches ? blueprintMatches[0] : null;
 
             const comments = await github.rest.issues.listComments({
               issue_number: context.issue.number,
@@ -112,7 +133,8 @@ jobs:
               context.issue.number,
               context.repo.owner,
               context.repo.repo,
-              '${{ needs.check_pr_version.outputs.artifact_name }}'
+              '${{ needs.check_pr_version.outputs.artifact_name }}',
+              blueprintUrl
             );
 
             const playgroundUrl = `https://playground.wordpress.net/#${JSON.stringify(blueprint)}`;
@@ -125,8 +147,9 @@ jobs:
 
             ### What's included:
             - ✅ WordPress (latest)
-            - ✅ WooCommerce (latest) with imported blueprint configuration
+            - ✅ WooCommerce (latest)${blueprintUrl ? ' with imported blueprint configuration' : ''}
             - ✅ PayPal Payments plugin v${{ needs.check_pr_version.outputs.version }} (built from PR)
+            ${blueprintUrl ? `- ✅ Custom WooCommerce setup from: ${blueprintUrl}` : ''}
 
             ### Login credentials:
             - **Username:** \`admin\`
@@ -141,6 +164,7 @@ jobs:
             > 💡 The demo environment resets each time you refresh. Perfect for testing!
             > 🔧 This demo uses the fully built plugin with all compiled assets.
             > 📦 Plugin served directly from GitHub Actions artifacts via WordPress Playground proxy.
+            ${blueprintUrl ? `\n> 🛍️ WooCommerce configuration imported from blueprint found in PR description.` : `\n> ℹ️ To add custom WooCommerce setup, include a blueprint.json URL in your PR description.`}
 
             ---
             <sub>🤖 Auto-generated for commit ${{ github.event.pull_request.head.sha }}</sub>`;
