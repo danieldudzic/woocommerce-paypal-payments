@@ -88,6 +88,10 @@ jobs:
                     username: 'admin',
                     password: 'password',
                   },
+                  {
+                    step: 'runWpCliCommand',
+                    command: 'wc blueprint import https://github.com/user-attachments/files/22206448/paypal-blueprint.json'
+                  }
                 ],
               };
             };
@@ -121,7 +125,7 @@ jobs:
 
             ### What's included:
             - ✅ WordPress (latest)
-            - ✅ WooCommerce (latest)
+            - ✅ WooCommerce (latest) with imported blueprint configuration
             - ✅ PayPal Payments plugin v${{ needs.check_pr_version.outputs.version }} (built from PR)
 
             ### Login credentials:
