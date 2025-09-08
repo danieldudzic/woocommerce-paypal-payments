@@ -137,7 +137,7 @@ jobs:
               blueprintUrl
             );
 
-            const playgroundUrl = `https://playground.wordpress.net/#${JSON.stringify(blueprint)}`;
+            const playgroundUrl = `https://playground.wordpress.net/#${encodeURIComponent(JSON.stringify(blueprint))}`;
 
             const commentBody = `## 🎮 WordPress Playground Demo
 
