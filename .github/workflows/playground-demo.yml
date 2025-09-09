@@ -43,80 +43,10 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            const generatePlaygroundBlueprint = async (runId, prNumber, repoOwner, repoName, artifactName, blueprintUrl) => {
+            const generatePlaygroundBlueprint = (runId, prNumber, repoOwner, repoName, artifactName) => {
               const pluginProxyUrl = `https://playground.wordpress.net/plugin-proxy.php?org=${repoOwner}&repo=${repoName}&workflow=PR%20Playground%20Demo&artifact=${artifactName}&pr=${prNumber}`;
 
-              const steps = [
-                {
-                  step: 'installPlugin',
-                  pluginData: {
-                    resource: 'wordpress.org/plugins',
-                    slug: 'woocommerce'
-                  },
-                  options: {
-                    activate: true
-                  }
-                },
-                {
-                  step: 'installPlugin',
-                  pluginZipFile: {
-                    resource: 'url',
-                    url: pluginProxyUrl,
-                  },
-                  options: {
-                    activate: true,
-                  },
-                },
-                {
-                  step: 'setSiteOptions',
-                  options: {
-                    woocommerce_onboarding_profile: {
-                      skipped: true,
-                    },
-                  },
-                },
-                {
-                  step: 'login',
-                  username: 'admin',
-                  password: 'password',
-                }
-              ];
-
-              // Fetch and merge custom blueprint if URL is provided
-              if (blueprintUrl) {
-                try {
-                  console.log(`Fetching blueprint from: ${blueprintUrl}`);
-                  const response = await fetch(blueprintUrl);
-
-                  if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-                  }
-
-                  const customBlueprint = await response.json();
-                  console.log('Custom blueprint fetched successfully');
-
-                  // Merge custom blueprint steps
-                  if (customBlueprint.steps && Array.isArray(customBlueprint.steps)) {
-                    steps.push(...customBlueprint.steps);
-                    console.log(`Added ${customBlueprint.steps.length} custom steps`);
-                  }
-
-                  // Merge site options if present
-                  if (customBlueprint.siteOptions) {
-                    steps.push({
-                      step: 'setSiteOptions',
-                      options: customBlueprint.siteOptions
-                    });
-                  }
-
-                } catch (error) {
-                  console.error('Failed to fetch or parse blueprint:', error);
-                  // Continue without custom blueprint rather than failing
-                }
-              }
-
               return {
-                "$schema": "https://playground.wordpress.net/blueprint-schema.json",
                 landingPage: '/wp-admin/admin.php?page=wc-settings&tab=checkout&section=ppcp-gateway',
                 preferredVersions: {
                   php: '8.0',
@@ -124,23 +54,54 @@ jobs:
                 },
                 phpExtensionBundles: ['kitchen-sink'],
                 features: { networking: true },
-                steps: steps,
+                steps: [
+                  {
+                    step: 'installPlugin',
+                    pluginData: {
+                      resource: 'wordpress.org/plugins',
+                      slug: 'woocommerce'
+                    },
+                    options: {
+                      activate: true
+                    }
+                  },
+                  {
+                    step: 'installPlugin',
+                    pluginZipFile: {
+                      resource: 'url',
+                      url: pluginProxyUrl,
+                    },
+                    options: {
+                      activate: true,
+                    },
+                  },
+                  {
+                    step: 'importWxr',
+                    file: {
+                      resource: 'url',
+                      url: 'https://raw.githubusercontent.com/woocommerce/woocommerce/trunk/plugins/woocommerce/sample-data/sample_products.xml'
+                    }
+                  },
+                  {
+                    step: 'setSiteOptions',
+                    options: {
+                      woocommerce_onboarding_profile: {
+                        skipped: true,
+                      },
+                    },
+                  },
+                  {
+                    step: 'runPHP',
+                    code: "<?php require_once('/wordpress/wp-load.php'); $shop_page = get_page_by_path('shop'); if (!$shop_page) { $shop_id = wp_insert_post(array('post_title' => 'Shop', 'post_content' => '', 'post_status' => 'publish', 'post_type' => 'page', 'post_name' => 'shop')); update_option('woocommerce_shop_page_id', $shop_id); } flush_rewrite_rules();"
+                  },
+                  {
+                    step: 'login',
+                    username: 'admin',
+                    password: 'password',
+                  },
+                ],
               };
             };
-
-            // Get PR description and search for blueprint.json URLs
-            const prData = await github.rest.pulls.get({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              pull_number: context.issue.number,
-            });
-
-            const prDescription = prData.data.body || '';
-
-            // Search for blueprint.json URLs in PR description
-            const blueprintRegex = /https?:\/\/[^\s]+blueprint\.json/gi;
-            const blueprintMatches = prDescription.match(blueprintRegex);
-            const blueprintUrl = blueprintMatches ? blueprintMatches[0] : null;
 
             const comments = await github.rest.issues.listComments({
               issue_number: context.issue.number,
@@ -153,16 +114,15 @@ jobs:
               comment.body.includes('🎮 WordPress Playground Demo')
             );
 
-            const blueprint = await generatePlaygroundBlueprint(
+            const blueprint = generatePlaygroundBlueprint(
               context.runId,
               context.issue.number,
               context.repo.owner,
               context.repo.repo,
-              '${{ needs.check_pr_version.outputs.artifact_name }}',
-              blueprintUrl
+              '${{ needs.check_pr_version.outputs.artifact_name }}'
             );
 
-            const playgroundUrl = `https://playground.wordpress.net/#${encodeURIComponent(JSON.stringify(blueprint))}`;
+            const playgroundUrl = `https://playground.wordpress.net/#${JSON.stringify(blueprint)}`;
 
             const commentBody = `## 🎮 WordPress Playground Demo
 
@@ -172,9 +132,14 @@ jobs:
 
             ### What's included:
             - ✅ WordPress (latest)
-            - ✅ WooCommerce (latest)${blueprintUrl ? ' with imported blueprint configuration' : ''}
+            - ✅ WooCommerce (latest) + Sample Products
             - ✅ PayPal Payments plugin v${{ needs.check_pr_version.outputs.version }} (built from PR)
-            ${blueprintUrl ? `- ✅ Custom WooCommerce setup from: ${blueprintUrl}` : ''}
+
+            ### Demo Features:
+            - 🛍️ **Sample Products**: T-shirts, hoodies, accessories, and more
+            - 💳 **Payment Testing**: Test PayPal integration with demo products
+            - 🏪 **Shop Page**: Browse products at \`/shop/\`
+            - ⚙️ **Admin Access**: Configure PayPal settings in WooCommerce
 
             ### Login credentials:
             - **Username:** \`admin\`
@@ -189,7 +154,7 @@ jobs:
             > 💡 The demo environment resets each time you refresh. Perfect for testing!
             > 🔧 This demo uses the fully built plugin with all compiled assets.
             > 📦 Plugin served directly from GitHub Actions artifacts via WordPress Playground proxy.
-            ${blueprintUrl ? `\n> 🛍️ WooCommerce configuration imported from blueprint found in PR description.` : `\n> ℹ️ To add custom WooCommerce setup, include a blueprint.json URL in your PR description.`}
+            > 🛒 Sample products loaded from WooCommerce's official sample data.
 
             ---
             <sub>🤖 Auto-generated for commit ${{ github.event.pull_request.head.sha }}</sub>`;
