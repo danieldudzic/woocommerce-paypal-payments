@@ -22,7 +22,6 @@ jobs:
           echo "artifact_name=$ARTIFACT_NAME" >> $GITHUB_OUTPUT
 
   playground_demo:
-    needs: [check_pr_version]
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
@@ -52,16 +51,6 @@ jobs:
                     options: {
                       activate: true
                     }
-                  },
-                  {
-                    step: 'installPlugin',
-                    pluginData: {
-                      resource: 'url',
-                      url: githubProxyUrl,
-                    },
-                    options: {
-                      activate: true,
-                    },
                   },
                   {
                     step: 'importWxr',
