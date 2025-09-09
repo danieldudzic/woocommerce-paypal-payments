@@ -1,0 +1,49 @@
+{
+  "landingPage": "/wp-admin/admin.php?page=wc-admin",
+  "steps": [
+    {
+      "step": "installPlugin",
+      "pluginData": {
+        "resource": "wordpress.org/plugins",
+        "slug": "woocommerce"
+      },
+      "options": {
+        "activate": true
+      }
+    },
+    {
+      "step": "installTheme",
+      "themeData": {
+        "resource": "wordpress.org/themes",
+        "slug": "twentytwentyfive"
+      },
+      "options": {
+        "activate": true
+      }
+    },
+    {
+      "step": "setSiteOptions",
+      "options": {
+        "woocommerce_store_address": "Warszawska 12",
+        "woocommerce_store_address_2": "",
+        "woocommerce_store_city": "Warszawa",
+        "woocommerce_default_country": "PL",
+        "woocommerce_store_postcode": "02-953",
+        "woocommerce_allowed_countries": "all",
+        "woocommerce_all_except_countries": [],
+        "woocommerce_specific_allowed_countries": [],
+        "woocommerce_ship_to_countries": "",
+        "woocommerce_specific_ship_to_countries": [],
+        "woocommerce_default_customer_address": "base",
+        "woocommerce_calc_taxes": "no",
+        "woocommerce_enable_coupons": "yes",
+        "woocommerce_calc_discounts_sequentially": "no",
+        "woocommerce_currency": "PLN",
+        "woocommerce_currency_pos": "right",
+        "woocommerce_price_thousand_sep": ",",
+        "woocommerce_price_decimal_sep": ".",
+        "woocommerce_price_num_decimals": "2"
+      }
+    }
+  ]
+}
